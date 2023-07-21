@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.util.ClassUtils;
@@ -61,7 +61,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	private Locale defaultLocale;
 
 	@BeforeEach
-	void init() throws SecurityException {
+	void init() {
 		this.logger = Logger.getLogger(getClass().getName());
 		this.defaultLocale = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
@@ -85,7 +85,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
-		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
+		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
-		assertThat(temp.listFiles(SPRING_LOG_FILTER)).hasSizeGreaterThan(0);
+		assertThat(temp.listFiles(SPRING_LOG_FILTER)).isNotEmpty();
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testSystemPropertyInitializesFormat(CapturedOutput output) {
-		System.setProperty(LoggingSystemProperties.PID_KEY, "1234");
+		System.setProperty(LoggingSystemProperty.PID.getEnvironmentVariableName(), "1234");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null,
 				"classpath:" + ClassUtils.addResourcePathToPackagePath(getClass(), "logging.properties"), null);
@@ -133,8 +133,8 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException().isThrownBy(
-				() -> this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties", null));
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties", null));
 	}
 
 	@Test
@@ -150,7 +150,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.fine("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isOne();
 	}
 
 	@Test
@@ -162,7 +162,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", null);
 		this.logger.fine("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isOne();
 	}
 
 	@Test
@@ -182,7 +182,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
+			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 }

@@ -8,6 +8,7 @@
 .#*
 .*.md.html
 .DS_Store
+.attach_pid*
 .classpath
 .factorypath
 .gradle
@@ -17,6 +18,7 @@
 .recommenders
 .settings
 .springBeans
+.vscode
 /code
 MANIFEST.MF
 _site/
@@ -34,7 +36,6 @@ manifest.yml
 out
 overridedb.*
 target
-transaction-logs
 .flattened-pom.xml
 secrets.yml
 .gradletasknamecache

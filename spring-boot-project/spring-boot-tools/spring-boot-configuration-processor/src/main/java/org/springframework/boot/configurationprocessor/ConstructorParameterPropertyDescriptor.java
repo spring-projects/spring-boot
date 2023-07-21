@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -68,8 +68,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 				if (defaultValue.size() == 1) {
 					return coerceValue(specificType, defaultValue.get(0));
 				}
-				return defaultValue.stream().map((value) -> coerceValue(specificType, value))
-						.collect(Collectors.toList());
+				return defaultValue.stream().map((value) -> coerceValue(specificType, value)).toList();
 			}
 			catch (IllegalArgumentException ex) {
 				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element, annotation);
@@ -106,21 +105,14 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 		private static final DefaultValueCoercionTypeVisitor INSTANCE = new DefaultValueCoercionTypeVisitor();
 
-		private Integer parseInteger(String value) {
+		private <T extends Number> T parseNumber(String value, Function<String, T> parser,
+				PrimitiveType primitiveType) {
 			try {
-				return Integer.valueOf(value);
+				return parser.apply(value);
 			}
 			catch (NumberFormatException ex) {
-				throw new IllegalArgumentException(String.format("Invalid number representation '%s'", value));
-			}
-		}
-
-		private Double parseFloatingPoint(String value) {
-			try {
-				return Double.valueOf(value);
-			}
-			catch (NumberFormatException ex) {
-				throw new IllegalArgumentException(String.format("Invalid floating point representation '%s'", value));
+				throw new IllegalArgumentException(
+						String.format("Invalid %s representation '%s'", primitiveType, value));
 			}
 		}
 
@@ -131,22 +123,22 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 		@Override
 		public Object visitPrimitiveAsByte(PrimitiveType t, String value) {
-			return parseInteger(value);
+			return parseNumber(value, Byte::parseByte, t);
 		}
 
 		@Override
 		public Object visitPrimitiveAsShort(PrimitiveType t, String value) {
-			return parseInteger(value);
+			return parseNumber(value, Short::parseShort, t);
 		}
 
 		@Override
 		public Object visitPrimitiveAsInt(PrimitiveType t, String value) {
-			return parseInteger(value);
+			return parseNumber(value, Integer::parseInt, t);
 		}
 
 		@Override
 		public Object visitPrimitiveAsLong(PrimitiveType t, String value) {
-			return parseInteger(value);
+			return parseNumber(value, Long::parseLong, t);
 		}
 
 		@Override
@@ -159,12 +151,12 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 		@Override
 		public Object visitPrimitiveAsFloat(PrimitiveType t, String value) {
-			return parseFloatingPoint(value);
+			return parseNumber(value, Float::parseFloat, t);
 		}
 
 		@Override
 		public Object visitPrimitiveAsDouble(PrimitiveType t, String value) {
-			return parseFloatingPoint(value);
+			return parseNumber(value, Double::parseDouble, t);
 		}
 
 	}
@@ -180,12 +172,12 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 		@Override
 		public Object visitPrimitiveAsByte(PrimitiveType t, Void ignore) {
-			return 0;
+			return (byte) 0;
 		}
 
 		@Override
 		public Object visitPrimitiveAsShort(PrimitiveType t, Void ignore) {
-			return 0;
+			return (short) 0;
 		}
 
 		@Override
@@ -205,7 +197,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 		@Override
 		public Object visitPrimitiveAsFloat(PrimitiveType t, Void ignore) {
-			return 0;
+			return 0F;
 		}
 
 		@Override

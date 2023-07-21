@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class VolumeNameTests {
 	@Test
 	void randomWhenPrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.random(null))
-				.withMessage("Prefix must not be null");
+			.withMessage("Prefix must not be null");
 	}
 
 	@Test
@@ -57,49 +57,49 @@ class VolumeNameTests {
 	@Test
 	void basedOnWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn(null, "prefix", "suffix", 6))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void basedOnWhenNameExtractorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("test", null, "prefix", "suffix", 6))
-				.withMessage("NameExtractor must not be null");
+			.withMessage("NameExtractor must not be null");
 	}
 
 	@Test
 	void basedOnWhenPrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("test", null, "suffix", 6))
-				.withMessage("Prefix must not be null");
+			.withMessage("Prefix must not be null");
 	}
 
 	@Test
 	void basedOnWhenSuffixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("test", "prefix", null, 6))
-				.withMessage("Suffix must not be null");
+			.withMessage("Suffix must not be null");
 	}
 
 	@Test
 	void basedOnGeneratesHashBasedName() {
 		VolumeName name = VolumeName.basedOn("index.docker.io/library/myapp:latest", "pack-cache-", ".build", 6);
-		assertThat(name.toString()).isEqualTo("pack-cache-40a311b545d7.build");
+		assertThat(name).hasToString("pack-cache-40a311b545d7.build");
 	}
 
 	@Test
 	void basedOnWhenSizeIsTooBigThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("name", "prefix", "suffix", 33))
-				.withMessage("DigestLength must be less than or equal to 32");
+			.withMessage("DigestLength must be less than or equal to 32");
 	}
 
 	@Test
 	void ofWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.of(null))
-				.withMessage("Value must not be null");
+			.withMessage("Value must not be null");
 	}
 
 	@Test
 	void ofGeneratesValue() {
 		VolumeName name = VolumeName.of("test");
-		assertThat(name.toString()).isEqualTo("test");
+		assertThat(name).hasToString("test");
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class VolumeNameTests {
 		VolumeName n1 = VolumeName.of("test1");
 		VolumeName n2 = VolumeName.of("test1");
 		VolumeName n3 = VolumeName.of("test2");
-		assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
+		assertThat(n1).hasSameHashCodeAs(n2);
 		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isNotEqualTo(n3);
 	}
 

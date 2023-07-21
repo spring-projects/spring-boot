@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,15 @@ class ManagementContextConfigurationTests {
 	@Test
 	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(DefaultManagementContextConfiguration.class, Configuration.class);
-		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
+			.getMergedAnnotationAttributes(DefaultManagementContextConfiguration.class, Configuration.class);
+		assertThat(attributes).containsEntry("proxyBeanMethods", true);
 	}
 
 	@Test
 	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(
 				NoBeanMethodProxyingManagementContextConfiguration.class, Configuration.class);
-		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
+		assertThat(attributes).containsEntry("proxyBeanMethods", false);
 	}
 
 	@ManagementContextConfiguration

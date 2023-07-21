@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.context;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.ApplicationContext;
@@ -37,21 +35,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 @Endpoint(id = "shutdown", enableByDefault = false)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	private static final Map<String, String> NO_CONTEXT_MESSAGE = Collections
-			.unmodifiableMap(Collections.singletonMap("message", "No context to shutdown."));
-
-	private static final Map<String, String> SHUTDOWN_MESSAGE = Collections
-			.unmodifiableMap(Collections.singletonMap("message", "Shutting down, bye..."));
-
 	private ConfigurableApplicationContext context;
 
 	@WriteOperation
-	public Map<String, String> shutdown() {
+	public ShutdownDescriptor shutdown() {
 		if (this.context == null) {
-			return NO_CONTEXT_MESSAGE;
+			return ShutdownDescriptor.NO_CONTEXT;
 		}
 		try {
-			return SHUTDOWN_MESSAGE;
+			return ShutdownDescriptor.DEFAULT;
 		}
 		finally {
 			Thread thread = new Thread(this::performShutdown);
@@ -72,9 +64,30 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		if (context instanceof ConfigurableApplicationContext) {
-			this.context = (ConfigurableApplicationContext) context;
+		if (context instanceof ConfigurableApplicationContext configurableContext) {
+			this.context = configurableContext;
 		}
+	}
+
+	/**
+	 * Description of the shutdown.
+	 */
+	public static class ShutdownDescriptor implements OperationResponseBody {
+
+		private static final ShutdownDescriptor DEFAULT = new ShutdownDescriptor("Shutting down, bye...");
+
+		private static final ShutdownDescriptor NO_CONTEXT = new ShutdownDescriptor("No context to shutdown.");
+
+		private final String message;
+
+		ShutdownDescriptor(String message) {
+			this.message = message;
+		}
+
+		public String getMessage() {
+			return this.message;
+		}
+
 	}
 
 }

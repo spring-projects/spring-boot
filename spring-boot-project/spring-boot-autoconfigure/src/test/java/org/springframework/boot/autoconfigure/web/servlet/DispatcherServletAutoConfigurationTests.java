@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -29,7 +28,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.unit.DataSize;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -46,8 +44,8 @@ import static org.mockito.Mockito.mock;
  */
 class DispatcherServletAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class));
 
 	@Test
 	void registrationProperties() {
@@ -72,13 +70,13 @@ class DispatcherServletAutoConfigurationTests {
 	@Test
 	void registrationOverrideWithDispatcherServletWrongName() {
 		this.contextRunner
-				.withUserConfiguration(CustomDispatcherServletDifferentName.class, CustomDispatcherServletPath.class)
-				.run((context) -> {
-					ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings()).containsExactly("/");
-					assertThat(registration.getServletName()).isEqualTo("dispatcherServlet");
-					assertThat(context).getBeanNames(DispatcherServlet.class).hasSize(2);
-				});
+			.withUserConfiguration(CustomDispatcherServletDifferentName.class, CustomDispatcherServletPath.class)
+			.run((context) -> {
+				ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
+				assertThat(registration.getUrlMappings()).containsExactly("/");
+				assertThat(registration.getServletName()).isEqualTo("dispatcherServlet");
+				assertThat(context).getBeanNames(DispatcherServlet.class).hasSize(2);
+			});
 	}
 
 	@Test
@@ -105,22 +103,21 @@ class DispatcherServletAutoConfigurationTests {
 	@Test
 	void dispatcherServletPathWhenCustomDispatcherServletSameNameShouldReturnConfiguredServletPath() {
 		this.contextRunner.withUserConfiguration(CustomDispatcherServletSameName.class)
-				.withPropertyValues("spring.mvc.servlet.path:/spring")
-				.run((context) -> assertThat(context.getBean(DispatcherServletPath.class).getPath())
-						.isEqualTo("/spring"));
+			.withPropertyValues("spring.mvc.servlet.path:/spring")
+			.run((context) -> assertThat(context.getBean(DispatcherServletPath.class).getPath()).isEqualTo("/spring"));
 	}
 
 	@Test
 	void dispatcherServletPathNotCreatedWhenDefaultDispatcherServletNotAvailable() {
 		this.contextRunner
-				.withUserConfiguration(CustomDispatcherServletDifferentName.class, NonServletConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(DispatcherServletPath.class));
+			.withUserConfiguration(CustomDispatcherServletDifferentName.class, NonServletConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(DispatcherServletPath.class));
 	}
 
 	@Test
 	void dispatcherServletPathNotCreatedWhenCustomRegistrationBeanPresent() {
 		this.contextRunner.withUserConfiguration(CustomDispatcherServletRegistration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(DispatcherServletPath.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(DispatcherServletPath.class));
 	}
 
 	@Test
@@ -144,7 +141,6 @@ class DispatcherServletAutoConfigurationTests {
 	void dispatcherServletDefaultConfig() {
 		this.contextRunner.run((context) -> {
 			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
 			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(true);
 			assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(false);
 			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails").isEqualTo(false);
@@ -155,20 +151,38 @@ class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void dispatcherServletThrowExceptionIfNoHandlerFoundDefaultConfig() {
+		this.contextRunner.run((context) -> {
+			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
+			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
+		});
+	}
+
+	@Test
 	void dispatcherServletCustomConfig() {
 		this.contextRunner
-				.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
-						"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
-						"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
-				.run((context) -> {
-					DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-					assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
-					assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(false);
-					assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(true);
-					assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(false);
-					assertThat(context.getBean("dispatcherServletRegistration"))
-							.hasFieldOrPropertyWithValue("loadOnStartup", 5);
-				});
+			.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:false",
+					"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
+					"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
+			.run((context) -> {
+				DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
+				assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
+				assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(false);
+				assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(true);
+				assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(false);
+				assertThat(context.getBean("dispatcherServletRegistration"))
+					.hasFieldOrPropertyWithValue("loadOnStartup", 5);
+			});
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void dispatcherServletThrowExceptionIfNoHandlerFoundCustomConfig() {
+		this.contextRunner.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:false").run((context) -> {
+			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
+			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -273,7 +287,7 @@ class DispatcherServletAutoConfigurationTests {
 		}
 
 		@Override
-		public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException {
+		public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) {
 			return null;
 		}
 

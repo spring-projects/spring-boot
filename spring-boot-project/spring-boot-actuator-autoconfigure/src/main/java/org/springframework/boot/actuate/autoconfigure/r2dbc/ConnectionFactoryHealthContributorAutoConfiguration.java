@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,13 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHe
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.actuate.r2dbc.ConnectionFactoryHealthIndicator;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -40,17 +39,17 @@ import org.springframework.context.annotation.Configuration;
  * @author Mark Paluch
  * @since 2.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = R2dbcAutoConfiguration.class)
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("r2dbc")
-@AutoConfigureAfter(R2dbcAutoConfiguration.class)
 public class ConnectionFactoryHealthContributorAutoConfiguration
 		extends CompositeReactiveHealthContributorConfiguration<ConnectionFactoryHealthIndicator, ConnectionFactory> {
 
 	private final Map<String, ConnectionFactory> connectionFactory;
 
 	ConnectionFactoryHealthContributorAutoConfiguration(Map<String, ConnectionFactory> connectionFactory) {
+		super(ConnectionFactoryHealthIndicator::new);
 		this.connectionFactory = connectionFactory;
 	}
 

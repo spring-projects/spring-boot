@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,8 @@ public final class ColorConverter extends LogEventPatternConverter {
 
 	static {
 		Map<String, AnsiElement> ansiElements = new HashMap<>();
+		ansiElements.put("black", AnsiColor.BLACK);
+		ansiElements.put("white", AnsiColor.WHITE);
 		ansiElements.put("faint", AnsiStyle.FAINT);
 		ansiElements.put("red", AnsiColor.RED);
 		ansiElements.put("green", AnsiColor.GREEN);
@@ -60,6 +62,14 @@ public final class ColorConverter extends LogEventPatternConverter {
 		ansiElements.put("blue", AnsiColor.BLUE);
 		ansiElements.put("magenta", AnsiColor.MAGENTA);
 		ansiElements.put("cyan", AnsiColor.CYAN);
+		ansiElements.put("bright_black", AnsiColor.BRIGHT_BLACK);
+		ansiElements.put("bright_white", AnsiColor.BRIGHT_WHITE);
+		ansiElements.put("bright_red", AnsiColor.BRIGHT_RED);
+		ansiElements.put("bright_green", AnsiColor.BRIGHT_GREEN);
+		ansiElements.put("bright_yellow", AnsiColor.BRIGHT_YELLOW);
+		ansiElements.put("bright_blue", AnsiColor.BRIGHT_BLUE);
+		ansiElements.put("bright_magenta", AnsiColor.BRIGHT_MAGENTA);
+		ansiElements.put("bright_cyan", AnsiColor.BRIGHT_CYAN);
 		ELEMENTS = Collections.unmodifiableMap(ansiElements);
 	}
 

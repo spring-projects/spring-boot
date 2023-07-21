@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
@@ -37,11 +36,10 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
-import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
@@ -81,16 +79,22 @@ import static org.mockito.Mockito.mock;
  */
 class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
+
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-					ReactiveUserDetailsServiceAutoConfiguration.class, WebFluxAutoConfiguration.class,
-					JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-					PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
-					WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-					InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-					ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+				ReactiveUserDetailsServiceAutoConfiguration.class, WebFluxAutoConfiguration.class,
+				JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
+				WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+				ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class));
+
+	private static final String BASE_PATH = "/cloudfoundryapplication";
 
 	@AfterEach
 	void close() {
@@ -99,150 +103,170 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPlatformActive() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils.getField(handlerMapping,
-							"endpointMapping");
-					assertThat(endpointMapping.getPath()).isEqualTo("/cloudfoundryapplication");
-					CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
-							.getField(handlerMapping, "corsConfiguration");
-					assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
-					assertThat(corsConfiguration.getAllowedMethods())
-							.containsAll(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
-					assertThat(corsConfiguration.getAllowedHeaders())
-							.containsAll(Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
-				});
+		this.contextRunner
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils.getField(handlerMapping,
+						"endpointMapping");
+				assertThat(endpointMapping.getPath()).isEqualTo("/cloudfoundryapplication");
+				CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils.getField(handlerMapping,
+						"corsConfiguration");
+				assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
+				assertThat(corsConfiguration.getAllowedMethods())
+					.containsAll(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
+				assertThat(corsConfiguration.getAllowedHeaders())
+					.containsAll(Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
+			});
 	}
 
 	@Test
 	void cloudfoundryapplicationProducesActuatorMediaType() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
-					WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
-					webTestClient.get().uri("/cloudfoundryapplication").header("Content-Type",
-							ActuatorMediaType.V2_JSON + ";charset=UTF-8");
-				});
+		this.contextRunner
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
+				webTestClient.get().uri("/cloudfoundryapplication").header("Content-Type", V2_JSON + ";charset=UTF-8");
+			});
 	}
 
 	@Test
 	void cloudFoundryPlatformActiveSetsApplicationId() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-					String applicationId = (String) ReflectionTestUtils.getField(interceptor, "applicationId");
-					assertThat(applicationId).isEqualTo("my-app-id");
-				});
+		this.contextRunner
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				String applicationId = (String) ReflectionTestUtils.getField(interceptor, "applicationId");
+				assertThat(applicationId).isEqualTo("my-app-id");
+			});
 	}
 
 	@Test
 	void cloudFoundryPlatformActiveSetsCloudControllerUrl() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
-							"cloudFoundrySecurityService");
-					String cloudControllerUrl = (String) ReflectionTestUtils.getField(interceptorSecurityService,
-							"cloudControllerUrl");
-					assertThat(cloudControllerUrl).isEqualTo("https://my-cloud-controller.com");
-				});
+		this.contextRunner
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+						"cloudFoundrySecurityService");
+				String cloudControllerUrl = (String) ReflectionTestUtils.getField(interceptorSecurityService,
+						"cloudControllerUrl");
+				assertThat(cloudControllerUrl).isEqualTo("https://my-cloud-controller.com");
+			});
 	}
 
 	@Test
 	void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
-				.run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = context.getBean(
-							"cloudFoundryWebFluxEndpointHandlerMapping",
-							CloudFoundryWebFluxEndpointHandlerMapping.class);
-					Object securityInterceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-					Object interceptorSecurityService = ReflectionTestUtils.getField(securityInterceptor,
-							"cloudFoundrySecurityService");
-					assertThat(interceptorSecurityService).isNull();
-				});
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = context.getBean(
+						"cloudFoundryWebFluxEndpointHandlerMapping", CloudFoundryWebFluxEndpointHandlerMapping.class);
+				Object securityInterceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				Object interceptorSecurityService = ReflectionTestUtils.getField(securityInterceptor,
+						"cloudFoundrySecurityService");
+				assertThat(interceptorSecurityService).isNull();
+			});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void cloudFoundryPathsIgnoredBySpringSecurity() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
-					WebFilterChainProxy chainProxy = context.getBean(WebFilterChainProxy.class);
-					List<SecurityWebFilterChain> filters = (List<SecurityWebFilterChain>) ReflectionTestUtils
-							.getField(chainProxy, "filters");
-					Boolean cfRequestMatches = filters.get(0)
-							.matches(MockServerWebExchange
-									.from(MockServerHttpRequest.get("/cloudfoundryapplication/my-path").build()))
-							.block(Duration.ofSeconds(30));
-					Boolean otherRequestMatches = filters.get(0)
-							.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))
-							.block(Duration.ofSeconds(30));
-					assertThat(cfRequestMatches).isTrue();
-					assertThat(otherRequestMatches).isFalse();
-					otherRequestMatches = filters.get(1)
-							.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))
-							.block(Duration.ofSeconds(30));
-					assertThat(otherRequestMatches).isTrue();
-				});
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				WebFilterChainProxy chainProxy = context.getBean(WebFilterChainProxy.class);
+				List<SecurityWebFilterChain> filters = (List<SecurityWebFilterChain>) ReflectionTestUtils
+					.getField(chainProxy, "filters");
+				Boolean cfBaseRequestMatches = getMatches(filters, BASE_PATH);
+				Boolean cfBaseWithTrailingSlashRequestMatches = getMatches(filters, BASE_PATH + "/");
+				Boolean cfRequestMatches = getMatches(filters, BASE_PATH + "/test");
+				Boolean cfRequestWithAdditionalPathMatches = getMatches(filters, BASE_PATH + "/test/a");
+				Boolean otherCfRequestMatches = getMatches(filters, BASE_PATH + "/other-path");
+				Boolean otherRequestMatches = getMatches(filters, "/some-other-path");
+				assertThat(cfBaseRequestMatches).isTrue();
+				assertThat(cfBaseWithTrailingSlashRequestMatches).isTrue();
+				assertThat(cfRequestMatches).isTrue();
+				assertThat(cfRequestWithAdditionalPathMatches).isTrue();
+				assertThat(otherCfRequestMatches).isFalse();
+				assertThat(otherRequestMatches).isFalse();
+				otherRequestMatches = filters.get(1)
+					.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))
+					.block(Duration.ofSeconds(30));
+				assertThat(otherRequestMatches).isTrue();
+			});
 
+	}
+
+	private static Boolean getMatches(List<SecurityWebFilterChain> filters, String urlTemplate) {
+		return filters.get(0)
+			.matches(MockServerWebExchange.from(MockServerHttpRequest.get(urlTemplate).build()))
+			.block(Duration.ofSeconds(30));
 	}
 
 	@Test
 	void cloudFoundryPlatformInactive() {
-		this.contextRunner.run(
-				(context) -> assertThat(context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping")).isFalse());
+		this.contextRunner
+			.run((context) -> assertThat(context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping")).isFalse());
 	}
 
 	@Test
 	void cloudFoundryManagementEndpointsDisabled() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false").run(
-				(context) -> assertThat(context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping")).isFalse());
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false")
+			.run((context) -> assertThat(context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping")).isFalse());
 	}
 
 	@Test
 	void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebIncludes() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
-				.run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
-					List<EndpointId> endpointIds = endpoints.stream().map(ExposableEndpoint::getEndpointId)
-							.collect(Collectors.toList());
-					assertThat(endpointIds).contains(EndpointId.of("test"));
-				});
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
+				List<EndpointId> endpointIds = endpoints.stream().map(ExposableWebEndpoint::getEndpointId).toList();
+				assertThat(endpointIds).contains(EndpointId.of("test"));
+			});
 	}
 
 	@Test
 	void endpointPathCustomizationIsNotApplied() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
-				.run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
-					ExposableWebEndpoint endpoint = endpoints.stream()
-							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId())).findFirst()
-							.get();
-					assertThat(endpoint.getOperations()).hasSize(1);
-					WebOperation operation = endpoint.getOperations().iterator().next();
-					assertThat(operation.getRequestPredicate().getPath()).isEqualTo("test");
-				});
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
+				ExposableWebEndpoint endpoint = endpoints.stream()
+					.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId()))
+					.findFirst()
+					.get();
+				assertThat(endpoint.getOperations()).hasSize(1);
+				WebOperation operation = endpoint.getOperations().iterator().next();
+				assertThat(operation.getRequestPredicate().getPath()).isEqualTo("test");
+			});
 	}
 
 	@Test
 	void healthEndpointInvokerShouldBeCloudFoundryWebExtension() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
-				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:https://my-cloud-controller.com")
-				.run((context) -> {
-					Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(context).getEndpoints();
-					ExposableWebEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getOperations()).hasSize(2);
-					WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
-					assertThat(webOperation).extracting("invoker").extracting("target")
-							.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
-				});
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(context).getEndpoints();
+				ExposableWebEndpoint endpoint = endpoints.iterator().next();
+				assertThat(endpoint.getOperations()).hasSize(2);
+				WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
+				assertThat(webOperation).extracting("invoker")
+					.extracting("target")
+					.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
+			});
 	}
 
 	@Test
@@ -250,7 +274,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	void gitFullDetailsAlwaysPresent() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---").run((context) -> {
 			CloudFoundryInfoEndpointWebExtension extension = context
-					.getBean(CloudFoundryInfoEndpointWebExtension.class);
+				.getBean(CloudFoundryInfoEndpointWebExtension.class);
 			Map<String, Object> git = (Map<String, Object>) extension.info().get("git");
 			Map<String, Object> commit = (Map<String, Object>) git.get("commit");
 			assertThat(commit).hasSize(4);
@@ -260,36 +284,42 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	void skipSslValidation() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
-				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:https://my-cloud-controller.com",
-						"management.cloudfoundry.skip-ssl-validation:true")
-				.run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
-							"cloudFoundrySecurityService");
-					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
-							"webClient");
-					webClient.get().uri("https://self-signed.badssl.com/").exchange().block(Duration.ofSeconds(30));
-				});
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com",
+					"management.cloudfoundry.skip-ssl-validation:true")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+						"cloudFoundrySecurityService");
+				WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService, "webClient");
+				webClient.get()
+					.uri("https://self-signed.badssl.com/")
+					.retrieve()
+					.toBodilessEntity()
+					.block(Duration.ofSeconds(30));
+			});
 	}
 
 	@Test
 	void sslValidationNotSkippedByDefault() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
-				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:https://my-cloud-controller.com")
-				.run((context) -> {
-					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
-							"cloudFoundrySecurityService");
-					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
-							"webClient");
-					assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> webClient.get()
-							.uri("https://self-signed.badssl.com/").exchange().block(Duration.ofSeconds(30)))
-							.withCauseInstanceOf(SSLException.class);
-				});
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+						"cloudFoundrySecurityService");
+				WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService, "webClient");
+				assertThatExceptionOfType(RuntimeException.class)
+					.isThrownBy(() -> webClient.get()
+						.uri("https://self-signed.badssl.com/")
+						.retrieve()
+						.toBodilessEntity()
+						.block(Duration.ofSeconds(30)))
+					.withCauseInstanceOf(SSLException.class);
+			});
 	}
 
 	private CloudFoundryWebFluxEndpointHandlerMapping getHandlerMapping(ApplicationContext context) {
@@ -300,8 +330,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	private WebOperation findOperationWithRequestPath(ExposableWebEndpoint endpoint, String requestPath) {
 		for (WebOperation operation : endpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
-			if (predicate.getPath().equals(requestPath)
-					&& predicate.getProduces().contains(ActuatorMediaType.V3_JSON)) {
+			if (predicate.getPath().equals(requestPath) && predicate.getProduces().contains(V3_JSON)) {
 				return operation;
 			}
 		}

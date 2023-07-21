@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ext.ContextResolver;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.ext.ContextResolver;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -88,6 +89,12 @@ public class JerseyWebEndpointIntegrationTests
 	protected void validateErrorBody(WebTestClient.BodyContentSpec body, HttpStatus status, String path,
 			String message) {
 		// Jersey doesn't support the general error page handling
+	}
+
+	@Override
+	@Test
+	@Disabled("Jersey does not distinguish between /example and /example/")
+	protected void operationWithTrailingSlashShouldNotMatch() {
 	}
 
 	@Configuration(proxyBeanMethods = false)

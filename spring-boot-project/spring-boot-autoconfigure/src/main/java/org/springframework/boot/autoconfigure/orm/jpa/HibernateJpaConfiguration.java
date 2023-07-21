@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,37 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeHint;
+import org.springframework.aot.hint.TypeHint.Builder;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.SchemaManagementProvider;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
@@ -58,10 +68,12 @@ import org.springframework.util.ClassUtils;
  * @author Manuel Doninger
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HibernateProperties.class)
 @ConditionalOnSingleCandidate(DataSource.class)
+@ImportRuntimeHints(HibernateRuntimeHints.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private static final Log logger = LogFactory.getLog(HibernateJpaConfiguration.class);
@@ -81,7 +93,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
-	private DataSourcePoolMetadataProvider poolMetadataProvider;
+	private final DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
@@ -99,7 +111,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
 				physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(), beanFactory,
-				hibernatePropertiesCustomizers.orderedStream().collect(Collectors.toList()));
+				hibernatePropertiesCustomizers.orderedStream().toList());
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
@@ -113,8 +125,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 					new SpringBeanContainer(beanFactory)));
 		}
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
-			customizers.add(
-					new NamingStrategiesHibernatePropertiesCustomizer(physicalNamingStrategy, implicitNamingStrategy));
+			customizers
+				.add(new NamingStrategiesHibernatePropertiesCustomizer(physicalNamingStrategy, implicitNamingStrategy));
 		}
 		customizers.addAll(hibernatePropertiesCustomizers);
 		return customizers;
@@ -128,9 +140,9 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(this.hibernateProperties
-				.determineHibernateProperties(getProperties().getProperties(), new HibernateSettings()
-						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
+				getProperties().getProperties(), new HibernateSettings().ddlAuto(defaultDdlMode)
+					.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override
@@ -204,7 +216,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private Object getNoJtaPlatformManager() {
 		for (String candidate : NO_JTA_PLATFORM_CLASSES) {
 			try {
-				return Class.forName(candidate).newInstance();
+				return Class.forName(candidate).getDeclaredConstructor().newInstance();
 			}
 			catch (Exception ex) {
 				// Continue searching
@@ -234,6 +246,22 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			if (this.implicitNamingStrategy != null) {
 				hibernateProperties.put("hibernate.implicit_naming_strategy", this.implicitNamingStrategy);
 			}
+		}
+
+	}
+
+	static class HibernateRuntimeHints implements RuntimeHintsRegistrar {
+
+		private static final Consumer<Builder> INVOKE_DECLARED_CONSTRUCTORS = TypeHint
+			.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			for (String noJtaPlatformClass : NO_JTA_PLATFORM_CLASSES) {
+				hints.reflection().registerType(TypeReference.of(noJtaPlatformClass), INVOKE_DECLARED_CONSTRUCTORS);
+			}
+			hints.reflection().registerType(SpringImplicitNamingStrategy.class, INVOKE_DECLARED_CONSTRUCTORS);
+			hints.reflection().registerType(CamelCaseToUnderscoresNamingStrategy.class, INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

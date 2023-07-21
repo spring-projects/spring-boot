@@ -1,0 +1,9 @@
+plugins {
+	id 'org.springframework.boot' version '{version}'
+}
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+tasks.configureEach {
+	println "Configuring ${it.path}"
+}

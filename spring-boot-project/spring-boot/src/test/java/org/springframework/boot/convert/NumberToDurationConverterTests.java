@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class NumberToDurationConverterTests {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			DurationUnit unitAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
 			given(targetType.getAnnotation(DurationUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) Duration.class);

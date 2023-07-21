@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ import static org.mockito.Mockito.mock;
 class SessionsEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
-			.withUserConfiguration(SessionConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
+		.withUserConfiguration(SessionConfiguration.class);
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=sessions")
-				.run((context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ class SessionsEndpointAutoConfigurationTests {
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.sessions.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

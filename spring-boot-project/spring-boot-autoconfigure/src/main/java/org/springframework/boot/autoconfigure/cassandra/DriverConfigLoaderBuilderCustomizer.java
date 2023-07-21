@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBui
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link DriverConfigLoader} via a {@link DriverConfigLoaderBuilderCustomizer} whilst
+ * {@link DriverConfigLoader} through a {@link DriverConfigLoaderBuilderCustomizer} whilst
  * retaining default auto-configuration.
  *
  * @author Stephane Nicoll

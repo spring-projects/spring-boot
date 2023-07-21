@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.tests;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.function.BiFunction;
 
 /**
@@ -35,6 +36,8 @@ class LaunchedApplication {
 	private final Process localProcess;
 
 	private Process remoteProcess;
+
+	private final Instant launchTime = Instant.now();
 
 	private final BiFunction<Integer, File, Process> remoteProcessRestarter;
 
@@ -77,6 +80,10 @@ class LaunchedApplication {
 
 	File getClassesDirectory() {
 		return this.classesDirectory;
+	}
+
+	Instant getLaunchTime() {
+		return this.launchTime;
 	}
 
 }

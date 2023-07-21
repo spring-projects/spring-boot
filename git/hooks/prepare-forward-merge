@@ -1,0 +1,71 @@
+#!/usr/bin/ruby
+require 'json'
+require 'net/http'
+require 'yaml'
+require 'logger'
+
+$main_branch = "3.2.x"
+
+$log = Logger.new(STDOUT)
+$log.level = Logger::WARN
+
+def get_fixed_issues()
+  $log.debug "Searching for forward merge"
+  rev=`git rev-parse -q --verify MERGE_HEAD`.strip
+  $log.debug "Found #{rev} from git rev-parse"
+  return nil unless rev
+  fixed = []
+  message = `git log -1 --pretty=%B #{rev}`
+  message.each_line do |line|
+    $log.debug "Checking #{line} for message"
+    fixed << line.strip if /^(?:Fixes|Closes) gh-(\d+)/.match(line)
+  end
+  $log.debug "Found fixed issues #{fixed}"
+  return fixed;
+end
+
+def rewrite_message(message_file, fixed)
+  current_branch = `git rev-parse --abbrev-ref HEAD`.strip
+  if current_branch == "main"
+    current_branch = $main_branch
+  end
+  rewritten_message = ""
+  message = File.read(message_file)
+  message.each_line do |line|
+    match = /^Merge.*branch\ '(.*)'(?:\ into\ (.*))?$/.match(line)
+    if match
+      from_branch = match[1]
+      if from_branch.include? "/"
+        from_branch = from_branch.partition("/").last
+      end
+      to_branch = match[2]
+      $log.debug "Rewriting merge message"
+      line = "Merge branch '#{from_branch}'" + (to_branch ? " into #{to_branch}\n" : "\n")
+    end
+    if fixed and line.start_with?("#")
+      $log.debug "Adding fixed"
+      rewritten_message << "\n"
+      fixed.each do |fixes|
+        rewritten_message << "#{fixes} in #{current_branch}\n"
+      end
+      fixed = nil
+    end
+    rewritten_message << line
+  end
+  return rewritten_message
+end
+
+$log.debug "Running prepare-forward-merge hook script"
+
+message_file=ARGV[0]
+message_type=ARGV[1]
+
+if message_type != "merge"
+  $log.debug "Not a merge commit"
+  exit 0;
+end
+
+$log.debug "Searching for forward merge"
+fixed = get_fixed_issues()
+rewritten_message = rewrite_message(message_file, fixed)
+File.write(message_file, rewritten_message)

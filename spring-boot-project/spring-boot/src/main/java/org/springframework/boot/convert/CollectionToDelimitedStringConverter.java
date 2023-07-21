@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,9 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		if (source.isEmpty()) {
 			return "";
 		}
-		return source.stream().map((element) -> convertElement(element, sourceType, targetType))
-				.collect(Collectors.joining(getDelimiter(sourceType)));
+		return source.stream()
+			.map((element) -> convertElement(element, sourceType, targetType))
+			.collect(Collectors.joining(getDelimiter(sourceType)));
 	}
 
 	private CharSequence getDelimiter(TypeDescriptor sourceType) {
@@ -76,8 +77,8 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 	}
 
 	private String convertElement(Object element, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return String.valueOf(
-				this.conversionService.convert(element, sourceType.elementTypeDescriptor(element), targetType));
+		return String
+			.valueOf(this.conversionService.convert(element, sourceType.elementTypeDescriptor(element), targetType));
 	}
 
 }

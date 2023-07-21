@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,10 +49,9 @@ import static org.mockito.Mockito.mock;
 class JdbcTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.datasource.initialization-mode=never",
-					"spring.datasource.generate-unique-name=true")
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class));
+		.withPropertyValues("spring.datasource.generate-unique-name=true")
+		.withConfiguration(
+				AutoConfigurations.of(DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class));
 
 	@Test
 	void testJdbcTemplateExists() {
@@ -67,15 +67,17 @@ class JdbcTemplateAutoConfigurationTests {
 
 	@Test
 	void testJdbcTemplateWithCustomProperties() {
-		this.contextRunner.withPropertyValues("spring.jdbc.template.fetch-size:100",
-				"spring.jdbc.template.query-timeout:60", "spring.jdbc.template.max-rows:1000").run((context) -> {
-					assertThat(context).hasSingleBean(JdbcOperations.class);
-					JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
-					assertThat(jdbcTemplate.getDataSource()).isNotNull();
-					assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
-					assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
-					assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
-				});
+		this.contextRunner
+			.withPropertyValues("spring.jdbc.template.fetch-size:100", "spring.jdbc.template.query-timeout:60",
+					"spring.jdbc.template.max-rows:1000")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcOperations.class);
+				JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+				assertThat(jdbcTemplate.getDataSource()).isNotNull();
+				assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
+				assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
+				assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
+			});
 	}
 
 	@Test
@@ -107,7 +109,7 @@ class JdbcTemplateAutoConfigurationTests {
 	@Test
 	void testMultiJdbcTemplate() {
 		this.contextRunner.withUserConfiguration(MultiJdbcTemplateConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(NamedParameterJdbcOperations.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(NamedParameterJdbcOperations.class));
 	}
 
 	@Test
@@ -116,7 +118,7 @@ class JdbcTemplateAutoConfigurationTests {
 			assertThat(context).hasSingleBean(JdbcOperations.class);
 			assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
 			assertThat(context.getBean(JdbcTemplate.class).getDataSource())
-					.isEqualTo(context.getBean("test1DataSource"));
+				.isEqualTo(context.getBean("test1DataSource"));
 		});
 	}
 
@@ -125,7 +127,7 @@ class JdbcTemplateAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(MultiJdbcTemplateUsingPrimaryConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
 			assertThat(context.getBean(NamedParameterJdbcTemplate.class).getJdbcOperations())
-					.isEqualTo(context.getBean("test1Template"));
+				.isEqualTo(context.getBean("test1Template"));
 		});
 	}
 
@@ -142,59 +144,64 @@ class JdbcTemplateAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
 			assertThat(context.getBean(NamedParameterJdbcOperations.class))
-					.isEqualTo(context.getBean("customNamedParameterJdbcOperations"));
+				.isEqualTo(context.getBean("customNamedParameterJdbcOperations"));
 		});
 	}
 
 	@Test
-	void testDependencyToDataSourceInitialization() {
-		this.contextRunner.withUserConfiguration(DataSourceInitializationValidator.class)
-				.withPropertyValues("spring.datasource.initialization-mode=always").run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(DataSourceInitializationValidator.class).count).isEqualTo(1);
-				});
+	void testDependencyToScriptBasedDataSourceInitialization() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class))
+			.withUserConfiguration(DataSourceInitializationValidator.class)
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context.getBean(DataSourceInitializationValidator.class).count).isOne();
+			});
 	}
 
 	@Test
 	void testDependencyToFlyway() {
 		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
-				.withPropertyValues("spring.flyway.locations:classpath:db/city")
-				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class)).run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(DataSourceMigrationValidator.class).count).isEqualTo(0);
-				});
+			.withPropertyValues("spring.flyway.locations:classpath:db/city")
+			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context.getBean(DataSourceMigrationValidator.class).count).isZero();
+			});
 	}
 
 	@Test
 	void testDependencyToFlywayWithJdbcTemplateMixed() {
 		this.contextRunner.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
-				.withPropertyValues("spring.flyway.locations:classpath:db/city")
-				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class)).run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
-					assertThat(context.getBean(NamedParameterDataSourceMigrationValidator.class).count).isEqualTo(0);
-				});
+			.withPropertyValues("spring.flyway.locations:classpath:db/city")
+			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
+				assertThat(context.getBean(NamedParameterDataSourceMigrationValidator.class).count).isZero();
+			});
 	}
 
 	@Test
 	void testDependencyToLiquibase() {
 		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
-				.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
-				.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class)).run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(DataSourceMigrationValidator.class).count).isEqualTo(0);
-				});
+			.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
+			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context.getBean(DataSourceMigrationValidator.class).count).isZero();
+			});
 	}
 
 	@Test
 	void testDependencyToLiquibaseWithJdbcTemplateMixed() {
 		this.contextRunner.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
-				.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
-				.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class)).run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
-					assertThat(context.getBean(NamedParameterDataSourceMigrationValidator.class).count).isEqualTo(0);
-				});
+			.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
+			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
+				assertThat(context.getBean(NamedParameterDataSourceMigrationValidator.class).count).isZero();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

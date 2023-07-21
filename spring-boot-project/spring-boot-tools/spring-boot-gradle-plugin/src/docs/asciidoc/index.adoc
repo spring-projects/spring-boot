@@ -1,16 +1,19 @@
+[[spring-boot-gradle-plugin-documentation]]
 = Spring Boot Gradle Plugin Reference Guide
-Andy Wilkinson, Scott Frederick
+Andy Wilkinson; Scott Frederick
+v{gradle-project-version}
+:!version-label:
 :doctype: book
 :toc: left
 :toclevels: 4
-:source-highlighter: prettify
 :numbered:
+:sectanchors:
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
-
+:attribute-missing: warn
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
-:dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
+:dependency-management-plugin-documentation: https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/
 :gradle-userguide: https://docs.gradle.org/current/userguide
 :gradle-dsl: https://docs.gradle.org/current/dsl
 :gradle-api: https://docs.gradle.org/current/javadoc
@@ -34,22 +37,28 @@ Andy Wilkinson, Scott Frederick
 :boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html
 :github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
 :buildpacks-reference: https://buildpacks.io/docs
+:paketo-reference: https://paketo.io/docs
+:paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
+:nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/{native-build-tools-version}/gradle-plugin.html
 
 
-[[introduction]]
-== Introduction
 
-The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle].
-It allows you to package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
-Spring Boot's Gradle plugin requires Gradle 6.x (5.6 is also supported but this support is deprecated and will be removed in a future release).
+include::introduction.adoc[leveloffset=+1]
 
-In addition to this user guide, {api-documentation}[API documentation] is also available.
+include::getting-started.adoc[leveloffset=+1]
 
-include::getting-started.adoc[]
-include::managing-dependencies.adoc[]
-include::packaging.adoc[]
-include::packaging-oci-image.adoc[]
-include::publishing.adoc[]
-include::running.adoc[]
-include::integrating-with-actuator.adoc[]
-include::reacting.adoc[]
+include::managing-dependencies.adoc[leveloffset=+1]
+
+include::packaging.adoc[leveloffset=+1]
+
+include::packaging-oci-image.adoc[leveloffset=+1]
+
+include::publishing.adoc[leveloffset=+1]
+
+include::running.adoc[leveloffset=+1]
+
+include::aot.adoc[leveloffset=+1]
+
+include::integrating-with-actuator.adoc[leveloffset=+1]
+
+include::reacting.adoc[leveloffset=+1]

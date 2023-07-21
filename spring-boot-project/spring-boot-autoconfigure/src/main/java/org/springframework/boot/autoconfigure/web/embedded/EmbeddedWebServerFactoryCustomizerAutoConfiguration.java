@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,11 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.xnio.SslClientAuthMode;
 import reactor.netty.http.server.HttpServer;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnVirtualThreads;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -41,7 +44,8 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
+@ConditionalOnNotWarDeployment
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(ServerProperties.class)
 public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
@@ -59,6 +63,12 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 			return new TomcatWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
+		@Bean
+		@ConditionalOnVirtualThreads
+		TomcatVirtualThreadsWebServerFactoryCustomizer tomcatVirtualThreadsProtocolHandlerCustomizer() {
+			return new TomcatVirtualThreadsWebServerFactoryCustomizer();
+		}
+
 	}
 
 	/**
@@ -72,6 +82,13 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment,
 				ServerProperties serverProperties) {
 			return new JettyWebServerFactoryCustomizer(environment, serverProperties);
+		}
+
+		@Bean
+		@ConditionalOnVirtualThreads
+		JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new JettyVirtualThreadsWebServerFactoryCustomizer(serverProperties);
 		}
 
 	}

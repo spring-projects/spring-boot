@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class DelimitedStringToArrayConverterTests {
 	void matchesWhenHasAnnotationAndNonConvertibleElementTypeShouldReturnFalse(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
+			.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
 		assertThat(new DelimitedStringToArrayConverter(conversionService).matches(sourceType, targetType)).isFalse();
 	}
 
@@ -68,17 +68,17 @@ class DelimitedStringToArrayConverterTests {
 	void matchesWhenHasAnnotationAndConvertibleElementTypeShouldReturnTrue() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
 		assertThat(
 				new DelimitedStringToArrayConverter(new ApplicationConversionService()).matches(sourceType, targetType))
-						.isTrue();
+			.isTrue();
 	}
 
 	@Test
 	void convertWhenHasConvertibleElementTypeShouldReturnConvertedType() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
 		Integer[] converted = (Integer[]) new ApplicationConversionService().convert(" 1 |  2| 3  ", sourceType,
 				targetType);
 		assertThat(converted).containsExactly(1, 2, 3);
@@ -86,7 +86,7 @@ class DelimitedStringToArrayConverterTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverter(new DelimitedStringToArrayConverter(service)));
+			.with((service) -> service.addConverter(new DelimitedStringToArrayConverter(service)));
 	}
 
 	static class Values {

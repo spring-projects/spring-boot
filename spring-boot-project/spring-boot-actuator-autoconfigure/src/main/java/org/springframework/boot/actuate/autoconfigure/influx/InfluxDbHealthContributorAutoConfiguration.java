@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,28 +24,35 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthCont
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.influx.InfluxDbHealthIndicator;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link InfluxDbHealthIndicator}.
  *
  * @author Eddú Meléndez
  * @since 2.0.0
+ * @deprecated since 3.2.0 for removal in 3.4.0 in favor of the
+ * <a href="https://github.com/influxdata/influxdb-client-java">new client</a> and its own
+ * Spring Boot integration.
  */
-@Configuration(proxyBeanMethods = false)
+@SuppressWarnings("removal")
+@AutoConfiguration(after = InfluxDbAutoConfiguration.class)
 @ConditionalOnClass(InfluxDB.class)
 @ConditionalOnBean(InfluxDB.class)
 @ConditionalOnEnabledHealthIndicator("influxdb")
-@AutoConfigureAfter(InfluxDbAutoConfiguration.class)
+@Deprecated(since = "3.2.0", forRemoval = true)
 public class InfluxDbHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<InfluxDbHealthIndicator, InfluxDB> {
+
+	public InfluxDbHealthContributorAutoConfiguration() {
+		super(InfluxDbHealthIndicator::new);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "influxDbHealthIndicator", "influxDbHealthContributor" })

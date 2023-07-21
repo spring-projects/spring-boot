@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import io.r2dbc.spi.ValidationDepth;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -29,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Mark Paluch
  * @author Andreas Killaitis
  * @author Stephane Nicoll
+ * @author Rodolpho S. Couto
  * @since 2.3.0
  */
 @ConfigurationProperties(prefix = "spring.r2dbc")
@@ -134,9 +137,37 @@ public class R2dbcProperties {
 	public static class Pool {
 
 		/**
-		 * Idle timeout.
+		 * Minimal number of idle connections.
+		 */
+		private int minIdle = 0;
+
+		/**
+		 * Maximum amount of time that a connection is allowed to sit idle in the pool.
 		 */
 		private Duration maxIdleTime = Duration.ofMinutes(30);
+
+		/**
+		 * Maximum lifetime of a connection in the pool. By default, connections have an
+		 * infinite lifetime.
+		 */
+		private Duration maxLifeTime;
+
+		/**
+		 * Maximum time to acquire a connection from the pool. By default, wait
+		 * indefinitely.
+		 */
+		private Duration maxAcquireTime;
+
+		/**
+		 * Maximum time to validate a connection from the pool. By default, wait
+		 * indefinitely.
+		 */
+		private Duration maxValidationTime;
+
+		/**
+		 * Maximum time to wait to create a new connection. By default, wait indefinitely.
+		 */
+		private Duration maxCreateConnectionTime;
 
 		/**
 		 * Initial connection pool size.
@@ -153,12 +184,62 @@ public class R2dbcProperties {
 		 */
 		private String validationQuery;
 
+		/**
+		 * Validation depth.
+		 */
+		private ValidationDepth validationDepth = ValidationDepth.LOCAL;
+
+		/**
+		 * Whether pooling is enabled. Requires r2dbc-pool.
+		 */
+		private boolean enabled = true;
+
+		public int getMinIdle() {
+			return this.minIdle;
+		}
+
+		public void setMinIdle(int minIdle) {
+			this.minIdle = minIdle;
+		}
+
 		public Duration getMaxIdleTime() {
 			return this.maxIdleTime;
 		}
 
 		public void setMaxIdleTime(Duration maxIdleTime) {
 			this.maxIdleTime = maxIdleTime;
+		}
+
+		public Duration getMaxLifeTime() {
+			return this.maxLifeTime;
+		}
+
+		public void setMaxLifeTime(Duration maxLifeTime) {
+			this.maxLifeTime = maxLifeTime;
+		}
+
+		public Duration getMaxValidationTime() {
+			return this.maxValidationTime;
+		}
+
+		public void setMaxValidationTime(Duration maxValidationTime) {
+			this.maxValidationTime = maxValidationTime;
+		}
+
+		public Duration getMaxAcquireTime() {
+			return this.maxAcquireTime;
+		}
+
+		public void setMaxAcquireTime(Duration maxAcquireTime) {
+			this.maxAcquireTime = maxAcquireTime;
+		}
+
+		public Duration getMaxCreateConnectionTime() {
+			return this.maxCreateConnectionTime;
+		}
+
+		public void setMaxCreateConnectionTime(Duration maxCreateConnectionTime) {
+			this.maxCreateConnectionTime = maxCreateConnectionTime;
 		}
 
 		public int getInitialSize() {
@@ -183,6 +264,22 @@ public class R2dbcProperties {
 
 		public void setValidationQuery(String validationQuery) {
 			this.validationQuery = validationQuery;
+		}
+
+		public ValidationDepth getValidationDepth() {
+			return this.validationDepth;
+		}
+
+		public void setValidationDepth(ValidationDepth validationDepth) {
+			this.validationDepth = validationDepth;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

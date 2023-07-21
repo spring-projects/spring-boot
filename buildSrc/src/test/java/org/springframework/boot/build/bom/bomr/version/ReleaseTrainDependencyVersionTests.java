@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ReleaseTrainDependencyVersionTests {
+class ReleaseTrainDependencyVersionTests {
 
 	@Test
 	void parsingOfANonReleaseTrainVersionReturnsNull() {
@@ -92,8 +92,35 @@ public class ReleaseTrainDependencyVersionTests {
 		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(version("Kay-SR7"))).isFalse();
 	}
 
+	@Test
+	void releaseTrainVersionIsNotNewerThanCalendarVersion() {
+		assertThat(version("Kay-SR6").isNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void releaseTrainVersionIsNotSameMajorAsCalendarTrainVersion() {
+		assertThat(version("Kay-SR6").isSameMajorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void releaseTrainVersionIsNotSameMinorAsCalendarVersion() {
+		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void whenComparedWithADifferentDependencyVersionTypeThenTheResultsAreNonZero() {
+		DependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
+		DependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
+		assertThat(dysprosium).isLessThan(twentyTwenty);
+		assertThat(twentyTwenty).isGreaterThan(dysprosium);
+	}
+
 	private static ReleaseTrainDependencyVersion version(String input) {
 		return ReleaseTrainDependencyVersion.parse(input);
+	}
+
+	private CalendarVersionDependencyVersion calendarVersion(String version) {
+		return CalendarVersionDependencyVersion.parse(version);
 	}
 
 }

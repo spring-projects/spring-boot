@@ -1,0 +1,14 @@
+[appendix]
+[[appendix.dependency-versions]]
+= Dependency Versions
+include::attributes.adoc[]
+
+
+
+This appendix provides details of the dependencies that are managed by Spring Boot.
+
+
+
+include::dependency-versions/coordinates.adoc[]
+
+include::dependency-versions/properties.adoc[]

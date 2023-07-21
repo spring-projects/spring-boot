@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,10 @@
 
 package org.springframework.boot.test.context.runner;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -59,28 +54,11 @@ public final class WebApplicationContextRunner extends
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
 	public WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory) {
-		super(contextFactory);
+		super(contextFactory, WebApplicationContextRunner::new);
 	}
 
-	private WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory,
-			boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
-			List<Configurations> configurations) {
-		super(contextFactory, allowBeanDefinitionOverriding, initializers, environmentProperties, systemProperties,
-				classLoader, parent, beanRegistrations, configurations);
-	}
-
-	@Override
-	protected WebApplicationContextRunner newInstance(Supplier<ConfigurableWebApplicationContext> contextFactory,
-			boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
-			List<Configurations> configurations) {
-		return new WebApplicationContextRunner(contextFactory, allowBeanDefinitionOverriding, initializers,
-				environmentProperties, systemProperties, classLoader, parent, beanRegistrations, configurations);
+	private WebApplicationContextRunner(RunnerConfiguration<ConfigurableWebApplicationContext> configuration) {
+		super(configuration, WebApplicationContextRunner::new);
 	}
 
 	/**

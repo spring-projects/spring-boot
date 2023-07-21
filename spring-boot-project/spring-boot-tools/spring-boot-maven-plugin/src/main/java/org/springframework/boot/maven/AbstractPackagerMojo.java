@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,19 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -31,24 +37,29 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts.Expanded;
 import org.springframework.boot.loader.tools.Layouts.Jar;
-import org.springframework.boot.loader.tools.Layouts.LayeredJar;
 import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Packager;
+import org.springframework.boot.loader.tools.layer.CustomLayers;
 
 /**
  * Abstract base class for classes that work with an {@link Packager}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo {
+
+	private static final org.springframework.boot.loader.tools.Layers IMPLICIT_LAYERS = org.springframework.boot.loader.tools.Layers.IMPLICIT;
 
 	/**
 	 * The Maven project.
@@ -56,6 +67,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
+
+	/**
+	 * The Maven session.
+	 * @since 2.4.0
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true, required = true)
+	protected MavenSession session;
 
 	/**
 	 * Maven project helper utils.
@@ -66,29 +84,11 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
-	 * contains a 'main' method will be used.
+	 * contains a {@code main} method will be used.
 	 * @since 1.0.0
 	 */
 	@Parameter
 	private String mainClass;
-
-	/**
-	 * The type of archive (which corresponds to how the dependencies are laid out inside
-	 * it). Possible values are JAR, LAYERED_JAR, WAR, ZIP, DIR, NONE. Defaults to a guess
-	 * based on the archive type.
-	 * @since 1.0.0
-	 */
-	@Parameter(property = "spring-boot.repackage.layout")
-	private LayoutType layout;
-
-	/**
-	 * The layout factory that will be used to create the executable archive if no
-	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
-	 * parties.
-	 * @since 1.5.0
-	 */
-	@Parameter
-	private LayoutFactory layoutFactory;
 
 	/**
 	 * Exclude Spring Boot devtools from the repackaged archive.
@@ -98,6 +98,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	private boolean excludeDevtools = true;
 
 	/**
+	 * Exclude Spring Boot dev services from the repackaged archive.
+	 * @since 3.1.0
+	 */
+	@Parameter(property = "spring-boot.repackage.excludeDockerCompose", defaultValue = "true")
+	private boolean excludeDockerCompose = true;
+
+	/**
 	 * Include system scoped dependencies.
 	 * @since 1.4.0
 	 */
@@ -105,11 +112,30 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	public boolean includeSystemScope;
 
 	/**
-	 * Layer configuration with the option to exclude layer tools jar.
+	 * Layer configuration with options to disable layer creation, exclude layer tools
+	 * jar, and provide a custom layers configuration file.
 	 * @since 2.3.0
 	 */
 	@Parameter
-	private Layered layered;
+	private Layers layers;
+
+	/**
+	 * Return the type of archive that should be packaged by this MOJO.
+	 * @return {@code null}, indicating a layout type will be chosen based on the original
+	 * archive type
+	 */
+	protected LayoutType getLayout() {
+		return null;
+	}
+
+	/**
+	 * Return the layout factory that will be used to determine the {@link LayoutType} if
+	 * no explicit layout is set.
+	 * @return {@code null}, indicating a default layout factory will be chosen
+	 */
+	protected LayoutFactory getLayoutFactory() {
+		return null;
+	}
 
 	/**
 	 * Return a {@link Packager} configured for this MOJO.
@@ -119,18 +145,42 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	protected <P extends Packager> P getConfiguredPackager(Supplier<P> supplier) {
 		P packager = supplier.get();
-		packager.setLayoutFactory(this.layoutFactory);
+		packager.setLayoutFactory(getLayoutFactory());
 		packager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener(this::getLog));
 		packager.setMainClass(this.mainClass);
-		if (this.layout != null) {
-			getLog().info("Layout: " + this.layout);
-			packager.setLayout(this.layout.layout());
+		LayoutType layout = getLayout();
+		if (layout != null) {
+			getLog().info("Layout: " + layout);
+			packager.setLayout(layout.layout());
 		}
-		if (this.layered != null && this.layered.isEnabled()) {
-			packager.setLayout(new LayeredJar());
-			packager.setIncludeRelevantJarModeJars(this.layered.isIncludeLayerTools());
+		if (this.layers == null) {
+			packager.setLayers(IMPLICIT_LAYERS);
+		}
+		else if (this.layers.isEnabled()) {
+			packager.setLayers((this.layers.getConfiguration() != null)
+					? getCustomLayers(this.layers.getConfiguration()) : IMPLICIT_LAYERS);
+			packager.setIncludeRelevantJarModeJars(this.layers.isIncludeLayerTools());
 		}
 		return packager;
+	}
+
+	private CustomLayers getCustomLayers(File configuration) {
+		try {
+			Document document = getDocumentIfAvailable(configuration);
+			return new CustomLayersProvider().getLayers(document);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Failed to process custom layers configuration " + configuration.getAbsolutePath(), ex);
+		}
+	}
+
+	private Document getDocumentIfAvailable(File xmlFile) throws Exception {
+		InputSource inputSource = new InputSource(new FileInputStream(xmlFile));
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		return builder.parse(inputSource);
 	}
 
 	/**
@@ -140,23 +190,59 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @throws MojoExecutionException on execution error
 	 */
 	protected final Libraries getLibraries(Collection<Dependency> unpacks) throws MojoExecutionException {
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), getFilters(getAdditionalFilters()));
-		return new ArtifactsLibraries(artifacts, unpacks, getLog());
+		Set<Artifact> artifacts = this.project.getArtifacts();
+		Set<Artifact> includedArtifacts = filterDependencies(artifacts, getAdditionalFilters());
+		return new ArtifactsLibraries(artifacts, includedArtifacts, this.session.getProjects(), unpacks, getLog());
 	}
 
 	private ArtifactsFilter[] getAdditionalFilters() {
 		List<ArtifactsFilter> filters = new ArrayList<>();
 		if (this.excludeDevtools) {
-			Exclude exclude = new Exclude();
-			exclude.setGroupId("org.springframework.boot");
-			exclude.setArtifactId("spring-boot-devtools");
-			ExcludeFilter filter = new ExcludeFilter(exclude);
-			filters.add(filter);
+			filters.add(DEVTOOLS_EXCLUDE_FILTER);
+		}
+		if (this.excludeDockerCompose) {
+			filters.add(DOCKER_COMPOSE_EXCLUDE_FILTER);
 		}
 		if (!this.includeSystemScope) {
 			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		}
 		return filters.toArray(new ArtifactsFilter[0]);
+	}
+
+	/**
+	 * Return the source {@link Artifact} to repackage. If a classifier is specified and
+	 * an artifact with that classifier exists, it is used. Otherwise, the main artifact
+	 * is used.
+	 * @param classifier the artifact classifier
+	 * @return the source artifact to repackage
+	 */
+	protected Artifact getSourceArtifact(String classifier) {
+		Artifact sourceArtifact = getArtifact(classifier);
+		return (sourceArtifact != null) ? sourceArtifact : this.project.getArtifact();
+	}
+
+	private Artifact getArtifact(String classifier) {
+		if (classifier != null) {
+			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
+				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
+						&& attachedArtifact.getFile().isFile()) {
+					return attachedArtifact;
+				}
+			}
+		}
+		return null;
+	}
+
+	protected File getTargetFile(String finalName, String classifier, File targetDirectory) {
+		String classifierSuffix = (classifier != null) ? classifier.trim() : "";
+		if (!classifierSuffix.isEmpty() && !classifierSuffix.startsWith("-")) {
+			classifierSuffix = "-" + classifierSuffix;
+		}
+		if (!targetDirectory.exists()) {
+			targetDirectory.mkdirs();
+		}
+		return new File(targetDirectory,
+				finalName + classifierSuffix + "." + this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	/**
@@ -180,7 +266,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		ZIP(new Expanded()),
 
 		/**
-		 * Dir Layout.
+		 * Directory Layout.
 		 */
 		DIR(new Expanded()),
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.function.Function;
 
 import io.undertow.UndertowOptions;
 import org.xnio.Option;
+import org.xnio.Options;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow;
@@ -38,6 +39,7 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -74,37 +76,50 @@ public class UndertowWebServerFactoryCustomizer
 	@Override
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		FactoryOptions options = new FactoryOptions(factory);
+		ServerOptions options = new ServerOptions(factory);
 		ServerProperties properties = this.serverProperties;
-		map.from(properties::getMaxHttpHeaderSize).asInt(DataSize::toBytes).when(this::isPositive)
-				.to(options.server(UndertowOptions.MAX_HEADER_SIZE));
-		map.from(properties::getConnectionTimeout).asInt(Duration::toMillis)
-				.to(options.server(UndertowOptions.NO_REQUEST_TIMEOUT));
+		map.from(properties::getMaxHttpRequestHeaderSize)
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
 		mapUndertowProperties(factory, options);
 		mapAccessLogProperties(factory);
 		map.from(this::getOrDeduceUseForwardHeaders).to(factory::setUseForwardHeaders);
 	}
 
-	private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, FactoryOptions options) {
+	private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Undertow properties = this.serverProperties.getUndertow();
 		map.from(properties::getBufferSize).whenNonNull().asInt(DataSize::toBytes).to(factory::setBufferSize);
-		map.from(properties::getIoThreads).to(factory::setIoThreads);
-		map.from(properties::getWorkerThreads).to(factory::setWorkerThreads);
+		ServerProperties.Undertow.Threads threadProperties = properties.getThreads();
+		map.from(threadProperties::getIo).to(factory::setIoThreads);
+		map.from(threadProperties::getWorker).to(factory::setWorkerThreads);
 		map.from(properties::getDirectBuffers).to(factory::setUseDirectBuffers);
-		map.from(properties::getMaxHttpPostSize).as(DataSize::toBytes).when(this::isPositive)
-				.to(options.server(UndertowOptions.MAX_ENTITY_SIZE));
-		map.from(properties::getMaxParameters).to(options.server(UndertowOptions.MAX_PARAMETERS));
-		map.from(properties::getMaxHeaders).to(options.server(UndertowOptions.MAX_HEADERS));
-		map.from(properties::getMaxCookies).to(options.server(UndertowOptions.MAX_COOKIES));
-		map.from(properties::isAllowEncodedSlash).to(options.server(UndertowOptions.ALLOW_ENCODED_SLASH));
-		map.from(properties::isDecodeUrl).to(options.server(UndertowOptions.DECODE_URL));
-		map.from(properties::getUrlCharset).as(Charset::name).to(options.server(UndertowOptions.URL_CHARSET));
-		map.from(properties::isAlwaysSetKeepAlive).to(options.server(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
-		map.from(properties::getNoRequestTimeout).asInt(Duration::toMillis)
-				.to(options.server(UndertowOptions.NO_REQUEST_TIMEOUT));
-		map.from(properties.getOptions()::getServer).to(options.forEach(options::server));
-		map.from(properties.getOptions()::getSocket).to(options.forEach(options::socket));
+		map.from(properties::getMaxHttpPostSize)
+			.as(DataSize::toBytes)
+			.when(this::isPositive)
+			.to(serverOptions.option(UndertowOptions.MAX_ENTITY_SIZE));
+		map.from(properties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
+		map.from(properties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
+		map.from(properties::getMaxCookies).to(serverOptions.option(UndertowOptions.MAX_COOKIES));
+		mapSlashProperties(properties, serverOptions);
+		map.from(properties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
+		map.from(properties::getUrlCharset).as(Charset::name).to(serverOptions.option(UndertowOptions.URL_CHARSET));
+		map.from(properties::isAlwaysSetKeepAlive).to(serverOptions.option(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
+		map.from(properties::getNoRequestTimeout)
+			.asInt(Duration::toMillis)
+			.to(serverOptions.option(UndertowOptions.NO_REQUEST_TIMEOUT));
+		map.from(properties.getOptions()::getServer).to(serverOptions.forEach(serverOptions::option));
+		SocketOptions socketOptions = new SocketOptions(factory);
+		map.from(properties.getOptions()::getSocket).to(socketOptions.forEach(socketOptions::option));
+	}
+
+	@SuppressWarnings({ "deprecation", "removal" })
+	private void mapSlashProperties(Undertow properties, ServerOptions serverOptions) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
+		map.from(properties::getDecodeSlash).to(serverOptions.option(UndertowOptions.DECODE_SLASH));
+
 	}
 
 	private boolean isPositive(Number value) {
@@ -130,16 +145,17 @@ public class UndertowWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
-	/**
-	 * {@link ConfigurableUndertowWebServerFactory} wrapper that makes it easier to apply
-	 * {@link UndertowOptions}.
-	 */
-	private static class FactoryOptions {
+	private abstract static class AbstractOptions {
 
-		private static final Map<String, Option<?>> NAME_LOOKUP;
-		static {
+		private final Class<?> source;
+
+		private final Map<String, Option<?>> nameLookup;
+
+		private final ConfigurableUndertowWebServerFactory factory;
+
+		AbstractOptions(Class<?> source, ConfigurableUndertowWebServerFactory factory) {
 			Map<String, Option<?>> lookup = new HashMap<>();
-			ReflectionUtils.doWithLocalFields(UndertowOptions.class, (field) -> {
+			ReflectionUtils.doWithLocalFields(source, (field) -> {
 				int modifiers = field.getModifiers();
 				if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers)
 						&& Option.class.isAssignableFrom(field.getType())) {
@@ -151,27 +167,21 @@ public class UndertowWebServerFactoryCustomizer
 					}
 				}
 			});
-			NAME_LOOKUP = Collections.unmodifiableMap(lookup);
-		}
-
-		private final ConfigurableUndertowWebServerFactory factory;
-
-		FactoryOptions(ConfigurableUndertowWebServerFactory factory) {
+			this.source = source;
+			this.nameLookup = Collections.unmodifiableMap(lookup);
 			this.factory = factory;
 		}
 
-		<T> Consumer<T> server(Option<T> option) {
-			return (value) -> this.factory.addBuilderCustomizers((builder) -> builder.setServerOption(option, value));
+		protected ConfigurableUndertowWebServerFactory getFactory() {
+			return this.factory;
 		}
 
-		<T> Consumer<T> socket(Option<T> option) {
-			return (value) -> this.factory.addBuilderCustomizers((builder) -> builder.setSocketOption(option, value));
-		}
-
+		@SuppressWarnings("unchecked")
 		<T> Consumer<Map<String, String>> forEach(Function<Option<T>, Consumer<T>> function) {
 			return (map) -> map.forEach((key, value) -> {
-				Option<T> option = (Option<T>) NAME_LOOKUP.get(getCanonicalName(key));
-				Assert.state(option != null, "Unable to find '" + key + "' in UndertowOptions");
+				Option<T> option = (Option<T>) this.nameLookup.get(getCanonicalName(key));
+				Assert.state(option != null,
+						() -> "Unable to find '" + key + "' in " + ClassUtils.getShortName(this.source));
 				T parsed = option.parseValue(value, getClass().getClassLoader());
 				function.apply(option).accept(parsed);
 			});
@@ -179,9 +189,43 @@ public class UndertowWebServerFactoryCustomizer
 
 		private static String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
-			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
-					.forEach((c) -> canonicalName.append((char) c));
+			name.chars()
+				.filter(Character::isLetterOrDigit)
+				.map(Character::toLowerCase)
+				.forEach((c) -> canonicalName.append((char) c));
 			return canonicalName.toString();
+		}
+
+	}
+
+	/**
+	 * {@link ConfigurableUndertowWebServerFactory} wrapper that makes it easier to apply
+	 * {@link UndertowOptions server options}.
+	 */
+	private static class ServerOptions extends AbstractOptions {
+
+		ServerOptions(ConfigurableUndertowWebServerFactory factory) {
+			super(UndertowOptions.class, factory);
+		}
+
+		<T> Consumer<T> option(Option<T> option) {
+			return (value) -> getFactory().addBuilderCustomizers((builder) -> builder.setServerOption(option, value));
+		}
+
+	}
+
+	/**
+	 * {@link ConfigurableUndertowWebServerFactory} wrapper that makes it easier to apply
+	 * {@link Options socket options}.
+	 */
+	private static class SocketOptions extends AbstractOptions {
+
+		SocketOptions(ConfigurableUndertowWebServerFactory factory) {
+			super(Options.class, factory);
+		}
+
+		<T> Consumer<T> option(Option<T> option) {
+			return (value) -> getFactory().addBuilderCustomizers((builder) -> builder.setSocketOption(option, value));
 		}
 
 	}

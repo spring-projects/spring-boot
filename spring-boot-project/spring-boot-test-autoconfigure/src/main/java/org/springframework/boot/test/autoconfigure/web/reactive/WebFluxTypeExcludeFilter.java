@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -43,6 +44,9 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
+	private static final String[] OPTIONAL_INCLUDES = { "com.fasterxml.jackson.databind.Module",
+			"org.thymeleaf.dialect.IDialect" };
+
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
@@ -54,6 +58,14 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 		includes.add(GenericConverter.class);
 		includes.add(WebExceptionHandler.class);
 		includes.add(WebFilter.class);
+		for (String optionalInclude : OPTIONAL_INCLUDES) {
+			try {
+				includes.add(ClassUtils.forName(optionalInclude, null));
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
+		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 

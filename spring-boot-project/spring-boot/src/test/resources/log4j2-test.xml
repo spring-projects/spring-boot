@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="warn" name="test" packages="">
+<Configuration status="warn" name="test">
 	<Properties>
 		<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
 		<Property name="LOG_LEVEL_PATTERN">%5p</Property>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import org.ehcache.jsr107.EhcacheCachingProvider;
+import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,22 +36,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Hibernate2ndLevelCacheIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
-					HibernateJpaAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.initialization-mode=never")
-			.withUserConfiguration(TestConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class))
+		.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	void hibernate2ndLevelCacheWithJCacheAndEhCache3() {
-		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
-		String configLocation = "ehcache3.xml";
+	void hibernate2ndLevelCacheWithJCacheAndHazelcast() {
+		String cachingProviderFqn = HazelcastServerCachingProvider.class.getName();
+		String configLocation = "classpath:hazelcast.xml";
 		this.contextRunner
-				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
-						"spring.cache.jcache.config=" + configLocation,
-						"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
-						"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
-						"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.jcache.config=" + configLocation,
+					"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
+					"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
+					"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Configuration(proxyBeanMethods = false)

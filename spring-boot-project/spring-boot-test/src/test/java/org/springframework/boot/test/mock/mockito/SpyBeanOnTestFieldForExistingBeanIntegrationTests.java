@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Test {@link SpyBean @SpyBean} on a test class field can be used to replace existing
@@ -48,7 +48,7 @@ class SpyBeanOnTestFieldForExistingBeanIntegrationTests {
 	@Test
 	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
-		verify(this.caller.getService()).greeting();
+		then(this.caller.getService()).should().greeting();
 	}
 
 }

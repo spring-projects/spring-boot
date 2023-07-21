@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package org.springframework.boot.web.servlet.context;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -38,7 +39,6 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Ivan Sopov
  */
+@DirtiesUrlFactories
 class ServletWebServerMvcIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
@@ -74,6 +75,7 @@ class ServletWebServerMvcIntegrationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jetty() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(JettyConfig.class);
 		doTest(this.context, "/hello");
@@ -86,6 +88,7 @@ class ServletWebServerMvcIntegrationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void advancedConfig() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(AdvancedConfig.class);
 		doTest(this.context, "/example/spring/hello");
@@ -97,8 +100,7 @@ class ServletWebServerMvcIntegrationTests {
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
 				new URI("http://localhost:" + context.getWebServer().getPort() + resourcePath), HttpMethod.GET);
 		try (ClientHttpResponse response = request.execute()) {
-			String actual = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
-			assertThat(actual).isEqualTo("Hello World");
+			assertThat(response.getBody()).hasContent("Hello World");
 		}
 	}
 
@@ -187,7 +189,8 @@ class ServletWebServerMvcIntegrationTests {
 
 		@Bean
 		DispatcherServlet dispatcherServlet() {
-			// Can configure dispatcher servlet here as would usually do via init-params
+			// Can configure dispatcher servlet here as would usually do through
+			// init-params
 			return new DispatcherServlet();
 		}
 

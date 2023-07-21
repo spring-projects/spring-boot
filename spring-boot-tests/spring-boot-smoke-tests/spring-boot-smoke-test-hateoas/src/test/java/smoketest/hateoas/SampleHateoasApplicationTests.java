@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package smoketest.hateoas;
+
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +40,21 @@ class SampleHateoasApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	void hasHalLinks() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/customers/1", String.class);
+	void hasHalLinksWhenAnythingIsAcceptable() {
+		HttpHeaders headers = new HttpHeaders();
+		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
+				new HttpEntity<>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
+		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
+	}
+
+	@Test
+	void hasHalLinksWhenJsonIsAcceptable() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
+				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
 		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.mongodb.MongoClientSettings.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link com.mongodb.MongoClientSettings} via a {@link Builder
+ * {@link com.mongodb.MongoClientSettings} through a {@link Builder
  * MongoClientSettings.Builder} whilst retaining default auto-configuration.
  *
  * @author Mark Paluch

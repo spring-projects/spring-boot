@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,22 @@ import java.util.zip.ZipEntry;
  */
 public abstract class TestJarCreator {
 
+	private static final int BASE_VERSION = 8;
+
+	private static final int RUNTIME_VERSION;
+
+	static {
+		int version;
+		try {
+			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
+			version = (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
+		}
+		catch (Throwable ex) {
+			version = BASE_VERSION;
+		}
+		RUNTIME_VERSION = version;
+	}
+
 	public static void createTestJar(File file) throws Exception {
 		createTestJar(file, false);
 	}
@@ -49,7 +65,6 @@ public abstract class TestJarCreator {
 			writeEntry(jarOutputStream, "d/9.dat", 9);
 			writeDirEntry(jarOutputStream, "special/");
 			writeEntry(jarOutputStream, "special/\u00EB.dat", '\u00EB');
-
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("space nested.jar", unpackNested, jarOutputStream);
@@ -79,7 +94,6 @@ public abstract class TestJarCreator {
 		CRC32 crc32 = new CRC32();
 		crc32.update(nestedJarData);
 		nestedEntry.setCrc(crc32.getValue());
-
 		nestedEntry.setMethod(ZipEntry.STORED);
 		jarOutputStream.putNextEntry(nestedEntry);
 		jarOutputStream.write(nestedJarData);
@@ -92,12 +106,9 @@ public abstract class TestJarCreator {
 		jarOutputStream.setComment("nested");
 		writeManifest(jarOutputStream, "j2", multiRelease);
 		if (multiRelease) {
-			writeEntry(jarOutputStream, "multi-release.dat", 8);
-			writeEntry(jarOutputStream, "META-INF/versions/9/multi-release.dat", 9);
-			writeEntry(jarOutputStream, "META-INF/versions/10/multi-release.dat", 10);
-			writeEntry(jarOutputStream, "META-INF/versions/11/multi-release.dat", 11);
-			writeEntry(jarOutputStream, "META-INF/versions/12/multi-release.dat", 12);
-			writeEntry(jarOutputStream, "META-INF/versions/13/multi-release.dat", 13);
+			writeEntry(jarOutputStream, "multi-release.dat", BASE_VERSION);
+			writeEntry(jarOutputStream, String.format("META-INF/versions/%d/multi-release.dat", RUNTIME_VERSION),
+					RUNTIME_VERSION);
 		}
 		else {
 			writeEntry(jarOutputStream, "3.dat", 3);

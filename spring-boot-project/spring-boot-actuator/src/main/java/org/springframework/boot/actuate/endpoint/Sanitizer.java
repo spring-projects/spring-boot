@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Strategy that should be used by endpoint implementations to sanitize potentially
@@ -37,102 +31,52 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author HaiTao Zhang
  * @author Chris Bono
+ * @author David Good
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class Sanitizer {
 
-	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
+	private final List<SanitizingFunction> sanitizingFunctions = new ArrayList<>();
 
-	private static final Set<String> DEFAULT_KEYS_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "secret",
-			"key", "token", ".*credentials.*", "vcap_services", "sun.java.command"));
-
-	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
-			Arrays.asList("uri", "uris", "address", "addresses"));
-
-	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("[A-Za-z]+://.+:(.*)@.+$");
-
-	private Pattern[] keysToSanitize;
-
-	static {
-		DEFAULT_KEYS_TO_SANITIZE.addAll(URI_USERINFO_KEYS);
-	}
-
+	/**
+	 * Create a new {@link Sanitizer} instance.
+	 */
 	public Sanitizer() {
-		this(DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
-	}
-
-	public Sanitizer(String... keysToSanitize) {
-		setKeysToSanitize(keysToSanitize);
+		this(Collections.emptyList());
 	}
 
 	/**
-	 * Keys that should be sanitized. Keys can be simple strings that the property ends
-	 * with or regular expressions.
-	 * @param keysToSanitize the keys to sanitize
+	 * Create a new {@link Sanitizer} instance with sanitizing functions.
+	 * @param sanitizingFunctions the sanitizing functions to apply
+	 * @since 2.6.0
 	 */
-	public void setKeysToSanitize(String... keysToSanitize) {
-		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		this.keysToSanitize = new Pattern[keysToSanitize.length];
-		for (int i = 0; i < keysToSanitize.length; i++) {
-			this.keysToSanitize[i] = getPattern(keysToSanitize[i]);
-		}
-	}
-
-	private Pattern getPattern(String value) {
-		if (isRegex(value)) {
-			return Pattern.compile(value, Pattern.CASE_INSENSITIVE);
-		}
-		return Pattern.compile(".*" + value + "$", Pattern.CASE_INSENSITIVE);
-	}
-
-	private boolean isRegex(String value) {
-		for (String part : REGEX_PARTS) {
-			if (value.contains(part)) {
-				return true;
-			}
-		}
-		return false;
+	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions) {
+		sanitizingFunctions.forEach(this.sanitizingFunctions::add);
 	}
 
 	/**
-	 * Sanitize the given value if necessary.
-	 * @param key the key to sanitize
-	 * @param value the value
-	 * @return the potentially sanitized value
+	 * Sanitize the value from the given {@link SanitizableData} using the available
+	 * {@link SanitizingFunction}s.
+	 * @param data the sanitizable data
+	 * @param showUnsanitized whether to show the unsanitized values or not
+	 * @return the potentially updated data
+	 * @since 3.0.0
 	 */
-	public Object sanitize(String key, Object value) {
+	public Object sanitize(SanitizableData data, boolean showUnsanitized) {
+		Object value = data.getValue();
 		if (value == null) {
 			return null;
 		}
-		for (Pattern pattern : this.keysToSanitize) {
-			if (pattern.matcher(key).matches()) {
-				if (keyIsUriWithUserInfo(pattern)) {
-					return sanitizeUris(value.toString());
-				}
-				return "******";
-			}
+		if (!showUnsanitized) {
+			return SanitizableData.SANITIZED_VALUE;
 		}
-		return value;
-	}
-
-	private boolean keyIsUriWithUserInfo(Pattern pattern) {
-		for (String uriKey : URI_USERINFO_KEYS) {
-			if (pattern.matcher(uriKey).matches()) {
-				return true;
+		for (SanitizingFunction sanitizingFunction : this.sanitizingFunctions) {
+			data = sanitizingFunction.apply(data);
+			Object sanitizedValue = data.getValue();
+			if (!value.equals(sanitizedValue)) {
+				return sanitizedValue;
 			}
-		}
-		return false;
-	}
-
-	private Object sanitizeUris(String value) {
-		return Arrays.stream(value.split(",")).map(this::sanitizeUri).collect(Collectors.joining(","));
-	}
-
-	private String sanitizeUri(String value) {
-		Matcher matcher = URI_USERINFO_PATTERN.matcher(value);
-		String password = matcher.matches() ? matcher.group(1) : null;
-		if (password != null) {
-			return StringUtils.replace(value, ":" + password + "@", ":******@");
 		}
 		return value;
 	}

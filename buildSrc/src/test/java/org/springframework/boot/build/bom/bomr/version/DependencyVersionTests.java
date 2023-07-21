@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DependencyVersion}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
-public class DependencyVersionTests {
+class DependencyVersionTests {
 
 	@Test
 	void parseWhenValidMavenVersionShouldReturnArtifactVersionDependencyVersion() {
-		assertThat(DependencyVersion.parse("1.2.3.Final")).isInstanceOf(ArtifactVersionDependencyVersion.class);
+		assertThat(DependencyVersion.parse("1.2.3.Final")).isExactlyInstanceOf(ArtifactVersionDependencyVersion.class);
 	}
 
 	@Test
@@ -38,8 +39,13 @@ public class DependencyVersionTests {
 	}
 
 	@Test
-	void parseWhenMavenLikeVersionWithNumericQualifieShouldReturnNumericQualifierDependencyVersion() {
-		assertThat(DependencyVersion.parse("1.2.3.4")).isInstanceOf(NumericQualifierDependencyVersion.class);
+	void parseWhenMavenLikeVersionWithNumericQualifierShouldReturnNumericQualifierDependencyVersion() {
+		assertThat(DependencyVersion.parse("1.2.3.4")).isInstanceOf(MultipleComponentsDependencyVersion.class);
+	}
+
+	@Test
+	void parseWhen5ComponentsShouldReturnNumericQualifierDependencyVersion() {
+		assertThat(DependencyVersion.parse("1.2.3.4.5")).isInstanceOf(MultipleComponentsDependencyVersion.class);
 	}
 
 	@Test
@@ -50,6 +56,21 @@ public class DependencyVersionTests {
 	@Test
 	void parseWhenVersionWithCombinedPatchAndQualifierShouldReturnCombinedPatchAndQualifierDependencyVersion() {
 		assertThat(DependencyVersion.parse("4.0.0M4")).isInstanceOf(CombinedPatchAndQualifierDependencyVersion.class);
+	}
+
+	@Test
+	void parseWhenCalendarVersionShouldReturnArtifactVersionDependencyVersion() {
+		assertThat(DependencyVersion.parse("2020.0.0")).isInstanceOf(CalendarVersionDependencyVersion.class);
+	}
+
+	@Test
+	void parseWhenCalendarVersionWithModifierShouldReturnArtifactVersionDependencyVersion() {
+		assertThat(DependencyVersion.parse("2020.0.0-M1")).isInstanceOf(CalendarVersionDependencyVersion.class);
+	}
+
+	@Test
+	void calendarVersionShouldBeNewerThanAReleaseCalendarVersion() {
+
 	}
 
 }

@@ -7,5 +7,6 @@ params:
   GITHUB_ORGANIZATION:
   GITHUB_PASSWORD:
   GITHUB_USERNAME:
+  MILESTONE:
 run:
   path: git-repo/ci/scripts/detect-ubuntu-image-updates.sh

@@ -57,7 +57,7 @@ class JpaRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupp
 
 	@Override
 	protected BootstrapMode getBootstrapMode() {
-		return (this.bootstrapMode == null) ? BootstrapMode.DEFERRED : this.bootstrapMode;
+		return (this.bootstrapMode == null) ? BootstrapMode.DEFAULT : this.bootstrapMode;
 	}
 
 	@Override

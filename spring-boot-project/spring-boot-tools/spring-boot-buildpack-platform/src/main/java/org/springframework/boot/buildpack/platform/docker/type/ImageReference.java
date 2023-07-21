@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,16 @@ import org.springframework.util.ObjectUtils;
  * A reference to a Docker image of the form {@code "imagename[:tag|@digest]"}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.3.0
  * @see ImageName
- * @see <a href=
- * "https://stackoverflow.com/questions/37861791/how-are-docker-image-names-parsed">How
- * are Docker image names parsed?</a>
  */
 public final class ImageReference {
 
-	private static final String LATEST = "latest";
+	private static final Pattern JAR_VERSION_PATTERN = Pattern.compile("^(.*)(\\-\\d+)$");
 
-	private static final Pattern TRAILING_VERSION_PATTERN = Pattern.compile("^(.*)(\\-\\d+)$");
+	private static final String LATEST = "latest";
 
 	private final ImageName name;
 
@@ -152,7 +151,31 @@ public final class ImageReference {
 	 */
 	public ImageReference inTaggedForm() {
 		Assert.state(this.digest == null, () -> "Image reference '" + this + "' cannot contain a digest");
-		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, this.digest);
+		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, null);
+	}
+
+	/**
+	 * Return an {@link ImageReference} without the tag.
+	 * @return the image reference in tagless form
+	 * @since 2.7.12
+	 */
+	public ImageReference inTaglessForm() {
+		if (this.tag == null) {
+			return this;
+		}
+		return new ImageReference(this.name, null, this.digest);
+	}
+
+	/**
+	 * Return an {@link ImageReference} containing either a tag or a digest. If neither
+	 * the digest nor the tag has been defined then tag {@code latest} is used.
+	 * @return the image reference in tagged or digest form
+	 */
+	public ImageReference inTaggedOrDigestForm() {
+		if (this.digest != null) {
+			return this;
+		}
+		return inTaggedForm();
 	}
 
 	/**
@@ -167,11 +190,11 @@ public final class ImageReference {
 		filename = filename.substring(0, filename.length() - 4);
 		int firstDot = filename.indexOf('.');
 		if (firstDot == -1) {
-			return ImageReference.of(filename);
+			return of(filename);
 		}
 		String name = filename.substring(0, firstDot);
 		String version = filename.substring(firstDot + 1);
-		Matcher matcher = TRAILING_VERSION_PATTERN.matcher(name);
+		Matcher matcher = JAR_VERSION_PATTERN.matcher(name);
 		if (matcher.matches()) {
 			name = matcher.group(1);
 			version = matcher.group(2).substring(1) + "." + version;
@@ -213,8 +236,36 @@ public final class ImageReference {
 	 */
 	public static ImageReference of(String value) {
 		Assert.hasText(value, "Value must not be null");
-		String[] domainAndValue = ImageName.split(value);
-		return of(domainAndValue[0], domainAndValue[1]);
+		String domain = ImageName.parseDomain(value);
+		String path = (domain != null) ? value.substring(domain.length() + 1) : value;
+		String digest = null;
+		int digestSplit = path.indexOf("@");
+		if (digestSplit != -1) {
+			String remainder = path.substring(digestSplit + 1);
+			Matcher matcher = Regex.DIGEST.matcher(remainder);
+			if (matcher.find()) {
+				digest = remainder.substring(0, matcher.end());
+				remainder = remainder.substring(matcher.end());
+				path = path.substring(0, digestSplit) + remainder;
+			}
+		}
+		String tag = null;
+		int tagSplit = path.lastIndexOf(":");
+		if (tagSplit != -1) {
+			String remainder = path.substring(tagSplit + 1);
+			Matcher matcher = Regex.TAG.matcher(remainder);
+			if (matcher.find()) {
+				tag = remainder.substring(0, matcher.end());
+				remainder = remainder.substring(matcher.end());
+				path = path.substring(0, tagSplit) + remainder;
+			}
+		}
+		Assert.isTrue(Regex.PATH.matcher(path).matches(),
+				() -> "Unable to parse image reference \"" + value + "\". "
+						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "
+						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+		ImageName name = new ImageName(domain, path);
+		return new ImageReference(name, tag, digest);
 	}
 
 	/**
@@ -245,23 +296,6 @@ public final class ImageReference {
 	 * @return a new image reference
 	 */
 	public static ImageReference of(ImageName name, String tag, String digest) {
-		return new ImageReference(name, tag, digest);
-	}
-
-	private static ImageReference of(String domain, String value) {
-		String digest = null;
-		int lastAt = value.indexOf('@');
-		if (lastAt != -1) {
-			digest = value.substring(lastAt + 1);
-			value = value.substring(0, lastAt);
-		}
-		String tag = null;
-		int firstColon = value.indexOf(':');
-		if (firstColon != -1) {
-			tag = value.substring(firstColon + 1);
-			value = value.substring(0, firstColon);
-		}
-		ImageName name = new ImageName(domain, value);
 		return new ImageReference(name, tag, digest);
 	}
 

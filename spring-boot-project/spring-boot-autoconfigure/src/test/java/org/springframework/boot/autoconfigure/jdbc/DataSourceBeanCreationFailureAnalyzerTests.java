@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,8 @@ class DataSourceBeanCreationFailureAnalyzerTests {
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
 		BeanCreationException failure = createFailure(configuration);
 		assertThat(failure).isNotNull();
-		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer();
-		failureAnalyzer.setEnvironment(this.environment);
+		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer(
+				this.environment);
 		return failureAnalyzer.analyze(failure);
 	}
 

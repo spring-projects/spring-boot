@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 package org.springframework.boot.test.autoconfigure.data.r2dbc;
 
+import java.time.Duration;
+import java.util.Map;
+
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
-import org.springframework.data.r2dbc.core.DatabaseClient;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  */
-@DataR2dbcTest
+@DataR2dbcTest(
+		properties = "spring.sql.init.schemaLocations=classpath:org/springframework/boot/test/autoconfigure/data/r2dbc/schema.sql")
 class DataR2dbcTestIntegrationTests {
 
 	@Autowired
@@ -50,7 +50,8 @@ class DataR2dbcTestIntegrationTests {
 
 	@Test
 	void testDatabaseClient() {
-		this.databaseClient.execute("SELECT * FROM example").fetch().all().as(StepVerifier::create).verifyComplete();
+		Flux<Map<String, Object>> all = this.databaseClient.sql("SELECT * FROM example").fetch().all();
+		StepVerifier.create(all).expectNextCount(1).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -62,19 +63,6 @@ class DataR2dbcTestIntegrationTests {
 	@Test
 	void registersExampleRepository() {
 		assertThat(this.applicationContext.getBeanNamesForType(ExampleRepository.class)).isNotEmpty();
-	}
-
-	@TestConfiguration
-	static class DatabaseInitializationConfiguration {
-
-		@Autowired
-		void initializeDatabase(ConnectionFactory connectionFactory) {
-			ResourceLoader resourceLoader = new DefaultResourceLoader();
-			Resource[] scripts = new Resource[] { resourceLoader
-					.getResource("classpath:org/springframework/boot/test/autoconfigure/data/r2dbc/schema.sql") };
-			new ResourceDatabasePopulator(scripts).execute(connectionFactory).block();
-		}
-
 	}
 
 }

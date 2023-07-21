@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.loader;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -24,12 +25,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,6 +102,29 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		List<File> expectedFiles = getExpectedFilesWithExtraLibs(explodedRoot);
 		URL[] expectedFileUrls = expectedFiles.stream().map(this::toUrl).toArray(URL[]::new);
 		assertThat(urls).containsExactly(expectedFileUrls);
+	}
+
+	@Test
+	void explodedJarDefinedPackagesIncludeManifestAttributes() {
+		Manifest manifest = new Manifest();
+		Attributes attributes = manifest.getMainAttributes();
+		attributes.put(Name.MANIFEST_VERSION, "1.0");
+		attributes.put(Name.IMPLEMENTATION_TITLE, "test");
+		SourceFile sourceFile = SourceFile.of("explodedsample/ExampleClass.java",
+				new ClassPathResource("explodedsample/ExampleClass.txt"));
+		TestCompiler.forSystem().compile(sourceFile, ThrowingConsumer.of((compiled) -> {
+			File explodedRoot = explode(
+					createJarArchive("archive.jar", manifest, "BOOT-INF", true, Collections.emptyList()));
+			File target = new File(explodedRoot, "BOOT-INF/classes/explodedsample/ExampleClass.class");
+			target.getParentFile().mkdirs();
+			FileCopyUtils.copy(compiled.getClassLoader().getResourceAsStream("explodedsample/ExampleClass.class"),
+					new FileOutputStream(target));
+			JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+			Iterator<Archive> archives = launcher.getClassPathArchivesIterator();
+			URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
+			Class<?> loaded = classLoader.loadClass("explodedsample.ExampleClass");
+			assertThat(loaded.getPackage().getImplementationTitle()).isEqualTo("test");
+		}));
 	}
 
 	protected final URL[] getExpectedFileUrls(File explodedRoot) {

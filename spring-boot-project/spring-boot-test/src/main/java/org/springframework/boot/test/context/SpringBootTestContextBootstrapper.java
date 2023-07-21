@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.context;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,15 +38,16 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
-import org.springframework.test.context.TestExecutionListener;
+import org.springframework.test.context.aot.AotTestAttributes;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -79,7 +81,7 @@ import org.springframework.util.StringUtils;
  */
 public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstrapper {
 
-	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
+	private static final String[] WEB_ENVIRONMENT_CLASSES = { "jakarta.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
@@ -93,6 +95,16 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			+ "context.web.ServletTestExecutionListener.activateListener";
 
 	private static final Log logger = LogFactory.getLog(SpringBootTestContextBootstrapper.class);
+
+	private final AotTestAttributes aotTestAttributes;
+
+	public SpringBootTestContextBootstrapper() {
+		this(AotTestAttributes.getInstance());
+	}
+
+	SpringBootTestContextBootstrapper(AotTestAttributes aotTestAttributes) {
+		this.aotTestAttributes = aotTestAttributes;
+	}
 
 	@Override
 	public TestContext buildTestContext() {
@@ -109,17 +121,6 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	@Override
-	protected Set<Class<? extends TestExecutionListener>> getDefaultTestExecutionListenerClasses() {
-		Set<Class<? extends TestExecutionListener>> listeners = super.getDefaultTestExecutionListenerClasses();
-		List<DefaultTestExecutionListenersPostProcessor> postProcessors = SpringFactoriesLoader
-				.loadFactories(DefaultTestExecutionListenersPostProcessor.class, getClass().getClassLoader());
-		for (DefaultTestExecutionListenersPostProcessor postProcessor : postProcessors) {
-			listeners = postProcessor.postProcessDefaultTestExecutionListeners(listeners);
-		}
-		return listeners;
-	}
-
-	@Override
 	protected ContextLoader resolveContextLoader(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributesList) {
 		Class<?>[] classes = getClasses(testClass);
@@ -132,7 +133,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
-		List<Class<?>> combined = new ArrayList<>(Arrays.asList(classes));
+		Set<Class<?>> combined = new LinkedHashSet<>(Arrays.asList(classes));
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
 		}
@@ -169,7 +170,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				TestPropertySourceUtils.convertInlinedPropertiesToMap(configuration.getPropertySourceProperties()));
 		Binder binder = new Binder(source);
 		return binder.bind("spring.main.web-application-type", Bindable.of(WebApplicationType.class))
-				.orElseGet(this::deduceWebApplicationType);
+			.orElseGet(this::deduceWebApplicationType);
 	}
 
 	private WebApplicationType deduceWebApplicationType() {
@@ -196,8 +197,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 */
 	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
 		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
-				.get(WebAppConfiguration.class).getValue(MergedAnnotation.VALUE, String.class)
-				.orElse("src/main/webapp");
+			.get(WebAppConfiguration.class)
+			.getValue(MergedAnnotation.VALUE, String.class)
+			.orElse("src/main/webapp");
 	}
 
 	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
@@ -228,18 +230,29 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (containsNonTestComponent(classes) || mergedConfig.hasLocations()) {
 			return classes;
 		}
-		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class)
-				.findFromClass(mergedConfig.getTestClass());
-		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
+		Class<?> found = findConfigurationClass(mergedConfig.getTestClass());
 		logger.info("Found @SpringBootConfiguration " + found.getName() + " for test " + mergedConfig.getTestClass());
 		return merge(found, classes);
+	}
+
+	private Class<?> findConfigurationClass(Class<?> testClass) {
+		String propertyName = "%s.SpringBootConfiguration.%s"
+			.formatted(SpringBootTestContextBootstrapper.class.getName(), testClass.getName());
+		String foundClassName = this.aotTestAttributes.getString(propertyName);
+		if (foundClassName != null) {
+			return ClassUtils.resolveClassName(foundClassName, testClass.getClassLoader());
+		}
+		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class).findFromClass(testClass);
+		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
+				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
+		this.aotTestAttributes.setAttribute(propertyName, found.getName());
+		return found;
 	}
 
 	private boolean containsNonTestComponent(Class<?>[] classes) {
 		for (Class<?> candidate : classes) {
 			if (!MergedAnnotations.from(candidate, SearchStrategy.INHERITED_ANNOTATIONS)
-					.isPresent(TestConfiguration.class)) {
+				.isPresent(TestConfiguration.class)) {
 				return true;
 			}
 		}
@@ -290,8 +303,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			// precedence
 			propertySourceProperties.addAll(0, Arrays.asList(properties));
 		}
-		if (getWebEnvironment(testClass) == WebEnvironment.RANDOM_PORT) {
+		WebEnvironment webEnvironment = getWebEnvironment(testClass);
+		if (webEnvironment == WebEnvironment.RANDOM_PORT) {
 			propertySourceProperties.add("server.port=0");
+		}
+		else if (webEnvironment == WebEnvironment.NONE) {
+			propertySourceProperties.add("spring.main.web-application-type=none");
 		}
 	}
 
@@ -316,14 +333,14 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(SpringBootTest.class)
-				.synthesize(MergedAnnotation::isPresent).orElse(null);
+		return TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class);
 	}
 
 	protected void verifyConfiguration(Class<?> testClass) {
 		SpringBootTest springBootTest = getAnnotation(testClass);
-		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment()) && MergedAnnotations
-				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).isPresent(WebAppConfiguration.class)) {
+		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment())
+				&& MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+					.isPresent(WebAppConfiguration.class)) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
 					+ "mock web environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
@@ -355,11 +372,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 */
 	protected final MergedContextConfiguration createModifiedConfig(MergedContextConfiguration mergedConfig,
 			Class<?>[] classes, String[] propertySourceProperties) {
+		Set<ContextCustomizer> contextCustomizers = new LinkedHashSet<>(mergedConfig.getContextCustomizers());
+		contextCustomizers.add(new SpringBootTestAnnotation(mergedConfig.getTestClass()));
 		return new MergedContextConfiguration(mergedConfig.getTestClass(), mergedConfig.getLocations(), classes,
 				mergedConfig.getContextInitializerClasses(), mergedConfig.getActiveProfiles(),
-				mergedConfig.getPropertySourceLocations(), propertySourceProperties,
-				mergedConfig.getContextCustomizers(), mergedConfig.getContextLoader(),
-				getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
+				mergedConfig.getPropertySourceLocations(), propertySourceProperties, contextCustomizers,
+				mergedConfig.getContextLoader(), getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
 	}
 
 }

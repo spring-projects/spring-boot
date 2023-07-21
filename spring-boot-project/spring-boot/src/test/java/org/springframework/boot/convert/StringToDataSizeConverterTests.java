@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,9 @@ class StringToDataSizeConverterTests {
 	@ConversionServiceTest
 	void convertWhenBadFormatShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert(conversionService, "10WB"))
-				.withMessageContaining("'10WB' is not a valid data size");
+			.havingCause()
+			.isInstanceOf(IllegalArgumentException.class)
+			.withMessageContaining("'10WB' is not a valid data size");
 	}
 
 	@ConversionServiceTest

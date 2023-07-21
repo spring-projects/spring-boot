@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,11 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
@@ -33,6 +36,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
@@ -45,6 +49,7 @@ import org.springframework.boot.loader.tools.Repackager;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Björn Lindström
+ * @author Scott Frederick
  * @since 1.0.0
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
@@ -140,6 +145,54 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	@Parameter
 	private Properties embeddedLaunchScriptProperties;
 
+	/**
+	 * Timestamp for reproducible output archive entries, either formatted as ISO 8601
+	 * (<code>yyyy-MM-dd'T'HH:mm:ssXXX</code>) or an {@code int} representing seconds
+	 * since the epoch.
+	 * @since 2.3.0
+	 */
+	@Parameter(defaultValue = "${project.build.outputTimestamp}")
+	private String outputTimestamp;
+
+	/**
+	 * The type of archive (which corresponds to how the dependencies are laid out inside
+	 * it). Possible values are {@code JAR}, {@code WAR}, {@code ZIP}, {@code DIR},
+	 * {@code NONE}. Defaults to a guess based on the archive type.
+	 * @since 1.0.0
+	 */
+	@Parameter(property = "spring-boot.repackage.layout")
+	private LayoutType layout;
+
+	/**
+	 * The layout factory that will be used to create the executable archive if no
+	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
+	 * parties.
+	 * @since 1.5.0
+	 */
+	@Parameter
+	private LayoutFactory layoutFactory;
+
+	/**
+	 * Return the type of archive that should be packaged by this MOJO.
+	 * @return the value of the {@code layout} parameter, or {@code null} if the parameter
+	 * is not provided
+	 */
+	@Override
+	protected LayoutType getLayout() {
+		return this.layout;
+	}
+
+	/**
+	 * Return the layout factory that will be used to determine the
+	 * {@link AbstractPackagerMojo.LayoutType} if no explicit layout is set.
+	 * @return the value of the {@code layoutFactory} parameter, or {@code null} if the
+	 * parameter is not provided
+	 */
+	@Override
+	protected LayoutFactory getLayoutFactory() {
+		return this.layoutFactory;
+	}
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -154,13 +207,13 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	private void repackage() throws MojoExecutionException {
-		Artifact source = getSourceArtifact();
-		File target = getTargetFile();
+		Artifact source = getSourceArtifact(this.classifier);
+		File target = getTargetFile(this.finalName, this.classifier, this.outputDirectory);
 		Repackager repackager = getRepackager(source.getFile());
 		Libraries libraries = getLibraries(this.requiresUnpack);
 		try {
 			LaunchScript launchScript = getLaunchScript();
-			repackager.repackage(target, libraries, launchScript);
+			repackager.repackage(target, libraries, launchScript, parseOutputTimestamp());
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -168,39 +221,22 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
-	/**
-	 * Return the source {@link Artifact} to repackage. If a classifier is specified and
-	 * an artifact with that classifier exists, it is used. Otherwise, the main artifact
-	 * is used.
-	 * @return the source artifact to repackage
-	 */
-	private Artifact getSourceArtifact() {
-		Artifact sourceArtifact = getArtifact(this.classifier);
-		return (sourceArtifact != null) ? sourceArtifact : this.project.getArtifact();
+	private FileTime parseOutputTimestamp() {
+		// Maven ignores a single-character timestamp as it is "useful to override a full
+		// value during pom inheritance"
+		if (this.outputTimestamp == null || this.outputTimestamp.length() < 2) {
+			return null;
+		}
+		return FileTime.from(getOutputTimestampEpochSeconds(), TimeUnit.SECONDS);
 	}
 
-	private Artifact getArtifact(String classifier) {
-		if (classifier != null) {
-			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
-						&& attachedArtifact.getFile().isFile()) {
-					return attachedArtifact;
-				}
-			}
+	private long getOutputTimestampEpochSeconds() {
+		try {
+			return Long.parseLong(this.outputTimestamp);
 		}
-		return null;
-	}
-
-	private File getTargetFile() {
-		String classifier = (this.classifier != null) ? this.classifier.trim() : "";
-		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
-			classifier = "-" + classifier;
+		catch (NumberFormatException ex) {
+			return OffsetDateTime.parse(this.outputTimestamp).toInstant().getEpochSecond();
 		}
-		if (!this.outputDirectory.exists()) {
-			this.outputDirectory.mkdirs();
-		}
-		return new File(this.outputDirectory,
-				this.finalName + classifier + "." + this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	private Repackager getRepackager(File source) {
@@ -243,7 +279,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 
 	private void updateArtifact(Artifact source, File target, File original) {
 		if (this.attach) {
-			attachArtifact(source, target);
+			attachArtifact(source, target, original);
 		}
 		else if (source.getFile().equals(target) && original.exists()) {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
@@ -256,7 +292,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private void attachArtifact(Artifact source, File target) {
+	private void attachArtifact(Artifact source, File target, File original) {
 		if (this.classifier != null && !source.getFile().equals(target)) {
 			getLog().info("Attaching repackaged archive " + target + " with classifier " + this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(), this.classifier, target);
@@ -264,7 +300,10 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		else {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
 					: "main artifact";
-			getLog().info("Replacing " + artifactId + " with repackaged archive");
+			getLog()
+				.info(String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
+						artifactId, source.getFile()));
+			getLog().info("The original artifact has been renamed to " + original);
 			source.setFile(target);
 		}
 	}

@@ -1,0 +1,34 @@
+[[io.hazelcast]]
+== Hazelcast
+If https://hazelcast.com/[Hazelcast] is on the classpath and a suitable configuration is found, Spring Boot auto-configures a `HazelcastInstance` that you can inject in your application.
+
+Spring Boot first attempts to create a client by checking the following configuration options:
+
+* The presence of a `com.hazelcast.client.config.ClientConfig` bean.
+* A configuration file defined by the configprop:spring.hazelcast.config[] property.
+* The presence of the `hazelcast.client.config` system property.
+* A `hazelcast-client.xml` in the working directory or at the root of the classpath.
+* A `hazelcast-client.yaml` (or `hazelcast-client.yml`) in the working directory or at the root of the classpath.
+
+If a client can not be created, Spring Boot attempts to configure an embedded server.
+If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.
+If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
+
+You could also specify the Hazelcast configuration file to use through configuration, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  hazelcast:
+	    config: "classpath:config/my-hazelcast.xml"
+----
+
+Otherwise, Spring Boot tries to find the Hazelcast configuration from the default locations: `hazelcast.xml` in the working directory or at the root of the classpath, or a YAML counterpart in the same locations.
+We also check if the `hazelcast.config` system property is set.
+See the https://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for more details.
+
+TIP: By default, `@SpringAware` on Hazelcast components is supported.
+The `ManagementContext` can be overridden by declaring a `HazelcastConfigCustomizer` bean with an `@Order` higher than zero.
+
+NOTE: Spring Boot also has <<io#io.caching.provider.hazelcast,explicit caching support for Hazelcast>>.
+If caching is enabled, the `HazelcastInstance` is automatically wrapped in a `CacheManager` implementation.

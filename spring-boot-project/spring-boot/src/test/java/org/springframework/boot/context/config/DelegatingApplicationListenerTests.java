@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.config;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
@@ -36,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
+@Deprecated(since = "3.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class DelegatingApplicationListenerTests {
 
 	private final DelegatingApplicationListener listener = new DelegatingApplicationListener();
@@ -53,8 +56,8 @@ class DelegatingApplicationListenerTests {
 	void orderedInitialize() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"context.listener.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
-				this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(),
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getSingleton("a")).isEqualTo("a");
@@ -63,15 +66,15 @@ class DelegatingApplicationListenerTests {
 
 	@Test
 	void noInitializers() {
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
-				this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(),
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Test
 	void emptyInitializers() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "context.listener.classes:");
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
-				this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(),
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -80,7 +83,7 @@ class DelegatingApplicationListenerTests {
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
-					.getApplicationContext();
+				.getApplicationContext();
 			applicationContext.getBeanFactory().registerSingleton("a", "a");
 		}
 
@@ -92,7 +95,7 @@ class DelegatingApplicationListenerTests {
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
-					.getApplicationContext();
+				.getApplicationContext();
 			assertThat(applicationContext.getBeanFactory().getSingleton("a")).isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}

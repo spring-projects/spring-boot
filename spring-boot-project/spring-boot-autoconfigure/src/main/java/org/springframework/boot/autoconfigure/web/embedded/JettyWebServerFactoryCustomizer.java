@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -31,9 +29,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.util.BlockingArrayQueue;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -53,10 +48,14 @@ import org.springframework.util.unit.DataSize;
  * @author Phillip Webb
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
+ * @author Florian Storz
+ * @author Michael Weidmann
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
+
+	static final int ORDER = 0;
 
 	private final Environment environment;
 
@@ -69,29 +68,37 @@ public class JettyWebServerFactoryCustomizer
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return ORDER;
 	}
 
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
-		ServerProperties properties = this.serverProperties;
-		ServerProperties.Jetty jettyProperties = properties.getJetty();
+		ServerProperties.Jetty properties = this.serverProperties.getJetty();
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
-		factory.setThreadPool(determineThreadPool(jettyProperties));
-		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
-		propertyMapper.from(jettyProperties::getSelectors).whenNonNull().to(factory::setSelectors);
-		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull().asInt(DataSize::toBytes)
-				.when(this::isPositive).to((maxHttpHeaderSize) -> factory
-						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
-		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
-		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
-				.to((connectionTimeout) -> customizeIdleTimeout(factory, connectionTimeout));
-		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
-				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
-		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
-				.to((accesslog) -> customizeAccessLog(factory, accesslog));
+		ServerProperties.Jetty.Threads threadProperties = properties.getThreads();
+		factory.setThreadPool(JettyThreadPool.create(properties.getThreads()));
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getMaxConnections).to(factory::setMaxConnections);
+		map.from(threadProperties::getAcceptors).to(factory::setAcceptors);
+		map.from(threadProperties::getSelectors).to(factory::setSelectors);
+		map.from(this.serverProperties::getMaxHttpRequestHeaderSize)
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to((maxHttpRequestHeaderSize) -> factory
+				.addServerCustomizers(new MaxHttpRequestHeaderSizeCustomizer(maxHttpRequestHeaderSize)));
+		map.from(properties::getMaxHttpResponseHeaderSize)
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to((maxHttpResponseHeaderSize) -> factory
+				.addServerCustomizers(new MaxHttpResponseHeaderSizeCustomizer(maxHttpResponseHeaderSize)));
+		map.from(properties::getMaxHttpFormPostSize)
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
+		map.from(properties::getConnectionIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+		map.from(properties::getAccesslog)
+			.when(ServerProperties.Jetty.Accesslog::isEnabled)
+			.to((accesslog) -> customizeAccessLog(factory, accesslog));
 	}
 
 	private boolean isPositive(Integer value) {
@@ -109,8 +116,8 @@ public class JettyWebServerFactoryCustomizer
 	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
 			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
-				if (connector instanceof AbstractConnector) {
-					((AbstractConnector) connector).setIdleTimeout(connectionTimeout.toMillis());
+				if (connector instanceof AbstractConnector abstractConnector) {
+					abstractConnector.setIdleTimeout(connectionTimeout.toMillis());
 				}
 			}
 		});
@@ -126,40 +133,19 @@ public class JettyWebServerFactoryCustomizer
 
 			private void setHandlerMaxHttpFormPostSize(Handler... handlers) {
 				for (Handler handler : handlers) {
-					if (handler instanceof ContextHandler) {
-						((ContextHandler) handler).setMaxFormContentSize(maxHttpFormPostSize);
+					if (handler instanceof ContextHandler contextHandler) {
+						contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
 					}
-					else if (handler instanceof HandlerWrapper) {
-						setHandlerMaxHttpFormPostSize(((HandlerWrapper) handler).getHandler());
+					else if (handler instanceof HandlerWrapper wrapper) {
+						setHandlerMaxHttpFormPostSize(wrapper.getHandler());
 					}
-					else if (handler instanceof HandlerCollection) {
-						setHandlerMaxHttpFormPostSize(((HandlerCollection) handler).getHandlers());
+					else if (handler instanceof HandlerCollection collection) {
+						setHandlerMaxHttpFormPostSize(collection.getHandlers());
 					}
 				}
 			}
 
 		});
-	}
-
-	private ThreadPool determineThreadPool(ServerProperties.Jetty properties) {
-		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
-		int maxThreadCount = (properties.getMaxThreads() > 0) ? properties.getMaxThreads() : 200;
-		int minThreadCount = (properties.getMinThreads() > 0) ? properties.getMinThreads() : 8;
-		int threadIdleTimeout = (properties.getThreadIdleTimeout() != null)
-				? (int) properties.getThreadIdleTimeout().toMillis() : 60000;
-		return new QueuedThreadPool(maxThreadCount, minThreadCount, threadIdleTimeout, queue);
-	}
-
-	private BlockingQueue<Runnable> determineBlockingQueue(Integer maxQueueCapacity) {
-		if (maxQueueCapacity == null) {
-			return null;
-		}
-		if (maxQueueCapacity == 0) {
-			return new SynchronousQueue<>();
-		}
-		else {
-			return new BlockingArrayQueue<>(maxQueueCapacity);
-		}
 	}
 
 	private void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
@@ -193,12 +179,12 @@ public class JettyWebServerFactoryCustomizer
 		return CustomRequestLog.NCSA_FORMAT;
 	}
 
-	private static class MaxHttpHeaderSizeCustomizer implements JettyServerCustomizer {
+	private static class MaxHttpRequestHeaderSizeCustomizer implements JettyServerCustomizer {
 
-		private final int maxHttpHeaderSize;
+		private final int maxRequestHeaderSize;
 
-		MaxHttpHeaderSizeCustomizer(int maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
+		MaxHttpRequestHeaderSizeCustomizer(int maxRequestHeaderSize) {
+			this.maxRequestHeaderSize = maxRequestHeaderSize;
 		}
 
 		@Override
@@ -213,7 +199,32 @@ public class JettyWebServerFactoryCustomizer
 		private void customize(ConnectionFactory factory) {
 			if (factory instanceof HttpConfiguration.ConnectionFactory) {
 				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
-						.setRequestHeaderSize(this.maxHttpHeaderSize);
+					.setRequestHeaderSize(this.maxRequestHeaderSize);
+			}
+		}
+
+	}
+
+	private static class MaxHttpResponseHeaderSizeCustomizer implements JettyServerCustomizer {
+
+		private final int maxResponseHeaderSize;
+
+		MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) {
+			this.maxResponseHeaderSize = maxResponseHeaderSize;
+		}
+
+		@Override
+		public void customize(Server server) {
+			Arrays.stream(server.getConnectors()).forEach(this::customize);
+		}
+
+		private void customize(org.eclipse.jetty.server.Connector connector) {
+			connector.getConnectionFactories().forEach(this::customize);
+		}
+
+		private void customize(ConnectionFactory factory) {
+			if (factory instanceof HttpConfiguration.ConnectionFactory httpConnectionFactory) {
+				httpConnectionFactory.getHttpConfiguration().setResponseHeaderSize(this.maxResponseHeaderSize);
 			}
 		}
 

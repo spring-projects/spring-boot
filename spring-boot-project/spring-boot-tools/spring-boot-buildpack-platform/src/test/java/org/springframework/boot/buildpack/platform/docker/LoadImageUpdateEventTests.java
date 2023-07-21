@@ -26,17 +26,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link LoadImageUpdateEvent}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class LoadImageUpdateEventTests extends ProgressUpdateEventTests {
+class LoadImageUpdateEventTests extends ProgressUpdateEventTests<LoadImageUpdateEvent> {
 
 	@Test
 	void getStreamReturnsStream() {
-		LoadImageUpdateEvent event = (LoadImageUpdateEvent) createEvent();
+		LoadImageUpdateEvent event = createEvent();
 		assertThat(event.getStream()).isEqualTo("stream");
 	}
 
 	@Override
-	protected ProgressUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress) {
+	protected LoadImageUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress) {
 		return new LoadImageUpdateEvent("stream", status, progressDetail, progress);
 	}
 

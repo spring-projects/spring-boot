@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.lang.Nullable;
@@ -59,22 +59,22 @@ class ReflectiveOperationInvokerTests {
 	@Test
 	void createWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
-				.withMessageContaining("Target must not be null");
+			.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
+			.withMessageContaining("Target must not be null");
 	}
 
 	@Test
 	void createWhenOperationMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
-				.withMessageContaining("OperationMethod must not be null");
+			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
+			.withMessageContaining("OperationMethod must not be null");
 	}
 
 	@Test
 	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
-				.withMessageContaining("ParameterValueMapper must not be null");
+			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
+			.withMessageContaining("ParameterValueMapper must not be null");
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class ReflectiveOperationInvokerTests {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
-				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", "boot")));
+			.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", "boot")));
 		assertThat(result).isEqualTo("toob");
 	}
 
@@ -91,7 +91,7 @@ class ReflectiveOperationInvokerTests {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		assertThatExceptionOfType(MissingParametersException.class).isThrownBy(() -> invoker
-				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", null))));
+			.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", null))));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class ReflectiveOperationInvokerTests {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
-				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", null)));
+			.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", null)));
 		assertThat(result).isEqualTo("llun");
 	}
 
@@ -110,7 +110,7 @@ class ReflectiveOperationInvokerTests {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
-				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", 1234)));
+			.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", 1234)));
 		assertThat(result).isEqualTo("4321");
 	}
 

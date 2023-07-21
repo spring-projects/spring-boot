@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ class TarArchiveTests {
 	void ofWritesTarContent() throws Exception {
 		Owner owner = Owner.of(123, 456);
 		TarArchive tarArchive = TarArchive.of((content) -> {
-			content.folder("/workspace", owner);
-			content.folder("/layers", owner);
-			content.folder("/cnb", Owner.ROOT);
-			content.folder("/cnb/buildpacks", Owner.ROOT);
-			content.folder("/platform", Owner.ROOT);
-			content.folder("/platform/env", Owner.ROOT);
+			content.directory("/workspace", owner);
+			content.directory("/layers", owner);
+			content.directory("/cnb", Owner.ROOT);
+			content.directory("/cnb/buildpacks", Owner.ROOT);
+			content.directory("/platform", Owner.ROOT);
+			content.directory("/platform/env", Owner.ROOT);
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		tarArchive.writeTo(outputStream);
@@ -68,8 +68,8 @@ class TarArchiveTests {
 			assertThat(entries.get(0).getLongUserId()).isEqualTo(123);
 			assertThat(entries.get(0).getLongGroupId()).isEqualTo(456);
 			assertThat(entries.get(2).getName()).isEqualTo("/cnb/");
-			assertThat(entries.get(2).getLongUserId()).isEqualTo(0);
-			assertThat(entries.get(2).getLongGroupId()).isEqualTo(0);
+			assertThat(entries.get(2).getLongUserId()).isZero();
+			assertThat(entries.get(2).getLongGroupId()).isZero();
 		}
 	}
 

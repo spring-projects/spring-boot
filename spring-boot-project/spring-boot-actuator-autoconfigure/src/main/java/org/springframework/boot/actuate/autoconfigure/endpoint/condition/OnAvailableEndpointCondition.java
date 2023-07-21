@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,33 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.MethodMetadata;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
@@ -39,100 +51,154 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @see ConditionalOnAvailableEndpoint
  */
-class OnAvailableEndpointCondition extends AbstractEndpointCondition {
+class OnAvailableEndpointCondition extends SpringBootCondition {
 
 	private static final String JMX_ENABLED_KEY = "spring.jmx.enabled";
 
-	private static final ConcurrentReferenceHashMap<Environment, Set<ExposureInformation>> endpointExposureCache = new ConcurrentReferenceHashMap<>();
+	private static final String ENABLED_BY_DEFAULT_KEY = "management.endpoints.enabled-by-default";
+
+	private static final Map<Environment, Set<ExposureFilter>> exposureFiltersCache = new ConcurrentReferenceHashMap<>();
+
+	private static final ConcurrentReferenceHashMap<Environment, Optional<Boolean>> enabledByDefaultCache = new ConcurrentReferenceHashMap<>();
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ConditionOutcome enablementOutcome = getEnablementOutcome(context, metadata,
-				ConditionalOnAvailableEndpoint.class);
+		Environment environment = context.getEnvironment();
+		MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation = metadata.getAnnotations()
+			.get(ConditionalOnAvailableEndpoint.class);
+		Class<?> target = getTarget(context, metadata, conditionAnnotation);
+		MergedAnnotation<Endpoint> endpointAnnotation = getEndpointAnnotation(target);
+		return getMatchOutcome(environment, conditionAnnotation, endpointAnnotation);
+	}
+
+	private Class<?> getTarget(ConditionContext context, AnnotatedTypeMetadata metadata,
+			MergedAnnotation<ConditionalOnAvailableEndpoint> condition) {
+		Class<?> target = condition.getClass("endpoint");
+		if (target != Void.class) {
+			return target;
+		}
+		Assert.state(metadata instanceof MethodMetadata && metadata.isAnnotated(Bean.class.getName()),
+				"EndpointCondition must be used on @Bean methods when the endpoint is not specified");
+		MethodMetadata methodMetadata = (MethodMetadata) metadata;
+		try {
+			return ClassUtils.forName(methodMetadata.getReturnTypeName(), context.getClassLoader());
+		}
+		catch (Throwable ex) {
+			throw new IllegalStateException("Failed to extract endpoint id for "
+					+ methodMetadata.getDeclaringClassName() + "." + methodMetadata.getMethodName(), ex);
+		}
+	}
+
+	protected MergedAnnotation<Endpoint> getEndpointAnnotation(Class<?> target) {
+		MergedAnnotations annotations = MergedAnnotations.from(target, SearchStrategy.TYPE_HIERARCHY);
+		MergedAnnotation<Endpoint> endpoint = annotations.get(Endpoint.class);
+		if (endpoint.isPresent()) {
+			return endpoint;
+		}
+		MergedAnnotation<EndpointExtension> extension = annotations.get(EndpointExtension.class);
+		Assert.state(extension.isPresent(), "No endpoint is specified and the return type of the @Bean method is "
+				+ "neither an @Endpoint, nor an @EndpointExtension");
+		return getEndpointAnnotation(extension.getClass("endpoint"));
+	}
+
+	private ConditionOutcome getMatchOutcome(Environment environment,
+			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation,
+			MergedAnnotation<Endpoint> endpointAnnotation) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnAvailableEndpoint.class);
+		EndpointId endpointId = EndpointId.of(environment, endpointAnnotation.getString("id"));
+		ConditionOutcome enablementOutcome = getEnablementOutcome(environment, endpointAnnotation, endpointId, message);
 		if (!enablementOutcome.isMatch()) {
 			return enablementOutcome;
 		}
-		ConditionMessage message = enablementOutcome.getConditionMessage();
-		Environment environment = context.getEnvironment();
-		if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
-			return new ConditionOutcome(true, message.andCondition(ConditionalOnAvailableEndpoint.class)
-					.because("application is running on Cloud Foundry"));
-		}
-		AnnotationAttributes attributes = getEndpointAttributes(ConditionalOnAvailableEndpoint.class, context,
-				metadata);
-		EndpointId id = EndpointId.of(environment, attributes.getString("id"));
-		Set<ExposureInformation> exposureInformations = getExposureInformation(environment);
-		for (ExposureInformation exposureInformation : exposureInformations) {
-			if (exposureInformation.isExposed(id)) {
-				return new ConditionOutcome(true,
-						message.andCondition(ConditionalOnAvailableEndpoint.class)
-								.because("marked as exposed by a 'management.endpoints."
-										+ exposureInformation.getPrefix() + ".exposure' property"));
+		Set<EndpointExposure> exposuresToCheck = getExposuresToCheck(conditionAnnotation);
+		Set<ExposureFilter> exposureFilters = getExposureFilters(environment);
+		for (ExposureFilter exposureFilter : exposureFilters) {
+			if (exposuresToCheck.contains(exposureFilter.getExposure()) && exposureFilter.isExposed(endpointId)) {
+				return ConditionOutcome.match(message.because("marked as exposed by a 'management.endpoints."
+						+ exposureFilter.getExposure().name().toLowerCase() + ".exposure' property"));
 			}
 		}
-		return new ConditionOutcome(false, message.andCondition(ConditionalOnAvailableEndpoint.class)
-				.because("no 'management.endpoints' property marked it as exposed"));
+		return ConditionOutcome.noMatch(message.because("no 'management.endpoints' property marked it as exposed"));
 	}
 
-	private Set<ExposureInformation> getExposureInformation(Environment environment) {
-		Set<ExposureInformation> exposureInformations = endpointExposureCache.get(environment);
-		if (exposureInformations == null) {
-			exposureInformations = new HashSet<>(2);
-			Binder binder = Binder.get(environment);
+	private ConditionOutcome getEnablementOutcome(Environment environment,
+			MergedAnnotation<Endpoint> endpointAnnotation, EndpointId endpointId, ConditionMessage.Builder message) {
+		String key = "management.endpoint." + endpointId.toLowerCaseString() + ".enabled";
+		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
+		if (userDefinedEnabled != null) {
+			return new ConditionOutcome(userDefinedEnabled,
+					message.because("found property " + key + " with value " + userDefinedEnabled));
+		}
+		Boolean userDefinedDefault = isEnabledByDefault(environment);
+		if (userDefinedDefault != null) {
+			return new ConditionOutcome(userDefinedDefault, message
+				.because("no property " + key + " found so using user defined default from " + ENABLED_BY_DEFAULT_KEY));
+		}
+		boolean endpointDefault = endpointAnnotation.getBoolean("enableByDefault");
+		return new ConditionOutcome(endpointDefault,
+				message.because("no property " + key + " found so using endpoint default of " + endpointDefault));
+	}
+
+	private Boolean isEnabledByDefault(Environment environment) {
+		Optional<Boolean> enabledByDefault = enabledByDefaultCache.get(environment);
+		if (enabledByDefault == null) {
+			enabledByDefault = Optional.ofNullable(environment.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class));
+			enabledByDefaultCache.put(environment, enabledByDefault);
+		}
+		return enabledByDefault.orElse(null);
+	}
+
+	private Set<EndpointExposure> getExposuresToCheck(
+			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
+		EndpointExposure[] exposure = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
+		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class)
+				: new LinkedHashSet<>(Arrays.asList(exposure));
+	}
+
+	private Set<ExposureFilter> getExposureFilters(Environment environment) {
+		Set<ExposureFilter> exposureFilters = exposureFiltersCache.get(environment);
+		if (exposureFilters == null) {
+			exposureFilters = new HashSet<>(2);
 			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
-				exposureInformations.add(new ExposureInformation(binder, "jmx", "*"));
+				exposureFilters.add(new ExposureFilter(environment, EndpointExposure.JMX));
 			}
-			exposureInformations.add(new ExposureInformation(binder, "web", "info", "health"));
-			endpointExposureCache.put(environment, exposureInformations);
+			if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
+				exposureFilters.add(new ExposureFilter(environment, EndpointExposure.CLOUD_FOUNDRY));
+			}
+			exposureFilters.add(new ExposureFilter(environment, EndpointExposure.WEB));
+			exposureFiltersCache.put(environment, exposureFilters);
 		}
-		return exposureInformations;
+		return exposureFilters;
 	}
 
-	static class ExposureInformation {
+	static final class ExposureFilter extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
 
-		private final String prefix;
+		private final EndpointExposure exposure;
 
-		private final Set<String> include;
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private ExposureFilter(Environment environment, EndpointExposure exposure) {
+			super((Class) ExposableEndpoint.class, environment,
+					"management.endpoints." + getCanonicalName(exposure) + ".exposure", exposure.getDefaultIncludes());
+			this.exposure = exposure;
 
-		private final Set<String> exclude;
-
-		private final Set<String> exposeDefaults;
-
-		ExposureInformation(Binder binder, String prefix, String... exposeDefaults) {
-			this.prefix = prefix;
-			this.include = bind(binder, "management.endpoints." + prefix + ".exposure.include");
-			this.exclude = bind(binder, "management.endpoints." + prefix + ".exposure.exclude");
-			this.exposeDefaults = new HashSet<>(Arrays.asList(exposeDefaults));
 		}
 
-		private Set<String> bind(Binder binder, String name) {
-			List<String> values = binder.bind(name, Bindable.listOf(String.class)).orElse(Collections.emptyList());
-			Set<String> result = new HashSet<>(values.size());
-			for (String value : values) {
-				result.add("*".equals(value) ? "*" : EndpointId.fromPropertyValue(value).toLowerCaseString());
+		private static String getCanonicalName(EndpointExposure exposure) {
+			if (EndpointExposure.CLOUD_FOUNDRY.equals(exposure)) {
+				return "cloud-foundry";
 			}
-			return result;
+			return exposure.name().toLowerCase();
 		}
 
-		String getPrefix() {
-			return this.prefix;
+		EndpointExposure getExposure() {
+			return this.exposure;
 		}
 
-		boolean isExposed(EndpointId endpointId) {
-			String id = endpointId.toLowerCaseString();
-			if (!this.exclude.isEmpty()) {
-				if (this.exclude.contains("*") || this.exclude.contains(id)) {
-					return false;
-				}
-			}
-			if (this.include.isEmpty()) {
-				if (this.exposeDefaults.contains("*") || this.exposeDefaults.contains(id)) {
-					return true;
-				}
-			}
-			return this.include.contains("*") || this.include.contains(id);
+		boolean isExposed(EndpointId id) {
+			return super.match(id);
 		}
 
 	}

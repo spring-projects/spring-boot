@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencyConstraint;
 import org.gradle.api.artifacts.DependencyConstraintMetadata;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.platform.base.Platform;
@@ -45,7 +45,7 @@ import org.springframework.boot.build.bom.Library;
  *
  * @author Andy Wilkinson
  */
-public class ExtractVersionConstraints extends AbstractTask {
+public class ExtractVersionConstraints extends DefaultTask {
 
 	private final Configuration configuration;
 
@@ -64,8 +64,10 @@ public class ExtractVersionConstraints extends AbstractTask {
 	}
 
 	public void enforcedPlatform(String projectPath) {
-		this.configuration.getDependencies().add(getProject().getDependencies().enforcedPlatform(
-				getProject().getDependencies().project(Collections.singletonMap("path", projectPath))));
+		this.configuration.getDependencies()
+			.add(getProject().getDependencies()
+				.enforcedPlatform(
+						getProject().getDependencies().project(Collections.singletonMap("path", projectPath))));
 		this.projectPaths.add(projectPath);
 	}
 
@@ -89,8 +91,10 @@ public class ExtractVersionConstraints extends AbstractTask {
 		this.configuration.resolve();
 		for (String projectPath : this.projectPaths) {
 			extractVersionProperties(projectPath);
-			for (DependencyConstraint constraint : getProject().project(projectPath).getConfigurations()
-					.getByName("apiElements").getAllDependencyConstraints()) {
+			for (DependencyConstraint constraint : getProject().project(projectPath)
+				.getConfigurations()
+				.getByName("apiElements")
+				.getAllDependencyConstraints()) {
 				this.versionConstraints.put(constraint.getGroup() + ":" + constraint.getName(),
 						constraint.getVersionConstraint().toString());
 				this.constrainedVersions.add(new ConstrainedVersion(constraint.getGroup(), constraint.getName(),
@@ -103,7 +107,10 @@ public class ExtractVersionConstraints extends AbstractTask {
 		Object bom = getProject().project(projectPath).getExtensions().getByName("bom");
 		BomExtension bomExtension = (BomExtension) bom;
 		for (Library lib : bomExtension.getLibraries()) {
-			this.versionProperties.add(new VersionProperty(lib.getName(), lib.getVersionProperty()));
+			String versionProperty = lib.getVersionProperty();
+			if (versionProperty != null) {
+				this.versionProperties.add(new VersionProperty(lib.getName(), versionProperty));
+			}
 		}
 	}
 

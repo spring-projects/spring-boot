@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,21 +23,23 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
-import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+
+import org.springframework.core.CollectionFactory;
 
 /**
  * A {@link Task} for generating metadata that describes a starter.
  *
  * @author Andy Wilkinson
  */
-public class StarterMetadata extends AbstractTask {
+public class StarterMetadata extends DefaultTask {
 
 	private Configuration dependencies;
 
@@ -48,7 +50,7 @@ public class StarterMetadata extends AbstractTask {
 		getInputs().property("description", (Callable<String>) () -> getProject().getDescription());
 	}
 
-	@InputFiles
+	@Classpath
 	public FileCollection getDependencies() {
 		return this.dependencies;
 	}
@@ -68,11 +70,16 @@ public class StarterMetadata extends AbstractTask {
 
 	@TaskAction
 	void generateMetadata() throws IOException {
-		Properties properties = new Properties();
+		Properties properties = CollectionFactory.createSortedProperties(true);
 		properties.setProperty("name", getProject().getName());
 		properties.setProperty("description", getProject().getDescription());
-		properties.setProperty("dependencies", String.join(",", this.dependencies.getResolvedConfiguration()
-				.getResolvedArtifacts().stream().map(ResolvedArtifact::getName).collect(Collectors.toSet())));
+		properties.setProperty("dependencies",
+				String.join(",",
+						this.dependencies.getResolvedConfiguration()
+							.getResolvedArtifacts()
+							.stream()
+							.map(ResolvedArtifact::getName)
+							.collect(Collectors.toSet())));
 		this.destination.getParentFile().mkdirs();
 		try (FileWriter writer = new FileWriter(this.destination)) {
 			properties.store(writer, null);

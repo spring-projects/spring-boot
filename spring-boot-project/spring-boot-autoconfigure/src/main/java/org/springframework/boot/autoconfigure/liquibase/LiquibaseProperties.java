@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.springframework.util.Assert;
  *
  * @author Marcel Overdijk
  * @author Eddú Meléndez
+ * @author Ferenc Gratzer
+ * @author Evgeniy Cheban
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
@@ -37,7 +39,13 @@ public class LiquibaseProperties {
 	/**
 	 * Change log configuration path.
 	 */
-	private String changeLog = "classpath:db/changelog/db.changelog-master.yaml";
+	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
+
+	/**
+	 * Whether to clear all checksums in the current changelog, so they will be
+	 * recalculated upon the next update.
+	 */
+	private boolean clearChecksums;
 
 	/**
 	 * Comma-separated list of runtime contexts to use.
@@ -90,6 +98,11 @@ public class LiquibaseProperties {
 	private String password;
 
 	/**
+	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	 */
+	private String driverClassName;
+
+	/**
 	 * JDBC URL of the database to migrate. If not set, the primary configured data source
 	 * is used.
 	 */
@@ -98,7 +111,7 @@ public class LiquibaseProperties {
 	/**
 	 * Comma-separated list of runtime labels to use.
 	 */
-	private String labels;
+	private String labelFilter;
 
 	/**
 	 * Change log parameters.
@@ -187,6 +200,14 @@ public class LiquibaseProperties {
 		this.dropFirst = dropFirst;
 	}
 
+	public boolean isClearChecksums() {
+		return this.clearChecksums;
+	}
+
+	public void setClearChecksums(boolean clearChecksums) {
+		this.clearChecksums = clearChecksums;
+	}
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -211,6 +232,14 @@ public class LiquibaseProperties {
 		this.password = password;
 	}
 
+	public String getDriverClassName() {
+		return this.driverClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
 	public String getUrl() {
 		return this.url;
 	}
@@ -219,12 +248,12 @@ public class LiquibaseProperties {
 		this.url = url;
 	}
 
-	public String getLabels() {
-		return this.labels;
+	public String getLabelFilter() {
+		return this.labelFilter;
 	}
 
-	public void setLabels(String labels) {
-		this.labels = labels;
+	public void setLabelFilter(String labelFilter) {
+		this.labelFilter = labelFilter;
 	}
 
 	public Map<String, String> getParameters() {

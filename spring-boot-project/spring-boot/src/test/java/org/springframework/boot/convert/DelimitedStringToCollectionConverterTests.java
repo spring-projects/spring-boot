@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class DelimitedStringToCollectionConverterTests {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noAnnotation"), 0);
 		assertThat(new DelimitedStringToCollectionConverter(conversionService).matches(sourceType, targetType))
-				.isTrue();
+			.isTrue();
 	}
 
 	@ConversionServiceTest
@@ -55,16 +55,16 @@ class DelimitedStringToCollectionConverterTests {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noElementType"), 0);
 		assertThat(new DelimitedStringToCollectionConverter(conversionService).matches(sourceType, targetType))
-				.isTrue();
+			.isTrue();
 	}
 
 	@ConversionServiceTest
 	void matchesWhenHasAnnotationAndNonConvertibleElementTypeShouldReturnFalse(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
+			.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
 		assertThat(new DelimitedStringToCollectionConverter(conversionService).matches(sourceType, targetType))
-				.isFalse();
+			.isFalse();
 	}
 
 	@ConversionServiceTest
@@ -100,9 +100,10 @@ class DelimitedStringToCollectionConverterTests {
 	void matchesWhenHasAnnotationAndConvertibleElementTypeShouldReturnTrue() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
 		assertThat(new DelimitedStringToCollectionConverter(new ApplicationConversionService()).matches(sourceType,
-				targetType)).isTrue();
+				targetType))
+			.isTrue();
 	}
 
 	@Test
@@ -110,7 +111,7 @@ class DelimitedStringToCollectionConverterTests {
 	void convertWhenHasConvertibleElementTypeShouldReturnConvertedType() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
 		List<Integer> converted = (List<Integer>) new ApplicationConversionService().convert(" 1 |  2| 3  ", sourceType,
 				targetType);
 		assertThat(converted).containsExactly(1, 2, 3);
@@ -118,7 +119,7 @@ class DelimitedStringToCollectionConverterTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverter(new DelimitedStringToCollectionConverter(service)));
+			.with((service) -> service.addConverter(new DelimitedStringToCollectionConverter(service)));
 	}
 
 	static class Values {

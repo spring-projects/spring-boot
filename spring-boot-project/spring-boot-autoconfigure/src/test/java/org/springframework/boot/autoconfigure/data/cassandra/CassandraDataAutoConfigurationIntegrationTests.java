@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import java.time.Duration;
-
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -31,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -48,30 +46,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+	static final CassandraContainer cassandra = new CassandraContainer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class))
-			.withPropertyValues("spring.data.cassandra.contact-points:localhost:" + cassandra.getFirstMappedPort(),
-					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.read-timeout=20s",
-					"spring.data.cassandra.connect-timeout=10s")
-			.withInitializer((context) -> AutoConfigurationPackages.register((BeanDefinitionRegistry) context,
-					City.class.getPackage().getName()));
+		.withConfiguration(
+				AutoConfigurations.of(CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class))
+		.withPropertyValues(
+				"spring.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
+				"spring.cassandra.local-datacenter=datacenter1", "spring.cassandra.connection.connect-timeout=60s",
+				"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s")
+		.withInitializer((context) -> AutoConfigurationPackages.register((BeanDefinitionRegistry) context,
+				City.class.getPackage().getName()));
 
 	@Test
 	void hasDefaultSchemaActionSet() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(SessionFactoryFactoryBean.class))
-				.hasFieldOrPropertyWithValue("schemaAction", SchemaAction.NONE));
+			.hasFieldOrPropertyWithValue("schemaAction", SchemaAction.NONE));
 	}
 
 	@Test
 	void hasRecreateSchemaActionSet() {
 		this.contextRunner.withUserConfiguration(KeyspaceTestConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.schemaAction=recreate_drop_unused")
-				.run((context) -> assertThat(context.getBean(SessionFactoryFactoryBean.class))
-						.hasFieldOrPropertyWithValue("schemaAction", SchemaAction.RECREATE_DROP_UNUSED));
+			.withPropertyValues("spring.cassandra.schemaAction=recreate_drop_unused")
+			.run((context) -> assertThat(context.getBean(SessionFactoryFactoryBean.class))
+				.hasFieldOrPropertyWithValue("schemaAction", SchemaAction.RECREATE_DROP_UNUSED));
 	}
 
 	@Configuration(proxyBeanMethods = false)

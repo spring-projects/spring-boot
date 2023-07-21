@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
+import org.gradle.api.Action;
+import org.gradle.api.JavaVersion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,16 +33,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BootWar}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
+@ClassPathExclusions("kotlin-daemon-client-*")
 class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	BootWarTests() {
-		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/");
+		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/",
+				"WEB-INF/");
+	}
+
+	@BeforeEach
+	void setUp() {
+		this.getTask().getTargetJavaVersion().set(JavaVersion.VERSION_17);
 	}
 
 	@Test
 	void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"), jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
@@ -48,7 +61,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
 		getTask().setProvidedClasspath(getTask().getProject().files(jarFile("two.jar")));
 		executeTask();
@@ -60,7 +73,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathCanBeSetUsingAnObject() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
 		getTask().setProvidedClasspath(jarFile("two.jar"));
 		executeTask();
@@ -72,7 +85,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(newFile("spring-boot-devtools-0.1.2.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
@@ -81,25 +94,14 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	}
 
 	@Test
-	void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
-		getTask().setExcludeDevtools(false);
-		executeTask();
-		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNotNull();
-		}
-	}
-
-	@Test
 	void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged() throws IOException {
-		File webappFolder = new File(this.temp, "src/main/webapp");
-		webappFolder.mkdirs();
-		File orgFolder = new File(webappFolder, "org");
-		orgFolder.mkdir();
-		new File(orgFolder, "foo.txt").createNewFile();
-		getTask().from(webappFolder);
-		getTask().setMainClassName("com.example.Main");
+		File webappDirectory = new File(this.temp, "src/main/webapp");
+		webappDirectory.mkdirs();
+		File orgDirectory = new File(webappDirectory, "org");
+		orgDirectory.mkdir();
+		new File(orgDirectory, "foo.txt").createNewFile();
+		getTask().from(webappDirectory);
+		getTask().getMainClass().set("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("org/")).isNotNull();
@@ -109,17 +111,54 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().classpath(jarFile("library.jar"));
 		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();
 		assertThat(getEntryNames(getTask().getArchiveFile().get().getAsFile()))
-				.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+			.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+	}
+
+	@Test
+	void whenWarIsLayeredClasspathIndexPointsToLayeredLibs() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar())) {
+			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
+					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
+					"- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
+		}
+	}
+
+	@Test
+	void classpathIndexPointsToWebInfLibs() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+				.isEqualTo("WEB-INF/classpath.idx");
+			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
+					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
+					"- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
+		}
+	}
+
+	@Test
+	void javaVersionIsWrittenToManifest() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))
+				.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
+		}
 	}
 
 	@Override
 	protected void executeTask() {
 		getTask().copy();
+	}
+
+	@Override
+	void applyLayered(Action<LayeredSpec> action) {
+		getTask().layered(action);
 	}
 
 }

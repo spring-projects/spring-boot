@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ public final class Metadata {
 
 		@Override
 		public boolean matches(ConfigurationMetadata value) {
-			ItemMetadata itemMetadata = getFirstItemWithName(value, this.name);
+			ItemMetadata itemMetadata = findItem(value, this.name);
 			if (itemMetadata == null) {
 				return false;
 			}
@@ -207,13 +207,15 @@ public final class Metadata {
 					this.description, this.defaultValue, null);
 		}
 
-		private ItemMetadata getFirstItemWithName(ConfigurationMetadata metadata, String name) {
-			for (ItemMetadata item : metadata.getItems()) {
-				if (item.isOfItemType(this.itemType) && name.equals(item.getName())) {
-					return item;
-				}
+		private ItemMetadata findItem(ConfigurationMetadata metadata, String name) {
+			List<ItemMetadata> candidates = metadata.getItems()
+				.stream()
+				.filter((item) -> item.isOfItemType(this.itemType) && name.equals(item.getName()))
+				.toList();
+			if (candidates.size() > 1) {
+				throw new IllegalStateException("More than one metadata item with name '" + name + "': " + candidates);
 			}
-			return null;
+			return (candidates.size() == 1) ? candidates.get(0) : null;
 		}
 
 	}
@@ -389,7 +391,7 @@ public final class Metadata {
 			if (this.parameters != null) {
 				for (Map.Entry<String, Object> entry : this.parameters.entrySet()) {
 					if (!IsMapContaining.hasEntry(entry.getKey(), entry.getValue())
-							.matches(valueProvider.getParameters())) {
+						.matches(valueProvider.getParameters())) {
 						return false;
 					}
 				}

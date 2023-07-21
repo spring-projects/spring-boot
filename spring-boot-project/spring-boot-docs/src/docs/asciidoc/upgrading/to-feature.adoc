@@ -1,0 +1,19 @@
+[[upgrading.to-feature]]
+== Upgrading to a New Feature Release
+
+When upgrading to a new feature release, some properties may have been renamed or removed.
+Spring Boot provides a way to analyze your application's environment and print diagnostics at startup, but also temporarily migrate properties at runtime for you.
+To enable that feature, add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-properties-migrator</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+----
+
+WARNING: Properties that are added late to the environment, such as when using `@PropertySource`, will not be taken into account.
+
+NOTE: Once you finish the migration, please make sure to remove this module from your project's dependencies.

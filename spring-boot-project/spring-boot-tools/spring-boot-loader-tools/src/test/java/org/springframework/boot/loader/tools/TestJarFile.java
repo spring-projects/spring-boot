@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,15 +40,15 @@ public class TestJarFile {
 
 	private final byte[] buffer = new byte[4096];
 
-	private final File temporaryFolder;
+	private final File temporaryDirectory;
 
 	private final File jarSource;
 
 	private final List<ZipEntrySource> entries = new ArrayList<>();
 
-	public TestJarFile(File temporaryFolder) throws IOException {
-		this.temporaryFolder = temporaryFolder;
-		this.jarSource = new File(temporaryFolder, "jar-source");
+	public TestJarFile(File temporaryDirectory) {
+		this.temporaryDirectory = temporaryDirectory;
+		this.jarSource = new File(temporaryDirectory, "jar-source");
 	}
 
 	public void addClass(String filename, Class<?> classToCopy) throws IOException {
@@ -59,7 +59,7 @@ public class TestJarFile {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
 		InputStream inputStream = getClass()
-				.getResourceAsStream("/" + classToCopy.getName().replace('.', '/') + ".class");
+			.getResourceAsStream("/" + classToCopy.getName().replace('.', '/') + ".class");
 		copyToFile(inputStream, file);
 		if (time != null) {
 			file.setLastModified(time);
@@ -68,11 +68,15 @@ public class TestJarFile {
 	}
 
 	public void addFile(String filename, File fileToCopy) throws IOException {
+		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
+			addFile(filename, inputStream);
+		}
+	}
+
+	public void addFile(String filename, InputStream inputStream) throws IOException {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
-		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
-			copyToFile(inputStream, file);
-		}
+		copyToFile(inputStream, file);
 		this.entries.add(new FileSource(filename, file));
 	}
 
@@ -115,12 +119,12 @@ public class TestJarFile {
 		return this.jarSource;
 	}
 
-	public File getFile() throws IOException {
+	public File getFile() {
 		return getFile("jar");
 	}
 
-	public File getFile(String extension) throws IOException {
-		File file = new File(this.temporaryFolder, UUID.randomUUID() + "." + extension);
+	public File getFile(String extension) {
+		File file = new File(this.temporaryDirectory, UUID.randomUUID() + "." + extension);
 		ZipUtil.pack(this.entries.toArray(new ZipEntrySource[0]), file);
 		return file;
 	}

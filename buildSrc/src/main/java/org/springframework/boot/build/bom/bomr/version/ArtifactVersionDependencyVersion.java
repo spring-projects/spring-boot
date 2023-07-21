@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build.bom.bomr.version;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -76,15 +77,30 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	@Override
+	public int compareTo(DependencyVersion other) {
+		if (other instanceof ArtifactVersionDependencyVersion otherArtifactDependencyVersion) {
+			ArtifactVersion otherArtifactVersion = otherArtifactDependencyVersion.artifactVersion;
+			if ((!Objects.equals(this.artifactVersion.getQualifier(), otherArtifactVersion.getQualifier()))
+					&& "snapshot".equalsIgnoreCase(otherArtifactVersion.getQualifier())
+					&& otherArtifactVersion.getMajorVersion() == this.artifactVersion.getMajorVersion()
+					&& otherArtifactVersion.getMinorVersion() == this.artifactVersion.getMinorVersion()
+					&& otherArtifactVersion.getIncrementalVersion() == this.artifactVersion.getIncrementalVersion()) {
+				return 1;
+			}
+		}
+		return super.compareTo(other);
+	}
+
+	@Override
 	public String toString() {
 		return this.artifactVersion.toString();
 	}
 
-	private Optional<ArtifactVersionDependencyVersion> extractArtifactVersionDependencyVersion(
+	protected Optional<ArtifactVersionDependencyVersion> extractArtifactVersionDependencyVersion(
 			DependencyVersion other) {
 		ArtifactVersionDependencyVersion artifactVersion = null;
-		if (other instanceof ArtifactVersionDependencyVersion) {
-			artifactVersion = (ArtifactVersionDependencyVersion) other;
+		if (other instanceof ArtifactVersionDependencyVersion otherVersion) {
+			artifactVersion = otherVersion;
 		}
 		return Optional.ofNullable(artifactVersion);
 	}

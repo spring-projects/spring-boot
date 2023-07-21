@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.util.StringUtils;
 
@@ -32,7 +31,7 @@ final class ApiVersions {
 	/**
 	 * The platform API versions supported by this release.
 	 */
-	static final ApiVersions SUPPORTED_PLATFORMS = new ApiVersions(ApiVersion.of(0, 1), ApiVersion.of(0, 2));
+	static final ApiVersions SUPPORTED_PLATFORMS = ApiVersions.of(0, IntStream.rangeClosed(3, 11));
 
 	private final ApiVersion[] apiVersions;
 
@@ -41,17 +40,24 @@ final class ApiVersions {
 	}
 
 	/**
-	 * Assert that the specified version is supported by these API versions.
-	 * @param other the version to check against
+	 * Find the latest version among the specified versions that is supported by these API
+	 * versions.
+	 * @param others the versions to check against
+	 * @return the version
 	 */
-	void assertSupports(ApiVersion other) {
-		for (ApiVersion apiVersion : this.apiVersions) {
-			if (apiVersion.supports(other)) {
-				return;
+	ApiVersion findLatestSupported(String... others) {
+		for (int versionsIndex = this.apiVersions.length - 1; versionsIndex >= 0; versionsIndex--) {
+			ApiVersion apiVersion = this.apiVersions[versionsIndex];
+			for (int otherIndex = others.length - 1; otherIndex >= 0; otherIndex--) {
+				ApiVersion other = ApiVersion.parse(others[otherIndex]);
+				if (apiVersion.supports(other)) {
+					return apiVersion;
+				}
 			}
 		}
 		throw new IllegalStateException(
-				"Detected platform API version '" + other + "' is not included in supported versions '" + this + "'");
+				"Detected platform API versions '" + StringUtils.arrayToCommaDelimitedString(others)
+						+ "' are not included in supported versions '" + this + "'");
 	}
 
 	@Override
@@ -84,8 +90,12 @@ final class ApiVersions {
 	 * @throws IllegalArgumentException if any values could not be parsed
 	 */
 	static ApiVersions parse(String... values) {
-		List<ApiVersion> versions = Arrays.stream(values).map(ApiVersion::parse).collect(Collectors.toList());
-		return new ApiVersions(versions.toArray(new ApiVersion[] {}));
+		return new ApiVersions(Arrays.stream(values).map(ApiVersion::parse).toArray(ApiVersion[]::new));
+	}
+
+	static ApiVersions of(int major, IntStream minorsInclusive) {
+		return new ApiVersions(
+				minorsInclusive.mapToObj((minor) -> ApiVersion.of(major, minor)).toArray(ApiVersion[]::new));
 	}
 
 }

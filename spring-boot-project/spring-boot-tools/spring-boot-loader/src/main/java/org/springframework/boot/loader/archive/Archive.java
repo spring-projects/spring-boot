@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.List;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
@@ -58,41 +57,12 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	 * @throws IOException on IO error
 	 * @since 2.3.0
 	 */
-	default Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
-			throws IOException {
-		EntryFilter combinedFilter = (entry) -> (searchFilter == null || searchFilter.matches(entry))
-				&& (includeFilter == null || includeFilter.matches(entry));
-		List<Archive> nestedArchives = getNestedArchives(combinedFilter);
-		return nestedArchives.iterator();
-	}
-
-	/**
-	 * Returns nested {@link Archive}s for entries that match the specified filter.
-	 * @param filter the filter used to limit entries
-	 * @return nested archives
-	 * @throws IOException if nested archives cannot be read
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getNestedArchives(EntryFilter, EntryFilter)}
-	 */
-	@Deprecated
-	default List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-		throw new IllegalStateException("Unexpected call to getNestedArchives(filter)");
-	}
-
-	/**
-	 * Return a new iterator for the archive entries.
-	 * @see java.lang.Iterable#iterator()
-	 * @deprecated since 2.3.0 in favor of using
-	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
-	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
-	 */
-	@Deprecated
-	@Override
-	Iterator<Entry> iterator();
+	Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException;
 
 	/**
 	 * Return if the archive is exploded (already unpacked).
 	 * @return if the archive is exploded
+	 * @since 2.3.0
 	 */
 	default boolean isExploded() {
 		return false;

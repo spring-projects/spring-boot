@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.devtools.tests;
-
-import java.io.IOException;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -42,14 +40,14 @@ class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsInt
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 	}
 
-	static Object[] parameters() throws IOException {
+	static Object[] parameters() {
 		Directories directories = new Directories(buildOutput, temp);
 		return new Object[] { new Object[] { new LocalApplicationLauncher(directories) },
 				new Object[] { new ExplodedRemoteApplicationLauncher(directories) },

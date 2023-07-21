@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,24 +18,24 @@ package org.springframework.boot.web.servlet;
 
 import java.util.EventListener;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextListener;
-
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextListener;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletListenerRegistrationBean}.
  *
  * @author Dave Syer
  */
+@ExtendWith(MockitoExtension.class)
 class ServletListenerRegistrationBeanTests {
 
 	@Mock
@@ -44,17 +44,12 @@ class ServletListenerRegistrationBeanTests {
 	@Mock
 	private ServletContext servletContext;
 
-	@BeforeEach
-	void setupMocks() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
 	void startupWithDefaults() throws Exception {
 		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addListener(this.listener);
+		then(this.servletContext).should().addListener(this.listener);
 	}
 
 	@Test
@@ -63,15 +58,16 @@ class ServletListenerRegistrationBeanTests {
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, never()).addListener(any(ServletContextListener.class));
+		then(this.servletContext).should(never()).addListener(any(ServletContextListener.class));
 	}
 
 	@Test
 	void cannotRegisterUnsupportedType() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
+			.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
 
-				})).withMessageContaining("Listener is not of a supported type");
+			}))
+			.withMessageContaining("Listener is not of a supported type");
 	}
 
 }

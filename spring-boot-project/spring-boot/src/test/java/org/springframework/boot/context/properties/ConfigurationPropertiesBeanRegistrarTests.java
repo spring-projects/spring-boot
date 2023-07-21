@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.properties.bind.BindMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -35,9 +39,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class ConfigurationPropertiesBeanRegistrarTests {
 
-	private BeanDefinitionRegistry registry = new DefaultListableBeanFactory();
+	private final BeanDefinitionRegistry registry = new DefaultListableBeanFactory();
 
-	private ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(this.registry);
+	private final ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(
+			this.registry);
 
 	@Test
 	void registerWhenNotAlreadyRegisteredAddBeanDefinition() {
@@ -61,8 +66,8 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registerWhenNoAnnotationThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.registrar.register(NoAnnotationConfigurationProperties.class))
-				.withMessageContaining("No ConfigurationProperties annotation found");
+			.isThrownBy(() -> this.registrar.register(NoAnnotationConfigurationProperties.class))
+			.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
 	@Test
@@ -70,15 +75,23 @@ class ConfigurationPropertiesBeanRegistrarTests {
 		String beanName = "valuecp-" + ValueObjectConfigurationProperties.class.getName();
 		this.registrar.register(ValueObjectConfigurationProperties.class);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
-		assertThat(definition).isInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
+		assertThat(definition).satisfies(configurationPropertiesBeanDefinition(BindMethod.VALUE_OBJECT));
 	}
 
 	@Test
-	void registerWhenNotValueObjectRegistersGenericBeanDefinition() {
+	void registerWhenNotValueObjectRegistersRootBeanDefinitionWithJavaBeanBindMethod() {
 		String beanName = MultiConstructorBeanConfigurationProperties.class.getName();
 		this.registrar.register(MultiConstructorBeanConfigurationProperties.class);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
-		assertThat(definition).isInstanceOf(GenericBeanDefinition.class);
+		assertThat(definition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
+	}
+
+	private Consumer<BeanDefinition> configurationPropertiesBeanDefinition(BindMethod bindMethod) {
+		return (definition) -> {
+			assertThat(definition).isExactlyInstanceOf(RootBeanDefinition.class);
+			assertThat(definition.hasAttribute(BindMethod.class.getName())).isTrue();
+			assertThat(definition.getAttribute(BindMethod.class.getName())).isEqualTo(bindMethod);
+		};
 	}
 
 	@ConfigurationProperties(prefix = "beancp")
@@ -90,7 +103,6 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 	}
 
-	@ConstructorBinding
 	@ConfigurationProperties("valuecp")
 	static class ValueObjectConfigurationProperties {
 

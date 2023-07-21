@@ -4,6 +4,7 @@ inputs:
 - name: git-repo
 outputs:
 - name: distribution-repository
+- name: git-repo
 caches:
 - path: gradle
 - path: embedmongo
@@ -11,14 +12,20 @@ params:
   BRANCH:
   CI: true
   GRADLE_ENTERPRISE_ACCESS_KEY:
+  GRADLE_ENTERPRISE_CACHE_URL:
   GRADLE_ENTERPRISE_CACHE_USERNAME:
   GRADLE_ENTERPRISE_CACHE_PASSWORD:
   GRADLE_ENTERPRISE_URL: https://ge.spring.io
+  DOCKER_HUB_MIRROR:
 run:
   path: bash
   args:
-    - -ec
-    - |
-      source /docker-lib.sh
-      start_docker
-      ${PWD}/git-repo/ci/scripts/build-project.sh
+  - "-ec"
+  - |
+    mkdir -p /root/.docker
+    cat > /root/.docker/config.json <<EOF
+    { "auths": { "https://index.docker.io/v1/": { "auth": "$DOCKER_HUB_AUTH" }}}
+    EOF
+    source /docker-lib.sh
+    start_docker $DOCKER_HUB_MIRROR
+    ${PWD}/git-repo/ci/scripts/build-project.sh

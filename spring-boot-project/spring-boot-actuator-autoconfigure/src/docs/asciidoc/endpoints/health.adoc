@@ -4,8 +4,8 @@ The `health` endpoint provides detailed information about the health of the appl
 
 
 
-[[health-retrieving]]
-== Retrieving the Health of the application
+[[health.retrieving]]
+== Retrieving the Health of the Application
 To retrieve the health of the application, make a `GET` request to `/actuator/health`, as shown in the following curl-based example:
 
 include::{snippets}/health/curl-request.adoc[]
@@ -16,7 +16,7 @@ include::{snippets}/health/http-response.adoc[]
 
 
 
-[[health-retrieving-response-structure]]
+[[health.retrieving.response-structure]]
 === Response Structure
 The response contains details of the health of the application.
 The following table describes the structure of the response:
@@ -29,8 +29,8 @@ If you need to return V2 JSON you should use an accept header or `application/vn
 
 
 
-[[health-retrieving-component]]
-== Retrieving the Health of a component
+[[health.retrieving-component]]
+== Retrieving the Health of a Component
 To retrieve the health of a particular component of the application's health, make a `GET` request to `/actuator/health/\{component}`, as shown in the following curl-based example:
 
 include::{snippets}/health/component/curl-request.adoc[]
@@ -41,7 +41,7 @@ include::{snippets}/health/component/http-response.adoc[]
 
 
 
-[[health-retrieving-component-response-structure]]
+[[health.retrieving-component.response-structure]]
 === Response Structure
 The response contains details of the health of a particular component of the application's health.
 The following table describes the structure of the response:
@@ -51,8 +51,8 @@ include::{snippets}/health/component/response-fields.adoc[]
 
 
 
-[[health-retrieving-component-nested]]
-== Retrieving the Health of a nested component
+[[health.retrieving-component-nested]]
+== Retrieving the Health of a Nested Component
 If a particular component contains other nested components (as the `broker` indicator in the example above), the health of such a nested component can be retrieved by issuing a `GET` request to `/actuator/health/\{component}/\{subcomponent}`, as shown in the following curl-based example:
 
 include::{snippets}/health/instance/curl-request.adoc[]
@@ -66,7 +66,7 @@ The health endpoint supports any number of `/\{component}` identifiers in the UR
 
 
 
-[[health-retrieving-component-instance-response-structure]]
+[[health.retrieving-component-nested.response-structure]]
 === Response Structure
 The response contains details of the health of an instance of a particular component of the application.
 The following table describes the structure of the response:

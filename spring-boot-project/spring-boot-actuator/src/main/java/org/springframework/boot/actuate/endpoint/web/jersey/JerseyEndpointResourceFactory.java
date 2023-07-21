@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,22 +28,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.glassfish.jersey.process.Inflector;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.Resource.Builder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
+import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -52,6 +54,7 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -81,8 +84,10 @@ public class JerseyEndpointResourceFactory {
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			EndpointLinksResolver linksResolver, boolean shouldRegisterLinks) {
 		List<Resource> resources = new ArrayList<>();
-		endpoints.stream().flatMap((endpoint) -> endpoint.getOperations().stream())
-				.map((operation) -> createResource(endpointMapping, operation)).forEach(resources::add);
+		endpoints.stream()
+			.flatMap((endpoint) -> endpoint.getOperations().stream())
+			.map((operation) -> createResource(endpointMapping, operation))
+			.forEach(resources::add);
 		if (shouldRegisterLinks) {
 			Resource resource = createEndpointLinksResource(endpointMapping.getPath(), endpointMediaTypes,
 					linksResolver);
@@ -91,7 +96,7 @@ public class JerseyEndpointResourceFactory {
 		return resources;
 	}
 
-	private Resource createResource(EndpointMapping endpointMapping, WebOperation operation) {
+	protected Resource createResource(EndpointMapping endpointMapping, WebOperation operation) {
 		WebOperationRequestPredicate requestPredicate = operation.getRequestPredicate();
 		String path = requestPredicate.getPath();
 		String matchAllRemainingPathSegmentsVariable = requestPredicate.getMatchAllRemainingPathSegmentsVariable();
@@ -99,19 +104,29 @@ public class JerseyEndpointResourceFactory {
 			path = path.replace("{*" + matchAllRemainingPathSegmentsVariable + "}",
 					"{" + matchAllRemainingPathSegmentsVariable + ": .*}");
 		}
-		Builder resourceBuilder = Resource.builder().path(endpointMapping.createSubPath(path));
+		return getResource(endpointMapping, operation, requestPredicate, path, null, null);
+	}
+
+	protected Resource getResource(EndpointMapping endpointMapping, WebOperation operation,
+			WebOperationRequestPredicate requestPredicate, String path, WebServerNamespace serverNamespace,
+			JerseyRemainingPathSegmentProvider remainingPathSegmentProvider) {
+		Builder resourceBuilder = Resource.builder()
+			.path(endpointMapping.getPath())
+			.path(endpointMapping.createSubPath(path));
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
-				.consumes(StringUtils.toStringArray(requestPredicate.getConsumes()))
-				.produces(StringUtils.toStringArray(requestPredicate.getProduces()))
-				.handledBy(new OperationInflector(operation, !requestPredicate.getConsumes().isEmpty()));
+			.consumes(StringUtils.toStringArray(requestPredicate.getConsumes()))
+			.produces(StringUtils.toStringArray(requestPredicate.getProduces()))
+			.handledBy(new OperationInflector(operation, !requestPredicate.getConsumes().isEmpty(), serverNamespace,
+					remainingPathSegmentProvider));
 		return resourceBuilder.build();
 	}
 
 	private Resource createEndpointLinksResource(String endpointPath, EndpointMediaTypes endpointMediaTypes,
 			EndpointLinksResolver linksResolver) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
-		resourceBuilder.addMethod("GET").produces(StringUtils.toStringArray(endpointMediaTypes.getProduced()))
-				.handledBy(new EndpointLinksInflector(linksResolver));
+		resourceBuilder.addMethod("GET")
+			.produces(StringUtils.toStringArray(endpointMediaTypes.getProduced()))
+			.handledBy(new EndpointLinksInflector(linksResolver));
 		return resourceBuilder.build();
 	}
 
@@ -128,6 +143,7 @@ public class JerseyEndpointResourceFactory {
 			List<Function<Object, Object>> converters = new ArrayList<>();
 			converters.add(new ResourceBodyConverter());
 			if (ClassUtils.isPresent("reactor.core.publisher.Mono", OperationInflector.class.getClassLoader())) {
+				converters.add(new FluxBodyConverter());
 				converters.add(new MonoBodyConverter());
 			}
 			BODY_CONVERTERS = Collections.unmodifiableList(converters);
@@ -137,9 +153,16 @@ public class JerseyEndpointResourceFactory {
 
 		private final boolean readBody;
 
-		private OperationInflector(WebOperation operation, boolean readBody) {
+		private final WebServerNamespace serverNamespace;
+
+		private final JerseyRemainingPathSegmentProvider remainingPathSegmentProvider;
+
+		private OperationInflector(WebOperation operation, boolean readBody, WebServerNamespace serverNamespace,
+				JerseyRemainingPathSegmentProvider remainingPathSegments) {
 			this.operation = operation;
 			this.readBody = readBody;
+			this.serverNamespace = serverNamespace;
+			this.remainingPathSegmentProvider = remainingPathSegments;
 		}
 
 		@Override
@@ -151,9 +174,12 @@ public class JerseyEndpointResourceFactory {
 			arguments.putAll(extractPathParameters(data));
 			arguments.putAll(extractQueryParameters(data));
 			try {
-				ApiVersion apiVersion = ApiVersion.fromHttpHeaders(data.getHeaders());
 				JerseySecurityContext securityContext = new JerseySecurityContext(data.getSecurityContext());
-				InvocationContext invocationContext = new InvocationContext(apiVersion, securityContext, arguments);
+				OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
+					.of(WebServerNamespace.class, () -> this.serverNamespace);
+				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
+						serverNamespaceArgumentResolver,
+						new ProducibleOperationArgumentResolver(() -> data.getHeaders().get("Accept")));
 				Object response = this.operation.invoke(invocationContext);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
@@ -162,23 +188,30 @@ public class JerseyEndpointResourceFactory {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		private Map<String, Object> extractBodyArguments(ContainerRequestContext data) {
 			Map<String, Object> entity = ((ContainerRequest) data).readEntity(Map.class);
-			if (entity == null) {
-				return Collections.emptyMap();
-			}
-			return entity;
+			return (entity != null) ? entity : Collections.emptyMap();
 		}
 
 		private Map<String, Object> extractPathParameters(ContainerRequestContext requestContext) {
 			Map<String, Object> pathParameters = extract(requestContext.getUriInfo().getPathParameters());
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
-					.getMatchAllRemainingPathSegmentsVariable();
+				.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
-				String remainingPathSegments = (String) pathParameters.get(matchAllRemainingPathSegmentsVariable);
+				String remainingPathSegments = getRemainingPathSegments(requestContext, pathParameters,
+						matchAllRemainingPathSegmentsVariable);
 				pathParameters.put(matchAllRemainingPathSegmentsVariable, tokenizePathSegments(remainingPathSegments));
 			}
 			return pathParameters;
+		}
+
+		private String getRemainingPathSegments(ContainerRequestContext requestContext,
+				Map<String, Object> pathParameters, String matchAllRemainingPathSegmentsVariable) {
+			if (this.remainingPathSegmentProvider != null) {
+				return this.remainingPathSegmentProvider.get(requestContext, matchAllRemainingPathSegmentsVariable);
+			}
+			return (String) pathParameters.get(matchAllRemainingPathSegmentsVariable);
 		}
 
 		private String[] tokenizePathSegments(String path) {
@@ -211,20 +244,16 @@ public class JerseyEndpointResourceFactory {
 				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
-			try {
-				if (!(response instanceof WebEndpointResponse)) {
-					return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
-				}
-				WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
-				return Response.status(webEndpointResponse.getStatus())
-						.entity(convertIfNecessary(webEndpointResponse.getBody())).build();
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
+				return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
 			}
-			catch (IOException ex) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-			}
+			return Response.status(webEndpointResponse.getStatus())
+				.header("Content-Type", webEndpointResponse.getContentType())
+				.entity(convertIfNecessary(webEndpointResponse.getBody()))
+				.build();
 		}
 
-		private Object convertIfNecessary(Object body) throws IOException {
+		private Object convertIfNecessary(Object body) {
 			for (Function<Object, Object> converter : BODY_CONVERTERS) {
 				body = converter.apply(body);
 			}
@@ -270,6 +299,21 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	/**
+	 * Body converter from {@link Flux} to {@link Flux#collectList Mono&lt;List&gt;}.
+	 */
+	private static final class FluxBodyConverter implements Function<Object, Object> {
+
+		@Override
+		public Object apply(Object body) {
+			if (body instanceof Flux) {
+				return ((Flux<?>) body).collectList();
+			}
+			return body;
+		}
+
+	}
+
+	/**
 	 * {@link Inflector} to for endpoint links.
 	 */
 	private static final class EndpointLinksInflector implements Inflector<ContainerRequestContext, Response> {
@@ -283,17 +327,18 @@ public class JerseyEndpointResourceFactory {
 		@Override
 		public Response apply(ContainerRequestContext request) {
 			Map<String, Link> links = this.linksResolver
-					.resolveLinks(request.getUriInfo().getAbsolutePath().toString());
-			return Response.ok(Collections.singletonMap("_links", links)).build();
+				.resolveLinks(request.getUriInfo().getAbsolutePath().toString());
+			Map<String, Map<String, Link>> entity = OperationResponseBody.of(Collections.singletonMap("_links", links));
+			return Response.ok(entity).build();
 		}
 
 	}
 
 	private static final class JerseySecurityContext implements SecurityContext {
 
-		private final javax.ws.rs.core.SecurityContext securityContext;
+		private final jakarta.ws.rs.core.SecurityContext securityContext;
 
-		private JerseySecurityContext(javax.ws.rs.core.SecurityContext securityContext) {
+		private JerseySecurityContext(jakarta.ws.rs.core.SecurityContext securityContext) {
 			this.securityContext = securityContext;
 		}
 

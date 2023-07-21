@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,28 @@
 
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 
+import javax.annotation.Nonnull;
+import javax.annotation.meta.When;
+
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
  * {@link OperationParameter} created from an {@link OperationMethod}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class OperationMethodParameter implements OperationParameter {
+
+	private static final boolean jsr305Present = ClassUtils.isPresent("javax.annotation.Nonnull", null);
 
 	private final String name;
 
@@ -55,12 +65,29 @@ class OperationMethodParameter implements OperationParameter {
 
 	@Override
 	public boolean isMandatory() {
-		return ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class));
+		if (!ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class))) {
+			return false;
+		}
+		return (jsr305Present) ? new Jsr305().isMandatory(this.parameter) : true;
+	}
+
+	@Override
+	public <T extends Annotation> T getAnnotation(Class<T> annotation) {
+		return this.parameter.getAnnotation(annotation);
 	}
 
 	@Override
 	public String toString() {
 		return this.name + " of type " + this.parameter.getType().getName();
+	}
+
+	private static class Jsr305 {
+
+		boolean isMandatory(Parameter parameter) {
+			MergedAnnotation<Nonnull> annotation = MergedAnnotations.from(parameter).get(Nonnull.class);
+			return !annotation.isPresent() || annotation.getEnum("when", When.class) == When.ALWAYS;
+		}
+
 	}
 
 }

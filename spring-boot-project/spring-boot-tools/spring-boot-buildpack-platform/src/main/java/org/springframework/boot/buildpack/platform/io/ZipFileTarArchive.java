@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.util.StreamUtils;
  * Adapter class to convert a ZIP file to a {@link TarArchive}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class ZipFileTarArchive implements TarArchive {
@@ -54,6 +55,7 @@ public class ZipFileTarArchive implements TarArchive {
 	public ZipFileTarArchive(File zip, Owner owner) {
 		Assert.notNull(zip, "Zip must not be null");
 		Assert.notNull(owner, "Owner must not be null");
+		assertArchiveHasEntries(zip);
 		this.zip = zip;
 		this.owner = owner;
 	}
@@ -72,6 +74,15 @@ public class ZipFileTarArchive implements TarArchive {
 		tar.finish();
 	}
 
+	private void assertArchiveHasEntries(File file) {
+		try (ZipFile zipFile = new ZipFile(file)) {
+			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "Archive file '" + file + "' is not valid");
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("File '" + file + "' is not readable", ex);
+		}
+	}
+
 	private void copy(ZipArchiveEntry zipEntry, InputStream zip, TarArchiveOutputStream tar) throws IOException {
 		TarArchiveEntry tarEntry = convert(zipEntry);
 		tar.putArchiveEntry(tarEntry);
@@ -87,6 +98,7 @@ public class ZipFileTarArchive implements TarArchive {
 		tarEntry.setUserId(this.owner.getUid());
 		tarEntry.setGroupId(this.owner.getGid());
 		tarEntry.setModTime(NORMALIZED_MOD_TIME);
+		tarEntry.setMode(zipEntry.getUnixMode());
 		if (!zipEntry.isDirectory()) {
 			tarEntry.setSize(zipEntry.getSize());
 		}

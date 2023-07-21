@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.StringUtils;
@@ -32,8 +34,20 @@ import org.springframework.util.StringUtils;
  * {@link BeanCurrentlyInCreationException}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
+
+	private final AbstractAutowireCapableBeanFactory beanFactory;
+
+	BeanCurrentlyInCreationFailureAnalyzer(BeanFactory beanFactory) {
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			this.beanFactory = autowireCapableBeanFactory;
+		}
+		else {
+			this.beanFactory = null;
+		}
+	}
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanCurrentlyInCreationException cause) {
@@ -41,7 +55,18 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		if (dependencyCycle == null) {
 			return null;
 		}
-		return new FailureAnalysis(buildMessage(dependencyCycle), null, cause);
+		return new FailureAnalysis(buildMessage(dependencyCycle), action(), cause);
+	}
+
+	private String action() {
+		if (this.beanFactory != null && this.beanFactory.isAllowCircularReferences()) {
+			return "Despite circular references being allowed, the dependency cycle between beans could not be "
+					+ "broken. Update your application to remove the dependency cycle.";
+		}
+		return "Relying upon circular references is discouraged and they are prohibited by default. "
+				+ "Update your application to remove the dependency cycle between beans. "
+				+ "As a last resort, it may be possible to break the cycle automatically by setting "
+				+ "spring.main.allow-circular-references to true.";
 	}
 
 	private DependencyCycle findCycle(Throwable rootFailure) {
@@ -70,11 +95,12 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		message.append(
 				String.format("The dependencies of some of the beans in the application context form a cycle:%n%n"));
 		List<BeanInCycle> beansInCycle = dependencyCycle.getBeansInCycle();
+		boolean singleBean = beansInCycle.size() == 1;
 		int cycleStart = dependencyCycle.getCycleStart();
 		for (int i = 0; i < beansInCycle.size(); i++) {
 			BeanInCycle beanInCycle = beansInCycle.get(i);
 			if (i == cycleStart) {
-				message.append(String.format("┌─────┐%n"));
+				message.append(String.format(singleBean ? "┌──->──┐%n" : "┌─────┐%n"));
 			}
 			else if (i > 0) {
 				String leftSide = (i < cycleStart) ? " " : "↑";
@@ -83,7 +109,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			String leftSide = (i < cycleStart) ? " " : "|";
 			message.append(String.format("%s  %s%n", leftSide, beanInCycle));
 		}
-		message.append(String.format("└─────┘%n"));
+		message.append(String.format(singleBean ? "└──<-──┘%n" : "└─────┘%n"));
 		return message.toString();
 	}
 
@@ -131,10 +157,10 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
-			if (!(ex instanceof UnsatisfiedDependencyException)) {
-				return null;
+			if (ex instanceof UnsatisfiedDependencyException unsatisfiedDependencyException) {
+				return unsatisfiedDependencyException.getInjectionPoint();
 			}
-			return ((UnsatisfiedDependencyException) ex).getInjectionPoint();
+			return null;
 		}
 
 		@Override
@@ -159,8 +185,8 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		static BeanInCycle get(Throwable ex) {
-			if (ex instanceof BeanCreationException) {
-				return get((BeanCreationException) ex);
+			if (ex instanceof BeanCreationException beanCreationException) {
+				return get(beanCreationException);
 			}
 			return null;
 		}

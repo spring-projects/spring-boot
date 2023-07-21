@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 	@Test
 	void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));
+			.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.boot.system;
 
-import java.lang.invoke.MethodHandles;
+import java.io.Console;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.SortedSet;
+import java.util.concurrent.Future;
 
 import org.springframework.util.ClassUtils;
 
@@ -29,44 +31,35 @@ import org.springframework.util.ClassUtils;
  *
  * @author Oliver Gierke
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public enum JavaVersion {
 
 	/**
-	 * Java 1.8.
+	 * Java 17.
 	 */
-	EIGHT("1.8", Optional.class, "empty"),
+	SEVENTEEN("17", Console.class, "charset"),
 
 	/**
-	 * Java 9.
+	 * Java 18.
 	 */
-	NINE("9", Optional.class, "stream"),
+	EIGHTEEN("18", Duration.class, "isPositive"),
 
 	/**
-	 * Java 10.
+	 * Java 19.
 	 */
-	TEN("10", Optional.class, "orElseThrow"),
+	NINETEEN("19", Future.class, "state"),
 
 	/**
-	 * Java 11.
+	 * Java 20.
 	 */
-	ELEVEN("11", String.class, "strip"),
+	TWENTY("20", Class.class, "accessFlags"),
 
 	/**
-	 * Java 12.
+	 * Java 21.
 	 */
-	TWELVE("12", String.class, "describeConstable"),
-
-	/**
-	 * Java 13.
-	 */
-	THIRTEEN("13", String.class, "stripIndent"),
-
-	/**
-	 * Java 14.
-	 */
-	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess");
+	TWENTY_ONE("21", SortedSet.class, "getFirst");
 
 	private final String name;
 
@@ -94,7 +87,7 @@ public enum JavaVersion {
 				return candidate;
 			}
 		}
-		return EIGHT;
+		return SEVENTEEN;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -66,8 +64,8 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	private Map<EndpointId, PathMappedEndpoint> getEndpoints(Collection<EndpointsSupplier<?>> suppliers) {
 		Map<EndpointId, PathMappedEndpoint> endpoints = new LinkedHashMap<>();
 		suppliers.forEach((supplier) -> supplier.getEndpoints().forEach((endpoint) -> {
-			if (endpoint instanceof PathMappedEndpoint) {
-				endpoints.put(endpoint.getEndpointId(), (PathMappedEndpoint) endpoint);
+			if (endpoint instanceof PathMappedEndpoint pathMappedEndpoint) {
+				endpoints.put(endpoint.getEndpointId(), pathMappedEndpoint);
 			}
 		}));
 		return Collections.unmodifiableMap(endpoints);
@@ -107,7 +105,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @return all root paths
 	 */
 	public Collection<String> getAllRootPaths() {
-		return asList(stream().map(PathMappedEndpoint::getRootPath));
+		return stream().map(PathMappedEndpoint::getRootPath).toList();
 	}
 
 	/**
@@ -115,7 +113,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @return all root paths
 	 */
 	public Collection<String> getAllPaths() {
-		return asList(stream().map(this::getPath));
+		return stream().map(this::getPath).toList();
 	}
 
 	/**
@@ -143,10 +141,6 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 
 	private String getPath(PathMappedEndpoint endpoint) {
 		return (endpoint != null) ? this.basePath + "/" + endpoint.getRootPath() : null;
-	}
-
-	private <T> List<T> asList(Stream<T> stream) {
-		return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
 }

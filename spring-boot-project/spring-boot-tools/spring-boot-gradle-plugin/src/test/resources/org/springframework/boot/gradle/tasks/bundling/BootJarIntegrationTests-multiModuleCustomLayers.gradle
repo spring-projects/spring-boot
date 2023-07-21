@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+subprojects {
+	apply plugin: 'java'
+	group = 'org.example.projects'
+	version = '1.2.3'
+	if (it.name == 'bravo') {
+		dependencies {
+			implementation(project(':charlie'))
+		}
+	}
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+	layered {
+		application {
+			intoLayer("static") {
+				include "META-INF/resources/**", "resources/**", "static/**", "public/**"
+			}
+			intoLayer("app")
+		}
+		dependencies {
+			intoLayer("snapshot-dependencies") {
+				include "*:*:*SNAPSHOT"
+				excludeProjectDependencies()
+			}
+			intoLayer("subproject-dependencies") {
+				includeProjectDependencies()
+			}
+			intoLayer("commons-dependencies") {
+				include "org.apache.commons:*" 
+			}
+			intoLayer("dependencies")
+		}
+		layerOrder = ["dependencies", "commons-dependencies", "snapshot-dependencies", "subproject-dependencies", "static", "app"]
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url "file:repository" }
+}
+
+dependencies {
+	implementation(project(':alpha'))
+	implementation(project(':bravo'))
+	implementation("com.example:library:1.0-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+}
+
+task listLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "list"
+}
+
+task extractLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "extract"
+}

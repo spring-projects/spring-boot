@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,11 +48,11 @@ class JsonReader {
 			return new RawConfigurationMetadata(groups, items, hints);
 		}
 		catch (Exception ex) {
-			if (ex instanceof IOException) {
-				throw (IOException) ex;
+			if (ex instanceof IOException ioException) {
+				throw ioException;
 			}
-			if (ex instanceof RuntimeException) {
-				throw (RuntimeException) ex;
+			if (ex instanceof RuntimeException runtimeException) {
+				throw runtimeException;
 			}
 			throw new IllegalStateException(ex);
 		}
@@ -185,8 +185,7 @@ class JsonReader {
 	}
 
 	private Object readItemValue(Object value) throws Exception {
-		if (value instanceof JSONArray) {
-			JSONArray array = (JSONArray) value;
+		if (value instanceof JSONArray array) {
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {
 				content[i] = array.get(i);
@@ -197,7 +196,7 @@ class JsonReader {
 	}
 
 	private JSONObject readJson(InputStream in, Charset charset) throws Exception {
-		try {
+		try (in) {
 			StringBuilder out = new StringBuilder();
 			InputStreamReader reader = new InputStreamReader(in, charset);
 			char[] buffer = new char[BUFFER_SIZE];
@@ -206,9 +205,6 @@ class JsonReader {
 				out.append(buffer, 0, bytesRead);
 			}
 			return new JSONObject(out.toString());
-		}
-		finally {
-			in.close();
 		}
 	}
 

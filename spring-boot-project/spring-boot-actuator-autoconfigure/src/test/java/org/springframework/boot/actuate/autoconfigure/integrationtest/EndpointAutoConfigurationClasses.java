@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAut
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration;
 import org.springframework.util.ClassUtils;
 
@@ -50,7 +50,7 @@ final class EndpointAutoConfigurationClasses {
 		all.add(HealthEndpointAutoConfiguration.class);
 		all.add(InfoEndpointAutoConfiguration.class);
 		all.add(ThreadDumpEndpointAutoConfiguration.class);
-		all.add(HttpTraceEndpointAutoConfiguration.class);
+		all.add(HttpExchangesEndpointAutoConfiguration.class);
 		all.add(MappingsEndpointAutoConfiguration.class);
 		ALL = ClassUtils.toClassArray(all);
 	}

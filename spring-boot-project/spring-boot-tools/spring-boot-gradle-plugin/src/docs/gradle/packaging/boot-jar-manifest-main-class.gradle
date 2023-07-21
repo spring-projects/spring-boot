@@ -1,10 +1,10 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '{version}'
+	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
 // tag::main-class[]
-bootJar {
+tasks.named("bootJar") {
 	manifest {
 		attributes 'Start-Class': 'com.example.ExampleApplication'
 	}

@@ -131,7 +131,7 @@ public final class EndpointId {
 
 	private static String migrateLegacyId(Environment environment, String value) {
 		if (environment.getProperty(MIGRATE_LEGACY_NAMES_PROPERTY, Boolean.class, false)) {
-			return value.replace(".", "");
+			return value.replaceAll("[-.]+", "");
 		}
 		return value;
 	}

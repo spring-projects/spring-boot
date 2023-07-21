@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 
 package org.springframework.boot.logging;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.MDC;
 
 import org.springframework.util.StringUtils;
+
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Base for {@link LoggingSystem} tests.
@@ -35,23 +40,26 @@ public abstract class AbstractLoggingSystemTests {
 
 	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-	private String originalTempFolder;
+	private String originalTempDirectory;
 
 	@BeforeEach
 	void configureTempDir(@TempDir Path temp) {
-		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
+		this.originalTempDirectory = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, temp.toAbsolutePath().toString());
+		MDC.clear();
 	}
 
 	@AfterEach
 	void reinstateTempDir() {
-		System.setProperty(JAVA_IO_TMPDIR, this.originalTempFolder);
+		System.setProperty(JAVA_IO_TMPDIR, this.originalTempDirectory);
 	}
 
 	@AfterEach
 	void clear() {
-		System.clearProperty(LoggingSystemProperties.LOG_FILE);
-		System.clearProperty(LoggingSystemProperties.PID_KEY);
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
+		MDC.clear();
 	}
 
 	protected final String[] getSpringConfigLocations(AbstractLoggingSystem system) {
@@ -76,6 +84,17 @@ public abstract class AbstractLoggingSystemTests {
 			path = path.substring(0, path.length() - 1);
 		}
 		return path;
+	}
+
+	protected final String getLineWithText(File file, CharSequence outputSearch) {
+		return getLineWithText(contentOf(file), outputSearch);
+	}
+
+	protected final String getLineWithText(CharSequence output, CharSequence outputSearch) {
+		return Arrays.stream(output.toString().split("\\r?\\n"))
+			.filter((line) -> line.contains(outputSearch))
+			.findFirst()
+			.orElse(null);
 	}
 
 }

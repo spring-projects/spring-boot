@@ -2,19 +2,35 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Buildpack Platform"
 
+configurations.all {
+	resolutionStrategy {
+		eachDependency { dependency ->
+			// Downgrade Jackson as Gradle cannot cope with 2.15.0's multi-version
+			// jar files with bytecode in META-INF/versions/19
+			if (dependency.requested.group.startsWith("com.fasterxml.jackson")) {
+				dependency.useVersion("2.14.2")
+			}
+			// Downgrade Spring Framework as Gradle cannot cope with 6.1.0-M1's
+			// multi-version jar files with bytecode in META-INF/versions/21
+			if (dependency.requested.group.equals("org.springframework")) {
+				dependency.useVersion("6.0.10")
+			}
+		}
+	}
+}
+
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-parent")))
 	api("com.fasterxml.jackson.core:jackson-databind")
 	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	api("net.java.dev.jna:jna-platform")
 	api("org.apache.commons:commons-compress:1.19")
-	api("org.apache.httpcomponents:httpclient")
+	api("org.apache.httpcomponents.client5:httpclient5")
 	api("org.springframework:spring-core")
+	api("org.tomlj:tomlj:1.0.0")
 	
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.jayway.jsonpath:json-path")

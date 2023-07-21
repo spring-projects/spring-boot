@@ -11,8 +11,9 @@ configurations {
 }
 
 dependencies {
+	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-parent", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
-	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
 
 	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -25,22 +26,18 @@ task syncMavenRepository(type: Sync) {
 	into "${buildDir}/int-test-maven-repository"
 }
 
-task syncAppSource(type: Sync) {
-	from "app"
-	into "${buildDir}/app"
-	filter { line ->
-		line.replace("id \"org.springframework.boot\"", "id \"org.springframework.boot\" version \"${project.version}\"")
-	}
+task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-launch-script-tests-app")
+	destinationDirectory = file("${buildDir}/spring-boot-launch-script-tests-app")
 }
 
 task buildApp(type: GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
-	dir = "${buildDir}/app"
+	dir = "${buildDir}/spring-boot-launch-script-tests-app"
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
 
 intTest {
 	dependsOn buildApp
-	enabled = !JavaVersion.current().java9Compatible
 }

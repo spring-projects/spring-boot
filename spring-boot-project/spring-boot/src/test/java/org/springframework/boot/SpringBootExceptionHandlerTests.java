@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link SpringBootExceptionHandler}.
@@ -43,7 +42,7 @@ class SpringBootExceptionHandlerTests {
 		Exception ex = new Exception();
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
-		verifyNoInteractions(this.parent);
+		then(this.parent).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -52,7 +51,7 @@ class SpringBootExceptionHandlerTests {
 		Exception ex = new Exception("[stuff] Logback configuration error detected [stuff]");
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
-		verify(this.parent).uncaughtException(thread, ex);
+		then(this.parent).should().uncaughtException(thread, ex);
 	}
 
 	@Test
@@ -62,7 +61,7 @@ class SpringBootExceptionHandlerTests {
 				new Exception("[stuff] Logback configuration error detected [stuff]", new Exception()));
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
-		verify(this.parent).uncaughtException(thread, ex);
+		then(this.parent).should().uncaughtException(thread, ex);
 	}
 
 }

@@ -1,0 +1,131 @@
+[[messaging.amqp]]
+== AMQP
+The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for message-oriented middleware.
+The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions.
+Spring Boot offers several conveniences for working with AMQP through RabbitMQ, including the `spring-boot-starter-amqp` "`Starter`".
+
+
+
+[[messaging.amqp.rabbitmq]]
+=== RabbitMQ Support
+https://www.rabbitmq.com/[RabbitMQ] is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol.
+Spring uses RabbitMQ to communicate through the AMQP protocol.
+
+RabbitMQ configuration is controlled by external configuration properties in `+spring.rabbitmq.*+`.
+For example, you might declare the following section in `application.properties`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  rabbitmq:
+	    host: "localhost"
+	    port: 5672
+	    username: "admin"
+	    password: "secret"
+----
+
+Alternatively, you could configure the same connection using the `addresses` attribute:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  rabbitmq:
+	    addresses: "amqp://admin:secret@localhost"
+----
+
+NOTE: When specifying addresses that way, the `host` and `port` properties are ignored.
+If the address uses the `amqps` protocol, SSL support is enabled automatically.
+
+See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitProperties`] for more of the supported property-based configuration options.
+To configure lower-level details of the RabbitMQ `ConnectionFactory` that is used by Spring AMQP, define a `ConnectionFactoryCustomizer` bean.
+
+If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `CachingConnectionFactory`.
+
+To make an application-wide, additive customization to the `RabbitTemplate`, use a `RabbitTemplateCustomizer` bean.
+
+TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ] for more details.
+
+
+
+[[messaging.amqp.sending]]
+=== Sending a Message
+Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
+
+include::code:MyBean[]
+
+NOTE: {spring-amqp-api}/rabbit/core/RabbitMessagingTemplate.html[`RabbitMessagingTemplate`] can be injected in a similar manner.
+If a `MessageConverter` bean is defined, it is associated automatically to the auto-configured `AmqpTemplate`.
+
+If necessary, any `org.springframework.amqp.core.Queue` that is defined as a bean is automatically used to declare a corresponding queue on the RabbitMQ instance.
+
+To retry operations, you can enable retries on the `AmqpTemplate` (for example, in the event that the broker connection is lost):
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  rabbitmq:
+	    template:
+	      retry:
+	        enabled: true
+	        initial-interval: "2s"
+----
+
+Retries are disabled by default.
+You can also customize the `RetryTemplate` programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
+
+If you need to create more `RabbitTemplate` instances or if you want to override the default, Spring Boot provides a `RabbitTemplateConfigurer` bean that you can use to initialize a `RabbitTemplate` with the same settings as the factories used by the auto-configuration.
+
+
+
+[[messaging.amqp.sending-stream]]
+=== Sending a Message To A Stream
+To send a message to a particular stream, specify the name of the stream, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  rabbitmq:
+	    stream:
+	      name: "my-stream"
+----
+
+If a `MessageConverter`, `StreamMessageConverter`, or `ProducerCustomizer` bean is defined, it is associated automatically to the auto-configured `RabbitStreamTemplate`.
+
+If you need to create more `RabbitStreamTemplate` instances or if you want to override the default, Spring Boot provides a `RabbitStreamTemplateConfigurer` bean that you can use to initialize a `RabbitStreamTemplate` with the same settings as the factories used by the auto-configuration.
+
+
+
+[[messaging.amqp.receiving]]
+=== Receiving a Message
+When the Rabbit infrastructure is present, any bean can be annotated with `@RabbitListener` to create a listener endpoint.
+If no `RabbitListenerContainerFactory` has been defined, a default `SimpleRabbitListenerContainerFactory` is automatically configured and you can switch to a direct container using the configprop:spring.rabbitmq.listener.type[] property.
+If a `MessageConverter` or a `MessageRecoverer` bean is defined, it is automatically associated with the default factory.
+
+The following sample component creates a listener endpoint on the `someQueue` queue:
+
+include::code:MyBean[]
+
+TIP: See {spring-amqp-api}/rabbit/annotation/EnableRabbit.html[the Javadoc of `@EnableRabbit`] for more details.
+
+If you need to create more `RabbitListenerContainerFactory` instances or if you want to override the default, Spring Boot provides a `SimpleRabbitListenerContainerFactoryConfigurer` and a `DirectRabbitListenerContainerFactoryConfigurer` that you can use to initialize a `SimpleRabbitListenerContainerFactory` and a `DirectRabbitListenerContainerFactory` with the same settings as the factories used by the auto-configuration.
+
+TIP: It does not matter which container type you chose.
+Those two beans are exposed by the auto-configuration.
+
+For instance, the following configuration class exposes another factory that uses a specific `MessageConverter`:
+
+include::code:custom/MyRabbitConfiguration[]
+
+Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
+
+include::code:custom/MyBean[]
+
+You can enable retries to handle situations where your listener throws an exception.
+By default, `RejectAndDontRequeueRecoverer` is used, but you can define a `MessageRecoverer` of your own.
+When retries are exhausted, the message is rejected and either dropped or routed to a dead-letter exchange if the broker is configured to do so.
+By default, retries are disabled.
+You can also customize the `RetryTemplate` programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
+
+IMPORTANT: By default, if retries are disabled and the listener throws an exception, the delivery is retried indefinitely.
+You can modify this behavior in two ways: Set the `defaultRequeueRejected` property to `false` so that zero re-deliveries are attempted or throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
+The latter is the mechanism used when retries are enabled and the maximum number of delivery attempts is reached.

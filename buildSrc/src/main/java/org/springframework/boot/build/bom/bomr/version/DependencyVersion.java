@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,10 @@ public interface DependencyVersion extends Comparable<DependencyVersion> {
 	boolean isSameMinorAndNewerThan(DependencyVersion other);
 
 	static DependencyVersion parse(String version) {
-		List<Function<String, DependencyVersion>> parsers = Arrays.asList(ArtifactVersionDependencyVersion::parse,
-				ReleaseTrainDependencyVersion::parse, NumericQualifierDependencyVersion::parse,
-				CombinedPatchAndQualifierDependencyVersion::parse, LeadingZeroesDependencyVersion::parse,
-				UnstructuredDependencyVersion::parse);
+		List<Function<String, DependencyVersion>> parsers = Arrays.asList(CalendarVersionDependencyVersion::parse,
+				ArtifactVersionDependencyVersion::parse, ReleaseTrainDependencyVersion::parse,
+				MultipleComponentsDependencyVersion::parse, CombinedPatchAndQualifierDependencyVersion::parse,
+				LeadingZeroesDependencyVersion::parse, UnstructuredDependencyVersion::parse);
 		for (Function<String, DependencyVersion> parser : parsers) {
 			DependencyVersion result = parser.apply(version);
 			if (result != null) {

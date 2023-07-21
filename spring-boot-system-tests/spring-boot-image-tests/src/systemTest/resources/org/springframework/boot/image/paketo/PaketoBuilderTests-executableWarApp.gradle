@@ -1,0 +1,34 @@
+plugins {
+	id 'org.springframework.boot' version '{bootVersion}'
+	id 'io.spring.dependency-management' version '{dependencyManagementPluginVersion}'
+	id 'java'
+	id 'war'
+}
+
+repositories {
+	exclusiveContent {
+		forRepository {
+			maven { url '{systemTestMavenRepository}' }
+		}
+		filter {
+			includeGroup "org.springframework.boot"
+		}
+	}
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-web:{bootVersion}")
+	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:{bootVersion}")
+}
+
+bootWar {
+	manifest {
+		attributes(
+				'Implementation-Version': '1.0.0',
+				'Implementation-Title': "Paketo Test"
+		)
+	}
+}

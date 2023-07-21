@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.alt.couchbase.CityCouchbaseRepository;
 import org.springframework.boot.autoconfigure.data.alt.couchbase.ReactiveCityCouchbaseRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
@@ -42,10 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
-					CouchbaseRepositoriesAutoConfiguration.class, CouchbaseReactiveDataAutoConfiguration.class,
-					CouchbaseReactiveRepositoriesAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
+				CouchbaseRepositoriesAutoConfiguration.class, CouchbaseReactiveDataAutoConfiguration.class,
+				CouchbaseReactiveRepositoriesAutoConfiguration.class));
 
 	@Test
 	void couchbaseNotAvailable() {
@@ -55,45 +54,45 @@ class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	@Test
 	void defaultRepository() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveCityRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveCityRepository.class));
 	}
 
 	@Test
 	void imperativeRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.repositories.type=imperative")
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
+			.withPropertyValues("spring.data.couchbase.repositories.type=imperative")
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
 	void disabledRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
+			.withPropertyValues("spring.data.couchbase.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
 	void noRepositoryAvailable() {
 		this.contextRunner.withUserConfiguration(NoRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityCouchbaseRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityCouchbaseRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class NoRepositoryConfiguration {
 
 	}
@@ -101,7 +100,7 @@ class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CouchbaseReactiveRepositoriesAutoConfigurationTests.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityCouchbaseRepository.class)
-	@Import(CouchbaseDataAutoConfigurationTests.CustomCouchbaseConfiguration.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class CustomizedConfiguration {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -28,9 +31,11 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer.ControllerEndpointDiscovererRuntimeHints;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.util.ClassUtils;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
  * {@link EndpointDiscoverer} for {@link ExposableControllerEndpoint controller
@@ -39,6 +44,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@ImportRuntimeHints(ControllerEndpointDiscovererRuntimeHints.class)
 public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableControllerEndpoint, Operation>
 		implements ControllerEndpointsSupplier {
 
@@ -57,9 +63,8 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	}
 
 	@Override
-	protected boolean isEndpointExposed(Object endpointBean) {
-		Class<?> type = ClassUtils.getUserClass(endpointBean.getClass());
-		MergedAnnotations annotations = MergedAnnotations.from(type);
+	protected boolean isEndpointTypeExposed(Class<?> beanType) {
+		MergedAnnotations annotations = MergedAnnotations.from(beanType, SearchStrategy.SUPERCLASS);
 		return annotations.isPresent(ControllerEndpoint.class) || annotations.isPresent(RestControllerEndpoint.class);
 	}
 
@@ -79,6 +84,16 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	@Override
 	protected OperationKey createOperationKey(Operation operation) {
 		throw new IllegalStateException("ControllerEndpoints must not declare operations");
+	}
+
+	static class ControllerEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection()
+				.registerType(ControllerEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+		}
+
 	}
 
 }

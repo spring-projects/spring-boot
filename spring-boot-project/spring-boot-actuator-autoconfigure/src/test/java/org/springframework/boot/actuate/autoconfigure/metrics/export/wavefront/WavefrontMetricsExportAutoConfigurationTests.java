@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
+import java.util.Map;
+
+import com.wavefront.sdk.common.WavefrontSender;
+import com.wavefront.sdk.common.application.ApplicationTags;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -28,16 +34,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link WavefrontMetricsExportAutoConfiguration}.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
+ * @author Glenn Oppegard
  */
 class WavefrontMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WavefrontMetricsExportAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(WavefrontAutoConfiguration.class, WavefrontMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -45,48 +54,106 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void failsWithoutAnApiTokenWhenPublishingDirectly() {
+	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
+			.withPropertyValues("management.wavefront.api-token=abcde",
+					"management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
+				.doesNotHaveBean(WavefrontConfig.class));
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
-						.doesNotHaveBean(WavefrontConfig.class));
+			.withPropertyValues("management.wavefront.api-token=abcde",
+					"management.wavefront.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
+				.doesNotHaveBean(WavefrontConfig.class));
 	}
 
 	@Test
 	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasSingleBean(WavefrontConfig.class)
-						.hasBean("customConfig"));
+			.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+				.hasSingleBean(WavefrontMeterRegistry.class)
+				.hasSingleBean(WavefrontConfig.class)
+				.hasSingleBean(WavefrontSender.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsRegistryToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasSingleBean(WavefrontConfig.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasBean("customRegistry"));
+			.withPropertyValues("management.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+				.hasSingleBean(WavefrontConfig.class)
+				.hasSingleBean(WavefrontMeterRegistry.class)
+				.hasBean("customRegistry"));
+	}
+
+	@Test
+	void exportsApplicationTagsInWavefrontRegistryWhenApplicationTagsBean() {
+		ApplicationTags.Builder builder = new ApplicationTags.Builder("super-application", "super-service");
+		builder.cluster("super-cluster");
+		builder.shard("super-shard");
+		builder.customTags(Map.of("custom-key", "custom-val"));
+		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+			.withUserConfiguration(BaseConfiguration.class)
+			.withBean(ApplicationTags.class, builder::build)
+			.run((context) -> {
+				WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
+				registry.counter("my.counter", "env", "qa");
+				assertThat(registry.find("my.counter")
+					.tags("env", "qa")
+					.tags("application", "super-application")
+					.tags("service", "super-service")
+					.tags("cluster", "super-cluster")
+					.tags("shard", "super-shard")
+					.tags("custom-key", "custom-val")
+					.counter()).isNotNull();
+			});
+	}
+
+	@Test
+	void exportsApplicationTagsInWavefrontRegistryWhenInProperties() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+			.withPropertyValues("management.wavefront.application.service-name=super-service",
+					"management.wavefront.application.name=super-application",
+					"management.wavefront.application.cluster-name=super-cluster",
+					"management.wavefront.application.shard-name=super-shard")
+			.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> {
+				WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
+				registry.counter("my.counter", "env", "qa");
+				assertThat(registry.find("my.counter")
+					.tags("env", "qa")
+					.tags("application", "super-application")
+					.tags("service", "super-service")
+					.tags("cluster", "super-cluster")
+					.tags("shard", "super-shard")
+					.counter()).isNotNull();
+			});
 	}
 
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde").run((context) -> {
-					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
-					assertThat(registry.isClosed()).isFalse();
-					context.close();
-					assertThat(registry.isClosed()).isTrue();
-				});
+			.withPropertyValues("management.wavefront.api-token=abcde")
+			.run((context) -> {
+				WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
+				assertThat(registry.isClosed()).isFalse();
+				context.close();
+				assertThat(registry.isClosed()).isTrue();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
+
+		@Bean
+		WavefrontSender customWavefrontSender() {
+			return mock(WavefrontSender.class);
+		}
 
 		@Bean
 		Clock clock() {
@@ -109,9 +176,25 @@ class WavefrontMetricsExportAutoConfigurationTests {
 
 				@Override
 				public String uri() {
-					return WavefrontConfig.DEFAULT_PROXY.uri();
+					return WavefrontConfig.DEFAULT_DIRECT.uri();
+				}
+
+				@Override
+				public String apiToken() {
+					return "abc-def";
 				}
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class CustomSenderConfiguration {
+
+		@Bean
+		WavefrontSender customSender() {
+			return mock(WavefrontSender.class);
 		}
 
 	}

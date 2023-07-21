@@ -1,0 +1,63 @@
+[[container-images.dockerfiles]]
+== Dockerfiles
+While it is possible to convert a Spring Boot fat jar into a docker image with just a few lines in the Dockerfile, we will use the <<container-images#container-images.efficient-images.layering,layering feature>> to create an optimized docker image.
+When you create a jar containing the layers index file, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
+
+CAUTION: The `layertools` mode can not be used with a <<deployment#deployment.installing, fully executable Spring Boot archive>> that includes a launch script.
+Disable launch script configuration when building a jar file that is intended to be used with `layertools`.
+
+Here’s how you can launch your jar with a `layertools` jar mode:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+$ java -Djarmode=layertools -jar my-app.jar
+----
+
+This will provide the following output:
+
+[subs="verbatim"]
+----
+Usage:
+  java -Djarmode=layertools -jar my-app.jar
+
+Available commands:
+  list     List layers from the jar that can be extracted
+  extract  Extracts layers from the jar for image creation
+  help     Help about any command
+----
+
+The `extract` command can be used to easily split the application into layers to be added to the dockerfile.
+Here is an example of a Dockerfile using `jarmode`.
+
+[source,dockerfile,indent=0,subs="verbatim"]
+----
+FROM eclipse-temurin:17-jre as builder
+WORKDIR application
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+RUN java -Djarmode=layertools -jar application.jar extract
+
+FROM eclipse-temurin:17-jre
+WORKDIR application
+COPY --from=builder application/dependencies/ ./
+COPY --from=builder application/spring-boot-loader/ ./
+COPY --from=builder application/snapshot-dependencies/ ./
+COPY --from=builder application/application/ ./
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+----
+
+Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ docker build --build-arg JAR_FILE=path/to/myapp.jar .
+----
+
+This is a multi-stage dockerfile.
+The builder stage extracts the directories that are needed later.
+Each of the `COPY` commands relates to the layers extracted by the jarmode.
+
+Of course, a Dockerfile can be written without using the jarmode.
+You can use some combination of `unzip` and `mv` to move things to the right layer but jarmode simplifies that.
+

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.process.internal.ExecException;
 import org.slf4j.Logger;
@@ -38,19 +39,21 @@ import org.slf4j.LoggerFactory;
  */
 public class MavenExec extends JavaExec {
 
-	private Logger log = LoggerFactory.getLogger(MavenExec.class);
+	private final Logger log = LoggerFactory.getLogger(MavenExec.class);
 
 	private File projectDir;
 
-	public MavenExec() throws IOException {
+	public MavenExec() {
 		setClasspath(mavenConfiguration(getProject()));
 		args("--batch-mode");
-		setMain("org.apache.maven.cli.MavenCli");
+		getMainClass().set("org.apache.maven.cli.MavenCli");
 	}
 
 	public void setProjectDir(File projectDir) {
 		this.projectDir = projectDir;
-		getInputs().file(new File(projectDir, "pom.xml"));
+		getInputs().file(new File(projectDir, "pom.xml"))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("pom");
 	}
 
 	@Override
@@ -83,13 +86,14 @@ public class MavenExec extends JavaExec {
 			return existing;
 		}
 		return project.getConfigurations().create("maven", (maven) -> {
-			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-embedder:3.6.2"));
-			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-compat:3.6.2"));
+			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-embedder:3.6.3"));
+			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-compat:3.6.3"));
 			maven.getDependencies().add(project.getDependencies().create("org.slf4j:slf4j-simple:1.7.5"));
-			maven.getDependencies().add(
-					project.getDependencies().create("org.apache.maven.resolver:maven-resolver-connector-basic:1.4.1"));
-			maven.getDependencies().add(
-					project.getDependencies().create("org.apache.maven.resolver:maven-resolver-transport-http:1.4.1"));
+			maven.getDependencies()
+				.add(project.getDependencies()
+					.create("org.apache.maven.resolver:maven-resolver-connector-basic:1.4.1"));
+			maven.getDependencies()
+				.add(project.getDependencies().create("org.apache.maven.resolver:maven-resolver-transport-http:1.4.1"));
 		});
 	}
 

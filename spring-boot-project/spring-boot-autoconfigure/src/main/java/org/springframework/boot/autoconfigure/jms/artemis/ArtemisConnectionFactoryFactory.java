@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 package org.springframework.boot.autoconfigure.jms.artemis;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.api.core.client.ActiveMQClient;
 import org.apache.activemq.artemis.api.core.client.ServerLocator;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
-import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
-import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -40,8 +36,11 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Justin Bertram
  */
 class ArtemisConnectionFactoryFactory {
+
+	private static final String DEFAULT_BROKER_URL = "tcp://localhost:61616";
 
 	static final String[] EMBEDDED_JMS_CLASSES = { "org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS",
 			"org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ" };
@@ -127,19 +126,21 @@ class ArtemisConnectionFactoryFactory {
 
 	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
 			throws Exception {
-		Map<String, Object> params = new HashMap<>();
-		params.put(TransportConstants.HOST_PROP_NAME, this.properties.getHost());
-		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
-		TransportConfiguration transportConfiguration = new TransportConfiguration(
-				NettyConnectorFactory.class.getName(), params);
-		Constructor<T> constructor = factoryClass.getConstructor(boolean.class, TransportConfiguration[].class);
-		T connectionFactory = constructor.newInstance(false, new TransportConfiguration[] { transportConfiguration });
+		T connectionFactory = newNativeConnectionFactory(factoryClass);
 		String user = this.properties.getUser();
 		if (StringUtils.hasText(user)) {
 			connectionFactory.setUser(user);
 			connectionFactory.setPassword(this.properties.getPassword());
 		}
 		return connectionFactory;
+	}
+
+	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
+		String brokerUrl = StringUtils.hasText(this.properties.getBrokerUrl()) ? this.properties.getBrokerUrl()
+				: DEFAULT_BROKER_URL;
+		Constructor<T> constructor = factoryClass.getConstructor(String.class);
+		return constructor.newInstance(brokerUrl);
+
 	}
 
 }

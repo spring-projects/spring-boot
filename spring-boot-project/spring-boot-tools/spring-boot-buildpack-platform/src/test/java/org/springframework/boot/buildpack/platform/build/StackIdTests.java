@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class StackIdTests {
 	@Test
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> StackId.fromImage(null))
-				.withMessage("Image must not be null");
+			.withMessage("Image must not be null");
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class StackIdTests {
 		ImageConfig imageConfig = mock(ImageConfig.class);
 		given(image.getConfig()).willReturn(imageConfig);
 		assertThatIllegalStateException().isThrownBy(() -> StackId.fromImage(image))
-				.withMessage("Missing 'io.buildpacks.stack.id' stack label");
+			.withMessage("Missing 'io.buildpacks.stack.id' stack label");
 	}
 
 	@Test
@@ -58,13 +58,13 @@ class StackIdTests {
 		given(image.getConfig()).willReturn(imageConfig);
 		given(imageConfig.getLabels()).willReturn(Collections.singletonMap("io.buildpacks.stack.id", "test"));
 		StackId stackId = StackId.fromImage(image);
-		assertThat(stackId.toString()).isEqualTo("test");
+		assertThat(stackId).hasToString("test");
 	}
 
 	@Test
 	void ofCreatesStackId() {
 		StackId stackId = StackId.of("test");
-		assertThat(stackId.toString()).isEqualTo("test");
+		assertThat(stackId).hasToString("test");
 	}
 
 	@Test
@@ -72,14 +72,14 @@ class StackIdTests {
 		StackId s1 = StackId.of("a");
 		StackId s2 = StackId.of("a");
 		StackId s3 = StackId.of("b");
-		assertThat(s1.hashCode()).isEqualTo(s2.hashCode());
+		assertThat(s1).hasSameHashCodeAs(s2);
 		assertThat(s1).isEqualTo(s1).isEqualTo(s2).isNotEqualTo(s3);
 	}
 
 	@Test
 	void toStringReturnsValue() {
 		StackId stackId = StackId.of("test");
-		assertThat(stackId.toString()).isEqualTo("test");
+		assertThat(stackId).hasToString("test");
 	}
 
 }

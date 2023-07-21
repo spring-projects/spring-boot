@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import java.lang.annotation.Annotation;
+
 /**
  * A single operation parameter.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public interface OperationParameter {
@@ -41,5 +44,15 @@ public interface OperationParameter {
 	 * @return if the parameter is mandatory
 	 */
 	boolean isMandatory();
+
+	/**
+	 * Returns this element's annotation for the specified type if such an annotation is
+	 * present, else null.
+	 * @param annotation class of the annotation
+	 * @return annotation value
+	 * @param <T> type of the annotation
+	 * @since 2.7.8
+	 */
+	<T extends Annotation> T getAnnotation(Class<T> annotation);
 
 }

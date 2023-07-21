@@ -1,0 +1,2 @@
+# AutoConfigureMockWebServiceClient auto-configuration imports
+org.springframework.boot.test.autoconfigure.webservices.server.MockWebServiceClientAutoConfiguration

@@ -2,41 +2,64 @@ plugins {
 	id "java-gradle-plugin"
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
+	id "eclipse"
 }
 
 repositories {
 	mavenCentral()
 	gradlePluginPortal()
-	maven { url "https://repo.spring.io/release" }
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+new File(new File("$projectDir").parentFile, "gradle.properties").withInputStream {
+	def properties = new Properties()
+	properties.load(it)
+	ext.set("kotlinVersion", properties["kotlinVersion"])
+}
+
+ext.set("springFrameworkVersion", "6.0.10")
+
+sourceCompatibility = 17
+targetCompatibility = 17
 
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
-	implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+
+	implementation(platform("org.springframework:spring-framework-bom:${springFrameworkVersion}"))
+	implementation("com.diffplug.gradle:goomph:3.37.2")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.11.4")
+	implementation("com.gradle:gradle-enterprise-gradle-plugin:3.12.1")
+	implementation("com.tngtech.archunit:archunit:1.0.0")
 	implementation("commons-codec:commons-codec:1.13")
-	implementation("org.apache.maven:maven-embedder:3.6.2")
-	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.0.0")
-	implementation("org.asciidoctor:asciidoctor-gradle-jvm-pdf:3.0.0")
-	implementation("org.springframework:spring-core:5.2.2.RELEASE")
-	implementation("org.springframework:spring-web:5.2.2.RELEASE")
-	implementation("com.google.code.gson:gson:2.8.5")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
+	implementation("org.apache.maven:maven-embedder:3.6.3")
+	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
+	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
+	implementation("org.springframework:spring-context")
+	implementation("org.springframework:spring-core")
+	implementation("org.springframework:spring-web")
+
 	testImplementation("org.assertj:assertj-core:3.11.1")
-	testImplementation("org.apache.logging.log4j:log4j-core:2.12.1")
+	testImplementation("org.apache.logging.log4j:log4j-core:2.17.1")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 checkstyle {
-	def archive = configurations.checkstyle.filter { it.name.startsWith("spring-javaformat-checkstyle")}
-	config = resources.text.fromArchiveEntry(archive, "io/spring/javaformat/checkstyle/checkstyle.xml")
 	toolVersion = 8.11
 }
 
 gradlePlugin {
 	plugins {
+		annotationProcessorPlugin {
+			id = "org.springframework.boot.annotation-processor"
+			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
+		}
+		architecturePlugin {
+		 	id = "org.springframework.boot.architecture"
+		 	implementationClass = "org.springframework.boot.build.architecture.ArchitecturePlugin"
+		}
 		autoConfigurationPlugin {
 			id = "org.springframework.boot.auto-configuration"
 			implementationClass = "org.springframework.boot.build.autoconfigure.AutoConfigurationPlugin"
@@ -53,10 +76,6 @@ gradlePlugin {
 			id = "org.springframework.boot.conventions"
 			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
 		}
-		dependencyManagementPlugin {
-			id = "org.springframework.boot.internal-dependency-management"
-			implementationClass = "org.springframework.boot.build.InternalDependencyManagementPlugin"
-		}
 		deployedPlugin {
 			id = "org.springframework.boot.deployed"
 			implementationClass = "org.springframework.boot.build.DeployedPlugin"
@@ -64,6 +83,10 @@ gradlePlugin {
 		integrationTestPlugin {
 			id = "org.springframework.boot.integration-test"
 			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
+		}
+		systemTestPlugin {
+			id = "org.springframework.boot.system-test"
+			implementationClass = "org.springframework.boot.build.test.SystemTestPlugin"
 		}
 		mavenPluginPlugin {
 			id = "org.springframework.boot.maven-plugin"
@@ -76,6 +99,10 @@ gradlePlugin {
 		optionalDependenciesPlugin {
 			id = "org.springframework.boot.optional-dependencies"
 			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
+		}
+		processedAnnotationsPlugin {
+			id = "org.springframework.boot.processed-annotations"
+			implementationClass = "org.springframework.boot.build.processors.ProcessedAnnotationsPlugin"
 		}
 		starterPlugin {
 			id = "org.springframework.boot.starter"
@@ -91,3 +118,10 @@ gradlePlugin {
 test {
 	useJUnitPlatform()
 }
+
+eclipse.classpath.file.whenMerged {
+	def jreEntry = entries.find { it.path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") }
+	jreEntry.entryAttributes['module'] = 'true'
+	jreEntry.entryAttributes['limit-modules'] = 'java.base'
+}
+

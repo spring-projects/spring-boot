@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class Library {
 
 	private final String name;
 
-	private final DependencyVersion version;
+	private final LibraryVersion version;
 
 	private final List<Group> groups;
 
@@ -50,12 +50,13 @@ public class Library {
 	 * @param groups groups in the library
 	 * @param prohibitedVersions version of the library that are prohibited
 	 */
-	public Library(String name, DependencyVersion version, List<Group> groups,
+	public Library(String name, LibraryVersion version, List<Group> groups,
 			List<ProhibitedVersion> prohibitedVersions) {
 		this.name = name;
 		this.version = version;
 		this.groups = groups;
-		this.versionProperty = name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
+		this.versionProperty = "Spring Boot".equals(name) ? null
+				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
 		this.prohibitedVersions = prohibitedVersions;
 	}
 
@@ -63,7 +64,7 @@ public class Library {
 		return this.name;
 	}
 
-	public DependencyVersion getVersion() {
+	public LibraryVersion getVersion() {
 		return this.version;
 	}
 
@@ -86,10 +87,20 @@ public class Library {
 
 		private final VersionRange range;
 
+		private final List<String> startsWith;
+
+		private final List<String> endsWith;
+
+		private final List<String> contains;
+
 		private final String reason;
 
-		public ProhibitedVersion(VersionRange range, String reason) {
+		public ProhibitedVersion(VersionRange range, List<String> startsWith, List<String> endsWith,
+				List<String> contains, String reason) {
 			this.range = range;
+			this.startsWith = startsWith;
+			this.endsWith = endsWith;
+			this.contains = contains;
 			this.reason = reason;
 		}
 
@@ -97,8 +108,34 @@ public class Library {
 			return this.range;
 		}
 
+		public List<String> getStartsWith() {
+			return this.startsWith;
+		}
+
+		public List<String> getEndsWith() {
+			return this.endsWith;
+		}
+
+		public List<String> getContains() {
+			return this.contains;
+		}
+
 		public String getReason() {
 			return this.reason;
+		}
+
+	}
+
+	public static class LibraryVersion {
+
+		private final DependencyVersion version;
+
+		public LibraryVersion(DependencyVersion version) {
+			this.version = version;
+		}
+
+		public DependencyVersion getVersion() {
+			return this.version;
 		}
 
 	}
@@ -148,19 +185,41 @@ public class Library {
 
 		private final String name;
 
+		private final String type;
+
+		private final String classifier;
+
 		private final List<Exclusion> exclusions;
 
 		public Module(String name) {
 			this(name, Collections.emptyList());
 		}
 
+		public Module(String name, String type) {
+			this(name, type, null, Collections.emptyList());
+		}
+
 		public Module(String name, List<Exclusion> exclusions) {
+			this(name, null, null, exclusions);
+		}
+
+		public Module(String name, String type, String classifier, List<Exclusion> exclusions) {
 			this.name = name;
+			this.type = type;
+			this.classifier = (classifier != null) ? classifier : "";
 			this.exclusions = exclusions;
 		}
 
 		public String getName() {
 			return this.name;
+		}
+
+		public String getClassifier() {
+			return this.classifier;
+		}
+
+		public String getType() {
+			return this.type;
 		}
 
 		public List<Exclusion> getExclusions() {

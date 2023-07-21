@@ -11,8 +11,8 @@
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
     xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/buildship/oomph/1.0 https://raw.githubusercontent.com/eclipse/buildship/master/org.eclipse.buildship.oomph/model/GradleImport-1.0.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
-    name="spring.boot.2.3.x"
-    label="Spring Boot 2.3.x">
+    name="spring.boot.3.2.x"
+    label="Spring Boot 3.2.x">
   <setupTask
       xsi:type="setup:VariableTask"
       type="FOLDER"
@@ -22,8 +22,8 @@
       label="Checkout Location"/>
   <setupTask
       xsi:type="jdt:JRETask"
-      version="JavaSE-1.8"
-      location="${jre.location-1.8}">
+      version="JavaSE-17"
+      location="${jre.location-17}">
     <description>
       Define the JRE needed to compile and run the Java
       projects of ${scope.project.label}
@@ -44,13 +44,25 @@
   <setupTask
       xsi:type="setup:ResourceCreationTask"
       excludedTriggers="STARTUP MANUAL"
-      content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;section name=&quot;Workbench&quot;>&#xD;&#xA;&#x9;&lt;section name=&quot;org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart&quot;>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;true&quot; key=&quot;group_libraries&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;false&quot; key=&quot;linkWithEditor&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;2&quot; key=&quot;layout&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;2&quot; key=&quot;rootMode&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;packageExplorer configured=&amp;quot;true&amp;quot; group_libraries=&amp;quot;1&amp;quot; layout=&amp;quot;2&amp;quot; linkWithEditor=&amp;quot;0&amp;quot; rootMode=&amp;quot;2&amp;quot; sortWorkingSets=&amp;quot;false&amp;quot; workingSetName=&amp;quot;&amp;quot;&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;localWorkingSetManager&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;workingSet editPageId=&amp;quot;org.eclipse.jdt.internal.ui.OthersWorkingSet&amp;quot; factoryID=&amp;quot;org.eclipse.ui.internal.WorkingSetFactory&amp;quot; id=&amp;quot;1382792884467_1&amp;quot; label=&amp;quot;Other Projects&amp;quot; name=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;/localWorkingSetManager&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;activeWorkingSet workingSetName=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;allWorkingSets workingSetName=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;/packageExplorer&amp;gt;&quot; key=&quot;memento&quot;/>&#xD;&#xA;&#x9;&lt;/section>&#xD;&#xA;&lt;/section>&#xD;&#xA;"
       targetURL="${workspace.location|uri}/.metadata/.plugins/org.eclipse.jdt.ui/dialog_settings.xml"
       encoding="UTF-8">
     <description>
       Initialize JDT's package explorer to show working sets as
       its root objects
     </description>
+    <content>
+      &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>
+      &lt;section name=&quot;Workbench&quot;>
+      	&lt;section name=&quot;org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart&quot;>
+      		&lt;item value=&quot;true&quot; key=&quot;group_libraries&quot;/>
+      		&lt;item value=&quot;false&quot; key=&quot;linkWithEditor&quot;/>
+      		&lt;item value=&quot;2&quot; key=&quot;layout&quot;/>
+      		&lt;item value=&quot;2&quot; key=&quot;rootMode&quot;/>
+      		&lt;item value=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;packageExplorer configured=&amp;quot;true&amp;quot; group_libraries=&amp;quot;1&amp;quot; layout=&amp;quot;2&amp;quot; linkWithEditor=&amp;quot;0&amp;quot; rootMode=&amp;quot;2&amp;quot; sortWorkingSets=&amp;quot;false&amp;quot; workingSetName=&amp;quot;&amp;quot;&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;localWorkingSetManager&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;workingSet editPageId=&amp;quot;org.eclipse.jdt.internal.ui.OthersWorkingSet&amp;quot; factoryID=&amp;quot;org.eclipse.ui.internal.WorkingSetFactory&amp;quot; id=&amp;quot;1382792884467_1&amp;quot; label=&amp;quot;Other Projects&amp;quot; name=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;/localWorkingSetManager&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;activeWorkingSet workingSetName=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;allWorkingSets workingSetName=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;/packageExplorer&amp;gt;&quot; key=&quot;memento&quot;/>
+      	&lt;/section>
+      &lt;/section>
+
+    </content>
   </setupTask>
   <setupTask
       xsi:type="setup.p2:P2Task">
@@ -79,23 +91,13 @@
     <requirement
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
-    <requirement
-        name="org.springframework.boot.ide.main.feature.feature.group"/>
-    <requirement
-        name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
-    <requirement
-        name="org.springframework.tooling.boot.ls.feature.feature.group"/>
-    <requirement
         name="org.eclipse.buildship.feature.group"/>
     <requirement
         name="org.eclipse.buildship.oomph.feature.group"/>
     <repository
-        url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
+        url="https://repo.spring.io/javaformat-eclipse-update-site/"/>
     <repository
-        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
-    <repository
-        url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
+        url="https://repo.maven.apache.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
         url="https://download.eclipse.org/buildship/updates/e411/releases/"/>
     <description>
@@ -104,10 +106,17 @@
     </description>
   </setupTask>
   <setupTask
-      xsi:type="oomph:GradleImportTask">
+      xsi:type="oomph:GradleImportTask"
+      javaHome="${jre.location-17}">
     <sourceLocator
         rootFolder="${checkout.location}"
         locateNestedProjects="true"/>
+  </setupTask>
+  <setupTask
+      xsi:type="oomph:GradleImportTask"
+      javaHome="${jre.location-17}">
+    <sourceLocator
+        rootFolder="${checkout.location}/buildSrc"/>
   </setupTask>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
@@ -120,14 +129,14 @@
             pattern="spring-boot.*"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.7/@workingSets.3 //@setupTasks.7/@workingSets.2 //@setupTasks.7/@workingSets.4 //@setupTasks.7/@workingSets.1"/>
+            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests'] //@setupTasks.8/@workingSets[name='spring-boot-starters'] //@setupTasks.8/@workingSets[name='spring-boot-tests'] //@setupTasks.8/@workingSets[name='spring-boot-tools']"/>
       </predicate>
     </workingSet>
     <workingSet
         name="spring-boot-tools">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|*.layertools|.*-plugin|autoconfigure-processor|buildpack.*)"/>
+          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|.*-layertools|.*-plugin|autoconfigure-processor|buildpack.*)"/>
     </workingSet>
     <workingSet
         name="spring-boot-starters">
@@ -162,7 +171,7 @@
             pattern="spring-boot-(.*-test|tests).*"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.7/@workingSets.3"/>
+            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests']"/>
       </predicate>
     </workingSet>
   </setupTask>

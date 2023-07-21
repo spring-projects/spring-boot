@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,14 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.util.StringUtils;
@@ -45,7 +47,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentStarters extends AbstractTask {
+public class DocumentStarters extends DefaultTask {
 
 	private final Configuration starters;
 
@@ -75,14 +77,17 @@ public class DocumentStarters extends AbstractTask {
 	}
 
 	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getStarters() {
 		return this.starters;
 	}
 
 	@TaskAction
 	void documentStarters() {
-		Set<Starter> starters = this.starters.getFiles().stream().map(this::loadStarter)
-				.collect(Collectors.toCollection(TreeSet::new));
+		Set<Starter> starters = this.starters.getFiles()
+			.stream()
+			.map(this::loadStarter)
+			.collect(Collectors.toCollection(TreeSet::new));
 		writeTable("application-starters", starters.stream().filter(Starter::isApplication));
 		writeTable("production-starters", starters.stream().filter(Starter::isProduction));
 		writeTable("technical-starters", starters.stream().filter(Starter::isTechnical));

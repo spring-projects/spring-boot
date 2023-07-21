@@ -35,7 +35,8 @@ public class CodecProperties {
 
 	/**
 	 * Limit on the number of bytes that can be buffered whenever the input stream needs
-	 * to be aggregated. By default this is not set, in which case individual codec
+	 * to be aggregated. This applies only to the auto-configured WebFlux server and
+	 * WebClient instances. By default this is not set, in which case individual codec
 	 * defaults apply. Most codecs are limited to 256K by default.
 	 */
 	private DataSize maxInMemorySize;

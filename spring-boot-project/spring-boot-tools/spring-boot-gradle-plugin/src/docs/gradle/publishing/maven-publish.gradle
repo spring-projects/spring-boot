@@ -1,14 +1,14 @@
 plugins {
 	id 'java'
 	id 'maven-publish'
-	id 'org.springframework.boot' version '{version}'
+	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
 // tag::publishing[]
 publishing {
 	publications {
 		bootJava(MavenPublication) {
-			artifact bootJar
+			artifact tasks.named("bootJar")
 		}
 	}
 	repositories {
@@ -19,7 +19,7 @@ publishing {
 }
 // end::publishing[]
 
-task publishingConfiguration {
+tasks.register("publishingConfiguration") {
 	doLast {
 		println publishing.publications.bootJava
 		println publishing.repositories.maven.url

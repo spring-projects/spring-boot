@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * Base class for {@link BuildLog} implementations.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Andrey Shlykov
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public abstract class AbstractBuildLog implements BuildLog {
@@ -40,23 +43,23 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference) {
-		return getProgressConsumer(" > Pulling builder image '" + imageReference + "'");
+	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType) {
+		return getProgressConsumer(String.format(" > Pulling %s '%s'", imageType.getDescription(), imageReference));
 	}
 
 	@Override
-	public void pulledBuilder(BuildRequest request, Image image) {
-		log(" > Pulled builder image '" + getDigest(image) + "'");
+	public void pulledImage(Image image, ImageType imageType) {
+		log(String.format(" > Pulled %s '%s'", imageType.getDescription(), getDigest(image)));
 	}
 
 	@Override
-	public Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference) {
-		return getProgressConsumer(" > Pulling run image '" + imageReference + "'");
+	public Consumer<TotalProgressEvent> pushingImage(ImageReference imageReference) {
+		return getProgressConsumer(String.format(" > Pushing image '%s'", imageReference));
 	}
 
 	@Override
-	public void pulledRunImage(BuildRequest request, Image image) {
-		log(" > Pulled run image '" + getDigest(image) + "'");
+	public void pushedImage(ImageReference imageReference) {
+		log(String.format(" > Pushed image '%s'", imageReference));
 	}
 
 	@Override
@@ -74,9 +77,22 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
+	public void skippingPhase(String name, String reason) {
+		log();
+		log(" > Skipping " + name + " " + reason);
+		log();
+	}
+
+	@Override
 	public void executedLifecycle(BuildRequest request) {
 		log();
 		log("Successfully built image '" + request.getName() + "'");
+		log();
+	}
+
+	@Override
+	public void taggedImage(ImageReference tag) {
+		log("Successfully created image tag '" + tag + "'");
 		log();
 	}
 

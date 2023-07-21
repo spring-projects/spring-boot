@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Map;
@@ -46,23 +47,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CloudFoundryInfoEndpointWebExtensionTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withPropertyValues("VCAP_APPLICATION={}")
-			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
-					JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-					HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-					ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
-					InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		.withPropertyValues("VCAP_APPLICATION={}")
+		.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
+				InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+				HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void gitFullDetailsAlwaysPresent() {
 		this.contextRunner.run((context) -> {
 			CloudFoundryInfoEndpointWebExtension extension = context
-					.getBean(CloudFoundryInfoEndpointWebExtension.class);
+				.getBean(CloudFoundryInfoEndpointWebExtension.class);
 			Map<String, Object> git = (Map<String, Object>) extension.info().get("git");
 			Map<String, Object> commit = (Map<String, Object>) git.get("commit");
 			assertThat(commit).hasSize(4);

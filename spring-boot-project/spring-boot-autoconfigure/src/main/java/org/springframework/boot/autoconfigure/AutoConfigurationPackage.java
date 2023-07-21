@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,9 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 /**
- * Indicates that the package containing the annotated class should be registered with
- * {@link AutoConfigurationPackages}.
+ * Registers packages with {@link AutoConfigurationPackages}. When no {@link #basePackages
+ * base packages} or {@link #basePackageClasses base package classes} are specified, the
+ * package of the annotated class is registered.
  *
  * @author Phillip Webb
  * @since 1.3.0
@@ -39,5 +40,26 @@ import org.springframework.context.annotation.Import;
 @Inherited
 @Import(AutoConfigurationPackages.Registrar.class)
 public @interface AutoConfigurationPackage {
+
+	/**
+	 * Base packages that should be registered with {@link AutoConfigurationPackages}.
+	 * <p>
+	 * Use {@link #basePackageClasses} for a type-safe alternative to String-based package
+	 * names.
+	 * @return the back package names
+	 * @since 2.3.0
+	 */
+	String[] basePackages() default {};
+
+	/**
+	 * Type-safe alternative to {@link #basePackages} for specifying the packages to be
+	 * registered with {@link AutoConfigurationPackages}.
+	 * <p>
+	 * Consider creating a special no-op marker class or interface in each package that
+	 * serves no purpose other than being referenced by this attribute.
+	 * @return the base package classes
+	 * @since 2.3.0
+	 */
+	Class<?>[] basePackageClasses() default {};
 
 }

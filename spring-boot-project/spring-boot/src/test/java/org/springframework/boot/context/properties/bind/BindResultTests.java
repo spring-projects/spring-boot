@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,17 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link BindResult}.
@@ -41,6 +40,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class BindResultTests {
 
 	@Mock
@@ -52,11 +52,6 @@ class BindResultTests {
 	@Mock
 	private Supplier<String> supplier;
 
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
 	void getWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
@@ -67,7 +62,7 @@ class BindResultTests {
 	void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
 		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(result::get)
-				.withMessageContaining("No value bound");
+			.withMessageContaining("No value bound");
 	}
 
 	@Test
@@ -86,28 +81,28 @@ class BindResultTests {
 	void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.ifBound(null))
-				.withMessageContaining("Consumer must not be null");
+			.withMessageContaining("Consumer must not be null");
 	}
 
 	@Test
 	void ifBoundWhenHasValueShouldCallConsumer() {
 		BindResult<String> result = BindResult.of("foo");
 		result.ifBound(this.consumer);
-		verify(this.consumer).accept("foo");
+		then(this.consumer).should().accept("foo");
 	}
 
 	@Test
 	void ifBoundWhenHasNoValueShouldNotCallConsumer() {
 		BindResult<String> result = BindResult.of(null);
 		result.ifBound(this.consumer);
-		verifyNoInteractions(this.consumer);
+		then(this.consumer).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.map(null))
-				.withMessageContaining("Mapper must not be null");
+			.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test
@@ -121,7 +116,7 @@ class BindResultTests {
 	void mapWhenHasNoValueShouldNotCallMapper() {
 		BindResult<String> result = BindResult.of(null);
 		result.map(this.mapper);
-		verifyNoInteractions(this.mapper);
+		then(this.mapper).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -140,7 +135,7 @@ class BindResultTests {
 	void orElseGetWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("foo");
-		verifyNoInteractions(this.supplier);
+		then(this.supplier).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -157,7 +152,7 @@ class BindResultTests {
 	}
 
 	@Test
-	void orElseThrowWhenHasNoValueShouldThrowException() throws Exception {
+	void orElseThrowWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
 		assertThatIOException().isThrownBy(() -> result.orElseThrow(IOException::new));
 	}
@@ -168,7 +163,7 @@ class BindResultTests {
 		BindResult<?> result2 = BindResult.of("foo");
 		BindResult<?> result3 = BindResult.of("bar");
 		BindResult<?> result4 = BindResult.of(null);
-		assertThat(result1.hashCode()).isEqualTo(result2.hashCode());
+		assertThat(result1).hasSameHashCodeAs(result2);
 		assertThat(result1).isEqualTo(result1).isEqualTo(result2).isNotEqualTo(result3).isNotEqualTo(result4);
 	}
 

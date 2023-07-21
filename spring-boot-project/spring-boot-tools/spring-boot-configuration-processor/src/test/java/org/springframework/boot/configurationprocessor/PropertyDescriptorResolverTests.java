@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -29,25 +27,27 @@ import java.util.stream.Stream;
 import javax.lang.model.element.TypeElement;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
+import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
+import org.springframework.boot.configurationsample.immutable.ImmutableNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
+import org.springframework.boot.configurationsample.simple.AutowiredProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
-import org.springframework.boot.configurationsample.specific.MatchingConstructorNoDirectiveProperties;
-import org.springframework.boot.configurationsample.specific.TwoConstructorsClassConstructorBindingExample;
 import org.springframework.boot.configurationsample.specific.TwoConstructorsExample;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,20 +55,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link PropertyDescriptorResolver}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class PropertyDescriptorResolverTests {
 
-	@TempDir
-	File tempDir;
-
 	@Test
-	void propertiesWithJavaBeanProperties() throws IOException {
+	void propertiesWithJavaBeanProperties() {
 		process(SimpleProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator")));
 	}
 
 	@Test
-	void propertiesWithJavaBeanHierarchicalProperties() throws IOException {
+	void propertiesWithJavaBeanHierarchicalProperties() {
 		process(HierarchicalProperties.class,
 				Arrays.asList(HierarchicalPropertiesParent.class, HierarchicalPropertiesGrandparent.class),
 				(type, metadataEnv) -> {
@@ -76,72 +74,89 @@ class PropertyDescriptorResolverTests {
 					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
 							"second", "first");
 					assertThat(resolver.resolve(type, null)
-							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
-							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
+						.map((descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
+						.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
+								"HierarchicalPropertiesParent");
+					assertThat(resolver.resolve(type, null)
+						.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
+						.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
 				});
 	}
 
 	@Test
-	void propertiesWithLombokGetterSetterAtClassLevel() throws IOException {
+	void propertiesWithLombokGetterSetterAtClassLevel() {
 		process(LombokSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithLombokGetterSetterAtFieldLevel() throws IOException {
+	void propertiesWithLombokGetterSetterAtFieldLevel() {
 		process(LombokExplicitProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithLombokDataClass() throws IOException {
+	void propertiesWithLombokDataClass() {
 		process(LombokSimpleDataProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithConstructorWithConstructorBinding() throws IOException {
+	void propertiesWithLombokValueClass() {
+		process(LombokSimpleValueProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
+	}
+
+	@Test
+	void propertiesWithDeducedConstructorBinding() {
+		process(ImmutableDeducedConstructorBindingProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag")));
+		process(ImmutableDeducedConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+	}
+
+	@Test
+	void propertiesWithConstructorWithConstructorBinding() {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
 		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
-	void propertiesWithConstructorAndClassConstructorBinding() throws IOException {
+	void propertiesWithConstructorAndClassConstructorBinding() {
 		process(ImmutableClassConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
-	void propertiesWithConstructorAndClassConstructorBindingAndSeveralCandidates() throws IOException {
-		process(TwoConstructorsClassConstructorBindingExample.class,
-				propertyNames((stream) -> assertThat(stream).isEmpty()));
+	void propertiesWithAutowiredConstructor() {
+		process(AutowiredProperties.class, propertyNames((stream) -> assertThat(stream).containsExactly("theName")));
+		process(AutowiredProperties.class, properties((stream) -> assertThat(stream)
+			.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 
 	@Test
-	void propertiesWithConstructorNoDirective() throws IOException {
-		process(MatchingConstructorNoDirectiveProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name")));
-		process(MatchingConstructorNoDirectiveProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
-	}
-
-	@Test
-	void propertiesWithMultiConstructor() throws IOException {
+	void propertiesWithMultiConstructor() {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
-	void propertiesWithMultiConstructorNoDirective() throws IOException {
+	void propertiesWithMultiConstructorNoDirective() {
 		process(TwoConstructorsExample.class, propertyNames((stream) -> assertThat(stream).containsExactly("name")));
 		process(TwoConstructorsExample.class,
 				properties((stream) -> assertThat(stream).element(0).isInstanceOf(JavaBeanPropertyDescriptor.class)));
+	}
+
+	@Test
+	void propertiesWithNameAnnotationParameter() {
+		process(ImmutableNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
 	}
 
 	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(
@@ -156,13 +171,12 @@ class PropertyDescriptorResolverTests {
 		return properties((result) -> stream.accept(result.map(PropertyDescriptor::getName)));
 	}
 
-	private void process(Class<?> target, BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer)
-			throws IOException {
+	private void process(Class<?> target, BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) {
 		process(target, Collections.emptyList(), consumer);
 	}
 
 	private void process(Class<?> target, Collection<Class<?>> additionalClasses,
-			BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) throws IOException {
+			BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) {
 		BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> internalConsumer = (roundEnv,
 				metadataEnv) -> {
 			TypeElement element = roundEnv.getRootElement(target);
@@ -170,11 +184,14 @@ class PropertyDescriptorResolverTests {
 		};
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
 				internalConsumer, new MetadataGenerationEnvironmentFactory());
-		TestCompiler compiler = new TestCompiler(this.tempDir);
-		ArrayList<Class<?>> allClasses = new ArrayList<>();
-		allClasses.add(target);
-		allClasses.addAll(additionalClasses);
-		compiler.getTask(allClasses.toArray(new Class<?>[0])).call(processor);
+		SourceFile targetSource = SourceFile.forTestClass(target);
+		List<SourceFile> additionalSource = additionalClasses.stream().map(SourceFile::forTestClass).toList();
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(targetSource)
+			.withSources(additionalSource);
+		compiler.compile((compiled) -> {
+		});
 	}
 
 }

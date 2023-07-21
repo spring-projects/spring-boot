@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
-import org.gradle.testkit.runner.TaskOutcome;
-import org.gradle.testkit.runner.UnexpectedBuildFailure;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.TestTemplate;
+
+import org.springframework.boot.gradle.junit.GradleCompatibility;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,37 +33,53 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Paddy Drury
  */
+@GradleCompatibility(configurationCache = true)
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootJarIntegrationTests() {
-		super("bootJar");
+		super("bootJar", "BOOT-INF/lib/", "BOOT-INF/classes/", "BOOT-INF/");
 	}
 
 	@TestTemplate
-	void upToDateWhenBuiltTwiceWithLayers()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
-		assertThat(this.gradleBuild.build("-Playered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-Playered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
+	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
+		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.0").build("build");
 	}
 
 	@TestTemplate
-	void notUpToDateWhenBuiltWithoutLayersAndThenWithLayers()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-Playered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+	void packagedApplicationClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("launch");
+		String output = result.getOutput();
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-layertools.*.jar");
+		assertThat(output).doesNotContain("5. ");
 	}
 
 	@TestTemplate
-	void notUpToDateWhenBuiltWithLayersAndToolsAndThenWithLayersAndWithoutTools()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
-		assertThat(this.gradleBuild.build("-Playered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-Playered=true", "-PexcludeTools=true", "bootJar").task(":bootJar")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	void explodedApplicationClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("launch");
+		String output = result.getOutput();
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-layertools.*.jar");
+		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
+		assertThat(output).doesNotContain("5. ");
+	}
+
+	private void copyClasspathApplication() throws IOException {
+		copyApplication("classpath");
+	}
+
+	@Override
+	String[] getExpectedApplicationLayerContents(String... additionalFiles) {
+		Set<String> contents = new TreeSet<>(Arrays.asList(additionalFiles));
+		contents.addAll(Arrays.asList("BOOT-INF/classpath.idx", "BOOT-INF/layers.idx", "META-INF/"));
+		return contents.toArray(new String[0]);
 	}
 
 }

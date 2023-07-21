@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package io.spring.concourse.releasescripts.command;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -32,6 +35,8 @@ import org.springframework.util.Assert;
 @Component
 public class CommandProcessor implements ApplicationRunner {
 
+	private static final Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
+
 	private final List<Command> commands;
 
 	public CommandProcessor(List<Command> commands) {
@@ -40,11 +45,14 @@ public class CommandProcessor implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		logger.debug("Running command processor");
 		List<String> nonOptionArgs = args.getNonOptionArgs();
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		String request = nonOptionArgs.get(0);
-		this.commands.stream().filter((c) -> c.getName().equals(request)).findFirst()
-				.orElseThrow(() -> new IllegalStateException("Unknown command '" + request + "'")).run(args);
+		Command command = this.commands.stream().filter((candidate) -> candidate.getName().equals(request)).findFirst()
+				.orElseThrow(() -> new IllegalStateException("Unknown command '" + request + "'"));
+		logger.debug("Found command " + command.getClass().getName());
+		command.run(args);
 	}
 
 }

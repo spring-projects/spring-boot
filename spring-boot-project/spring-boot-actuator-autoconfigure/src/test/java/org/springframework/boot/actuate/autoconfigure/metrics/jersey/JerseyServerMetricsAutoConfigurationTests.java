@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
 import java.net.URI;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.jersey2.server.DefaultJerseyTagsProvider;
-import io.micrometer.jersey2.server.JerseyTagsProvider;
-import io.micrometer.jersey2.server.MetricsApplicationEventListener;
+import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
+import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
+import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.junit.jupiter.api.Test;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
@@ -59,14 +59,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JerseyServerMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(JerseyServerMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JerseyServerMetricsAutoConfiguration.class));
 
 	private final WebApplicationContextRunner webContextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class,
-							JerseyServerMetricsAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-							SimpleMetricsExportAutoConfiguration.class, MetricsAutoConfiguration.class))
-					.withUserConfiguration(ResourceConfiguration.class).withPropertyValues("server.port:0");
+		.withConfiguration(
+				AutoConfigurations.of(JerseyAutoConfiguration.class, JerseyServerMetricsAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
+						ObservationAutoConfiguration.class, MetricsAutoConfiguration.class))
+		.withUserConfiguration(ResourceConfiguration.class)
+		.withPropertyValues("server.port:0");
 
 	@Test
 	void shouldOnlyBeActiveInWebApplicationContext() {
@@ -76,13 +78,13 @@ class JerseyServerMetricsAutoConfigurationTests {
 	@Test
 	void shouldProvideAllNecessaryBeans() {
 		this.webContextRunner.run((context) -> assertThat(context).hasSingleBean(DefaultJerseyTagsProvider.class)
-				.hasSingleBean(ResourceConfigCustomizer.class));
+			.hasSingleBean(ResourceConfigCustomizer.class));
 	}
 
 	@Test
 	void shouldHonorExistingTagProvider() {
 		this.webContextRunner.withUserConfiguration(CustomJerseyTagsProviderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
+			.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
 	}
 
 	@Test
@@ -91,24 +93,25 @@ class JerseyServerMetricsAutoConfigurationTests {
 			doRequest(context);
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			Timer timer = registry.get("http.server.requests").tag("uri", "/users/{id}").timer();
-			assertThat(timer.count()).isEqualTo(1);
+			assertThat(timer.count()).isOne();
 		});
 	}
 
 	@Test
 	void noHttpRequestsTimedWhenJerseyInstrumentationMissingFromClasspath() {
 		this.webContextRunner.withClassLoader(new FilteredClassLoader(MetricsApplicationEventListener.class))
-				.run((context) -> {
-					doRequest(context);
+			.run((context) -> {
+				doRequest(context);
 
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("http.server.requests").timer()).isNull();
-				});
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.find("http.server.requests").timer()).isNull();
+			});
 	}
 
 	private static void doRequest(AssertableWebApplicationContext context) {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer().getPort();
+			.getWebServer()
+			.getPort();
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getForEntity(URI.create("http://localhost:" + port + "/users/3"), String.class);
 	}

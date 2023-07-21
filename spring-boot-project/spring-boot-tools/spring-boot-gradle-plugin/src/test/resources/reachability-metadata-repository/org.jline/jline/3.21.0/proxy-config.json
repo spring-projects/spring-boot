@@ -1,0 +1,10 @@
+[
+  {
+    "condition": {
+      "typeReachable": "org.jline.utils.Signals"
+    },
+    "interfaces": [
+      "sun.misc.SignalHandler"
+    ]
+  }
+]

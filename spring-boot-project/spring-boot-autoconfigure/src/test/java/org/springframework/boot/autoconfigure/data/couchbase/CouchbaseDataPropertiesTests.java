@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.data.couchbase.config.CouchbaseConfigurationSupport;
+import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +31,7 @@ class CouchbaseDataPropertiesTests {
 
 	@Test
 	void typeKeyHasConsistentDefault() {
-		assertThat(new CouchbaseDataProperties().getTypeKey()).isEqualTo(new CouchbaseConfigurationSupport().typeKey());
+		assertThat(new CouchbaseDataProperties().getTypeKey()).isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
 	}
 
 }

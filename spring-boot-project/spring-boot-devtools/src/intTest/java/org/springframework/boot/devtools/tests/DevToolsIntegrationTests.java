@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.springframework.boot.devtools.tests;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.TimeValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,9 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
-	private final TestRestTemplate template = new TestRestTemplate(
-			new RestTemplateBuilder().requestFactory(() -> new HttpComponentsClientHttpRequestFactory(
-					HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
+	private final TestRestTemplate template = new TestRestTemplate(new RestTemplateBuilder()
+		.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+			.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
+			.build())));
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
@@ -49,7 +51,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
@@ -65,7 +67,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		controller("com.example.ControllerOne").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/one", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -75,7 +77,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
@@ -90,7 +92,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
@@ -108,7 +110,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
@@ -127,10 +129,10 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(new File(this.launchedApplication.getClassesDirectory(), "com/example/ControllerOne.class").delete())
-				.isTrue();
+			.isTrue();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/one", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 
 	}
 
@@ -141,19 +143,19 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 		assertThat(new File(this.launchedApplication.getClassesDirectory(), "com/example/ControllerTwo.class").delete())
-				.isTrue();
+			.isTrue();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	static Object[] parameters() throws IOException {
+	static Object[] parameters() {
 		Directories directories = new Directories(buildOutput, temp);
 		return new Object[] { new Object[] { new LocalApplicationLauncher(directories) },
 				new Object[] { new ExplodedRemoteApplicationLauncher(directories) },

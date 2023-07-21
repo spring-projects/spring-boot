@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
+import org.thymeleaf.dialect.IDialect;
 import reactor.core.publisher.Mono;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -45,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebFluxTypeExcludeFilterTests {
 
-	private MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
+	private final MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
 	@Test
 	void matchWhenHasNoControllers() throws Exception {
@@ -57,6 +59,8 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleDialect.class)).isFalse();
 	}
 
 	@Test
@@ -69,6 +73,8 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleDialect.class)).isFalse();
 	}
 
 	@Test
@@ -81,6 +87,8 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isTrue();
+		assertThat(excludes(filter, ExampleModule.class)).isTrue();
+		assertThat(excludes(filter, ExampleDialect.class)).isTrue();
 	}
 
 	@Test
@@ -93,6 +101,8 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleDialect.class)).isFalse();
 	}
 
 	@Test
@@ -105,6 +115,8 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleDialect.class)).isFalse();
 	}
 
 	private boolean excludes(WebFluxTypeExcludeFilter filter, Class<?> type) throws IOException {
@@ -171,6 +183,19 @@ class WebFluxTypeExcludeFilterTests {
 		@Override
 		public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
 			return null;
+		}
+
+	}
+
+	static class ExampleModule extends SimpleModule {
+
+	}
+
+	static class ExampleDialect implements IDialect {
+
+		@Override
+		public String getName() {
+			return "example";
 		}
 
 	}

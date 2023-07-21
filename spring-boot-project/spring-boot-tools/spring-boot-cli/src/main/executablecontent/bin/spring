@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+darwin=false
+case "$(uname)" in
+	CYGWIN*)
+		cygwin=true
+		;;
+
+	MINGW*)
+		cygwin=true
+		;;
+
+	Darwin*)
+		darwin=true
+		;;
+esac
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched.
+if $cygwin ; then
+	[ -n "${JAVA_HOME}" ] && JAVA_HOME=$(cygpath --unix "${JAVA_HOME}")
+fi
+
+# Attempt to find JAVA_HOME if not already set
+if [ -z "${JAVA_HOME}" ]; then
+	if ${darwin} ; then
+		if [[ -z "${JAVA_HOME}" && -f "/usr/libexec/java_home" ]]; then
+			JAVA_HOME=$(/usr/libexec/java_home)
+			export JAVA_HOME
+		fi
+		if [[ -z "${JAVA_HOME}" && -d "/Library/Java/Home" ]]; then
+			export JAVA_HOME="/Library/Java/Home"
+		fi
+		if [[ -z "${JAVA_HOME}" && -d "/System/Library/Frameworks/JavaVM.framework/Home" ]]; then
+			export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
+		fi
+	else
+		javaExecutable="$(command -v javac)"
+		if [[ -z "$javaExecutable" || "$(expr "${javaExecutable}" : '\([^ ]*\)')" = "no" ]]; then
+			echo "JAVA_HOME not set and cannot find javac to deduce location, please set JAVA_HOME."
+			exit 1
+		fi
+		# readlink(1) is not available as standard on Solaris 10.
+		readLink="$(command -v readlink)"
+		[ "$(expr "${readLink}" : '\([^ ]*\)')" = "no" ] && {
+			echo "JAVA_HOME not set and readlink not available, please set JAVA_HOME."
+			exit 1
+		}
+		javaExecutable="$(readlink -f "${javaExecutable}")"
+		javaHome="$(dirname "${javaExecutable}")"
+		javaHome=$(expr "$javaHome" : '\(.*\)/bin')
+		JAVA_HOME="${javaHome}"
+		export JAVA_HOME
+	fi
+fi
+
+# Sanity check that we have java
+if [ ! -f "${JAVA_HOME}/bin/java" ]; then
+	cat <<-JAVA_HOME_NOT_SET_TXT
+
+	======================================================================================================
+	 Please ensure that your JAVA_HOME points to a valid Java SDK.
+	 You are currently pointing to:
+
+	  ${JAVA_HOME}
+
+	 This does not seem to be valid. Please rectify and restart.
+	======================================================================================================
+
+	JAVA_HOME_NOT_SET_TXT
+	exit 1
+fi
+
+# Attempt to find SPRING_HOME if not already set
+if [ -z "${SPRING_HOME}" ]; then
+	# Resolve links: $0 may be a link
+	PRG="$0"
+	# Need this for relative symlinks.
+	while [ -h "$PRG" ] ; do
+		ls=$(ls -ld "$PRG")
+		link=$(expr "$ls" : '.*-> \(.*\)$')
+		if expr "$link" : '/.*' > /dev/null; then
+			PRG="$link"
+		else
+			PRG=$(dirname "$PRG")"/$link"
+		fi
+	done
+	SAVED="$(pwd)"
+	cd "$(dirname "${PRG}")/../" > /dev/null || exit 1
+	SPRING_HOME="$(pwd -P)"
+	export SPRING_HOME
+	cd "$SAVED" > /dev/null || exit 1
+fi
+
+if [ ! -d "${SPRING_HOME}" ]; then
+	echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
+	echo "Please rectify and restart."
+	exit 2
+fi
+
+[[ "${cygwin}" == "true" ]] && SPRINGPATH=$(cygpath "${SPRING_HOME}") || SPRINGPATH=$SPRING_HOME
+CLASSPATH=${SPRINGPATH}/bin
+if [ -d "${SPRINGPATH}/ext" ]; then
+	CLASSPATH=$CLASSPATH:${SPRINGPATH}/ext
+fi
+for f in "${SPRINGPATH}"/lib/*; do
+	[[ "${cygwin}" == "true" ]] && LIBFILE=$(cygpath "$f") || LIBFILE=$f
+	CLASSPATH=$CLASSPATH:$LIBFILE
+done
+
+if $cygwin; then
+	SPRING_HOME=$(cygpath --path --mixed "$SPRING_HOME")
+	CLASSPATH=$(cygpath --path --mixed "$CLASSPATH")
+fi
+
+IFS=" " read -r -a javaOpts <<< "$JAVA_OPTS"
+exec "${JAVA_HOME}/bin/java" "${javaOpts[@]}" -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher "$@"

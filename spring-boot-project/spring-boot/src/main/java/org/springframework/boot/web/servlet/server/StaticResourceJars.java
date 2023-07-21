@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -41,12 +42,13 @@ class StaticResourceJars {
 
 	List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		if (classLoader instanceof URLClassLoader) {
-			return getUrlsFrom(((URLClassLoader) classLoader).getURLs());
+		if (classLoader instanceof URLClassLoader urlClassLoader) {
+			return getUrlsFrom(urlClassLoader.getURLs());
 		}
 		else {
 			return getUrlsFrom(Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
-					.map(this::toUrl).toArray(URL[]::new));
+				.map(this::toUrl)
+				.toArray(URL[]::new));
 		}
 	}
 
@@ -106,7 +108,7 @@ class StaticResourceJars {
 	}
 
 	private void addUrlConnection(List<URL> urls, URL url, URLConnection connection) {
-		if (connection instanceof JarURLConnection && isResourcesJar((JarURLConnection) connection)) {
+		if (connection instanceof JarURLConnection jarURLConnection && isResourcesJar(jarURLConnection)) {
 			urls.add(url);
 		}
 	}
@@ -124,17 +126,14 @@ class StaticResourceJars {
 		try {
 			return isResourcesJar(new JarFile(file));
 		}
-		catch (IOException ex) {
+		catch (IOException | InvalidPathException ex) {
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(JarFile jar) throws IOException {
-		try {
+		try (jar) {
 			return jar.getName().endsWith(".jar") && (jar.getJarEntry("META-INF/resources") != null);
-		}
-		finally {
-			jar.close();
 		}
 	}
 

@@ -1,0 +1,68 @@
+[[actuator.observability]]
+== Observability
+
+Observability is the ability to observe the internal state of a running system from the outside.
+It consists of the three pillars logging, metrics and traces.
+
+For metrics and traces, Spring Boot uses https://micrometer.io/docs/observation[Micrometer Observation].
+To create your own observations (which will lead to metrics and traces), you can inject an `ObservationRegistry`.
+
+include::code:MyCustomObservation[]
+
+NOTE: Low cardinality key-values will be added to metrics and traces, while high cardinality key-values will only be added to traces.
+
+Beans of type `ObservationPredicate`, `GlobalObservationConvention`, `ObservationFilter` and `ObservationHandler` will be automatically registered on the `ObservationRegistry`.
+You can additionally register any number of `ObservationRegistryCustomizer` beans to further configure the registry.
+
+For more details please see the https://micrometer.io/docs/observation[Micrometer Observation documentation].
+
+TIP: Observability for JDBC and R2DBC can be configured using separate projects.
+For JDBC, the https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
+Read more about it https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[in the reference documentation].
+For R2DBC, the https://github.com/spring-projects-experimental/r2dbc-micrometer-spring-boot[Spring Boot Auto Configuration for R2DBC Observation] creates observations for R2DBC query invocations.
+
+[[actuator.observability.common-key-values]]
+=== Common Key-Values
+Common key-values are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
+Commons key-values are applied to all observations as low cardinality key-values and can be configured, as the following example shows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  observations:
+	    key-values:
+	      region: "us-east-1"
+	      stack: "prod"
+----
+
+The preceding example adds `region` and `stack` key-values to all observations with a value of `us-east-1` and `prod`, respectively.
+
+[[actuator.observability.preventing-observations]]
+=== Preventing Observations
+
+If you'd like to prevent some observations from being reported, you can use the configprop:management.observations.enable[] properties:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  observations:
+	    enable:
+	      denied:
+            prefix: false
+	      another:
+            denied:
+              prefix: false
+----
+
+The preceding example will prevent all observations with a name starting with `denied.prefix` or `another.denied.prefix`.
+
+TIP: If you want to prevent Spring Security from reporting observations, set the property configprop:management.observations.enable.spring.security[] to `false`.
+
+If you need greater control over the prevention of observations, you can register beans of type `ObservationPredicate`.
+Observations are only reported if all the `ObservationPredicate` beans return `true` for that observation.
+
+include::code:MyObservationPredicate[]
+
+The preceding example will prevent all observations whose name contains "denied".
+
+The next sections will provide more details about logging, metrics and traces.

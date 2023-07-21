@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * Callback interface used to provide {@link Builder} output logging.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Andrey Shlykov
+ * @author Rafael Ceccone
  * @since 2.3.0
  * @see #toSystemOut()
  */
@@ -41,34 +44,32 @@ public interface BuildLog {
 	void start(BuildRequest request);
 
 	/**
-	 * Log that the builder image is being pulled.
-	 * @param request the build request
-	 * @param imageReference the builder image reference
+	 * Log that an image is being pulled.
+	 * @param imageReference the image reference
+	 * @param imageType the image type
 	 * @return a consumer for progress update events
 	 */
-	Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference);
+	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType);
 
 	/**
-	 * Log that the builder image has been pulled.
-	 * @param request the build request
-	 * @param image the builder image that was pulled
+	 * Log that an image has been pulled.
+	 * @param image the image that was pulled
+	 * @param imageType the image type that was pulled
 	 */
-	void pulledBuilder(BuildRequest request, Image image);
+	void pulledImage(Image image, ImageType imageType);
 
 	/**
-	 * Log that a run image is being pulled.
-	 * @param request the build request
-	 * @param imageReference the run image reference
+	 * Log that an image is being pushed.
+	 * @param imageReference the image reference
 	 * @return a consumer for progress update events
 	 */
-	Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference);
+	Consumer<TotalProgressEvent> pushingImage(ImageReference imageReference);
 
 	/**
-	 * Log that a run image has been pulled.
-	 * @param request the build request
-	 * @param image the run image that was pulled
+	 * Log that an image has been pushed.
+	 * @param imageReference the image reference
 	 */
-	void pulledRunImage(BuildRequest request, Image image);
+	void pushedImage(ImageReference imageReference);
 
 	/**
 	 * Log that the lifecycle is executing.
@@ -87,10 +88,23 @@ public interface BuildLog {
 	Consumer<LogUpdateEvent> runningPhase(BuildRequest request, String name);
 
 	/**
+	 * Log that a specific phase is being skipped.
+	 * @param name the name of the phase
+	 * @param reason the reason the phase is skipped
+	 */
+	void skippingPhase(String name, String reason);
+
+	/**
 	 * Log that the lifecycle has executed.
 	 * @param request the build request
 	 */
 	void executedLifecycle(BuildRequest request);
+
+	/**
+	 * Log that a tag has been created.
+	 * @param tag the tag reference
+	 */
+	void taggedImage(ImageReference tag);
 
 	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.

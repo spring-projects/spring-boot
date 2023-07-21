@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -26,8 +27,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link Condition} that checks whether or not the Spring resource handling chain is
- * enabled.
+ * {@link Condition} that checks whether the Spring resource handling chain is enabled.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
@@ -44,7 +44,7 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		boolean fixed = getEnabledProperty(environment, "strategy.fixed.", false);
 		boolean content = getEnabledProperty(environment, "strategy.content.", false);
 		Boolean chain = getEnabledProperty(environment, "", null);
-		Boolean match = ResourceProperties.Chain.getEnabled(fixed, content, chain);
+		Boolean match = Chain.getEnabled(fixed, content, chain);
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
 			if (ClassUtils.isPresent(WEBJAR_ASSET_LOCATOR, getClass().getClassLoader())) {
@@ -59,7 +59,7 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 	}
 
 	private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key, Boolean defaultValue) {
-		String name = "spring.resources.chain." + key + "enabled";
+		String name = "spring.web.resources.chain." + key + "enabled";
 		return environment.getProperty(name, Boolean.class, defaultValue);
 	}
 

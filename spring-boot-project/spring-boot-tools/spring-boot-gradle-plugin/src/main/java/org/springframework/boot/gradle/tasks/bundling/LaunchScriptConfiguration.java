@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,18 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import org.gradle.api.Project;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
-
-import org.springframework.boot.loader.tools.FileUtils;
 
 /**
  * Encapsulates the configuration of the launch script for an executable jar or war.
@@ -41,7 +43,9 @@ public class LaunchScriptConfiguration implements Serializable {
 
 	private static final Pattern LINE_FEED_PATTERN = Pattern.compile("\n");
 
-	private final Map<String, String> properties = new HashMap<>();
+	// We don't care about the order, but Gradle's configuration cache currently does.
+	// https://github.com/gradle/gradle/pull/17863
+	private final Map<String, String> properties = new TreeMap<>();
 
 	private File script;
 
@@ -61,6 +65,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	 * including in the executable archive.
 	 * @return the properties
 	 */
+	@Input
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
@@ -79,6 +84,9 @@ public class LaunchScriptConfiguration implements Serializable {
 	 * When {@code null}, the default launch script will be used.
 	 * @return the script file
 	 */
+	@Optional
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public File getScript() {
 		return this.script;
 	}
@@ -90,47 +98,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	 */
 	public void setScript(File script) {
 		this.script = script;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		LaunchScriptConfiguration other = (LaunchScriptConfiguration) obj;
-		if (!this.properties.equals(other.properties)) {
-			return false;
-		}
-		if (this.script == null) {
-			return other.script == null;
-		}
-		else if (!this.script.equals(other.script)) {
-			return false;
-		}
-		else {
-			return equalContents(this.script, other.script);
-		}
-	}
-
-	private boolean equalContents(File one, File two) {
-		try {
-			return FileUtils.sha1Hash(one).equals(FileUtils.sha1Hash(two));
-		}
-		catch (IOException ex) {
-			return false;
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.properties.hashCode();
-		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
-		return result;
 	}
 
 	private String removeLineBreaks(String string) {

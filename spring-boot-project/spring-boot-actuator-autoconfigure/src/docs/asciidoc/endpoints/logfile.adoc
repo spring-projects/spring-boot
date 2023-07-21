@@ -1,13 +1,11 @@
-[[log-file]]
+[[logfile]]
 = Log File (`logfile`)
-
 The `logfile` endpoint provides access to the contents of the application's log file.
 
 
 
-[[logfile-retrieving]]
+[[logfile.retrieving]]
 == Retrieving the Log File
-
 To retrieve the log file, make a `GET` request to `/actuator/logfile`, as shown in the following curl-based example:
 
 include::{snippets}/logfile/entire/curl-request.adoc[]
@@ -18,9 +16,8 @@ include::{snippets}/logfile/entire/http-response.adoc[]
 
 
 
-[[logfile-retrieving-part]]
+[[logfile.retrieving-part]]
 == Retrieving Part of the Log File
-
 NOTE: Retrieving part of the log file is not supported when using Jersey.
 
 To retrieve part of the log file, make a `GET` request to `/actuator/logfile` by using the `Range` header, as shown in the following curl-based example:

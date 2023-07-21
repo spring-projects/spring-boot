@@ -1,11 +1,11 @@
 plugins {
 	id "java"
-//	id "org.springframework.boot.conventions"
 }
 
 description = "Spring Boot TestNG smoke test"
 
 dependencies {
+	implementation(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
 	implementation("org.springframework:spring-webmvc")

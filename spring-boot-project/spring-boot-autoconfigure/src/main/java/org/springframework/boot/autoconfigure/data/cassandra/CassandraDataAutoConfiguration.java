@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import java.util.List;
 import com.datastax.oss.driver.api.core.CqlSession;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -32,8 +32,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.cassandra.CassandraManagedTypes;
 import org.springframework.data.cassandra.SessionFactory;
 import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -56,10 +56,9 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = CassandraAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, CassandraAdminOperations.class })
 @ConditionalOnBean(CqlSession.class)
-@AutoConfigureAfter(CassandraAutoConfiguration.class)
 public class CassandraDataAutoConfiguration {
 
 	private final CqlSession session;
@@ -70,18 +69,24 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping(BeanFactory beanFactory, CassandraCustomConversions conversions)
-			throws ClassNotFoundException {
-		CassandraMappingContext context = new CassandraMappingContext();
+	public static CassandraManagedTypes cassandraManagedTypes(BeanFactory beanFactory) throws ClassNotFoundException {
 		List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
 			packages = AutoConfigurationPackages.get(beanFactory);
 		}
 		if (!packages.isEmpty()) {
-			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
+			return CassandraManagedTypes.fromIterable(CassandraEntityClassScanner.scan(packages));
 		}
-		context.setUserTypeResolver(new SimpleUserTypeResolver(this.session));
-		context.setCustomConversions(conversions);
+		return CassandraManagedTypes.empty();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CassandraMappingContext cassandraMappingContext(CassandraManagedTypes cassandraManagedTypes,
+			CassandraCustomConversions conversions) {
+		CassandraMappingContext context = new CassandraMappingContext();
+		context.setManagedTypes(cassandraManagedTypes);
+		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;
 	}
 
@@ -90,7 +95,9 @@ public class CassandraDataAutoConfiguration {
 	public CassandraConverter cassandraConverter(CassandraMappingContext mapping,
 			CassandraCustomConversions conversions) {
 		MappingCassandraConverter converter = new MappingCassandraConverter(mapping);
+		converter.setCodecRegistry(this.session.getContext().getCodecRegistry());
 		converter.setCustomConversions(conversions);
+		converter.setUserTypeResolver(new SimpleUserTypeResolver(this.session));
 		return converter;
 	}
 
@@ -101,7 +108,7 @@ public class CassandraDataAutoConfiguration {
 		session.setSession(this.session);
 		session.setConverter(converter);
 		Binder binder = Binder.get(environment);
-		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
+		binder.bind("spring.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
 		return session;
 	}
 

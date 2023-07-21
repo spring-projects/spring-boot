@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,11 @@ public class FileEncodingApplicationListener
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
-		if (!environment.containsProperty("spring.mandatory-file-encoding")) {
+		String desired = environment.getProperty("spring.mandatory-file-encoding");
+		if (desired == null) {
 			return;
 		}
 		String encoding = System.getProperty("file.encoding");
-		String desired = environment.getProperty("spring.mandatory-file-encoding");
 		if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
 			if (logger.isErrorEnabled()) {
 				logger.error("System property 'file.encoding' is currently '" + encoding + "'. It should be '" + desired

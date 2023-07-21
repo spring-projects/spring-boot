@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package smoketest.webflux;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -29,7 +30,9 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class SampleWebFluxApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleWebFluxApplication.class, args);
+		SpringApplication application = new SpringApplication(SampleWebFluxApplication.class);
+		application.setApplicationStartup(new BufferingApplicationStartup(1024));
+		application.run(args);
 	}
 
 	@Bean

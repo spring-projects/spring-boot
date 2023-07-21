@@ -1,16 +1,21 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
 	java
-	id("org.springframework.boot") version "{version}"
-}
-
-tasks.getByName<BootJar>("bootJar") {
-	mainClassName = "com.example.ExampleApplication"
+	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
 // tag::env[]
-tasks.getByName<BootBuildImage>("bootBuildImage") {
-	environment = ["BP_JAVA_VERSION" : "13.0.1"]
+tasks.named<BootBuildImage>("bootBuildImage") {
+	environment.set(environment.get() + mapOf("BP_JVM_VERSION" to "17"))
 }
 // end::env[]
+
+tasks.register("bootBuildImageEnvironment") {
+	doFirst {
+		for((name, value) in tasks.getByName<BootBuildImage>("bootBuildImage").environment.get()) {
+			print(name + "=" + value)
+		}
+	}
+}
+

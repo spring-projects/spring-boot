@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class SampleReactiveOAuth2ResourceServerApplicationTests {
 	@Autowired
 	private WebTestClient webTestClient;
 
-	private static MockWebServer server = new MockWebServer();
+	private static final MockWebServer server = new MockWebServer();
 
 	private static final String VALID_TOKEN = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJzdWJqZWN0Iiwic2NvcGUiOiJtZXNzYWdlOnJlYWQi"
 			+ "LCJleHAiOjQ2ODM4MDUxNDF9.h-j6FKRFdnTdmAueTZCdep45e6DPwqM68ZQ8doIJ1exi9YxAlbWzOwId6Bd0L5YmCmp63gGQgsBUBLzwnZQ8kLUgU"
@@ -58,14 +58,25 @@ class SampleReactiveOAuth2ResourceServerApplicationTests {
 
 	@Test
 	void getWhenValidTokenShouldBeOk() {
-		this.webTestClient.get().uri("/").headers((headers) -> headers.setBearerAuth(VALID_TOKEN)).exchange()
-				.expectStatus().isOk().expectBody(String.class).isEqualTo("Hello, subject!");
+		this.webTestClient.get()
+			.uri("/")
+			.headers((headers) -> headers.setBearerAuth(VALID_TOKEN))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("Hello, subject!");
 	}
 
 	@Test
 	void getWhenNoTokenShouldBeUnauthorized() {
-		this.webTestClient.get().uri("/").exchange().expectStatus().isUnauthorized().expectHeader()
-				.valueEquals(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
+		this.webTestClient.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isUnauthorized()
+			.expectHeader()
+			.valueEquals(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
 	}
 
 	private static MockResponse mockResponse() {
@@ -87,7 +98,8 @@ class SampleReactiveOAuth2ResourceServerApplicationTests {
 				+ "8CJ453lo4gcBm1efURN3LIVc1V9NQY_ESBKVdwqYyoJPEanURLVGRd6cQKn6YrCbbIRHjqAyqOE-z3KmgDJnPriljfR5XhSGyM9eq"
 				+ "D9Xpy6zu_MAeMJJfSArp857zLPk-Wf5VP9STAcjyfdBIybMKnwBYr2qHMT675hQ\"}]}";
 		return new MockResponse().setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.setResponseCode(200).setBody(body);
+			.setResponseCode(200)
+			.setBody(body);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import java.time.Duration;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -23,14 +25,15 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Listener for the {@link SpringApplication} {@code run} method.
- * {@link SpringApplicationRunListener}s are loaded via the {@link SpringFactoriesLoader}
- * and should declare a public constructor that accepts a {@link SpringApplication}
- * instance and a {@code String[]} of arguments. A new
+ * {@link SpringApplicationRunListener}s are loaded through the
+ * {@link SpringFactoriesLoader} and should declare a public constructor that accepts a
+ * {@link SpringApplication} instance and a {@code String[]} of arguments. A new
  * {@link SpringApplicationRunListener} instance will be created for each run.
  *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Chris Bono
  * @since 1.0.0
  */
 public interface SpringApplicationRunListener {
@@ -38,16 +41,19 @@ public interface SpringApplicationRunListener {
 	/**
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
+	 * @param bootstrapContext the bootstrap context
 	 */
-	default void starting() {
+	default void starting(ConfigurableBootstrapContext bootstrapContext) {
 	}
 
 	/**
 	 * Called once the environment has been prepared, but before the
 	 * {@link ApplicationContext} has been created.
+	 * @param bootstrapContext the bootstrap context
 	 * @param environment the environment
 	 */
-	default void environmentPrepared(ConfigurableEnvironment environment) {
+	default void environmentPrepared(ConfigurableBootstrapContext bootstrapContext,
+			ConfigurableEnvironment environment) {
 	}
 
 	/**
@@ -71,9 +77,10 @@ public interface SpringApplicationRunListener {
 	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
 	 * ApplicationRunners} have not been called.
 	 * @param context the application context.
-	 * @since 2.0.0
+	 * @param timeTaken the time taken to start the application or {@code null} if unknown
+	 * @since 2.6.0
 	 */
-	default void started(ConfigurableApplicationContext context) {
+	default void started(ConfigurableApplicationContext context, Duration timeTaken) {
 	}
 
 	/**
@@ -81,9 +88,11 @@ public interface SpringApplicationRunListener {
 	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
 	 * {@link ApplicationRunner ApplicationRunners} have been called.
 	 * @param context the application context.
-	 * @since 2.0.0
+	 * @param timeTaken the time taken for the application to be ready or {@code null} if
+	 * unknown
+	 * @since 2.6.0
 	 */
-	default void running(ConfigurableApplicationContext context) {
+	default void ready(ConfigurableApplicationContext context, Duration timeTaken) {
 	}
 
 	/**

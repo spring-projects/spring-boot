@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IntegrationGraphEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
-					IntegrationGraphEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
+				IntegrationGraphEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=integrationgraph")
-				.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class IntegrationGraphEndpointAutoConfigurationTests {
 	@Test
 	void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
 		ApplicationContextRunner noSpringIntegrationRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class));
 		noSpringIntegrationRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
 			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);

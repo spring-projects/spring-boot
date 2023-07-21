@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,65 +17,59 @@
 package org.springframework.boot.build.context.properties;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.gradle.api.file.FileCollection;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Configuration properties read from one or more
  * {@code META-INF/spring-configuration-metadata.json} files.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 final class ConfigurationProperties {
 
-	private static final Type MAP_TYPE = new MapTypeToken().getType();
+	private final Map<String, ConfigurationProperty> byName;
 
-	private ConfigurationProperties() {
+	private ConfigurationProperties(List<ConfigurationProperty> properties) {
+		Map<String, ConfigurationProperty> byName = new LinkedHashMap<>();
+		for (ConfigurationProperty property : properties) {
+			byName.put(property.getName(), property);
+		}
+		this.byName = Collections.unmodifiableMap(byName);
+	}
 
+	ConfigurationProperty get(String propertyName) {
+		return this.byName.get(propertyName);
+	}
+
+	Stream<ConfigurationProperty> stream() {
+		return this.byName.values().stream();
 	}
 
 	@SuppressWarnings("unchecked")
-	static Map<String, ConfigurationProperty> fromFiles(FileCollection files) {
-		List<ConfigurationProperty> configurationProperties = new ArrayList<>();
+	static ConfigurationProperties fromFiles(Iterable<File> files) {
 		try {
-			Gson gson = new GsonBuilder().create();
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<ConfigurationProperty> properties = new ArrayList<>();
 			for (File file : files) {
-				try (Reader reader = new FileReader(file)) {
-					Map<String, Object> json = gson.fromJson(reader, MAP_TYPE);
-					List<Map<String, Object>> properties = (List<Map<String, Object>>) json.get("properties");
-					for (Map<String, Object> property : properties) {
-						String name = (String) property.get("name");
-						String type = (String) property.get("type");
-						Object defaultValue = property.get("defaultValue");
-						String description = (String) property.get("description");
-						boolean deprecated = property.containsKey("deprecated");
-						configurationProperties
-								.add(new ConfigurationProperty(name, type, defaultValue, description, deprecated));
-					}
+				Map<String, Object> json = objectMapper.readValue(file, Map.class);
+				for (Map<String, Object> property : (List<Map<String, Object>>) json.get("properties")) {
+					properties.add(ConfigurationProperty.fromJsonProperties(property));
 				}
 			}
-			return configurationProperties.stream()
-					.collect(Collectors.toMap(ConfigurationProperty::getName, Function.identity()));
+			return new ConfigurationProperties(properties);
 		}
 		catch (IOException ex) {
 			throw new RuntimeException("Failed to load configuration metadata", ex);
 		}
-	}
-
-	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
-
 	}
 
 }

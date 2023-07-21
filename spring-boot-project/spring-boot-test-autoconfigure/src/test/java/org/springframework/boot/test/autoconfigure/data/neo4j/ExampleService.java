@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,26 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.neo4j.ogm.session.Session;
-
+import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 
 /**
  * Example service used with {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
+ * @author Michael J. Simons
  */
 @Service
 public class ExampleService {
 
-	private final Session session;
+	private final Neo4jTemplate neo4jTemplate;
 
-	public ExampleService(Session session) {
-		this.session = session;
+	public ExampleService(Neo4jTemplate neo4jTemplate) {
+		this.neo4jTemplate = neo4jTemplate;
 	}
 
 	public boolean hasNode(Class<?> clazz) {
-		return this.session.countEntitiesOfType(clazz) == 1;
+		return this.neo4jTemplate.count(clazz) == 1;
 	}
 
 }

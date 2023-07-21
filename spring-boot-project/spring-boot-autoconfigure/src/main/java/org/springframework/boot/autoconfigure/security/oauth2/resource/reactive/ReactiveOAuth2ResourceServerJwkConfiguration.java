@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,11 +37,19 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder.JwkSetUriReactiveJwtDecoderBuilder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
+import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI
@@ -45,6 +59,9 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  * @author HaiTao Zhang
+ * @author Anastasiia Losieva
+ * @author Mushtaq Ahmed
+ * @author Roman Golovin
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -55,28 +72,60 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
 
-		JwtConfiguration(OAuth2ResourceServerProperties properties) {
+		private final List<OAuth2TokenValidator<Jwt>> additionalValidators;
+
+		JwtConfiguration(OAuth2ResourceServerProperties properties,
+				ObjectProvider<OAuth2TokenValidator<Jwt>> additionalValidators) {
 			this.properties = properties.getJwt();
+			this.additionalValidators = additionalValidators.orderedStream().toList();
 		}
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-		ReactiveJwtDecoder jwtDecoder() {
-			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = new NimbusReactiveJwtDecoder(
-					this.properties.getJwkSetUri());
+		ReactiveJwtDecoder jwtDecoder(ObjectProvider<JwkSetUriReactiveJwtDecoderBuilderCustomizer> customizers) {
+			JwkSetUriReactiveJwtDecoderBuilder builder = NimbusReactiveJwtDecoder
+				.withJwkSetUri(this.properties.getJwkSetUri())
+				.jwsAlgorithms(this::jwsAlgorithms);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = builder.build();
 			String issuerUri = this.properties.getIssuerUri();
-			if (issuerUri != null) {
-				nimbusReactiveJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
-			}
+			OAuth2TokenValidator<Jwt> defaultValidator = (issuerUri != null)
+					? JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators.createDefault();
+			nimbusReactiveJwtDecoder.setJwtValidator(getValidators(defaultValidator));
 			return nimbusReactiveJwtDecoder;
+		}
+
+		private void jwsAlgorithms(Set<SignatureAlgorithm> signatureAlgorithms) {
+			for (String algorithm : this.properties.getJwsAlgorithms()) {
+				signatureAlgorithms.add(SignatureAlgorithm.from(algorithm));
+			}
+		}
+
+		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
+			List<String> audiences = this.properties.getAudiences();
+			if (CollectionUtils.isEmpty(audiences) && this.additionalValidators.isEmpty()) {
+				return defaultValidator;
+			}
+			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
+			validators.add(defaultValidator);
+			if (!CollectionUtils.isEmpty(audiences)) {
+				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
+						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+			}
+			validators.addAll(this.additionalValidators);
+			return new DelegatingOAuth2TokenValidator<>(validators);
 		}
 
 		@Bean
 		@Conditional(KeyValueCondition.class)
 		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
-			return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
+				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
+			NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withPublicKey(publicKey)
+				.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()))
+				.build();
+			jwtDecoder.setJwtValidator(getValidators(JwtValidators.createDefault()));
+			return jwtDecoder;
 		}
 
 		private byte[] getKeySpec(String keyValue) {
@@ -84,10 +133,30 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			return Base64.getMimeDecoder().decode(keyValue);
 		}
 
+		private String exactlyOneAlgorithm() {
+			List<String> algorithms = this.properties.getJwsAlgorithms();
+			int count = (algorithms != null) ? algorithms.size() : 0;
+			if (count != 1) {
+				throw new IllegalStateException(
+						"Creating a JWT decoder using a public key requires exactly one JWS algorithm but " + count
+								+ " were configured");
+			}
+			return algorithms.get(0);
+		}
+
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-			return ReactiveJwtDecoders.fromIssuerLocation(this.properties.getIssuerUri());
+		SupplierReactiveJwtDecoder jwtDecoderByIssuerUri(
+				ObjectProvider<JwkSetUriReactiveJwtDecoderBuilderCustomizer> customizers) {
+			return new SupplierReactiveJwtDecoder(() -> {
+				JwkSetUriReactiveJwtDecoderBuilder builder = NimbusReactiveJwtDecoder
+					.withIssuerLocation(this.properties.getIssuerUri());
+				customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+				NimbusReactiveJwtDecoder jwtDecoder = builder.build();
+				jwtDecoder.setJwtValidator(
+						getValidators(JwtValidators.createDefaultWithIssuer(this.properties.getIssuerUri())));
+				return jwtDecoder;
+			});
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,29 +40,29 @@ class LayerTests {
 	@Test
 	void ofWhenLayoutIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.of((IOConsumer<Layout>) null))
-				.withMessage("Layout must not be null");
+			.withMessage("Layout must not be null");
 	}
 
 	@Test
 	void fromTarArchiveWhenTarArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.fromTarArchive(null))
-				.withMessage("TarArchive must not be null");
+			.withMessage("TarArchive must not be null");
 	}
 
 	@Test
 	void ofCreatesLayer() throws Exception {
 		Layer layer = Layer.of((layout) -> {
-			layout.folder("/folder", Owner.ROOT);
-			layout.file("/folder/file", Owner.ROOT, Content.of("test"));
+			layout.directory("/directory", Owner.ROOT);
+			layout.file("/directory/file", Owner.ROOT, Content.of("test"));
 		});
-		assertThat(layer.getId().toString())
-				.isEqualTo("sha256:8b8a3cea2ba716da6bbb0a3bf7472f235fa08c71a27cec5fbf2de1cf1baa513f");
+		assertThat(layer.getId())
+			.hasToString("sha256:d03a34f73804698c875eb56ff694fc2fceccc69b645e4adceb004ed13588613b");
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		layer.writeTo(outputStream);
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/folder/");
-			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/folder/file");
+			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/");
+			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/file");
 			assertThat(tarStream.getNextTarEntry()).isNull();
 		}
 	}

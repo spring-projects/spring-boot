@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,37 +17,55 @@
 package org.springframework.boot.gradle.plugin;
 
 import org.gradle.api.Buildable;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.PublishArtifact;
 import org.gradle.api.artifacts.PublishArtifactSet;
+import org.gradle.api.artifacts.dsl.ArtifactHandler;
 import org.gradle.api.tasks.TaskDependency;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.Jar;
+
+import org.springframework.boot.gradle.tasks.bundling.BootJar;
+import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
 /**
  * A wrapper for a {@link PublishArtifactSet} that ensures that only a single artifact is
  * published, with a war file taking precedence over a jar file.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 final class SinglePublishedArtifact implements Buildable {
 
-	private final PublishArtifactSet artifacts;
+	private final Configuration configuration;
+
+	private final ArtifactHandler handler;
 
 	private PublishArtifact currentArtifact;
 
-	SinglePublishedArtifact(PublishArtifactSet artifacts) {
-		this.artifacts = artifacts;
+	SinglePublishedArtifact(Configuration configuration, ArtifactHandler handler) {
+		this.configuration = configuration;
+		this.handler = handler;
 	}
 
-	void addCandidate(PublishArtifact candidate) {
-		if (this.currentArtifact == null || "war".equals(candidate.getExtension())) {
-			this.artifacts.remove(this.currentArtifact);
-			this.artifacts.add(candidate);
-			this.currentArtifact = candidate;
+	void addWarCandidate(TaskProvider<BootWar> candidate) {
+		add(candidate);
+	}
+
+	void addJarCandidate(TaskProvider<BootJar> candidate) {
+		if (this.currentArtifact == null) {
+			add(candidate);
 		}
+	}
+
+	private void add(TaskProvider<? extends Jar> artifact) {
+		this.configuration.getArtifacts().remove(this.currentArtifact);
+		this.currentArtifact = this.handler.add(this.configuration.getName(), artifact);
 	}
 
 	@Override
 	public TaskDependency getBuildDependencies() {
-		return this.currentArtifact.getBuildDependencies();
+		return this.configuration.getArtifacts().getBuildDependencies();
 	}
 
 }

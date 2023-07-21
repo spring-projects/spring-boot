@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,31 +31,31 @@ class ContainerReferenceTests {
 	@Test
 	void ofCreatesInstance() {
 		ContainerReference reference = ContainerReference
-				.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
-		assertThat(reference.toString()).isEqualTo("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
+			.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
+		assertThat(reference).hasToString("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
 	}
 
 	@Test
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerReference.of(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void ofWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerReference.of(""))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void hashCodeAndEquals() {
 		ContainerReference r1 = ContainerReference
-				.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
+			.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
 		ContainerReference r2 = ContainerReference
-				.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
+			.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
 		ContainerReference r3 = ContainerReference
-				.of("02691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
-		assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
+			.of("02691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
+		assertThat(r1).hasSameHashCodeAs(r2);
 		assertThat(r1).isEqualTo(r1).isEqualTo(r2).isNotEqualTo(r3);
 	}
 

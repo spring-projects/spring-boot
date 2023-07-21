@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.reactor;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
@@ -30,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@ClassPathOverrides("io.projectreactor:reactor-tools:3.3.0.RELEASE")
+@Disabled("We need the not-yet-released reactor-tools 3.4.11 for JDK 17 compatibility")
+@ClassPathOverrides("io.projectreactor:reactor-tools:3.4.11")
 class DebugAgentEnvironmentPostProcessorTests {
 
 	static {
@@ -44,7 +46,7 @@ class DebugAgentEnvironmentPostProcessorTests {
 		InstrumentedFluxProvider fluxProvider = new InstrumentedFluxProvider();
 		Flux<Integer> flux = fluxProvider.newFluxJust();
 		assertThat(Scannable.from(flux).stepName())
-				.startsWith("Flux.just ⇢ at org.springframework.boot.reactor.InstrumentedFluxProvider.newFluxJust");
+			.startsWith("Flux.just ⇢ at org.springframework.boot.reactor.InstrumentedFluxProvider.newFluxJust");
 	}
 
 }

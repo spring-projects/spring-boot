@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,6 @@ public class CacheProperties {
 
 	private final Couchbase couchbase = new Couchbase();
 
-	private final EhCache ehcache = new EhCache();
-
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
@@ -80,10 +78,6 @@ public class CacheProperties {
 
 	public Couchbase getCouchbase() {
 		return this.couchbase;
-	}
-
-	public EhCache getEhcache() {
-		return this.ehcache;
 	}
 
 	public Infinispan getInfinispan() {
@@ -152,26 +146,6 @@ public class CacheProperties {
 
 		public void setExpiration(Duration expiration) {
 			this.expiration = expiration;
-		}
-
-	}
-
-	/**
-	 * EhCache specific cache properties.
-	 */
-	public static class EhCache {
-
-		/**
-		 * The location of the configuration file to use to initialize EhCache.
-		 */
-		private Resource config;
-
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
 		}
 
 	}
@@ -257,6 +231,11 @@ public class CacheProperties {
 		 */
 		private boolean useKeyPrefix = true;
 
+		/**
+		 * Whether to enable cache statistics.
+		 */
+		private boolean enableStatistics;
+
 		public Duration getTimeToLive() {
 			return this.timeToLive;
 		}
@@ -287,6 +266,14 @@ public class CacheProperties {
 
 		public void setUseKeyPrefix(boolean useKeyPrefix) {
 			this.useKeyPrefix = useKeyPrefix;
+		}
+
+		public boolean isEnableStatistics() {
+			return this.enableStatistics;
+		}
+
+		public void setEnableStatistics(boolean enableStatistics) {
+			this.enableStatistics = enableStatistics;
 		}
 
 	}

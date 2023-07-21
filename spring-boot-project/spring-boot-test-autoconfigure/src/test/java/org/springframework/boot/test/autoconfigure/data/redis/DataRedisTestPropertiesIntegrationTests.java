@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,15 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,13 +33,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link DataRedisTest @DataRedisTest}.
  *
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(initializers = DataRedisTestPropertiesIntegrationTests.Initializer.class)
 @DataRedisTest(properties = "spring.profiles.active=test")
 class DataRedisTestPropertiesIntegrationTests {
 
 	@Container
+	@ServiceConnection
 	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired
@@ -52,12 +53,17 @@ class DataRedisTestPropertiesIntegrationTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
 	}
 
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	@Nested
+	class NestedTests {
 
-		@Override
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.redis.port=" + redis.getFirstMappedPort())
-					.applyTo(configurableApplicationContext.getEnvironment());
+		@Autowired
+		private Environment innerEnvironment;
+
+		@Test
+		void propertiesFromEnclosingClassAffectNestedTests() {
+			assertThat(DataRedisTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+				.containsExactly("test");
+			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
 		}
 
 	}

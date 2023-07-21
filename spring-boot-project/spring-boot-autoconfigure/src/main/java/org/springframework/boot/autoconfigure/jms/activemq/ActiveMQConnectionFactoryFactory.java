@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,22 +32,22 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Venil Noronha
+ * @author Eddú Meléndez
  */
 class ActiveMQConnectionFactoryFactory {
-
-	private static final String DEFAULT_EMBEDDED_BROKER_URL = "vm://localhost?broker.persistent=false";
-
-	private static final String DEFAULT_NETWORK_BROKER_URL = "tcp://localhost:61616";
 
 	private final ActiveMQProperties properties;
 
 	private final List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers;
 
+	private final ActiveMQConnectionDetails connectionDetails;
+
 	ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
-			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, ActiveMQConnectionDetails connectionDetails) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
 		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers : Collections.emptyList();
+		this.connectionDetails = connectionDetails;
 	}
 
 	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
@@ -81,12 +81,12 @@ class ActiveMQConnectionFactoryFactory {
 
 	private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(Class<T> factoryClass)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		String brokerUrl = determineBrokerUrl();
-		String user = this.properties.getUser();
-		String password = this.properties.getPassword();
+		String brokerUrl = this.connectionDetails.getBrokerUrl();
+		String user = this.connectionDetails.getUser();
+		String password = this.connectionDetails.getPassword();
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
-			return factoryClass.getConstructor(String.class, String.class, String.class).newInstance(user, password,
-					brokerUrl);
+			return factoryClass.getConstructor(String.class, String.class, String.class)
+				.newInstance(user, password, brokerUrl);
 		}
 		return factoryClass.getConstructor(String.class).newInstance(brokerUrl);
 	}
@@ -95,16 +95,6 @@ class ActiveMQConnectionFactoryFactory {
 		for (ActiveMQConnectionFactoryCustomizer factoryCustomizer : this.factoryCustomizers) {
 			factoryCustomizer.customize(connectionFactory);
 		}
-	}
-
-	String determineBrokerUrl() {
-		if (this.properties.getBrokerUrl() != null) {
-			return this.properties.getBrokerUrl();
-		}
-		if (this.properties.isInMemory()) {
-			return DEFAULT_EMBEDDED_BROKER_URL;
-		}
-		return DEFAULT_NETWORK_BROKER_URL;
 	}
 
 }

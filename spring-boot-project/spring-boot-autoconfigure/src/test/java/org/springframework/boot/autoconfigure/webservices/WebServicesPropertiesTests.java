@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,21 +33,21 @@ class WebServicesPropertiesTests {
 	void pathMustNotBeEmpty() {
 		this.properties = new WebServicesProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath(""))
-				.withMessageContaining("Path must have length greater than 1");
+			.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new WebServicesProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("/"))
-				.withMessageContaining("Path must have length greater than 1");
+			.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	void customPathMustBeginWithASlash() {
 		this.properties = new WebServicesProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("custom"))
-				.withMessageContaining("Path must start with '/'");
+			.withMessageContaining("Path must start with '/'");
 	}
 
 }

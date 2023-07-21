@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.configurationsample.immutable;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.ConstructorBinding;
+import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
  * Inner properties, in immutable format.
@@ -25,12 +25,11 @@ import org.springframework.boot.configurationsample.ConstructorBinding;
  * @author Phillip Webb
  */
 @ConfigurationProperties("test")
-@ConstructorBinding
 public class DeducedImmutableClassProperties {
 
 	private final Nested nested;
 
-	public DeducedImmutableClassProperties(Nested nested) {
+	public DeducedImmutableClassProperties(@DefaultValue Nested nested) {
 		this.nested = nested;
 	}
 

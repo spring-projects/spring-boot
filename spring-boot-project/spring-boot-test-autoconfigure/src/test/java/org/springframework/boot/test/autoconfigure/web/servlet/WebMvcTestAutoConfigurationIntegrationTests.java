@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAu
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -75,7 +76,7 @@ class WebMvcTestAutoConfigurationIntegrationTests {
 	void asyncTaskExecutorWithApplicationTaskExecutor() {
 		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class)).hasSize(1);
 		assertThat(this.applicationContext.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
-				.isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
+			.isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
 	}
 
 	@Test
@@ -86,6 +87,11 @@ class WebMvcTestAutoConfigurationIntegrationTests {
 	@Test
 	void oAuth2ResourceServerAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(OAuth2ResourceServerAutoConfiguration.class));
+	}
+
+	@Test
+	void httpEncodingAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(HttpEncodingAutoConfiguration.class));
 	}
 
 }

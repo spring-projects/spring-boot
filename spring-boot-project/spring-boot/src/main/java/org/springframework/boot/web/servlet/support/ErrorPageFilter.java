@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,10 +42,8 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.NestedServletException;
 
 /**
  * A Servlet {@link Filter} that provides an {@link ErrorPageRegistry} for non-embedded
@@ -62,25 +59,24 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
-public class ErrorPageFilter implements Filter, ErrorPageRegistry {
+public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
-	private static final String ERROR_EXCEPTION = "javax.servlet.error.exception";
+	private static final String ERROR_EXCEPTION = "jakarta.servlet.error.exception";
 
-	private static final String ERROR_EXCEPTION_TYPE = "javax.servlet.error.exception_type";
+	private static final String ERROR_EXCEPTION_TYPE = "jakarta.servlet.error.exception_type";
 
-	private static final String ERROR_MESSAGE = "javax.servlet.error.message";
+	private static final String ERROR_MESSAGE = "jakarta.servlet.error.message";
 
 	/**
 	 * The name of the servlet attribute containing request URI.
 	 */
-	public static final String ERROR_REQUEST_URI = "javax.servlet.error.request_uri";
+	public static final String ERROR_REQUEST_URI = "jakarta.servlet.error.request_uri";
 
-	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
+	private static final String ERROR_STATUS_CODE = "jakarta.servlet.error.status_code";
 
 	private static final Set<Class<?>> CLIENT_ABORT_EXCEPTIONS;
 	static {
@@ -136,8 +132,11 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		}
 		catch (Throwable ex) {
 			Throwable exceptionToHandle = ex;
-			if (ex instanceof NestedServletException) {
-				exceptionToHandle = ((NestedServletException) ex).getRootCause();
+			if (ex instanceof ServletException servletException) {
+				Throwable rootCause = servletException.getRootCause();
+				if (rootCause != null) {
+					exceptionToHandle = rootCause;
+				}
 			}
 			handleException(request, response, wrapped, exceptionToHandle);
 			response.flushBuffer();
@@ -261,17 +260,17 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	}
 
 	private void rethrow(Throwable ex) throws IOException, ServletException {
-		if (ex instanceof RuntimeException) {
-			throw (RuntimeException) ex;
+		if (ex instanceof RuntimeException runtimeException) {
+			throw runtimeException;
 		}
-		if (ex instanceof Error) {
-			throw (Error) ex;
+		if (ex instanceof Error error) {
+			throw error;
 		}
-		if (ex instanceof IOException) {
-			throw (IOException) ex;
+		if (ex instanceof IOException ioException) {
+			throw ioException;
 		}
-		if (ex instanceof ServletException) {
-			throw (ServletException) ex;
+		if (ex instanceof ServletException servletException) {
+			throw servletException;
 		}
 		throw new IllegalStateException(ex);
 	}
@@ -293,6 +292,11 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	@Override
 	public void destroy() {
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 	private static void addClassIfPresent(Collection<Class<?>> collection, String className) {

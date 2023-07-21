@@ -1,0 +1,9 @@
+hazelcast-client:
+  client-labels:
+    - explicit-yml
+  connection-strategy:
+    connection-retry:
+      cluster-connect-timeout-millis: 60000
+  network:
+    cluster-members:
+      - ${address}

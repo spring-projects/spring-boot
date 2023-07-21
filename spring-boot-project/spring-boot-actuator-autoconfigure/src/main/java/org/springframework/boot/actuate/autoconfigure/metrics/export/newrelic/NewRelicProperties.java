@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
+import io.micrometer.newrelic.ClientProviderType;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -29,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Neil Powell
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.newrelic")
+@ConfigurationProperties(prefix = "management.newrelic.metrics.export")
 public class NewRelicProperties extends StepRegistryProperties {
 
 	/**
@@ -45,6 +47,11 @@ public class NewRelicProperties extends StepRegistryProperties {
 	 * 'meter-name-event-type-enabled' is set to 'true'.
 	 */
 	private String eventType = "SpringBootSample";
+
+	/**
+	 * Client provider type to use.
+	 */
+	private ClientProviderType clientProviderType = ClientProviderType.INSIGHTS_API;
 
 	/**
 	 * New Relic API key.
@@ -75,6 +82,14 @@ public class NewRelicProperties extends StepRegistryProperties {
 
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
+	}
+
+	public ClientProviderType getClientProviderType() {
+		return this.clientProviderType;
+	}
+
+	public void setClientProviderType(ClientProviderType clientProviderType) {
+		this.clientProviderType = clientProviderType;
 	}
 
 	public String getApiKey() {

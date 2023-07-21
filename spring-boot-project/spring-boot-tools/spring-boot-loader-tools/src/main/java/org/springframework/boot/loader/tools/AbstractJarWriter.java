@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -60,6 +61,20 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	private final Set<String> writtenEntries = new HashSet<>();
 
+	private Layers layers;
+
+	private LayersIndex layersIndex;
+
+	/**
+	 * Update this writer to use specific layers.
+	 * @param layers the layers to use
+	 * @param layersIndex the layers index to update
+	 */
+	void useLayers(Layers layers, LayersIndex layersIndex) {
+		this.layers = layers;
+		this.layersIndex = layersIndex;
+	}
+
 	/**
 	 * Write the specified manifest.
 	 * @param manifest the manifest to write
@@ -70,27 +85,26 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		writeEntry(entry, manifest::write);
 	}
 
-	/**
-	 * Write all entries from the specified jar file.
-	 * @param jarFile the source jar file
-	 * @throws IOException if the entries cannot be written
-	 */
-	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
-	}
-
-	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
-			throws IOException {
+	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+			Function<JarEntry, Library> libraryLookup) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
-			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
-			setUpEntry(jarFile, entry);
-			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
-				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
-				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
-				if (transformedEntry != null) {
-					writeEntry(transformedEntry, entryWriter, unpackHandler);
-				}
+			JarEntry entry = entries.nextElement();
+			Library library = libraryLookup.apply(entry);
+			if (library == null || library.isIncluded()) {
+				writeEntry(jarFile, entryTransformer, unpackHandler, new JarArchiveEntry(entry), library);
+			}
+		}
+	}
+
+	private void writeEntry(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+			JarArchiveEntry entry, Library library) throws IOException {
+		setUpEntry(jarFile, entry);
+		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
+			EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
+			JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
+			if (transformedEntry != null) {
+				writeEntry(transformedEntry, library, entryWriter, unpackHandler);
 			}
 		}
 	}
@@ -114,13 +128,20 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
+		try (inputStream) {
+			writeEntry(entryName, new InputStreamEntryWriter(inputStream));
+		}
+	}
+
+	/**
+	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
+	 * @param entryName the name of the entry
+	 * @param entryWriter the entry writer
+	 * @throws IOException if the write fails
+	 */
+	public void writeEntry(String entryName, EntryWriter entryWriter) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry(entryName);
-		try {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream));
-		}
-		finally {
-			inputStream.close();
-		}
+		writeEntry(entry, entryWriter);
 	}
 
 	/**
@@ -134,7 +155,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		entry.setTime(getNestedLibraryTime(library));
 		new CrcAndSize(library::openStream).setupStoredEntry(entry);
 		try (InputStream inputStream = library.openStream()) {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library));
+			writeEntry(entry, library, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library));
 		}
 	}
 
@@ -199,30 +220,39 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		try (JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()))) {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {
-				if (entry.getName().endsWith(".class")) {
+				if (isDirectoryEntry(entry) || isClassEntry(entry)) {
 					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream));
 				}
 			}
 		}
 	}
 
+	private boolean isDirectoryEntry(JarEntry entry) {
+		return entry.isDirectory() && !entry.getName().equals("META-INF/");
+	}
+
+	private boolean isClassEntry(JarEntry entry) {
+		return entry.getName().endsWith(".class");
+	}
+
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
-		writeEntry(entry, entryWriter, UnpackHandler.NEVER);
+		writeEntry(entry, null, entryWriter, UnpackHandler.NEVER);
 	}
 
 	/**
 	 * Perform the actual write of a {@link JarEntry}. All other write methods delegate to
 	 * this one.
 	 * @param entry the entry to write
+	 * @param library the library for the entry or {@code null}
 	 * @param entryWriter the entry writer or {@code null} if there is no content
 	 * @param unpackHandler handles possible unpacking for the entry
 	 * @throws IOException in case of I/O errors
 	 */
-	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler)
-			throws IOException {
+	private void writeEntry(JarArchiveEntry entry, Library library, EntryWriter entryWriter,
+			UnpackHandler unpackHandler) throws IOException {
 		String name = entry.getName();
-		writeParentFolderEntries(name);
 		if (this.writtenEntries.add(name)) {
+			writeParentDirectoryEntries(name);
 			entry.setUnixMode(name.endsWith("/") ? UNIX_DIR_MODE : UNIX_FILE_MODE);
 			entry.getGeneralPurposeBit().useUTF8ForNames(true);
 			if (!entry.isDirectory() && entry.getSize() == -1) {
@@ -230,18 +260,26 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				entry.setSize(entryWriter.size());
 			}
 			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
+			updateLayerIndex(entry, library);
 			writeToArchive(entry, entryWriter);
+		}
+	}
+
+	private void updateLayerIndex(JarArchiveEntry entry, Library library) {
+		if (this.layers != null && !entry.getName().endsWith("/")) {
+			Layer layer = (library != null) ? this.layers.getLayer(library) : this.layers.getLayer(entry.getName());
+			this.layersIndex.add(layer, entry.getName());
 		}
 	}
 
 	protected abstract void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException;
 
-	private void writeParentFolderEntries(String name) throws IOException {
+	private void writeParentDirectoryEntries(String name) throws IOException {
 		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));
 			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent + "/"), null, UnpackHandler.NEVER);
+				writeEntry(new JarArchiveEntry(parent + "/"), null, null, UnpackHandler.NEVER);
 			}
 		}
 	}
@@ -334,8 +372,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-	 * An {@code UnpackHandler} determines whether or not unpacking is required and
-	 * provides a SHA1 hash if required.
+	 * An {@code UnpackHandler} determines whether unpacking is required and provides a
+	 * SHA-1 hash if required.
 	 */
 	interface UnpackHandler {
 

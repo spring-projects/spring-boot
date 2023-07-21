@@ -9,3 +9,8 @@ bintray:
 sonatype:
   user-token: sonatype-user
   password-token: sonatype-password
+  polling-interval: 1s
+  staging-profile-id: 1a2b3c4d
+sdkman:
+  consumer-key: sdkman-consumer-key
+  consumer-token: sdkman-consumer-token

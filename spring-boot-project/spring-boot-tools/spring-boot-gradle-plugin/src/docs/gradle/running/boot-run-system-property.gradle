@@ -1,0 +1,18 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+// tag::system-property[]
+tasks.named("bootRun") {
+	systemProperty 'com.example.property', findProperty('example') ?: 'default'
+}
+// end::system-property[]
+
+tasks.register("configuredSystemProperties") {
+	doLast {
+		bootRun.systemProperties.each { k, v -> 
+			println "$k = $v"
+		}
+	}
+}

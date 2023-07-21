@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributeView;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * The {@code 'extract'} tools command.
@@ -64,8 +65,10 @@ class ExtractCommand extends Command {
 					mkDirs(new File(destination, layer));
 				}
 			}
-			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getJarFile()))) {
+			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getArchiveFile()))) {
 				ZipEntry entry = zip.getNextEntry();
+				Assert.state(entry != null, "File '" + this.context.getArchiveFile().toString()
+						+ "' is not compatible with layertools; ensure jar file is valid and launch script is not enabled");
 				while (entry != null) {
 					if (!entry.isDirectory()) {
 						String layer = this.layers.getLayer(entry);
@@ -83,14 +86,23 @@ class ExtractCommand extends Command {
 	}
 
 	private void write(ZipInputStream zip, ZipEntry entry, File destination) throws IOException {
-		String path = StringUtils.cleanPath(entry.getName());
-		File file = new File(destination, path);
-		if (file.getAbsolutePath().startsWith(destination.getAbsolutePath())) {
-			mkParentDirs(file);
-			try (OutputStream out = new FileOutputStream(file)) {
-				StreamUtils.copy(zip, out);
-			}
-			Files.setAttribute(file.toPath(), "creationTime", entry.getCreationTime());
+		String canonicalOutputPath = destination.getCanonicalPath() + File.separator;
+		File file = new File(destination, entry.getName());
+		String canonicalEntryPath = file.getCanonicalPath();
+		Assert.state(canonicalEntryPath.startsWith(canonicalOutputPath),
+				() -> "Entry '" + entry.getName() + "' would be written to '" + canonicalEntryPath
+						+ "'. This is outside the output location of '" + canonicalOutputPath
+						+ "'. Verify the contents of your archive.");
+		mkParentDirs(file);
+		try (OutputStream out = new FileOutputStream(file)) {
+			StreamUtils.copy(zip, out);
+		}
+		try {
+			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
+				.setTimes(entry.getLastModifiedTime(), entry.getLastAccessTime(), entry.getCreationTime());
+		}
+		catch (IOException ex) {
+			// File system does not support setting time attributes. Continue.
 		}
 	}
 
@@ -100,7 +112,7 @@ class ExtractCommand extends Command {
 
 	private void mkDirs(File file) throws IOException {
 		if (!file.exists() && !file.mkdirs()) {
-			throw new IOException("Unable to create folder " + file);
+			throw new IOException("Unable to create directory " + file);
 		}
 	}
 

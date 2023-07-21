@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,21 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.util.Set;
+
 import org.gradle.api.Action;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 
 /**
@@ -35,17 +42,12 @@ import org.gradle.api.tasks.Optional;
 public interface BootArchive extends Task {
 
 	/**
-	 * Returns the name of the main class of the application.
-	 * @return the main class name
+	 * Returns the fully-qualified name of the application's main class.
+	 * @return the fully-qualified name of the application's main class
+	 * @since 2.4.0
 	 */
 	@Input
-	String getMainClassName();
-
-	/**
-	 * Sets the name of the main class of the application.
-	 * @param mainClassName the name of the main class of the application
-	 */
-	void setMainClassName(String mainClassName);
+	Property<String> getMainClass();
 
 	/**
 	 * Adds Ant-style patterns that identify files that must be unpacked from the archive
@@ -67,7 +69,7 @@ public interface BootArchive extends Task {
 	 * @return the launch script configuration, or {@code null} if the launch script has
 	 * not been configured.
 	 */
-	@Input
+	@Nested
 	@Optional
 	LaunchScriptConfiguration getLaunchScript();
 
@@ -114,19 +116,21 @@ public interface BootArchive extends Task {
 	void setClasspath(FileCollection classpath);
 
 	/**
-	 * Returns {@code true} if the Devtools jar should be excluded, otherwise
-	 * {@code false}.
-	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
-	 * not
+	 * Returns the target Java version of the project (e.g. as provided by the
+	 * {@code targetCompatibility} build property).
+	 * @return the target Java version
 	 */
 	@Input
-	boolean isExcludeDevtools();
+	@Optional
+	Property<JavaVersion> getTargetJavaVersion();
 
 	/**
-	 * Sets whether or not the Devtools jar should be excluded.
-	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
-	 * {@code false} if not
+	 * Registers the given lazily provided {@code resolvedArtifacts}. They are used to map
+	 * from the files in the {@link #getClasspath classpath} to their dependency
+	 * coordinates.
+	 * @param resolvedArtifacts the lazily provided resolved artifacts
+	 * @since 3.0.7
 	 */
-	void setExcludeDevtools(boolean excludeDevtools);
+	void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts);
 
 }

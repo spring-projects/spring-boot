@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
@@ -59,23 +61,22 @@ import org.springframework.validation.annotation.Validated;
  */
 public final class ConfigurationPropertiesBean {
 
+	private static final org.springframework.boot.context.properties.bind.BindMethod JAVA_BEAN_BIND_METHOD = //
+			org.springframework.boot.context.properties.bind.BindMethod.JAVA_BEAN;
+
+	private static final org.springframework.boot.context.properties.bind.BindMethod VALUE_OBJECT_BIND_METHOD = //
+			org.springframework.boot.context.properties.bind.BindMethod.VALUE_OBJECT;
+
 	private final String name;
 
 	private final Object instance;
 
-	private final ConfigurationProperties annotation;
-
 	private final Bindable<?> bindTarget;
 
-	private final BindMethod bindMethod;
-
-	private ConfigurationPropertiesBean(String name, Object instance, ConfigurationProperties annotation,
-			Bindable<?> bindTarget) {
+	private ConfigurationPropertiesBean(String name, Object instance, Bindable<?> bindTarget) {
 		this.name = name;
 		this.instance = instance;
-		this.annotation = annotation;
 		this.bindTarget = bindTarget;
-		this.bindMethod = BindMethod.forType(bindTarget.getType().resolve());
 	}
 
 	/**
@@ -104,10 +105,13 @@ public final class ConfigurationPropertiesBean {
 
 	/**
 	 * Return the property binding method that was used for the bean.
-	 * @return the bind type
+	 * @return the bind method
+	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of {@link #asBindTarget} and
+	 * {@link Bindable#getBindMethod}
 	 */
+	@Deprecated(since = "3.0.8", forRemoval = true)
 	public BindMethod getBindMethod() {
-		return this.bindMethod;
+		return BindMethod.from(this.bindTarget.getBindMethod());
 	}
 
 	/**
@@ -117,7 +121,7 @@ public final class ConfigurationPropertiesBean {
 	 * @return the configuration properties annotation
 	 */
 	public ConfigurationProperties getAnnotation() {
-		return this.annotation;
+		return this.bindTarget.getAnnotation(ConfigurationProperties.class);
 	}
 
 	/**
@@ -139,12 +143,16 @@ public final class ConfigurationPropertiesBean {
 	 */
 	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			return getAll((ConfigurableApplicationContext) applicationContext);
+		if (applicationContext instanceof ConfigurableApplicationContext configurableContext) {
+			return getAll(configurableContext);
 		}
 		Map<String, ConfigurationPropertiesBean> propertiesBeans = new LinkedHashMap<>();
-		applicationContext.getBeansWithAnnotation(ConfigurationProperties.class)
-				.forEach((beanName, bean) -> propertiesBeans.put(beanName, get(applicationContext, bean, beanName)));
+		applicationContext.getBeansWithAnnotation(ConfigurationProperties.class).forEach((name, instance) -> {
+			ConfigurationPropertiesBean propertiesBean = get(applicationContext, instance, name);
+			if (propertiesBean != null) {
+				propertiesBeans.put(name, propertiesBean);
+			}
+		});
 		return propertiesBeans;
 	}
 
@@ -158,7 +166,9 @@ public final class ConfigurationPropertiesBean {
 				try {
 					Object bean = beanFactory.getBean(beanName);
 					ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
-					propertiesBeans.put(beanName, propertiesBean);
+					if (propertiesBean != null) {
+						propertiesBeans.put(beanName, propertiesBean);
+					}
 				}
 				catch (Exception ex) {
 				}
@@ -192,18 +202,29 @@ public final class ConfigurationPropertiesBean {
 	 * @param applicationContext the source application context
 	 * @param bean the bean to consider
 	 * @param beanName the bean name
-	 * @return a configuration properties bean or {@code null} if the neither the bean or
+	 * @return a configuration properties bean or {@code null} if the neither the bean nor
 	 * factory method are annotated with
 	 * {@link ConfigurationProperties @ConfigurationProperties}
 	 */
 	public static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
 		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
-		return create(beanName, bean, bean.getClass(), factoryMethod);
+		Bindable<Object> bindTarget = createBindTarget(bean, bean.getClass(), factoryMethod);
+		if (bindTarget == null) {
+			return null;
+		}
+		bindTarget = bindTarget.withBindMethod(BindMethodAttribute.get(applicationContext, beanName));
+		if (bindTarget.getBindMethod() == null && factoryMethod != null) {
+			bindTarget = bindTarget.withBindMethod(JAVA_BEAN_BIND_METHOD);
+		}
+		if (bindTarget.getBindMethod() != VALUE_OBJECT_BIND_METHOD) {
+			bindTarget = bindTarget.withExistingValue(bean);
+		}
+		return create(beanName, bean, bindTarget);
 	}
 
 	private static Method findFactoryMethod(ApplicationContext applicationContext, String beanName) {
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			return findFactoryMethod((ConfigurableApplicationContext) applicationContext, beanName);
+		if (applicationContext instanceof ConfigurableApplicationContext configurableContext) {
+			return findFactoryMethod(configurableContext, beanName);
 		}
 		return null;
 	}
@@ -215,8 +236,8 @@ public final class ConfigurationPropertiesBean {
 	private static Method findFactoryMethod(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
-			if (beanDefinition instanceof RootBeanDefinition) {
-				Method resolvedFactoryMethod = ((RootBeanDefinition) beanDefinition).getResolvedFactoryMethod();
+			if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
+				Method resolvedFactoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
 				if (resolvedFactoryMethod != null) {
 					return resolvedFactoryMethod;
 				}
@@ -246,28 +267,27 @@ public final class ConfigurationPropertiesBean {
 		return factoryMethod.get();
 	}
 
-	static ConfigurationPropertiesBean forValueObject(Class<?> beanClass, String beanName) {
-		ConfigurationPropertiesBean propertiesBean = create(beanName, null, beanClass, null);
-		Assert.state(propertiesBean != null && propertiesBean.getBindMethod() == BindMethod.VALUE_OBJECT,
-				"Bean '" + beanName + "' is not a @ConfigurationProperties value object");
-		return propertiesBean;
+	static ConfigurationPropertiesBean forValueObject(Class<?> beanType, String beanName) {
+		Bindable<Object> bindTarget = createBindTarget(null, beanType, null);
+		Assert.state(bindTarget != null && deduceBindMethod(bindTarget) == VALUE_OBJECT_BIND_METHOD,
+				() -> "Bean '" + beanName + "' is not a @ConfigurationProperties value object");
+		return create(beanName, null, bindTarget.withBindMethod(VALUE_OBJECT_BIND_METHOD));
 	}
 
-	private static ConfigurationPropertiesBean create(String name, Object instance, Class<?> type, Method factory) {
+	private static Bindable<Object> createBindTarget(Object bean, Class<?> beanType, Method factoryMethod) {
+		ResolvableType type = (factoryMethod != null) ? ResolvableType.forMethodReturnType(factoryMethod)
+				: ResolvableType.forClass(beanType);
+		Annotation[] annotations = findAnnotations(bean, beanType, factoryMethod);
+		return (annotations != null) ? Bindable.of(type).withAnnotations(annotations) : null;
+	}
+
+	private static Annotation[] findAnnotations(Object instance, Class<?> type, Method factory) {
 		ConfigurationProperties annotation = findAnnotation(instance, type, factory, ConfigurationProperties.class);
 		if (annotation == null) {
 			return null;
 		}
 		Validated validated = findAnnotation(instance, type, factory, Validated.class);
-		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
-				: new Annotation[] { annotation };
-		ResolvableType bindType = (factory != null) ? ResolvableType.forMethodReturnType(factory)
-				: ResolvableType.forClass(type);
-		Bindable<Object> bindTarget = Bindable.of(bindType).withAnnotations(annotations);
-		if (instance != null) {
-			bindTarget = bindTarget.withExistingValue(instance);
-		}
-		return new ConfigurationPropertiesBean(name, instance, annotation, bindTarget);
+		return (validated != null) ? new Annotation[] { annotation, validated } : new Annotation[] { annotation };
 	}
 
 	private static <A extends Annotation> A findAnnotation(Object instance, Class<?> type, Method factory,
@@ -281,7 +301,7 @@ public final class ConfigurationPropertiesBean {
 		}
 		if (!annotation.isPresent() && AopUtils.isAopProxy(instance)) {
 			annotation = MergedAnnotations.from(AopUtils.getTargetClass(instance), SearchStrategy.TYPE_HIERARCHY)
-					.get(annotationType);
+				.get(annotationType);
 		}
 		return annotation.isPresent() ? annotation.synthesize() : null;
 	}
@@ -292,9 +312,40 @@ public final class ConfigurationPropertiesBean {
 				: MergedAnnotation.missing();
 	}
 
+	private static ConfigurationPropertiesBean create(String name, Object instance, Bindable<Object> bindTarget) {
+		return (bindTarget != null) ? new ConfigurationPropertiesBean(name, instance, bindTarget) : null;
+	}
+
+	/**
+	 * Deduce the {@code BindMethod} that should be used for the given type.
+	 * @param type the source type
+	 * @return the bind method to use
+	 */
+	static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(Class<?> type) {
+		return deduceBindMethod(BindConstructorProvider.DEFAULT.getBindConstructor(type, false));
+	}
+
+	/**
+	 * Deduce the {@code BindMethod} that should be used for the given {@link Bindable}.
+	 * @param bindable the source bindable
+	 * @return the bind method to use
+	 */
+	static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(Bindable<Object> bindable) {
+		return deduceBindMethod(BindConstructorProvider.DEFAULT.getBindConstructor(bindable, false));
+	}
+
+	private static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(
+			Constructor<?> bindConstructor) {
+		return (bindConstructor != null) ? VALUE_OBJECT_BIND_METHOD : JAVA_BEAN_BIND_METHOD;
+	}
+
 	/**
 	 * The binding method that is used for the bean.
+	 *
+	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of
+	 * {@link org.springframework.boot.context.properties.bind.BindMethod}
 	 */
+	@Deprecated(since = "3.0.8", forRemoval = true)
 	public enum BindMethod {
 
 		/**
@@ -307,9 +358,14 @@ public final class ConfigurationPropertiesBean {
 		 */
 		VALUE_OBJECT;
 
-		static BindMethod forType(Class<?> type) {
-			return (ConfigurationPropertiesBindConstructorProvider.INSTANCE.getBindConstructor(type, false) != null)
-					? VALUE_OBJECT : JAVA_BEAN;
+		static BindMethod from(org.springframework.boot.context.properties.bind.BindMethod bindMethod) {
+			if (bindMethod == null) {
+				return null;
+			}
+			return switch (bindMethod) {
+				case VALUE_OBJECT -> BindMethod.VALUE_OBJECT;
+				case JAVA_BEAN -> BindMethod.JAVA_BEAN;
+			};
 		}
 
 	}

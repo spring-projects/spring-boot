@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) {
 		this.hazelcast.executeTransaction((context) -> {
-			builder.up().withDetail("name", this.hazelcast.getName()).withDetail("uuid",
-					this.hazelcast.getLocalEndpoint().getUuid());
+			String uuid = this.hazelcast.getLocalEndpoint().getUuid().toString();
+			builder.up().withDetail("name", this.hazelcast.getName()).withDetail("uuid", uuid);
 			return null;
 		});
 	}

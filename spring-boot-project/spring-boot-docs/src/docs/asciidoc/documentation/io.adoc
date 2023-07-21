@@ -1,0 +1,11 @@
+[[documentation.io]]
+== IO
+If your application needs IO capabilities, see one or more of the following sections:
+
+* *Caching:* <<io#io.caching, Caching support with EhCache, Hazelcast, Infinispan, and more>>
+* *Quartz:* <<io#io.quartz, Quartz Scheduling>>
+* *Mail:* <<io#io.email, Sending Email>>
+* *Validation:* <<io#io.validation, JSR-303 Validation>>
+* *REST Clients:* <<io#io.rest-client, Calling REST Services with RestTemplate and WebClient>>
+* *Webservices:* <<io#io.webservices, Auto-configuration for Spring Web Services>>
+* *JTA:* <<io#io.jta, Distributed Transactions with JTA>>

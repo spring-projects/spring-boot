@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.maven;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
+import org.assertj.core.api.ListAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
@@ -35,6 +44,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * Base class for archive (jar or war) related Maven plugin integration tests.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 abstract class AbstractArchiveIntegrationTests {
 
@@ -48,10 +58,10 @@ abstract class AbstractArchiveIntegrationTests {
 	}
 
 	protected AssertProvider<JarAssert> jar(File file) {
-		return new AssertProvider<JarAssert>() {
+		return new AssertProvider<>() {
 
 			@Override
-			@Deprecated
+			@Deprecated(since = "2.3.0", forRemoval = false)
 			public JarAssert assertThat() {
 				return new JarAssert(file);
 			}
@@ -59,11 +69,57 @@ abstract class AbstractArchiveIntegrationTests {
 		};
 	}
 
+	protected Map<String, List<String>> readLayerIndex(JarFile jarFile) throws IOException {
+		if (getLayersIndexLocation() == null) {
+			return Collections.emptyMap();
+		}
+		Map<String, List<String>> index = new LinkedHashMap<>();
+		String layerPrefix = "- ";
+		String entryPrefix = "  - ";
+		ZipEntry indexEntry = jarFile.getEntry(getLayersIndexLocation());
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
+			String line = reader.readLine();
+			String layer = null;
+			while (line != null) {
+				if (line.startsWith(layerPrefix)) {
+					layer = line.substring(layerPrefix.length() + 1, line.length() - 2);
+					index.put(layer, new ArrayList<>());
+				}
+				else if (line.startsWith(entryPrefix)) {
+					index.computeIfAbsent(layer, (key) -> new ArrayList<>())
+						.add(line.substring(entryPrefix.length() + 1, line.length() - 1));
+				}
+				line = reader.readLine();
+			}
+			return index;
+		}
+	}
+
+	protected String getLayersIndexLocation() {
+		return null;
+	}
+
+	protected List<String> readClasspathIndex(JarFile jarFile, String location) throws IOException {
+		List<String> index = new ArrayList<>();
+		String entryPrefix = "- ";
+		ZipEntry indexEntry = jarFile.getEntry(location);
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
+			String line = reader.readLine();
+			while (line != null) {
+				if (line.startsWith(entryPrefix)) {
+					index.add(line.substring(entryPrefix.length() + 1, line.length() - 1));
+				}
+				line = reader.readLine();
+			}
+		}
+		return index;
+	}
+
 	static final class JarAssert extends AbstractAssert<JarAssert, File> {
 
 		private JarAssert(File actual) {
 			super(actual, JarAssert.class);
-			assertThat(actual.exists());
+			assertThat(actual).exists();
 		}
 
 		JarAssert doesNotHaveEntryWithName(String name) {
@@ -90,7 +146,7 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
-							.findFirst();
+						.findFirst();
 					assertThat(match).hasValueSatisfying((entry) -> assertThat(entry.getComment()).isNull());
 				});
 			});
@@ -101,9 +157,9 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
-							.findFirst();
+						.findFirst();
 					assertThat(match).as("Name starting with %s", prefix)
-							.hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
+						.hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
 				});
 			});
 			return this;
@@ -113,11 +169,20 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
-							.findFirst();
+						.findFirst();
 					assertThat(match).isNotPresent();
 				});
 			});
 			return this;
+		}
+
+		ListAssert<String> entryNamesInPath(String path) {
+			List<String> matches = new ArrayList<>();
+			withJarFile((jarFile) -> withEntries(jarFile,
+					(entries) -> matches.addAll(entries.map(ZipEntry::getName)
+						.filter((name) -> name.startsWith(path) && name.length() > path.length())
+						.toList())));
+			return new ListAssert<>(matches);
 		}
 
 		JarAssert manifest(Consumer<ManifestAssert> consumer) {
@@ -163,6 +228,11 @@ abstract class AbstractArchiveIntegrationTests {
 
 			ManifestAssert hasAttribute(String name, String value) {
 				assertThat(this.actual.getMainAttributes().getValue(name)).isEqualTo(value);
+				return this;
+			}
+
+			ManifestAssert doesNotHaveAttribute(String name) {
+				assertThat(this.actual.getMainAttributes().getValue(name)).isNull();
 				return this;
 			}
 

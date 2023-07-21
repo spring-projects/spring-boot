@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.springframework.boot.devtools.remote.client;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,6 @@ import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
-import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration.LiveReloadConfiguration;
 import org.springframework.boot.devtools.remote.server.Dispatcher;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
@@ -52,8 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RemoteClientConfiguration}.
@@ -98,7 +98,7 @@ class RemoteClientConfigurationTests {
 	@Test
 	void failIfNoSecret() {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> configure("http://localhost", false))
-				.withMessageContaining("required to secure your connection");
+			.withMessageContaining("required to secure your connection");
 	}
 
 	@Test
@@ -107,25 +107,22 @@ class RemoteClientConfigurationTests {
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.clientContext.publishEvent(event);
-		LiveReloadConfiguration configuration = this.clientContext.getBean(LiveReloadConfiguration.class);
-		configuration.getExecutor().shutdown();
-		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
 		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
-		verify(server).triggerReload();
+		Awaitility.await().atMost(Duration.ofMinutes(1)).untilAsserted(() -> then(server).should().triggerReload());
 	}
 
 	@Test
 	void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
+			.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
 	void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
+			.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	private void configure(String... pairs) {
@@ -156,7 +153,9 @@ class RemoteClientConfigurationTests {
 
 		@Bean
 		TomcatServletWebServerFactory tomcat() {
-			return new TomcatServletWebServerFactory(0);
+			TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+			webServerFactory.setRegisterDefaultServlet(true);
+			return webServerFactory;
 		}
 
 		@Bean

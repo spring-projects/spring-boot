@@ -30,7 +30,7 @@ import java.io.InputStream;
 interface InputStreamSupplier {
 
 	/**
-	 * Returns a new open {@link InputStream} at the begining of the content.
+	 * Returns a new open {@link InputStream} at the beginning of the content.
 	 * @return a new {@link InputStream}
 	 * @throws IOException on IO error
 	 */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.archive.ExplodedArchive;
 
 /**
  * Base class for executable archive {@link Launcher}s.
@@ -31,6 +33,7 @@ import org.springframework.boot.loader.archive.Archive;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
@@ -38,6 +41,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	protected static final String BOOT_CLASSPATH_INDEX_ATTRIBUTE = "Spring-Boot-Classpath-Index";
+
+	protected static final String DEFAULT_CLASSPATH_INDEX_FILE_NAME = "classpath.idx";
 
 	private final Archive archive;
 
@@ -64,7 +69,19 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
+		// Only needed for exploded archives, regular ones already have a defined order
+		if (archive instanceof ExplodedArchive) {
+			String location = getClassPathIndexFileLocation(archive);
+			return ClassPathIndexFile.loadIfPossible(archive.getUrl(), location);
+		}
 		return null;
+	}
+
+	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
+		Manifest manifest = archive.getManifest();
+		Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
+		String location = (attributes != null) ? attributes.getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE) : null;
+		return (location != null) ? location : getArchiveEntryPathPrefix() + DEFAULT_CLASSPATH_INDEX_FILE_NAME;
 	}
 
 	@Override
@@ -89,7 +106,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		if (this.classPathIndex != null) {
 			urls.addAll(this.classPathIndex.getUrls());
 		}
-		return super.createClassLoader(urls.toArray(new URL[0]));
+		return createClassLoader(urls.toArray(new URL[0]));
 	}
 
 	private int guessClassPathSize() {
@@ -130,25 +147,30 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Determine if the specified entry is a candidate for further searching.
 	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a candidate for further searching
+	 * @since 2.3.0
 	 */
 	protected boolean isSearchCandidate(Archive.Entry entry) {
-		return true;
+		if (getArchiveEntryPathPrefix() == null) {
+			return true;
+		}
+		return entry.getName().startsWith(getArchiveEntryPathPrefix());
 	}
 
 	/**
 	 * Determine if the specified entry is a nested item that should be added to the
 	 * classpath.
 	 * @param entry the entry to check
-	 * @return {@code true} if the entry is a nested item (jar or folder)
+	 * @return {@code true} if the entry is a nested item (jar or directory)
 	 */
 	protected abstract boolean isNestedArchive(Archive.Entry entry);
 
 	/**
-	 * Return if post processing needs to be applied to the archives. For back
+	 * Return if post-processing needs to be applied to the archives. For back
 	 * compatibility this method returns {@code true}, but subclasses that don't override
 	 * {@link #postProcessClassPathArchives(List)} should provide an implementation that
 	 * returns {@code false}.
 	 * @return if the {@link #postProcessClassPathArchives(List)} method is implemented
+	 * @since 2.3.0
 	 */
 	protected boolean isPostProcessingClassPathArchives() {
 		return true;
@@ -158,10 +180,18 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Called to post-process archive entries before they are used. Implementations can
 	 * add and remove entries.
 	 * @param archives the archives
-	 * @throws Exception if the post processing fails
+	 * @throws Exception if the post-processing fails
 	 * @see #isPostProcessingClassPathArchives()
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+	}
+
+	/**
+	 * Return the path prefix for entries in the archive.
+	 * @return the path prefix
+	 */
+	protected String getArchiveEntryPathPrefix() {
+		return null;
 	}
 
 	@Override
@@ -169,10 +199,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return this.archive.isExploded();
 	}
 
-	/**
-	 * Return the root archive.
-	 * @return the root archive
-	 */
+	@Override
 	protected final Archive getArchive() {
 		return this.archive;
 	}

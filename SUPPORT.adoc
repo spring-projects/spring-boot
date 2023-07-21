@@ -21,6 +21,6 @@ If you want to discuss something or have a question that isn't suited to Stack O
 the Spring Boot community chat in the
 https://gitter.im/spring-projects/spring-boot[#spring-boot room on Gitter].
 
-== Pivotal Open Source Software Support
-If you are interested in more dedicated support, Pivotal provides
-https://pivotal.io/support/oss[premium support] for Spring Boot.
+== VMware Open Source Software Support
+If you are interested in more dedicated support, VMware provides
+https://spring.io/support[premium support] for Spring Boot.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,9 @@ class SampleDataJdbcApplicationTests {
 
 	@Test
 	void testCustomers() throws Exception {
-		this.mvc.perform(get("/").param("name", "merEDith")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("Meredith")));
+		this.mvc.perform(get("/").param("name", "merEDith"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("Meredith")));
 	}
 
 }

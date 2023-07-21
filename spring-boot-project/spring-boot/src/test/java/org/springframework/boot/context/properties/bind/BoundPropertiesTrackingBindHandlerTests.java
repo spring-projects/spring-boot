@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,27 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link BoundPropertiesTrackingBindHandler}.
  *
  * @author Madhura Bhave
  */
-public class BoundPropertiesTrackingBindHandlerTests {
+@ExtendWith(MockitoExtension.class)
+class BoundPropertiesTrackingBindHandlerTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private BoundPropertiesTrackingBindHandler handler;
 
@@ -52,7 +53,6 @@ public class BoundPropertiesTrackingBindHandlerTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.binder = new Binder(this.sources);
 		this.handler = new BoundPropertiesTrackingBindHandler(this.consumer);
 	}
@@ -61,8 +61,8 @@ public class BoundPropertiesTrackingBindHandlerTests {
 	void handlerShouldCallRecordBindingIfConfigurationPropertyIsNotNull() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
 		this.binder.bind("foo", Bindable.of(ExampleBean.class), this.handler);
-		verify(this.consumer, times(1)).accept(any(ConfigurationProperty.class));
-		verify(this.consumer, never()).accept(null);
+		then(this.consumer).should().accept(any(ConfigurationProperty.class));
+		then(this.consumer).should(never()).accept(null);
 	}
 
 	static class ExampleBean {

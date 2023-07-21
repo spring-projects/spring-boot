@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -92,8 +93,11 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		MutablePropertySources propertySources = environment.getPropertySources();
-		propertySources.stream().map(JsonPropertyValue::get).filter(Objects::nonNull).findFirst()
-				.ifPresent((v) -> processJson(environment, v));
+		propertySources.stream()
+			.map(JsonPropertyValue::get)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.ifPresent((v) -> processJson(environment, v));
 	}
 
 	private void processJson(ConfigurableEnvironment environment, JsonPropertyValue propertyValue) {
@@ -123,9 +127,17 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	@SuppressWarnings("unchecked")
 	private void extract(String name, Map<String, Object> result, Object value) {
 		if (value instanceof Map) {
+			if (CollectionUtils.isEmpty((Map<?, ?>) value)) {
+				result.put(name, value);
+				return;
+			}
 			flatten(name, result, (Map<String, Object>) value);
 		}
 		else if (value instanceof Collection) {
+			if (CollectionUtils.isEmpty((Collection<?>) value)) {
+				result.put(name, value);
+				return;
+			}
 			int index = 0;
 			for (Object object : (Collection<Object>) value) {
 				extract(name + "[" + index + "]", result, object);
@@ -151,8 +163,9 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	private String findPropertySource(MutablePropertySources sources) {
 		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)) {
 			PropertySource<?> servletPropertySource = sources.stream()
-					.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName())).findFirst()
-					.orElse(null);
+				.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName()))
+				.findFirst()
+				.orElse(null);
 			if (servletPropertySource != null) {
 				return servletPropertySource.getName();
 			}
@@ -204,8 +217,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 		static JsonPropertyValue get(PropertySource<?> propertySource) {
 			for (String candidate : CANDIDATES) {
 				Object value = propertySource.getProperty(candidate);
-				if (value instanceof String && StringUtils.hasLength((String) value)) {
-					return new JsonPropertyValue(propertySource, candidate, (String) value);
+				if (value instanceof String string && StringUtils.hasLength(string)) {
+					return new JsonPropertyValue(propertySource, candidate, string);
 				}
 			}
 			return null;

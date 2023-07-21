@@ -2,17 +2,17 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
 	java
-	id("org.springframework.boot") version "{version}"
+	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
 // tag::launch[]
-tasks.getByName<BootRun>("bootRun") {
-	isOptimizedLaunch = false
+tasks.named<BootRun>("bootRun") {
+	optimizedLaunch.set(false)
 }
 // end::launch[]
 
-task("optimizedLaunch") {
+tasks.register("optimizedLaunch") {
 	doLast {
-		println(tasks.getByName<BootRun>("bootRun").isOptimizedLaunch)
+		println(tasks.getByName<BootRun>("bootRun").optimizedLaunch.get())
 	}
 }

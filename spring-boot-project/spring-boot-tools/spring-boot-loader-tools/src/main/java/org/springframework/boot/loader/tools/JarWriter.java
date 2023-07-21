@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.HashSet;
-import java.util.Set;
+import java.nio.file.attribute.FileTime;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -38,11 +34,14 @@ import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 
 	private final JarArchiveOutputStream jarOutputStream;
+
+	private final FileTime lastModifiedTime;
 
 	/**
 	 * Create a new {@link JarWriter} instance.
@@ -62,30 +61,37 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	 * @throws FileNotFoundException if the file cannot be found
 	 */
 	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException, IOException {
-		FileOutputStream fileOutputStream = new FileOutputStream(file);
-		if (launchScript != null) {
-			fileOutputStream.write(launchScript.toByteArray());
-			setExecutableFilePermission(file);
-		}
-		this.jarOutputStream = new JarArchiveOutputStream(fileOutputStream);
-		this.jarOutputStream.setEncoding("UTF-8");
+		this(file, launchScript, null);
 	}
 
-	private void setExecutableFilePermission(File file) {
-		try {
-			Path path = file.toPath();
-			Set<PosixFilePermission> permissions = new HashSet<>(Files.getPosixFilePermissions(path));
-			permissions.add(PosixFilePermission.OWNER_EXECUTE);
-			Files.setPosixFilePermissions(path, permissions);
+	/**
+	 * Create a new {@link JarWriter} instance.
+	 * @param file the file to write
+	 * @param launchScript an optional launch script to prepend to the front of the jar
+	 * @param lastModifiedTime an optional last modified time to apply to the written
+	 * entries
+	 * @throws IOException if the file cannot be opened
+	 * @throws FileNotFoundException if the file cannot be found
+	 * @since 2.3.0
+	 */
+	public JarWriter(File file, LaunchScript launchScript, FileTime lastModifiedTime)
+			throws FileNotFoundException, IOException {
+		this.jarOutputStream = new JarArchiveOutputStream(new FileOutputStream(file));
+		if (launchScript != null) {
+			this.jarOutputStream.writePreamble(launchScript.toByteArray());
+			file.setExecutable(true);
 		}
-		catch (Throwable ex) {
-			// Ignore and continue creating the jar
-		}
+		this.jarOutputStream.setEncoding("UTF-8");
+		this.lastModifiedTime = lastModifiedTime;
 	}
 
 	@Override
 	protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
-		this.jarOutputStream.putArchiveEntry(asJarArchiveEntry(entry));
+		JarArchiveEntry jarEntry = asJarArchiveEntry(entry);
+		if (this.lastModifiedTime != null) {
+			jarEntry.setTime(DefaultTimeZoneOffset.INSTANCE.removeFrom(this.lastModifiedTime).toMillis());
+		}
+		this.jarOutputStream.putArchiveEntry(jarEntry);
 		if (entryWriter != null) {
 			entryWriter.write(this.jarOutputStream);
 		}
@@ -93,8 +99,8 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	}
 
 	private JarArchiveEntry asJarArchiveEntry(ZipEntry entry) throws ZipException {
-		if (entry instanceof JarArchiveEntry) {
-			return (JarArchiveEntry) entry;
+		if (entry instanceof JarArchiveEntry jarArchiveEntry) {
+			return jarArchiveEntry;
 		}
 		return new JarArchiveEntry(entry);
 	}

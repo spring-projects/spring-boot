@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -27,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -41,6 +40,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class RequestPredicateFactory {
 
@@ -53,9 +53,11 @@ class RequestPredicateFactory {
 
 	WebOperationRequestPredicate getRequestPredicate(String rootPath, DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
-		Parameter[] selectorParameters = Arrays.stream(method.getParameters()).filter(this::hasSelector)
-				.toArray(Parameter[]::new);
-		Parameter allRemainingPathSegmentsParameter = getAllRemainingPathSegmentsParameter(selectorParameters);
+		OperationParameter[] selectorParameters = operationMethod.getParameters()
+			.stream()
+			.filter(this::hasSelector)
+			.toArray(OperationParameter[]::new);
+		OperationParameter allRemainingPathSegmentsParameter = getAllRemainingPathSegmentsParameter(selectorParameters);
 		String path = getPath(rootPath, selectorParameters, allRemainingPathSegmentsParameter != null);
 		WebEndpointHttpMethod httpMethod = determineHttpMethod(operationMethod.getOperationType());
 		Collection<String> consumes = getConsumes(httpMethod, method);
@@ -63,9 +65,9 @@ class RequestPredicateFactory {
 		return new WebOperationRequestPredicate(path, httpMethod, consumes, produces);
 	}
 
-	private Parameter getAllRemainingPathSegmentsParameter(Parameter[] selectorParameters) {
-		Parameter trailingPathsParameter = null;
-		for (Parameter selectorParameter : selectorParameters) {
+	private OperationParameter getAllRemainingPathSegmentsParameter(OperationParameter[] selectorParameters) {
+		OperationParameter trailingPathsParameter = null;
+		for (OperationParameter selectorParameter : selectorParameters) {
 			Selector selector = selectorParameter.getAnnotation(Selector.class);
 			if (selector.match() == Match.ALL_REMAINING) {
 				Assert.state(trailingPathsParameter == null,
@@ -80,7 +82,8 @@ class RequestPredicateFactory {
 		return trailingPathsParameter;
 	}
 
-	private String getPath(String rootPath, Parameter[] selectorParameters, boolean matchRemainingPathSegments) {
+	private String getPath(String rootPath, OperationParameter[] selectorParameters,
+			boolean matchRemainingPathSegments) {
 		StringBuilder path = new StringBuilder(rootPath);
 		for (int i = 0; i < selectorParameters.length; i++) {
 			path.append("/{");
@@ -93,7 +96,7 @@ class RequestPredicateFactory {
 		return path.toString();
 	}
 
-	private boolean hasSelector(Parameter parameter) {
+	private boolean hasSelector(OperationParameter parameter) {
 		return parameter.getAnnotation(Selector.class) != null;
 	}
 
@@ -130,7 +133,7 @@ class RequestPredicateFactory {
 
 	private boolean consumesRequestBody(Method method) {
 		return Stream.of(method.getParameters())
-				.anyMatch((parameter) -> parameter.getAnnotation(Selector.class) == null);
+			.anyMatch((parameter) -> parameter.getAnnotation(Selector.class) == null);
 	}
 
 	private WebEndpointHttpMethod determineHttpMethod(OperationType operationType) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.tests;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,13 +59,16 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 		File standardOut = new File(this.outputDirectory, name + ".out");
 		File standardError = new File(this.outputDirectory, name + ".err");
 		Process process = new ProcessBuilder(StringUtils.toStringArray(command)).redirectError(standardError)
-				.redirectOutput(standardOut).start();
+			.redirectOutput(standardOut)
+			.start();
 		return new LaunchedJvm(process, standardOut, standardError);
 	}
 
 	static class LaunchedJvm {
 
 		private final Process process;
+
+		private final Instant launchTime = Instant.now();
 
 		private final File standardOut;
 
@@ -78,6 +82,10 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 
 		Process getProcess() {
 			return this.process;
+		}
+
+		Instant getLaunchTime() {
+			return this.launchTime;
 		}
 
 		File getStandardOut() {

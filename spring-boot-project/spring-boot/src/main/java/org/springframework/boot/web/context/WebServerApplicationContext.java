@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,22 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @since 2.1.8
 	 */
 	static boolean hasServerNamespace(ApplicationContext context, String serverNamespace) {
-		return (context instanceof WebServerApplicationContext) && ObjectUtils
-				.nullSafeEquals(((WebServerApplicationContext) context).getServerNamespace(), serverNamespace);
+		return (context instanceof WebServerApplicationContext webServerApplicationContext)
+				&& ObjectUtils.nullSafeEquals(webServerApplicationContext.getServerNamespace(), serverNamespace);
+	}
+
+	/**
+	 * Returns the server namespace if the specified context is a
+	 * {@link WebServerApplicationContext}.
+	 * @param context the context
+	 * @return the server namespace or {@code null} if the context is not a
+	 * {@link WebServerApplicationContext}
+	 * @since 2.6.0
+	 */
+	static String getServerNamespace(ApplicationContext context) {
+		return (context instanceof WebServerApplicationContext configurableContext)
+				? configurableContext.getServerNamespace() : null;
+
 	}
 
 }

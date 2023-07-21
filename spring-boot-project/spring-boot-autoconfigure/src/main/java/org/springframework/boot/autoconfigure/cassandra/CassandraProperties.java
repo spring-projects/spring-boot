@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,12 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-import org.springframework.boot.convert.DurationUnit;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Cassandra.
@@ -35,10 +31,16 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.data.cassandra")
+@ConfigurationProperties(prefix = "spring.cassandra")
 public class CassandraProperties {
+
+	/**
+	 * Location of the configuration file to use.
+	 */
+	private Resource config;
 
 	/**
 	 * Keyspace name to use.
@@ -51,9 +53,15 @@ public class CassandraProperties {
 	private String sessionName;
 
 	/**
-	 * Cluster node addresses in the form 'host:port'.
+	 * Cluster node addresses in the form 'host:port', or a simple 'host' to use the
+	 * configured port.
 	 */
-	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("127.0.0.1:9042"));
+	private List<String> contactPoints;
+
+	/**
+	 * Port to use if a contact point does not specify one.
+	 */
+	private int port = 9042;
 
 	/**
 	 * Datacenter that is considered "local". Contact points should be from this
@@ -74,32 +82,7 @@ public class CassandraProperties {
 	/**
 	 * Compression supported by the Cassandra binary protocol.
 	 */
-	private Compression compression = Compression.NONE;
-
-	/**
-	 * Queries consistency level.
-	 */
-	private DefaultConsistencyLevel consistencyLevel;
-
-	/**
-	 * Queries serial consistency level.
-	 */
-	private DefaultConsistencyLevel serialConsistencyLevel;
-
-	/**
-	 * Queries default page size.
-	 */
-	private int pageSize = 5000;
-
-	/**
-	 * Socket option: connection time out.
-	 */
-	private Duration connectTimeout;
-
-	/**
-	 * Socket option: read time out.
-	 */
-	private Duration readTimeout;
+	private Compression compression;
 
 	/**
 	 * Schema action to take at startup.
@@ -107,14 +90,37 @@ public class CassandraProperties {
 	private String schemaAction = "none";
 
 	/**
-	 * Enable SSL support.
+	 * SSL configuration.
 	 */
-	private boolean ssl = false;
+	private Ssl ssl = new Ssl();
+
+	/**
+	 * Connection configuration.
+	 */
+	private final Connection connection = new Connection();
 
 	/**
 	 * Pool configuration.
 	 */
 	private final Pool pool = new Pool();
+
+	/**
+	 * Request configuration.
+	 */
+	private final Request request = new Request();
+
+	/**
+	 * Control connection configuration.
+	 */
+	private final Controlconnection controlconnection = new Controlconnection();
+
+	public Resource getConfig() {
+		return this.config;
+	}
+
+	public void setConfig(Resource config) {
+		this.config = config;
+	}
 
 	public String getKeyspaceName() {
 		return this.keyspaceName;
@@ -132,19 +138,20 @@ public class CassandraProperties {
 		this.sessionName = sessionName;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.session-name")
-	public String getClusterName() {
-		return getSessionName();
-	}
-
-	@Deprecated
-	public void setClusterName(String clusterName) {
-		setSessionName(clusterName);
-	}
-
 	public List<String> getContactPoints() {
 		return this.contactPoints;
+	}
+
+	public void setContactPoints(List<String> contactPoints) {
+		this.contactPoints = contactPoints;
+	}
+
+	public int getPort() {
+		return this.port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public String getLocalDatacenter() {
@@ -179,62 +186,11 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	public DefaultConsistencyLevel getConsistencyLevel() {
-		return this.consistencyLevel;
-	}
-
-	public void setConsistencyLevel(DefaultConsistencyLevel consistency) {
-		this.consistencyLevel = consistency;
-	}
-
-	public DefaultConsistencyLevel getSerialConsistencyLevel() {
-		return this.serialConsistencyLevel;
-	}
-
-	public void setSerialConsistencyLevel(DefaultConsistencyLevel serialConsistency) {
-		this.serialConsistencyLevel = serialConsistency;
-	}
-
-	public int getPageSize() {
-		return this.pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.page-size")
-	public int getFetchSize() {
-		return getPageSize();
-	}
-
-	@Deprecated
-	public void setFetchSize(int fetchSize) {
-		setPageSize(fetchSize);
-	}
-
-	public Duration getConnectTimeout() {
-		return this.connectTimeout;
-	}
-
-	public void setConnectTimeout(Duration connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
-
-	public Duration getReadTimeout() {
-		return this.readTimeout;
-	}
-
-	public void setReadTimeout(Duration readTimeout) {
-		this.readTimeout = readTimeout;
-	}
-
-	public boolean isSsl() {
+	public Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(boolean ssl) {
+	public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
 	}
 
@@ -246,8 +202,143 @@ public class CassandraProperties {
 		this.schemaAction = schemaAction;
 	}
 
+	public Connection getConnection() {
+		return this.connection;
+	}
+
 	public Pool getPool() {
 		return this.pool;
+	}
+
+	public Request getRequest() {
+		return this.request;
+	}
+
+	public Controlconnection getControlconnection() {
+		return this.controlconnection;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support.
+		 */
+		private Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
+		}
+
+	}
+
+	public static class Connection {
+
+		/**
+		 * Timeout to use when establishing driver connections.
+		 */
+		private Duration connectTimeout;
+
+		/**
+		 * Timeout to use for internal queries that run as part of the initialization
+		 * process, just after a connection is opened.
+		 */
+		private Duration initQueryTimeout;
+
+		public Duration getConnectTimeout() {
+			return this.connectTimeout;
+		}
+
+		public void setConnectTimeout(Duration connectTimeout) {
+			this.connectTimeout = connectTimeout;
+		}
+
+		public Duration getInitQueryTimeout() {
+			return this.initQueryTimeout;
+		}
+
+		public void setInitQueryTimeout(Duration initQueryTimeout) {
+			this.initQueryTimeout = initQueryTimeout;
+		}
+
+	}
+
+	public static class Request {
+
+		/**
+		 * How long the driver waits for a request to complete.
+		 */
+		private Duration timeout;
+
+		/**
+		 * Queries consistency level.
+		 */
+		private DefaultConsistencyLevel consistency;
+
+		/**
+		 * Queries serial consistency level.
+		 */
+		private DefaultConsistencyLevel serialConsistency;
+
+		/**
+		 * How many rows will be retrieved simultaneously in a single network round-trip.
+		 */
+		private Integer pageSize;
+
+		private final Throttler throttler = new Throttler();
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+		public DefaultConsistencyLevel getConsistency() {
+			return this.consistency;
+		}
+
+		public void setConsistency(DefaultConsistencyLevel consistency) {
+			this.consistency = consistency;
+		}
+
+		public DefaultConsistencyLevel getSerialConsistency() {
+			return this.serialConsistency;
+		}
+
+		public void setSerialConsistency(DefaultConsistencyLevel serialConsistency) {
+			this.serialConsistency = serialConsistency;
+		}
+
+		public Integer getPageSize() {
+			return this.pageSize;
+		}
+
+		public void setPageSize(int pageSize) {
+			this.pageSize = pageSize;
+		}
+
+		public Throttler getThrottler() {
+			return this.throttler;
+		}
+
 	}
 
 	/**
@@ -256,24 +347,15 @@ public class CassandraProperties {
 	public static class Pool {
 
 		/**
-		 * Idle timeout before an idle connection is removed. If a duration suffix is not
-		 * specified, seconds will be used.
+		 * Idle timeout before an idle connection is removed.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration idleTimeout = Duration.ofSeconds(120);
+		private Duration idleTimeout;
 
 		/**
 		 * Heartbeat interval after which a message is sent on an idle connection to make
-		 * sure it's still alive. If a duration suffix is not specified, seconds will be
-		 * used.
+		 * sure it's still alive.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration heartbeatInterval = Duration.ofSeconds(30);
-
-		/**
-		 * Maximum number of requests that get queued if no connection is available.
-		 */
-		private int maxQueueSize = 256;
+		private Duration heartbeatInterval;
 
 		public Duration getIdleTimeout() {
 			return this.idleTimeout;
@@ -291,12 +373,93 @@ public class CassandraProperties {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
-		public int getMaxQueueSize() {
+	}
+
+	public static class Controlconnection {
+
+		/**
+		 * Timeout to use for control queries.
+		 */
+		private Duration timeout;
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+	}
+
+	public static class Throttler {
+
+		/**
+		 * Request throttling type.
+		 */
+		private ThrottlerType type;
+
+		/**
+		 * Maximum number of requests that can be enqueued when the throttling threshold
+		 * is exceeded.
+		 */
+		private Integer maxQueueSize;
+
+		/**
+		 * Maximum number of requests that are allowed to execute in parallel.
+		 */
+		private Integer maxConcurrentRequests;
+
+		/**
+		 * Maximum allowed request rate.
+		 */
+		private Integer maxRequestsPerSecond;
+
+		/**
+		 * How often the throttler attempts to dequeue requests. Set this high enough that
+		 * each attempt will process multiple entries in the queue, but not delay requests
+		 * too much.
+		 */
+		private Duration drainInterval;
+
+		public ThrottlerType getType() {
+			return this.type;
+		}
+
+		public void setType(ThrottlerType type) {
+			this.type = type;
+		}
+
+		public Integer getMaxQueueSize() {
 			return this.maxQueueSize;
 		}
 
 		public void setMaxQueueSize(int maxQueueSize) {
 			this.maxQueueSize = maxQueueSize;
+		}
+
+		public Integer getMaxConcurrentRequests() {
+			return this.maxConcurrentRequests;
+		}
+
+		public void setMaxConcurrentRequests(int maxConcurrentRequests) {
+			this.maxConcurrentRequests = maxConcurrentRequests;
+		}
+
+		public Integer getMaxRequestsPerSecond() {
+			return this.maxRequestsPerSecond;
+		}
+
+		public void setMaxRequestsPerSecond(int maxRequestsPerSecond) {
+			this.maxRequestsPerSecond = maxRequestsPerSecond;
+		}
+
+		public Duration getDrainInterval() {
+			return this.drainInterval;
+		}
+
+		public void setDrainInterval(Duration drainInterval) {
+			this.drainInterval = drainInterval;
 		}
 
 	}
@@ -320,6 +483,35 @@ public class CassandraProperties {
 		 * No compression.
 		 */
 		NONE;
+
+	}
+
+	public enum ThrottlerType {
+
+		/**
+		 * Limit the number of requests that can be executed in parallel.
+		 */
+		CONCURRENCY_LIMITING("ConcurrencyLimitingRequestThrottler"),
+
+		/**
+		 * Limits the request rate per second.
+		 */
+		RATE_LIMITING("RateLimitingRequestThrottler"),
+
+		/**
+		 * No request throttling.
+		 */
+		NONE("PassThroughRequestThrottler");
+
+		private final String type;
+
+		ThrottlerType(String type) {
+			this.type = type;
+		}
+
+		public String type() {
+			return this.type;
+		}
 
 	}
 

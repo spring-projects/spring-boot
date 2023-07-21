@@ -1,0 +1,29 @@
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer
+
+# Spring Test ContextCustomizerFactories
+org.springframework.test.context.ContextCustomizerFactory=\
+org.springframework.boot.testcontainers.service.connection.ServiceConnectionContextCustomizerFactory
+
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.testcontainers.service.connection.activemq.ActiveMQContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.amqp.RabbitContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.cassandra.CassandraContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.flyway.FlywayContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.jdbc.JdbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.kafka.KafkaContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.OracleR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.redpanda.RedpandaContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.zipkin.ZipkinContainerConnectionDetailsFactory

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,38 @@
 
 package org.springframework.boot.diagnostics;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link FailureAnalyzers}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
+@ExtendWith(OutputCaptureExtension.class)
 class FailureAnalyzersTests {
 
 	private static AwareFailureAnalyzer failureAnalyzer;
+
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@BeforeEach
 	void configureMock() {
@@ -53,42 +57,69 @@ class FailureAnalyzersTests {
 	@Test
 	void analyzersAreLoadedAndCalled() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("basic.factories", failure);
-		verify(failureAnalyzer, times(2)).analyze(failure);
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, StandardAwareFailureAnalyzer.class);
+		then(failureAnalyzer).should(times(2)).analyze(failure);
 	}
 
 	@Test
-	void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers() {
+	void analyzerIsConstructedWithBeanFactory(CapturedOutput output) {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("basic.factories", failure);
-		verify(failureAnalyzer).setBeanFactory(any(BeanFactory.class));
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, BeanFactoryConstructorFailureAnalyzer.class);
+		then(failureAnalyzer).should(times(2)).analyze(failure);
+		assertThat(output).doesNotContain("implement BeanFactoryAware or EnvironmentAware");
+	}
+
+	@Test
+	void analyzerIsConstructedWithEnvironment(CapturedOutput output) {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, EnvironmentConstructorFailureAnalyzer.class);
+		then(failureAnalyzer).should(times(2)).analyze(failure);
+		assertThat(output).doesNotContain("implement BeanFactoryAware or EnvironmentAware");
+	}
+
+	@Test
+	void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers(CapturedOutput output) {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, StandardAwareFailureAnalyzer.class);
+		then(failureAnalyzer).should().setBeanFactory(same(this.context.getBeanFactory()));
+		assertThat(output).contains("FailureAnalyzers [" + StandardAwareFailureAnalyzer.class.getName()
+				+ "] implement BeanFactoryAware or EnvironmentAware.");
 	}
 
 	@Test
 	void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("basic.factories", failure);
-		verify(failureAnalyzer).setEnvironment(any(Environment.class));
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, StandardAwareFailureAnalyzer.class);
+		then(failureAnalyzer).should().setEnvironment(same(this.context.getEnvironment()));
 	}
 
 	@Test
 	void analyzerThatFailsDuringInitializationDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("broken-initialization.factories", failure);
-		verify(failureAnalyzer, times(1)).analyze(failure);
+		analyzeAndReport(failure, BrokenInitializationFailureAnalyzer.class, BasicFailureAnalyzer.class);
+		then(failureAnalyzer).should().analyze(failure);
 	}
 
 	@Test
 	void analyzerThatFailsDuringAnalysisDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("broken-analysis.factories", failure);
-		verify(failureAnalyzer, times(1)).analyze(failure);
+		analyzeAndReport(failure, BrokenAnalysisFailureAnalyzer.class, BasicFailureAnalyzer.class);
+		then(failureAnalyzer).should().analyze(failure);
 	}
 
-	private void analyzeAndReport(String factoriesName, Throwable failure) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		ClassLoader classLoader = new CustomSpringFactoriesClassLoader(factoriesName);
-		new FailureAnalyzers(context, classLoader).reportException(failure);
+	@SafeVarargs
+	private void analyzeAndReport(Throwable failure, Class<? extends FailureAnalyzer>... failureAnalyzerClasses) {
+		analyzeAndReport(failure, this.context, failureAnalyzerClasses);
+	}
+
+	@SafeVarargs
+	private void analyzeAndReport(Throwable failure, AnnotationConfigApplicationContext context,
+			Class<? extends FailureAnalyzer>... failureAnalyzerClasses) {
+		MockSpringFactoriesLoader loader = new MockSpringFactoriesLoader();
+		for (Class<? extends FailureAnalyzer> failureAnalyzerClass : failureAnalyzerClasses) {
+			loader.add(FailureAnalyzer.class, failureAnalyzerClass);
+		}
+		new FailureAnalyzers(context, loader).reportException(failure);
 	}
 
 	static class BasicFailureAnalyzer implements FailureAnalyzer {
@@ -123,6 +154,22 @@ class FailureAnalyzersTests {
 
 	}
 
+	static class BeanFactoryConstructorFailureAnalyzer extends BasicFailureAnalyzer {
+
+		BeanFactoryConstructorFailureAnalyzer(BeanFactory beanFactory) {
+			assertThat(beanFactory).isNotNull();
+		}
+
+	}
+
+	static class EnvironmentConstructorFailureAnalyzer extends BasicFailureAnalyzer {
+
+		EnvironmentConstructorFailureAnalyzer(Environment environment) {
+			assertThat(environment).isNotNull();
+		}
+
+	}
+
 	interface AwareFailureAnalyzer extends BeanFactoryAware, EnvironmentAware, FailureAnalyzer {
 
 	}
@@ -135,27 +182,8 @@ class FailureAnalyzersTests {
 		}
 
 		@Override
-		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		public void setBeanFactory(BeanFactory beanFactory) {
 			failureAnalyzer.setBeanFactory(beanFactory);
-		}
-
-	}
-
-	static class CustomSpringFactoriesClassLoader extends ClassLoader {
-
-		private final String factoriesName;
-
-		CustomSpringFactoriesClassLoader(String factoriesName) {
-			super(CustomSpringFactoriesClassLoader.class.getClassLoader());
-			this.factoriesName = factoriesName;
-		}
-
-		@Override
-		public Enumeration<URL> getResources(String name) throws IOException {
-			if ("META-INF/spring.factories".equals(name)) {
-				return super.getResources("failure-analyzers-tests/" + this.factoriesName);
-			}
-			return super.getResources(name);
 		}
 
 	}

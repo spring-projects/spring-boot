@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,20 +30,20 @@ import static org.mockito.Mockito.mock;
  */
 class ImplicitLayerResolverTests {
 
-	private Layers layers = Layers.IMPLICIT;
+	private final Layers layers = Layers.IMPLICIT;
 
 	@Test
 	void iteratorReturnsLayers() {
-		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SNAPSHOT_DEPENDENCIES,
-				StandardLayers.RESOURCES, StandardLayers.APPLICATION);
+		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SPRING_BOOT_LOADER,
+				StandardLayers.SNAPSHOT_DEPENDENCIES, StandardLayers.APPLICATION);
 	}
 
 	@Test
-	void getLayerWhenNameInResourceLocationReturnsResourceLayer() {
-		assertThat(this.layers.getLayer("META-INF/resources/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("resources/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("static/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("public/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
+	void getLayerWhenNameInResourceLocationReturnsApplicationLayer() {
+		assertThat(this.layers.getLayer("META-INF/resources/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("resources/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("static/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("public/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
 	}
 
 	@Test
@@ -61,20 +61,28 @@ class ImplicitLayerResolverTests {
 	}
 
 	@Test
+	void getLayerWhenLoaderClassReturnsLoaderLayer() {
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Launcher.class"))
+			.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Utils.class"))
+			.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+	}
+
+	@Test
 	void getLayerWhenLibraryIsSnapshotReturnsSnapshotLayer() {
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.BUILD-SNAPSHOT.jar")))
-				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
+			.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0-SNAPSHOT.jar")))
-				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
+			.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.SNAPSHOT.jar")))
-				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
+			.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
 	}
 
 	@Test
 	void getLayerWhenLibraryIsNotSnapshotReturnsDependenciesLayer() {
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.jar"))).isEqualTo(StandardLayers.DEPENDENCIES);
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0-classified.jar")))
-				.isEqualTo(StandardLayers.DEPENDENCIES);
+			.isEqualTo(StandardLayers.DEPENDENCIES);
 	}
 
 	private Library mockLibrary(String name) {

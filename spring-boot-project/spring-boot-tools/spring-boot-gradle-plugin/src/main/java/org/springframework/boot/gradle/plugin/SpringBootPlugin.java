@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,19 @@ package org.springframework.boot.gradle.plugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
+import org.springframework.boot.gradle.util.VersionExtractor;
 
 /**
  * Gradle plugin for Spring Boot.
@@ -69,6 +70,36 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 */
 	public static final String BOOT_BUILD_IMAGE_TASK_NAME = "bootBuildImage";
 
+	static final String BOOT_RUN_TASK_NAME = "bootRun";
+
+	static final String BOOT_TEST_RUN_TASK_NAME = "bootTestRun";
+
+	/**
+	 * The name of the {@code developmentOnly} configuration.
+	 * @since 2.3.0
+	 */
+	public static final String DEVELOPMENT_ONLY_CONFIGURATION_NAME = "developmentOnly";
+
+	/**
+	 * The name of the {@code productionRuntimeClasspath} configuration.
+	 */
+	public static final String PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME = "productionRuntimeClasspath";
+
+	/**
+	 * The name of the {@link ResolveMainClassName} task used to resolve a main class from
+	 * the output of the {@code main} source set.
+	 * @since 3.0.0
+	 */
+	public static final String RESOLVE_MAIN_CLASS_NAME_TASK_NAME = "resolveMainClassName";
+
+	/**
+	 * The name of the {@link ResolveMainClassName} task used to resolve a main class from
+	 * the output of the {@code test} source set then, if needed, the output of the
+	 * {@code main} source set.
+	 * @since 3.1.0
+	 */
+	public static final String RESOLVE_TEST_MAIN_CLASS_NAME_TASK_NAME = "resolveTestMainClassName";
+
 	/**
 	 * The coordinates {@code (group:name:version)} of the
 	 * {@code spring-boot-dependencies} bom.
@@ -82,13 +113,13 @@ public class SpringBootPlugin implements Plugin<Project> {
 		createExtension(project);
 		Configuration bootArchives = createBootArchivesConfiguration(project);
 		registerPluginActions(project, bootArchives);
-		unregisterUnresolvedDependenciesAnalyzer(project);
 	}
 
 	private void verifyGradleVersion() {
-		if (GradleVersion.current().compareTo(GradleVersion.version("5.6")) < 0) {
-			throw new GradleException("Spring Boot plugin requires Gradle 5.6 or later. The current version is "
-					+ GradleVersion.current());
+		GradleVersion currentVersion = GradleVersion.current();
+		if (currentVersion.compareTo(GradleVersion.version("7.4")) < 0) {
+			throw new GradleException("Spring Boot plugin requires Gradle 7.x (7.4 or later). "
+					+ "The current version is " + currentVersion);
 		}
 	}
 
@@ -99,34 +130,33 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private Configuration createBootArchivesConfiguration(Project project) {
 		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
+		bootArchives.setCanBeResolved(false);
 		return bootArchives;
 	}
 
 	private void registerPluginActions(Project project, Configuration bootArchives) {
-		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives.getArtifacts());
+		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives,
+				project.getArtifacts());
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
-				new WarPluginAction(singlePublishedArtifact), new MavenPluginAction(bootArchives.getUploadTaskName()),
-				new DependencyManagementPluginAction(), new ApplicationPluginAction(), new KotlinPluginAction());
+				new WarPluginAction(singlePublishedArtifact), new DependencyManagementPluginAction(),
+				new ApplicationPluginAction(), new KotlinPluginAction(), new NativeImagePluginAction());
 		for (PluginApplicationAction action : actions) {
-			Class<? extends Plugin<? extends Project>> pluginClass = action.getPluginClass();
-			if (pluginClass != null) {
-				project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project));
-			}
+			withPluginClassOfAction(action,
+					(pluginClass) -> project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project)));
 		}
 	}
 
-	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
-		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
-		project.getConfigurations().all((configuration) -> {
-			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve((resolvableDependencies) -> {
-				if (incoming.equals(resolvableDependencies)) {
-					unresolvedDependenciesAnalyzer.analyze(configuration.getResolvedConfiguration()
-							.getLenientConfiguration().getUnresolvedModuleDependencies());
-				}
-			});
-		});
-		project.getGradle().buildFinished((buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
+	private void withPluginClassOfAction(PluginApplicationAction action,
+			Consumer<Class<? extends Plugin<? extends Project>>> consumer) {
+		Class<? extends Plugin<? extends Project>> pluginClass;
+		try {
+			pluginClass = action.getPluginClass();
+		}
+		catch (Throwable ex) {
+			// Plugin class unavailable.
+			return;
+		}
+		consumer.accept(pluginClass);
 	}
 
 }

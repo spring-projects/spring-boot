@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -35,12 +34,13 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 /**
- * An {@link AbstractUrlHandlerMapping} for an application's welcome page. Supports both
- * static and templated files. If both a static and templated index page are available,
- * the static page is preferred.
+ * An {@link AbstractUrlHandlerMapping} for an application's HTML welcome page. Supports
+ * both static and templated files. If both a static and templated index page are
+ * available, the static page is preferred.
  *
  * @author Andy Wilkinson
  * @author Bruce Brouwer
+ * @see WelcomePageNotAcceptableHandlerMapping
  */
 final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
@@ -49,37 +49,31 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Optional<Resource> welcomePage, String staticPathPattern) {
-		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
-			logger.info("Adding welcome page: " + welcomePage.get());
-			setRootViewName("forward:index.html");
-		}
-		else if (welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {
-			logger.info("Adding welcome page template: index");
-			setRootViewName("index");
-		}
-	}
-
-	private boolean welcomeTemplateExists(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext) {
-		return templateAvailabilityProviders.getProvider("index", applicationContext) != null;
-	}
-
-	private void setRootViewName(String viewName) {
-		ParameterizableViewController controller = new ParameterizableViewController();
-		controller.setViewName(viewName);
-		setRootHandler(controller);
+			ApplicationContext applicationContext, Resource indexHtmlResource, String staticPathPattern) {
 		setOrder(2);
+		WelcomePage welcomePage = WelcomePage.resolve(templateAvailabilityProviders, applicationContext,
+				indexHtmlResource, staticPathPattern);
+		if (welcomePage != WelcomePage.UNRESOLVED) {
+			logger.info(LogMessage.of(() -> (!welcomePage.isTemplated()) ? "Adding welcome page: " + indexHtmlResource
+					: "Adding welcome page template: index"));
+			ParameterizableViewController controller = new ParameterizableViewController();
+			controller.setViewName(welcomePage.getViewName());
+			setRootHandler(controller);
+		}
 	}
 
 	@Override
 	public Object getHandlerInternal(HttpServletRequest request) throws Exception {
+		return (!isHtmlTextAccepted(request)) ? null : super.getHandlerInternal(request);
+	}
+
+	private boolean isHtmlTextAccepted(HttpServletRequest request) {
 		for (MediaType mediaType : getAcceptedMediaTypes(request)) {
 			if (mediaType.includes(MediaType.TEXT_HTML)) {
-				return super.getHandlerInternal(request);
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
 	private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {

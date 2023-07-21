@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link ContainerConfig}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class ContainerConfigTests extends AbstractJsonTests {
 
@@ -44,7 +46,7 @@ class ContainerConfigTests extends AbstractJsonTests {
 	void ofWhenUpdateIsNullThrowsException() {
 		ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerConfig.of(imageReference, null))
-				.withMessage("Update must not be null");
+			.withMessage("Update must not be null");
 	}
 
 	@Test
@@ -55,13 +57,17 @@ class ContainerConfigTests extends AbstractJsonTests {
 			update.withCommand("ls", "-l");
 			update.withArgs("-h");
 			update.withLabel("spring", "boot");
-			update.withBind("bind-source", "bind-dest");
+			update.withBinding(Binding.from("bind-source", "bind-dest"));
+			update.withEnv("name1", "value1");
+			update.withEnv("name2", "value2");
+			update.withNetworkMode("test");
+			update.withSecurityOption("option=value");
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		containerConfig.writeTo(outputStream);
-		String actualJson = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+		String actualJson = outputStream.toString(StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("container-config.json"), StandardCharsets.UTF_8);
-		JSONAssert.assertEquals(expectedJson, actualJson, false);
+		JSONAssert.assertEquals(expectedJson, actualJson, true);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class HealthTests {
 	@Test
 	void statusMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Health.Builder(null, null))
-				.withMessageContaining("Status must not be null");
+			.withMessageContaining("Status must not be null");
 	}
 
 	@Test
@@ -65,8 +65,8 @@ class HealthTests {
 		assertThat(h1).isEqualTo(h1);
 		assertThat(h1).isEqualTo(h2);
 		assertThat(h1).isNotEqualTo(h3);
-		assertThat(h1.hashCode()).isEqualTo(h1.hashCode());
-		assertThat(h1.hashCode()).isEqualTo(h2.hashCode());
+		assertThat(h1).hasSameHashCodeAs(h1);
+		assertThat(h1).hasSameHashCodeAs(h2);
 		assertThat(h1.hashCode()).isNotEqualTo(h3.hashCode());
 	}
 

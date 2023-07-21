@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
@@ -75,27 +75,29 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
+		if (!hasBoundValueObject(beanName)) {
+			bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
+		}
 		return bean;
 	}
 
+	private boolean hasBoundValueObject(String beanName) {
+		return BindMethod.VALUE_OBJECT.equals(BindMethodAttribute.get(this.registry, beanName));
+	}
+
 	private void bind(ConfigurationPropertiesBean bean) {
-		if (bean == null || hasBoundValueObject(bean.getName())) {
+		if (bean == null) {
 			return;
 		}
-		Assert.state(bean.getBindMethod() == BindMethod.JAVA_BEAN, "Cannot bind @ConfigurationProperties for bean '"
-				+ bean.getName() + "'. Ensure that @ConstructorBinding has not been applied to regular bean");
+		Assert.state(bean.asBindTarget().getBindMethod() != BindMethod.VALUE_OBJECT,
+				"Cannot bind @ConfigurationProperties for bean '" + bean.getName()
+						+ "'. Ensure that @ConstructorBinding has not been applied to regular bean");
 		try {
 			this.binder.bind(bean);
 		}
 		catch (Exception ex) {
 			throw new ConfigurationPropertiesBindException(bean, ex);
 		}
-	}
-
-	private boolean hasBoundValueObject(String beanName) {
-		return this.registry.containsBeanDefinition(beanName) && this.registry
-				.getBeanDefinition(beanName) instanceof ConfigurationPropertiesValueObjectBeanDefinition;
 	}
 
 	/**
@@ -107,8 +109,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 	public static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
+			BeanDefinition definition = BeanDefinitionBuilder
+				.rootBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class)
+				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}

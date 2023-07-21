@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.io.Console;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.util.ServiceLoader;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
@@ -48,58 +46,59 @@ class ConditionalOnJavaTests {
 	private final OnJavaCondition condition = new OnJavaCondition();
 
 	@Test
-	@EnabledOnJre(JRE.JAVA_8)
+	@EnabledOnJre(JRE.JAVA_17)
 	void doesNotMatchIfBetterVersionIsRequired() {
-		this.contextRunner.withUserConfiguration(Java9Required.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+		this.contextRunner.withUserConfiguration(Java18Required.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
+	@EnabledOnJre(JRE.JAVA_18)
 	void doesNotMatchIfLowerIsRequired() {
-		this.contextRunner.withUserConfiguration(Java7Required.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+		this.contextRunner.withUserConfiguration(OlderThan18Required.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	void matchesIfVersionIsInRange() {
-		this.contextRunner.withUserConfiguration(Java8Required.class)
-				.run((context) -> assertThat(context).hasSingleBean(String.class));
+		this.contextRunner.withUserConfiguration(Java17Required.class)
+			.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
 	void boundsTests() {
-		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.NINE, JavaVersion.EIGHT, true);
-		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.EIGHT, true);
-		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.NINE, false);
-		testBounds(Range.OLDER_THAN, JavaVersion.NINE, JavaVersion.EIGHT, false);
-		testBounds(Range.OLDER_THAN, JavaVersion.EIGHT, JavaVersion.EIGHT, false);
-		testBounds(Range.OLDER_THAN, JavaVersion.EIGHT, JavaVersion.NINE, true);
+		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHTEEN, JavaVersion.SEVENTEEN, true);
+		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.SEVENTEEN, JavaVersion.SEVENTEEN, true);
+		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.SEVENTEEN, JavaVersion.EIGHTEEN, false);
+		testBounds(Range.OLDER_THAN, JavaVersion.EIGHTEEN, JavaVersion.SEVENTEEN, false);
+		testBounds(Range.OLDER_THAN, JavaVersion.SEVENTEEN, JavaVersion.SEVENTEEN, false);
+		testBounds(Range.OLDER_THAN, JavaVersion.SEVENTEEN, JavaVersion.EIGHTEEN, true);
 	}
 
 	@Test
 	void equalOrNewerMessage() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER, JavaVersion.NINE,
-				JavaVersion.EIGHT);
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 9");
+		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER, JavaVersion.EIGHTEEN,
+				JavaVersion.SEVENTEEN);
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (17 or newer) found 18");
 	}
 
 	@Test
 	void olderThanMessage() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN, JavaVersion.NINE,
-				JavaVersion.EIGHT);
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 9");
+		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN, JavaVersion.EIGHTEEN,
+				JavaVersion.SEVENTEEN);
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 17) found 18");
 	}
 
 	@Test
-	@EnabledOnJre(JRE.JAVA_8)
-	void java8IsDetected() throws Exception {
-		assertThat(getJavaVersion()).isEqualTo("1.8");
+	@EnabledOnJre(JRE.JAVA_17)
+	void java17IsDetected() throws Exception {
+		assertThat(getJavaVersion()).isEqualTo("17");
 	}
 
 	@Test
-	@EnabledOnJre(JRE.JAVA_8)
-	void java8IsTheFallback() throws Exception {
-		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class)).isEqualTo("1.8");
+	@EnabledOnJre(JRE.JAVA_17)
+	void java17IsTheFallback() throws Exception {
+		assertThat(getJavaVersion(Console.class)).isEqualTo("17");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
@@ -117,8 +116,8 @@ class ConditionalOnJavaTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnJava(JavaVersion.NINE)
-	static class Java9Required {
+	@ConditionalOnJava(JavaVersion.SEVENTEEN)
+	static class Java17Required {
 
 		@Bean
 		String foo() {
@@ -128,8 +127,8 @@ class ConditionalOnJavaTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.EIGHT)
-	static class Java7Required {
+	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.EIGHTEEN)
+	static class OlderThan18Required {
 
 		@Bean
 		String foo() {
@@ -139,8 +138,8 @@ class ConditionalOnJavaTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnJava(JavaVersion.EIGHT)
-	static class Java8Required {
+	@ConditionalOnJava(JavaVersion.EIGHTEEN)
+	static class Java18Required {
 
 		@Bean
 		String foo() {

@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '{version}'
+	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
 repositories {
@@ -11,12 +11,12 @@ dependencies {
 	runtimeOnly('org.jruby:jruby-complete:1.7.25')
 }
 
-bootJar {
-	mainClassName 'com.example.ExampleApplication'
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::requires-unpack[]
-bootJar {
+tasks.named("bootJar") {
 	requiresUnpack '**/jruby-complete-*.jar'
 }
 // end::requires-unpack[]

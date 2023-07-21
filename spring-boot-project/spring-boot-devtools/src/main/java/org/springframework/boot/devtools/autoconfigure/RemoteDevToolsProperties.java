@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,9 @@ public class RemoteDevToolsProperties {
 	 */
 	private String secretHeaderName = DEFAULT_SECRET_HEADER_NAME;
 
-	private Restart restart = new Restart();
+	private final Restart restart = new Restart();
 
-	private Proxy proxy = new Proxy();
+	private final Proxy proxy = new Proxy();
 
 	public String getContextPath() {
 		return this.contextPath;

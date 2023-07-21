@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,12 @@
  */
 
 package io.spring.concourse.releasescripts.artifactory.payload;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents the response from Artifactory's buildInfo endpoint.
@@ -54,7 +60,7 @@ public class BuildInfoResponse {
 		}
 
 		public String getName() {
-			return name;
+			return this.name;
 		}
 
 		public void setName(String name) {
@@ -83,6 +89,14 @@ public class BuildInfoResponse {
 
 		public void setVersion(String version) {
 			this.version = version;
+
+		}
+
+		public Set<String> getArtifactDigests(Predicate<Artifact> predicate) {
+			return Arrays.stream(this.modules).flatMap((module) -> {
+				Artifact[] artifacts = module.getArtifacts();
+				return (artifacts != null) ? Arrays.stream(artifacts) : Stream.empty();
+			}).filter(predicate).map(Artifact::getSha256).collect(Collectors.toSet());
 		}
 
 	}
@@ -105,12 +119,46 @@ public class BuildInfoResponse {
 
 		private String id;
 
+		private Artifact[] artifacts;
+
 		public String getId() {
 			return this.id;
 		}
 
 		public void setId(String id) {
 			this.id = id;
+		}
+
+		public Artifact[] getArtifacts() {
+			return this.artifacts;
+		}
+
+		public void setArtifacts(Artifact[] artifacts) {
+			this.artifacts = artifacts;
+		}
+
+	}
+
+	public static class Artifact {
+
+		private String name;
+
+		private String sha256;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getSha256() {
+			return this.sha256;
+		}
+
+		public void setSha256(String sha256) {
+			this.sha256 = sha256;
 		}
 
 	}

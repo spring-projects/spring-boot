@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package smoketest.kafka;
 
 import java.time.Duration;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +38,7 @@ import static org.hamcrest.Matchers.not;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
+@DisabledOnOs(OS.WINDOWS)
 @SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka(topics = "testTopic")
 class SampleKafkaApplicationTests {
@@ -43,7 +47,7 @@ class SampleKafkaApplicationTests {
 	private Consumer consumer;
 
 	@Test
-	void testVanillaExchange() throws Exception {
+	void testVanillaExchange() {
 		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(this.consumer::getMessages, not(empty()));
 		assertThat(this.consumer.getMessages()).extracting("message").containsOnly("A simple test message");
 	}

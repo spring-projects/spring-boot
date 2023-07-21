@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,12 +72,12 @@ class Frame {
 	void write(OutputStream outputStream) throws IOException {
 		outputStream.write(0x80 | this.type.code);
 		if (this.payload.length < 126) {
-			outputStream.write(0x00 | (this.payload.length & 0x7F));
+			outputStream.write(this.payload.length & 0x7F);
 		}
 		else {
 			outputStream.write(0x7E);
 			outputStream.write(this.payload.length >> 8 & 0xFF);
-			outputStream.write(this.payload.length >> 0 & 0xFF);
+			outputStream.write(this.payload.length & 0xFF);
 		}
 		outputStream.write(this.payload);
 		outputStream.flush();

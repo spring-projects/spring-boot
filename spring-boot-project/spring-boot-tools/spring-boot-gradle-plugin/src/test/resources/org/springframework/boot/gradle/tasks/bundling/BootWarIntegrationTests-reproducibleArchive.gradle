@@ -4,7 +4,7 @@ plugins {
 }
 
 bootWar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 	preserveFileTimestamps = false
 	reproducibleFileOrder = true
 }

@@ -1,0 +1,107 @@
+[[features.ssl]]
+== SSL
+Spring Boot provides the ability to configure SSL trust material that can be applied to several types of connections in order to support secure communications.
+Configuration properties with the prefix `spring.ssl.bundle` can be used to specify named sets of trust material and associated information.
+
+
+
+[[features.ssl.jks]]
+=== Configuring SSL With Java KeyStore Files
+Configuration properties with the prefix `spring.ssl.bundle.jks` can be used to configure bundles of trust material created with the Java `keytool` utility and stored in Java KeyStore files in the JKS or PKCS12 format.
+Each bundle has a user-provided name that can be used to reference the bundle.
+
+When used to secure an embedded web server, a `keystore` is typically configured with a Java KeyStore containing a certificate and private key as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+    spring:
+      ssl:
+        bundle:
+          jks:
+            mybundle:
+              key:
+                alias: "application"
+              keystore:
+                location: "classpath:application.p12"
+                password: "secret"
+                type: "PKCS12"
+----
+
+When used to secure a client-side connection, a `truststore` is typically configured with a Java KeyStore containing the server certificate as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+    spring:
+      ssl:
+        bundle:
+          jks:
+            mybundle:
+              truststore:
+                location: "classpath:server.p12"
+                password: "secret"
+----
+
+See {spring-boot-autoconfigure-module-code}/ssl/JksSslBundleProperties.java[JksSslBundleProperties] for the full set of supported properties.
+
+
+
+[[features.ssl.pem]]
+=== Configuring SSL With PEM-encoded Certificates
+Configuration properties with the prefix `spring.ssl.bundle.pem` can be used to configure bundles of trust material in the form of PEM-encoded text.
+Each bundle has a user-provided name that can be used to reference the bundle.
+
+When used to secure an embedded web server, a `keystore` is typically configured with a certificate and private key as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+    spring:
+      ssl:
+        bundle:
+          pem:
+            mybundle:
+              keystore:
+                certificate: "classpath:application.crt"
+                private-key: "classpath:application.key"
+----
+
+When used to secure a client-side connection, a `truststore` is typically configured with the server certificate as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+    spring:
+      ssl:
+        bundle:
+          pem:
+            mybundle:
+              truststore:
+                certificate: "classpath:server.crt"
+----
+
+See {spring-boot-autoconfigure-module-code}/ssl/PemSslBundleProperties.java[PemSslBundleProperties] for the full set of supported properties.
+
+
+
+[[features.ssl.applying]]
+=== Applying SSL Bundles
+Once configured using properties, SSL bundles can be referred to by name in configuration properties for various types of connections that are auto-configured by Spring Boot.
+See the sections on <<howto#howto.webserver.configure-ssl,embedded web servers>>, <<data#data,data technologies>>, and <<io#io.rest-client,REST clients>> for further information.
+
+
+
+[[features.ssl.bundles]]
+=== Using SSL Bundles
+Spring Boot auto-configures a bean of type `SslBundles` that provides access to each of the named bundles configured using the `spring.ssl.bundle` properties.
+
+An `SslBundle` can be retrieved from the auto-configured `SslBundles` bean and used to create objects that are used to configure SSL connectivity in client libraries.
+The `SslBundle` provides a layered approach of obtaining these SSL objects:
+
+- `getStores()` provides access to the key store and trust store `java.security.KeyStore` instances as well as any required key store password.
+- `getManagers()` provides access to the `java.net.ssl.KeyManagerFactory` and `java.net.ssl.TrustManagerFactory` instances as well as the `java.net.ssl.KeyManager` and `java.net.ssl.TrustManager` arrays that they create.
+- `createSslContext()` provides a convenient way to obtain a new `java.net.ssl.SSLContext` instance.
+
+In addition, the `SslBundle` provides details about the key being used, the protocol to use and any option that should be applied to the SSL engine.
+
+The following example shows retrieving an `SslBundle` and using it to create an `SSLContext`:
+
+include::code:MyComponent[]
+

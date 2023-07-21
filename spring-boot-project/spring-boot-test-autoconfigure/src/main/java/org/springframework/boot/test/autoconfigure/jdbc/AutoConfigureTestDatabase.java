@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,13 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Annotation that can be applied to a test class to configure a test database to use
- * instead of any application defined or auto-configured {@link DataSource}.
+ * instead of the application-defined or auto-configured {@link DataSource}. In the case
+ * of multiple {@code DataSource} beans, only the {@link Primary @Primary}
+ * {@code DataSource} is considered.
  *
  * @author Phillip Webb
  * @since 1.5.0
@@ -47,15 +50,16 @@ import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMappin
 public @interface AutoConfigureTestDatabase {
 
 	/**
-	 * Determines what type of existing DataSource beans can be replaced.
+	 * Determines what type of existing DataSource bean can be replaced.
 	 * @return the type of existing DataSource to replace
 	 */
 	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 	Replace replace() default Replace.ANY;
 
 	/**
-	 * The type of connection to be established when {@link #replace() replacing} the data
-	 * source. By default will attempt to detect the connection based on the classpath.
+	 * The type of connection to be established when {@link #replace() replacing} the
+	 * DataSource. By default will attempt to detect the connection based on the
+	 * classpath.
 	 * @return the type of connection to use
 	 */
 	EmbeddedDatabaseConnection connection() default EmbeddedDatabaseConnection.NONE;
@@ -66,12 +70,12 @@ public @interface AutoConfigureTestDatabase {
 	enum Replace {
 
 		/**
-		 * Replace any DataSource bean (auto-configured or manually defined).
+		 * Replace the DataSource bean whether it was auto-configured or manually defined.
 		 */
 		ANY,
 
 		/**
-		 * Only replace auto-configured DataSource.
+		 * Only replace the DataSource if it was auto-configured.
 		 */
 		AUTO_CONFIGURED,
 

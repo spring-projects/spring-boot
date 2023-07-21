@@ -2,17 +2,17 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "{version}"
+	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
-tasks.getByName<BootJar>("bootJar") {
-	mainClassName = "com.example.ExampleApplication"
+tasks.named<BootJar>("bootJar") {
+	mainClass.set("com.example.ExampleApplication")
 }
 
 // tag::layered[]
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	layered {
-		includeLayerTools = false
+		includeLayerTools.set(false)
 	}
 }
 // end::layered[]

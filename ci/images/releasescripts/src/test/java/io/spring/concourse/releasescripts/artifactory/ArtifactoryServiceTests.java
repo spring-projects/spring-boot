@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,24 @@
 
 package io.spring.concourse.releasescripts.artifactory;
 
+import java.util.Base64;
+
 import io.spring.concourse.releasescripts.ReleaseInfo;
-import io.spring.concourse.releasescripts.bintray.BintrayService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.DefaultResponseCreator;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -58,9 +53,6 @@ class ArtifactoryServiceTests {
 	@Autowired
 	private ArtifactoryService service;
 
-	@MockBean
-	private BintrayService bintrayService;
-
 	@Autowired
 	private ArtifactoryProperties properties;
 
@@ -78,8 +70,11 @@ class ArtifactoryServiceTests {
 				.andExpect(method(HttpMethod.POST))
 				.andExpect(content().json(
 						"{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"libs-milestone-local\"}"))
-				.andExpect(header("Authorization", "Basic " + Base64Utils.encodeToString(String
-						.format("%s:%s", this.properties.getUsername(), this.properties.getPassword()).getBytes())))
+				.andExpect(
+						header("Authorization",
+								"Basic " + Base64.getEncoder()
+										.encodeToString(String.format("%s:%s", this.properties.getUsername(),
+												this.properties.getPassword()).getBytes())))
 				.andExpect(header("Content-Type", MediaType.APPLICATION_JSON.toString())).andRespond(withSuccess());
 		this.service.promote("libs-milestone-local", getReleaseInfo());
 		this.server.verify();
@@ -107,6 +102,17 @@ class ArtifactoryServiceTests {
 	}
 
 	@Test
+	void promoteWhenCheckForArtifactsAlreadyPromotedReturnsNoStatus() {
+		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
+				.andRespond(withStatus(HttpStatus.CONFLICT));
+		this.server.expect(requestTo("https://repo.spring.io/api/build/example-build/example-build-1"))
+				.andRespond(withJsonFrom("no-status-build-info-response.json"));
+		assertThatExceptionOfType(HttpClientErrorException.class)
+				.isThrownBy(() -> this.service.promote("libs-milestone-local", getReleaseInfo()));
+		this.server.verify();
+	}
+
+	@Test
 	void promoteWhenPromotionFails() {
 		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
 				.andRespond(withStatus(HttpStatus.CONFLICT));
@@ -115,56 +121,6 @@ class ArtifactoryServiceTests {
 		assertThatExceptionOfType(HttpClientErrorException.class)
 				.isThrownBy(() -> this.service.promote("libs-release-local", getReleaseInfo()));
 		this.server.verify();
-	}
-
-	@Test
-	void distributeWhenSuccessful() throws Exception {
-		ReleaseInfo releaseInfo = getReleaseInfo();
-		given(this.bintrayService.isDistributionComplete(releaseInfo)).willReturn(true);
-		this.server.expect(requestTo("https://repo.spring.io/api/build/distribute/example-build/example-build-1"))
-				.andExpect(method(HttpMethod.POST))
-				.andExpect(content().json(
-						"{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}"))
-				.andExpect(header("Authorization", "Basic " + Base64Utils.encodeToString(String
-						.format("%s:%s", this.properties.getUsername(), this.properties.getPassword()).getBytes())))
-				.andExpect(header("Content-Type", MediaType.APPLICATION_JSON.toString())).andRespond(withSuccess());
-		this.service.distribute("libs-release-local", releaseInfo);
-		this.server.verify();
-		verify(this.bintrayService, times(1)).isDistributionComplete(releaseInfo);
-	}
-
-	@Test
-	void distributeWhenFailure() throws Exception {
-		ReleaseInfo releaseInfo = getReleaseInfo();
-		this.server.expect(requestTo("https://repo.spring.io/api/build/distribute/example-build/example-build-1"))
-				.andExpect(method(HttpMethod.POST))
-				.andExpect(content().json(
-						"{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}"))
-				.andExpect(header("Authorization", "Basic " + Base64Utils.encodeToString(String
-						.format("%s:%s", this.properties.getUsername(), this.properties.getPassword()).getBytes())))
-				.andExpect(header("Content-Type", MediaType.APPLICATION_JSON.toString()))
-				.andRespond(withStatus(HttpStatus.FORBIDDEN));
-		assertThatExceptionOfType(HttpClientErrorException.class)
-				.isThrownBy(() -> this.service.distribute("libs-release-local", releaseInfo));
-		this.server.verify();
-		verifyNoInteractions(this.bintrayService);
-	}
-
-	@Test
-	void distributeWhenGettingPackagesTimesOut() throws Exception {
-		ReleaseInfo releaseInfo = getReleaseInfo();
-		given(this.bintrayService.isDistributionComplete(releaseInfo)).willReturn(false);
-		this.server.expect(requestTo("https://repo.spring.io/api/build/distribute/example-build/example-build-1"))
-				.andExpect(method(HttpMethod.POST))
-				.andExpect(content().json(
-						"{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}"))
-				.andExpect(header("Authorization", "Basic " + Base64Utils.encodeToString(String
-						.format("%s:%s", this.properties.getUsername(), this.properties.getPassword()).getBytes())))
-				.andExpect(header("Content-Type", MediaType.APPLICATION_JSON.toString())).andRespond(withSuccess());
-		assertThatExceptionOfType(DistributionTimeoutException.class)
-				.isThrownBy(() -> this.service.distribute("libs-release-local", releaseInfo));
-		this.server.verify();
-		verify(this.bintrayService, times(1)).isDistributionComplete(releaseInfo);
 	}
 
 	private ReleaseInfo getReleaseInfo() {

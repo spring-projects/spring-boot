@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,13 +54,14 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		Map<Object, Object> map = CollectionFactory
-				.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
+			.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		boolean hasDescendants = hasDescendants(name);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
 				ConfigurationProperty property = source.getConfigurationProperty(name);
 				if (property != null && !hasDescendants) {
+					getContext().setConfigurationProperty(property);
 					return getContext().getConverter().convert(property.getValue(), target);
 				}
 				source = source.filter(name::isAncestorOf);
@@ -149,8 +150,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
-			if (source instanceof IterableConfigurationPropertySource) {
-				for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source) {
+			if (source instanceof IterableConfigurationPropertySource iterableSource) {
+				for (ConfigurationPropertyName name : iterableSource) {
 					Bindable<?> valueBindable = getValueBindable(name);
 					ConfigurationPropertyName entryName = getEntryName(source, name);
 					Object key = getContext().getConverter().convert(getKeyName(entryName), this.keyType);

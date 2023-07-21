@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFilePermission;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -35,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
 class RepackagerTests extends AbstractPackagerTests<Repackager> {
 
@@ -74,7 +79,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		repackager.repackage(NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -116,7 +121,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		assertThatIllegalArgumentException().isThrownBy(() -> repackager.repackage(null, NO_LIBRARIES))
-				.withMessageContaining("Invalid destination");
+			.withMessageContaining("Invalid destination");
 	}
 
 	@Test
@@ -124,7 +129,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		assertThatIllegalArgumentException().isThrownBy(() -> repackager.repackage(this.tempDir, NO_LIBRARIES))
-				.withMessageContaining("Invalid destination");
+			.withMessageContaining("Invalid destination");
 	}
 
 	@Test
@@ -132,6 +137,15 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		this.destination.createNewFile();
+		repackager.repackage(this.destination, NO_LIBRARIES);
+		assertThat(hasLauncherClasses(this.destination)).isTrue();
+	}
+
+	@Test
+	void layoutFactoryGetsOriginalFile() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), false);
+		repackager.setLayoutFactory(new TestLayoutFactory());
 		repackager.repackage(this.destination, NO_LIBRARIES);
 		assertThat(hasLauncherClasses(this.destination)).isTrue();
 	}
@@ -147,13 +161,61 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		assertThat(new String(bytes)).startsWith("ABC");
 		assertThat(hasLauncherClasses(source)).isFalse();
 		assertThat(hasLauncherClasses(this.destination)).isTrue();
+		try (ZipFile zipFile = new ZipFile(this.destination)) {
+			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
+		}
 		try {
 			assertThat(Files.getPosixFilePermissions(this.destination.toPath()))
-					.contains(PosixFilePermission.OWNER_EXECUTE);
+				.contains(PosixFilePermission.OWNER_EXECUTE);
 		}
 		catch (UnsupportedOperationException ex) {
 			// Probably running the test on Windows
 		}
+	}
+
+	@Test
+	void allLoaderDirectoriesAndFilesUseSameTimestamp() throws IOException {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		Long timestamp = null;
+		repackager.repackage(this.destination, NO_LIBRARIES);
+		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
+			if (entry.getName().startsWith("org/springframework/boot/loader")) {
+				if (timestamp == null) {
+					timestamp = entry.getTime();
+				}
+				else {
+					assertThat(entry.getTime())
+						.withFailMessage("Expected time %d to be equal to %d for entry %s", entry.getTime(), timestamp,
+								entry.getName())
+						.isEqualTo(timestamp);
+				}
+			}
+		}
+	}
+
+	@Test
+	void allEntriesUseProvidedTimestamp() throws IOException {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		long timestamp = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
+		repackager.repackage(this.destination, NO_LIBRARIES, null, FileTime.fromMillis(timestamp));
+		long offsetTimestamp = DefaultTimeZoneOffset.INSTANCE.removeFrom(timestamp);
+		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
+			assertThat(entry.getTime()).isEqualTo(offsetTimestamp);
+		}
+	}
+
+	@Test
+	void repackagingDeeplyNestedPackageIsNotProhibitivelySlow() throws IOException {
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		this.testJarFile.addClass("a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/Some.class",
+				ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		repackager.repackage(this.destination, NO_LIBRARIES, null, null);
+		stopWatch.stop();
+		assertThat(stopWatch.getTotalTimeMillis()).isLessThan(5000);
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
@@ -229,6 +291,16 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		@Override
 		public byte[] toByteArray() {
 			return this.bytes;
+		}
+
+	}
+
+	static class TestLayoutFactory implements LayoutFactory {
+
+		@Override
+		public Layout getLayout(File source) {
+			assertThat(source.length()).isGreaterThan(0);
+			return new DefaultLayoutFactory().getLayout(source);
 		}
 
 	}

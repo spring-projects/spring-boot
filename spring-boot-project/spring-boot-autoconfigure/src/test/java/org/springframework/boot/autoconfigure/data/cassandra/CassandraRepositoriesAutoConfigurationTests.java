@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import java.util.Set;
-
-import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -32,15 +29,14 @@ import org.springframework.boot.autoconfigure.data.cassandra.city.CityRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraRepositoriesAutoConfiguration}.
@@ -60,7 +56,7 @@ class CassandraRepositoriesAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CityRepository.class);
 			assertThat(context).hasSingleBean(CqlSessionBuilder.class);
-			assertThat(getInitialEntitySet(context)).hasSize(1);
+			assertThat(getManagedTypes(context).toList()).hasSize(1);
 		});
 	}
 
@@ -68,7 +64,7 @@ class CassandraRepositoriesAutoConfigurationTests {
 	void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CqlSessionBuilder.class);
-			assertThat(getInitialEntitySet(context)).isEmpty();
+			assertThat(getManagedTypes(context).toList()).isEmpty();
 		});
 	}
 
@@ -76,50 +72,39 @@ class CassandraRepositoriesAutoConfigurationTests {
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CityCassandraRepository.class);
-			assertThat(getInitialEntitySet(context)).hasSize(1).containsOnly(City.class);
+			assertThat(getManagedTypes(context).toList()).hasSize(1).containsOnly(City.class);
 		});
 	}
 
 	@Test
 	void enablingReactiveRepositoriesDisablesImperativeRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.repositories.type=reactive")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
+			.withPropertyValues("spring.cassandra.repositories.type=reactive")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
 	}
 
 	@Test
 	void enablingNoRepositoriesDisablesImperativeRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
+			.withPropertyValues("spring.cassandra.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
 	}
 
-	@SuppressWarnings("unchecked")
-	private Set<Class<?>> getInitialEntitySet(AssertableApplicationContext context) {
+	private ManagedTypes getManagedTypes(AssertableApplicationContext context) {
 		CassandraMappingContext mappingContext = context.getBean(CassandraMappingContext.class);
-		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext, "initialEntitySet");
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		CqlSession cqlSession() {
-			return mock(CqlSession.class);
-		}
-
+		return (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class EmptyConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
@@ -127,7 +112,7 @@ class CassandraRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CassandraRepositoriesAutoConfigurationTests.class)
 	@EnableCassandraRepositories(basePackageClasses = CityCassandraRepository.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class CustomizedConfiguration {
 
 	}

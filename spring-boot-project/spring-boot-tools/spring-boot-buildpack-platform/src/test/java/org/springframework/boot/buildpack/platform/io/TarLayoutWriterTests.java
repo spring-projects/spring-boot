@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TarLayoutWriter}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class TarLayoutWriterTests {
 
@@ -38,25 +39,25 @@ class TarLayoutWriterTests {
 	void writesTarArchive() throws Exception {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (TarLayoutWriter writer = new TarLayoutWriter(outputStream)) {
-			writer.folder("/foo", Owner.ROOT);
-			writer.file("/foo/bar.txt", Owner.of(1, 1), Content.of("test"));
+			writer.directory("/foo", Owner.ROOT);
+			writer.file("/foo/bar.txt", Owner.of(1, 1), 0777, Content.of("test"));
 		}
 		try (TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			TarArchiveEntry folderEntry = tarInputStream.getNextTarEntry();
+			TarArchiveEntry directoryEntry = tarInputStream.getNextTarEntry();
 			TarArchiveEntry fileEntry = tarInputStream.getNextTarEntry();
 			byte[] fileContent = new byte[(int) fileEntry.getSize()];
 			tarInputStream.read(fileContent);
 			assertThat(tarInputStream.getNextEntry()).isNull();
-			assertThat(folderEntry.getName()).isEqualTo("/foo/");
-			assertThat(folderEntry.getMode()).isEqualTo(0755);
-			assertThat(folderEntry.getLongUserId()).isEqualTo(0);
-			assertThat(folderEntry.getLongGroupId()).isEqualTo(0);
-			assertThat(folderEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));
+			assertThat(directoryEntry.getName()).isEqualTo("/foo/");
+			assertThat(directoryEntry.getMode()).isEqualTo(0755);
+			assertThat(directoryEntry.getLongUserId()).isZero();
+			assertThat(directoryEntry.getLongGroupId()).isZero();
+			assertThat(directoryEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));
 			assertThat(fileEntry.getName()).isEqualTo("/foo/bar.txt");
-			assertThat(fileEntry.getMode()).isEqualTo(0644);
-			assertThat(fileEntry.getLongUserId()).isEqualTo(1);
-			assertThat(fileEntry.getLongGroupId()).isEqualTo(1);
+			assertThat(fileEntry.getMode()).isEqualTo(0777);
+			assertThat(fileEntry.getLongUserId()).isOne();
+			assertThat(fileEntry.getLongGroupId()).isOne();
 			assertThat(fileEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));
 			assertThat(fileContent).isEqualTo("test".getBytes(StandardCharsets.UTF_8));
 		}

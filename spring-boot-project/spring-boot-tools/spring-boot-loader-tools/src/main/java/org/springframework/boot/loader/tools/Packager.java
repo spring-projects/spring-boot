@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,27 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
@@ -44,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public abstract class Packager {
@@ -68,31 +78,33 @@ public abstract class Packager {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
+	private final List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
 	private String mainClass;
 
 	private final File source;
 
+	private File backupFile;
+
 	private Layout layout;
 
 	private LayoutFactory layoutFactory;
 
-	private Layers layers = Layers.IMPLICIT;
+	private Layers layers;
+
+	private LayersIndex layersIndex;
 
 	private boolean includeRelevantJarModeJars = true;
 
 	/**
 	 * Create a new {@link Packager} instance.
-	 * @param source the source JAR file to package
-	 * @param layoutFactory the layout factory to use or {@code null}
+	 * @param source the source archive file to package
 	 */
-	protected Packager(File source, LayoutFactory layoutFactory) {
+	protected Packager(File source) {
 		Assert.notNull(source, "Source file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
-				"Source must refer to an existing file, got " + source.getAbsolutePath());
+				() -> "Source must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
-		this.layoutFactory = layoutFactory;
 	}
 
 	/**
@@ -135,11 +147,19 @@ public abstract class Packager {
 	/**
 	 * Sets the layers that should be used in the jar.
 	 * @param layers the jar layers
-	 * @see LayeredLayout
 	 */
 	public void setLayers(Layers layers) {
 		Assert.notNull(layers, "Layers must not be null");
 		this.layers = layers;
+		this.layersIndex = new LayersIndex(layers);
+	}
+
+	/**
+	 * Sets the {@link File} to use to back up the original source.
+	 * @param backupFile the file to use to back up the original source
+	 */
+	protected void setBackupFile(File backupFile) {
+		this.backupFile = backupFile;
 	}
 
 	/**
@@ -150,52 +170,92 @@ public abstract class Packager {
 		this.includeRelevantJarModeJars = includeRelevantJarModeJars;
 	}
 
-	protected final boolean isAlreadyPackaged() throws IOException {
+	protected final boolean isAlreadyPackaged() {
 		return isAlreadyPackaged(this.source);
 	}
 
-	protected final boolean isAlreadyPackaged(File file) throws IOException {
+	protected final boolean isAlreadyPackaged(File file) {
 		try (JarFile jarFile = new JarFile(file)) {
 			Manifest manifest = jarFile.getManifest();
 			return (manifest != null && manifest.getMainAttributes().getValue(BOOT_VERSION_ATTRIBUTE) != null);
 		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Error reading archive file", ex);
+		}
 	}
 
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
+		write(sourceJar, libraries, writer, false);
+	}
+
+	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer,
+			boolean ensureReproducibleBuild) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
-		WritableLibraries writeableLibraries = new WritableLibraries(libraries);
+		write(sourceJar, writer, new PackagedLibraries(libraries, ensureReproducibleBuild));
+	}
+
+	private void write(JarFile sourceJar, AbstractJarWriter writer, PackagedLibraries libraries) throws IOException {
+		if (isLayered()) {
+			writer.useLayers(this.layers, this.layersIndex);
+		}
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
-		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
-		writeableLibraries.write(writer);
-
-		writeLayerIndex(writer);
+		writer.writeEntries(sourceJar, getEntityTransformer(), libraries.getUnpackHandler(),
+				libraries.getLibraryLookup());
+		Map<String, Library> writtenLibraries = libraries.write(writer);
+		writeNativeImageArgFile(writer, sourceJar, writtenLibraries);
+		if (isLayered()) {
+			writeLayerIndex(writer);
+		}
 	}
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
 		Layout layout = getLayout();
-		if (layout instanceof CustomLoaderLayout) {
-			((CustomLoaderLayout) getLayout()).writeLoadedClasses(writer);
+		if (layout instanceof CustomLoaderLayout customLoaderLayout) {
+			customLoaderLayout.writeLoadedClasses(writer);
 		}
 		else if (layout.isExecutable()) {
 			writer.writeLoaderClasses();
 		}
 	}
 
-	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
-		if (this.layers != null && getLayout() instanceof LayeredLayout) {
-			String location = ((LayeredLayout) this.layout).getLayersIndexFileLocation();
-			if (StringUtils.hasLength(location)) {
-				List<String> layerNames = new ArrayList<>();
-				this.layers.forEach((layer) -> layerNames.add(layer.toString()));
-				writer.writeIndexFile(location, layerNames);
+	private void writeNativeImageArgFile(AbstractJarWriter writer, JarFile sourceJar,
+			Map<String, Library> writtenLibraries) throws IOException {
+		Set<String> excludes = new LinkedHashSet<>();
+		for (Map.Entry<String, Library> entry : writtenLibraries.entrySet()) {
+			LibraryCoordinates coordinates = entry.getValue().getCoordinates();
+			ZipEntry zipEntry = (coordinates != null)
+					? sourceJar.getEntry(ReachabilityMetadataProperties.getLocation(coordinates)) : null;
+			if (zipEntry != null) {
+				try (InputStream inputStream = sourceJar.getInputStream(zipEntry)) {
+					ReachabilityMetadataProperties properties = ReachabilityMetadataProperties
+						.fromInputStream(inputStream);
+					if (properties.isOverridden()) {
+						excludes.add(entry.getKey());
+					}
+				}
 			}
+		}
+		NativeImageArgFile argFile = new NativeImageArgFile(excludes);
+		argFile.writeIfNecessary((lines) -> {
+			String contents = String.join("\n", lines) + "\n";
+			writer.writeEntry(NativeImageArgFile.LOCATION,
+					new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)));
+		});
+	}
+
+	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
+		String name = this.layout.getLayersIndexFileLocation();
+		if (StringUtils.hasLength(name)) {
+			Layer layer = this.layers.getLayer(name);
+			this.layersIndex.add(layer, name);
+			writer.writeEntry(name, this.layersIndex::writeTo);
 		}
 	}
 
 	private EntryTransformer getEntityTransformer() {
-		if (getLayout() instanceof RepackagingLayout) {
-			return new RepackagingEntryTransformer((RepackagingLayout) getLayout(), this.layers);
+		if (getLayout() instanceof RepackagingLayout repackagingLayout) {
+			return new RepackagingEntryTransformer(repackagingLayout);
 		}
 		return EntryTransformer.NONE;
 	}
@@ -278,12 +338,14 @@ public abstract class Packager {
 	}
 
 	/**
-	 * Return the {@link File} to use to backup the original source.
-	 * @return the file to use to backup the original source
+	 * Return the {@link File} to use to back up the original source.
+	 * @return the file to use to back up the original source
 	 */
 	public final File getBackupFile() {
-		File source = getSource();
-		return new File(source.getParentFile(), source.getName() + ".original");
+		if (this.backupFile != null) {
+			return this.backupFile;
+		}
+		return new File(this.source.getParentFile(), this.source.getName() + ".original");
 	}
 
 	protected final File getSource() {
@@ -313,38 +375,32 @@ public abstract class Packager {
 
 	private void addBootAttributes(Attributes attributes) {
 		attributes.putValue(BOOT_VERSION_ATTRIBUTE, getClass().getPackage().getImplementationVersion());
+		addBootAttributesForLayout(attributes);
+	}
+
+	private void addBootAttributesForLayout(Attributes attributes) {
 		Layout layout = getLayout();
-		if (layout instanceof LayeredLayout) {
-			addBootBootAttributesForLayeredLayout(attributes, (LayeredLayout) layout);
-		}
-		else if (layout instanceof RepackagingLayout) {
-			addBootBootAttributesForRepackagingLayout(attributes, (RepackagingLayout) layout);
+		if (layout instanceof RepackagingLayout repackagingLayout) {
+			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, repackagingLayout.getRepackagedClassesLocation());
 		}
 		else {
-			addBootBootAttributesForPlainLayout(attributes, layout);
+			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getClassesLocation());
 		}
-	}
-
-	private void addBootBootAttributesForLayeredLayout(Attributes attributes, LayeredLayout layout) {
-		putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());
-		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
-	}
-
-	private void addBootBootAttributesForRepackagingLayout(Attributes attributes, RepackagingLayout layout) {
-		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getRepackagedClassesLocation());
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
-	}
-
-	private void addBootBootAttributesForPlainLayout(Attributes attributes, Layout layout) {
-		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, getLayout().getClassesLocation());
-		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
+		if (isLayered()) {
+			putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());
+		}
 	}
 
 	private void putIfHasLength(Attributes attributes, String name, String value) {
 		if (StringUtils.hasLength(value)) {
 			attributes.putValue(name, value);
 		}
+	}
+
+	private boolean isLayered() {
+		return this.layers != null;
 	}
 
 	/**
@@ -370,11 +426,8 @@ public abstract class Packager {
 
 		private final RepackagingLayout layout;
 
-		private final Layers layers;
-
-		private RepackagingEntryTransformer(RepackagingLayout layout, Layers layers) {
+		private RepackagingEntryTransformer(RepackagingLayout layout) {
 			this.layout = layout;
-			this.layers = layers;
 		}
 
 		@Override
@@ -411,18 +464,14 @@ public abstract class Packager {
 		}
 
 		private String transformName(String name) {
-			if (this.layout instanceof LayeredLayout) {
-				Layer layer = this.layers.getLayer(name);
-				Assert.state(layer != null, () -> "Invalid 'null' layer from " + this.layers.getClass().getName());
-				return ((LayeredLayout) this.layout).getRepackagedClassesLocation(layer) + name;
-			}
 			return this.layout.getRepackagedClassesLocation() + name;
 		}
 
 		private boolean isTransformable(JarArchiveEntry entry) {
 			String name = entry.getName();
 			if (name.startsWith("META-INF/")) {
-				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module");
+				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module")
+						|| name.startsWith("META-INF/services/");
 			}
 			return !name.startsWith("BOOT-INF/") && !name.equals("module-info.class");
 		}
@@ -430,28 +479,32 @@ public abstract class Packager {
 	}
 
 	/**
-	 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if a
-	 * library that requires unpacking has a matching entry name.
+	 * Libraries that should be packaged into the archive.
 	 */
-	private final class WritableLibraries implements UnpackHandler {
+	private final class PackagedLibraries {
 
-		private final Map<String, Library> libraries = new LinkedHashMap<>();
+		private final Map<String, Library> libraries;
 
-		WritableLibraries(Libraries libraries) throws IOException {
+		private final UnpackHandler unpackHandler;
+
+		private final Function<JarEntry, Library> libraryLookup;
+
+		PackagedLibraries(Libraries libraries, boolean ensureReproducibleBuild) throws IOException {
+			this.libraries = (ensureReproducibleBuild) ? new TreeMap<>() : new LinkedHashMap<>();
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library::openStream)) {
 					addLibrary(library);
 				}
 			});
-			if (Packager.this.includeRelevantJarModeJars) {
-				if (getLayout() instanceof LayeredLayout) {
-					addLibrary(JarModeLibrary.LAYER_TOOLS);
-				}
+			if (isLayered() && Packager.this.includeRelevantJarModeJars) {
+				addLibrary(JarModeLibrary.LAYER_TOOLS);
 			}
+			this.unpackHandler = new PackagedLibrariesUnpackHandler();
+			this.libraryLookup = this::lookup;
 		}
 
 		private void addLibrary(Library library) {
-			String location = getLocation(library);
+			String location = getLayout().getLibraryLocation(library.getName(), library.getScope());
 			if (location != null) {
 				String path = location + library.getName();
 				Library existing = this.libraries.putIfAbsent(path, library);
@@ -459,41 +512,60 @@ public abstract class Packager {
 			}
 		}
 
-		private String getLocation(Library library) {
-			Layout layout = getLayout();
-			if (layout instanceof LayeredLayout) {
-				Layers layers = Packager.this.layers;
-				Layer layer = layers.getLayer(library);
-				Assert.state(layer != null, () -> "Invalid 'null' library layer from " + layers.getClass().getName());
-				return ((LayeredLayout) layout).getLibraryLocation(library.getName(), library.getScope(), layer);
-			}
-			return layout.getLibraryLocation(library.getName(), library.getScope());
+		private Library lookup(JarEntry entry) {
+			return this.libraries.get(entry.getName());
 		}
 
-		@Override
-		public boolean requiresUnpack(String name) {
-			Library library = this.libraries.get(name);
-			return library != null && library.isUnpackRequired();
+		UnpackHandler getUnpackHandler() {
+			return this.unpackHandler;
 		}
 
-		@Override
-		public String sha1Hash(String name) throws IOException {
-			Library library = this.libraries.get(name);
-			Assert.notNull(library, () -> "No library found for entry name '" + name + "'");
-			return Digest.sha1(library::openStream);
+		Function<JarEntry, Library> getLibraryLookup() {
+			return this.libraryLookup;
 		}
 
-		private void write(AbstractJarWriter writer) throws IOException {
+		Map<String, Library> write(AbstractJarWriter writer) throws IOException {
+			Map<String, Library> writtenLibraries = new LinkedHashMap<>();
 			for (Entry<String, Library> entry : this.libraries.entrySet()) {
 				String path = entry.getKey();
 				Library library = entry.getValue();
-				String location = path.substring(0, path.lastIndexOf('/') + 1);
-				writer.writeNestedLibrary(location, library);
+				if (library.isIncluded()) {
+					String location = path.substring(0, path.lastIndexOf('/') + 1);
+					writer.writeNestedLibrary(location, library);
+					writtenLibraries.put(path, library);
+				}
 			}
-			if (getLayout() instanceof RepackagingLayout) {
-				String location = ((RepackagingLayout) getLayout()).getClasspathIndexFileLocation();
-				writer.writeIndexFile(location, this.libraries.keySet());
+			writeClasspathIndexIfNecessary(writtenLibraries.keySet(), getLayout(), writer);
+			return writtenLibraries;
+		}
+
+		private void writeClasspathIndexIfNecessary(Collection<String> paths, Layout layout, AbstractJarWriter writer)
+				throws IOException {
+			if (layout.getClasspathIndexFileLocation() != null) {
+				List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").toList();
+				writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
 			}
+		}
+
+		/**
+		 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if
+		 * a library that requires unpacking has a matching entry name.
+		 */
+		private class PackagedLibrariesUnpackHandler implements UnpackHandler {
+
+			@Override
+			public boolean requiresUnpack(String name) {
+				Library library = PackagedLibraries.this.libraries.get(name);
+				return library != null && library.isUnpackRequired();
+			}
+
+			@Override
+			public String sha1Hash(String name) throws IOException {
+				Library library = PackagedLibraries.this.libraries.get(name);
+				Assert.notNull(library, () -> "No library found for entry name '" + name + "'");
+				return Digest.sha1(library::openStream);
+			}
+
 		}
 
 	}

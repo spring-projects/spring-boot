@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,35 @@
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -54,40 +56,56 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Arthur Kalimullin
+ * @author Julio Gomez
+ * @author Safeer Ansari
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
-public class DataSourceHealthContributorAutoConfiguration extends
-		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
+@EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)
+public class DataSourceHealthContributorAutoConfiguration implements InitializingBean {
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthContributorAutoConfiguration(Map<String, DataSource> dataSources,
+	public DataSourceHealthContributorAutoConfiguration(
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
+		this.metadataProviders = metadataProviders.orderedStream().toList();
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(this.metadataProviders);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
-	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources) {
+	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
+			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
+		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
+			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
+				.stream()
+				.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			return createContributor(filteredDatasources);
+		}
 		return createContributor(dataSources);
 	}
 
-	@Override
-	protected AbstractHealthIndicator createIndicator(DataSource source) {
-		if (source instanceof AbstractRoutingDataSource) {
-			return new RoutingDataSourceHealthIndicator();
+	private HealthContributor createContributor(Map<String, DataSource> beans) {
+		Assert.notEmpty(beans, "Beans must not be empty");
+		if (beans.size() == 1) {
+			return createContributor(beans.values().iterator().next());
+		}
+		return CompositeHealthContributor.fromMap(beans, this::createContributor);
+	}
+
+	private HealthContributor createContributor(DataSource source) {
+		if (source instanceof AbstractRoutingDataSource routingDataSource) {
+			return new RoutingDataSourceHealthContributor(routingDataSource, this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
@@ -98,14 +116,34 @@ public class DataSourceHealthContributorAutoConfiguration extends
 	}
 
 	/**
-	 * {@link HealthIndicator} used for {@link AbstractRoutingDataSource} beans where we
-	 * can't actually query for the status.
+	 * {@link CompositeHealthContributor} used for {@link AbstractRoutingDataSource} beans
+	 * where the overall health is composed of a {@link DataSourceHealthIndicator} for
+	 * each routed datasource.
 	 */
-	static class RoutingDataSourceHealthIndicator extends AbstractHealthIndicator {
+	static class RoutingDataSourceHealthContributor implements CompositeHealthContributor {
+
+		private final CompositeHealthContributor delegate;
+
+		private static final String UNNAMED_DATASOURCE_KEY = "unnamed";
+
+		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
+				Function<DataSource, HealthContributor> contributorFunction) {
+			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources()
+				.entrySet()
+				.stream()
+				.collect(Collectors.toMap((e) -> Objects.toString(e.getKey(), UNNAMED_DATASOURCE_KEY),
+						Map.Entry::getValue));
+			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);
+		}
 
 		@Override
-		protected void doHealthCheck(Builder builder) throws Exception {
-			builder.unknown().withDetail("routing", true);
+		public HealthContributor getContributor(String name) {
+			return this.delegate.getContributor(name);
+		}
+
+		@Override
+		public Iterator<NamedContributor<HealthContributor>> iterator() {
+			return this.delegate.iterator();
 		}
 
 	}

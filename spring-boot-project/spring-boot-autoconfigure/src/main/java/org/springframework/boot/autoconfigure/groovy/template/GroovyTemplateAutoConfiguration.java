@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,13 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.Servlet;
-
 import groovy.text.markup.MarkupTemplateEngine;
+import jakarta.servlet.Servlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -58,9 +56,8 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
  * @author Brian Clozel
  * @since 1.1.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = WebMvcAutoConfiguration.class)
 @ConditionalOnClass(MarkupTemplateEngine.class)
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
@@ -74,13 +71,12 @@ public class GroovyTemplateAutoConfiguration {
 
 		private final GroovyTemplateProperties properties;
 
-		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties,
-				ObjectProvider<MarkupTemplateEngine> templateEngine) {
+		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
+			checkTemplateLocationExists();
 		}
 
-		@PostConstruct
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
@@ -96,8 +92,8 @@ public class GroovyTemplateAutoConfiguration {
 		/**
 		 * MarkupTemplateEngine could be loaded from groovy-templates or groovy-all.
 		 * Unfortunately it's quite common for people to use groovy-all and not actually
-		 * need templating support. This method check attempts to check the source jar so
-		 * that we can skip the {@code /template} folder check for such cases.
+		 * need templating support. This method attempts to check the source jar so that
+		 * we can skip the {@code /template} directory check for such cases.
 		 * @return true if the groovy-all jar is used
 		 */
 		private boolean isUsingGroovyAllJar() {

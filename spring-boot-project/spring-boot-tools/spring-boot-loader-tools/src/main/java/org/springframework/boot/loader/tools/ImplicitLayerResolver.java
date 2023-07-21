@@ -24,35 +24,25 @@ package org.springframework.boot.loader.tools;
  */
 class ImplicitLayerResolver extends StandardLayers {
 
-	private static final String[] RESOURCE_LOCATIONS = { "META-INF/resources/", "resources/", "static/", "public/" };
+	private static final String SPRING_BOOT_LOADER_PREFIX = "org/springframework/boot/loader/";
 
 	@Override
 	public Layer getLayer(String name) {
-		if (!isClassFile(name) && isInResourceLocation(name)) {
-			return RESOURCES;
+		if (name.startsWith(SPRING_BOOT_LOADER_PREFIX)) {
+			return SPRING_BOOT_LOADER;
 		}
 		return APPLICATION;
 	}
 
 	@Override
 	public Layer getLayer(Library library) {
+		if (library.isLocal()) {
+			return APPLICATION;
+		}
 		if (library.getName().contains("SNAPSHOT.")) {
 			return SNAPSHOT_DEPENDENCIES;
 		}
 		return DEPENDENCIES;
-	}
-
-	private boolean isClassFile(String name) {
-		return name.endsWith(".class");
-	}
-
-	private boolean isInResourceLocation(String name) {
-		for (String resourceLocation : RESOURCE_LOCATIONS) {
-			if (name.startsWith(resourceLocation)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

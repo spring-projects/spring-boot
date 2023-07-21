@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package org.springframework.boot.web.server;
 import java.net.InetAddress;
 import java.util.Set;
 
+import org.springframework.boot.ssl.SslBundles;
+
 /**
  * A configurable {@link WebServerFactory}.
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  * @see ErrorPageRegistry
  */
@@ -31,7 +34,7 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 
 	/**
 	 * Sets the port that the web server should listen on. If not specified port '8080'
-	 * will be used. Use port -1 to disable auto-start (i.e start the web application
+	 * will be used. Use port -1 to disable auto-start (i.e. start the web application
 	 * context but not have it listen to any port).
 	 * @param port the port to set
 	 */
@@ -58,8 +61,19 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	/**
 	 * Sets a provider that will be used to obtain SSL stores.
 	 * @param sslStoreProvider the SSL store provider
+	 * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
+	 * {@link #setSslBundles(SslBundles)}
 	 */
+	@Deprecated(since = "3.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
+
+	/**
+	 * Sets the SSL bundles that can be used to configure SSL connections.
+	 * @param sslBundles the SSL bundles
+	 * @since 3.1.0
+	 */
+	void setSslBundles(SslBundles sslBundles);
 
 	/**
 	 * Sets the HTTP/2 configuration that will be applied to the server.
@@ -79,5 +93,14 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	 * @param serverHeader the server header value
 	 */
 	void setServerHeader(String serverHeader);
+
+	/**
+	 * Sets the shutdown configuration that will be applied to the server.
+	 * @param shutdown the shutdown configuration
+	 * @since 2.3.0
+	 */
+	default void setShutdown(Shutdown shutdown) {
+
+	}
 
 }

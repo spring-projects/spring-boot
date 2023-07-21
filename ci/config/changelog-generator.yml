@@ -1,0 +1,23 @@
+changelog:
+  repository: spring-projects/spring-boot
+  sections:
+    - title: ":star: New Features"
+      labels:
+        - "type: enhancement"
+    - title: ":lady_beetle: Bug Fixes"
+      labels:
+        - "type: bug"
+        - "type: regression"
+    - title: ":notebook_with_decorative_cover: Documentation"
+      labels:
+        - "type: documentation"
+    - title: ":hammer: Dependency Upgrades"
+      sort: "title"
+      labels:
+        - "type: dependency-upgrade"
+  issues:
+    ports:
+      - label: "status: forward-port"
+        bodyExpression: 'Forward port of issue #(\d+).*'
+      - label: "status: back-port"
+        bodyExpression: 'Back port of issue #(\d+).*'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ class RestartLauncher extends Thread {
 		try {
 			Class<?> mainClass = Class.forName(this.mainClassName, false, getContextClassLoader());
 			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
+			mainMethod.setAccessible(true);
 			mainMethod.invoke(null, new Object[] { this.args });
 		}
 		catch (Throwable ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 
 package org.springframework.boot.origin;
 
+import java.io.IOException;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ObjectUtils;
 
 /**
  * {@link Origin} for an item loaded from a text resource. Provides access to the original
- * {@link Resource} that loaded the text and a {@link Location} within it.
+ * {@link Resource} that loaded the text and a {@link Location} within it. If the provided
+ * resource provides an {@link Origin} (e.g. it is an {@link OriginTrackedResource}), then
+ * it will be used as the {@link Origin#getParent() origin parent}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  * @since 2.0.0
+ * @see OriginTrackedResource
  */
 public class TextResourceOrigin implements Origin {
 
@@ -55,6 +61,11 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	@Override
+	public Origin getParent() {
+		return Origin.from(this.resource);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -62,8 +73,7 @@ public class TextResourceOrigin implements Origin {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof TextResourceOrigin) {
-			TextResourceOrigin other = (TextResourceOrigin) obj;
+		if (obj instanceof TextResourceOrigin other) {
 			boolean result = true;
 			result = result && ObjectUtils.nullSafeEquals(this.resource, other.resource);
 			result = result && ObjectUtils.nullSafeEquals(this.location, other.location);
@@ -83,11 +93,36 @@ public class TextResourceOrigin implements Origin {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append((this.resource != null) ? this.resource.getDescription() : "unknown resource [?]");
+		result.append(getResourceDescription(this.resource));
 		if (this.location != null) {
-			result.append(":").append(this.location);
+			result.append(" - ").append(this.location);
 		}
 		return result.toString();
+	}
+
+	private String getResourceDescription(Resource resource) {
+		if (resource instanceof OriginTrackedResource originTrackedResource) {
+			return getResourceDescription(originTrackedResource.getResource());
+		}
+		if (resource == null) {
+			return "unknown resource [?]";
+		}
+		if (resource instanceof ClassPathResource classPathResource) {
+			return getResourceDescription(classPathResource);
+		}
+		return resource.getDescription();
+	}
+
+	private String getResourceDescription(ClassPathResource resource) {
+		try {
+			JarUri jarUri = JarUri.from(resource.getURI());
+			if (jarUri != null) {
+				return jarUri.getDescription(resource.getDescription());
+			}
+		}
+		catch (IOException ex) {
+		}
+		return resource.getDescription();
 	}
 
 	/**

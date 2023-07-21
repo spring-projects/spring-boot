@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.r2dbc;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
@@ -29,13 +28,21 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties.Pool;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -43,37 +50,69 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Rodolpho S. Couto
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 abstract class ConnectionFactoryConfigurations {
 
-	protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties, ClassLoader classLoader,
+	protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties,
+			R2dbcConnectionDetails connectionDetails, ClassLoader classLoader,
 			List<ConnectionFactoryOptionsBuilderCustomizer> optionsCustomizers) {
-		return ConnectionFactoryBuilder.of(properties, () -> EmbeddedDatabaseConnection.get(classLoader))
+		try {
+			return org.springframework.boot.r2dbc.ConnectionFactoryBuilder
+				.withOptions(new ConnectionFactoryOptionsInitializer().initialize(properties, connectionDetails,
+						() -> EmbeddedDatabaseConnection.get(classLoader)))
 				.configure((options) -> {
 					for (ConnectionFactoryOptionsBuilderCustomizer optionsCustomizer : optionsCustomizers) {
 						optionsCustomizer.customize(options);
 					}
-				}).build();
+				})
+				.build();
+		}
+		catch (IllegalStateException ex) {
+			String message = ex.getMessage();
+			if (message != null && message.contains("driver=pool")
+					&& !ClassUtils.isPresent("io.r2dbc.pool.ConnectionPool", classLoader)) {
+				throw new MissingR2dbcPoolDependencyException();
+			}
+			throw ex;
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ConnectionPool.class)
 	@Conditional(PooledConnectionFactoryCondition.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
-	static class Pool {
+	static class PoolConfiguration {
 
-		@Bean(destroyMethod = "dispose")
-		ConnectionPool connectionFactory(R2dbcProperties properties, ResourceLoader resourceLoader,
-				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
-			ConnectionFactory connectionFactory = createConnectionFactory(properties, resourceLoader.getClassLoader(),
-					customizers.orderedStream().collect(Collectors.toList()));
-			R2dbcProperties.Pool pool = properties.getPool();
-			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory)
-					.maxSize(pool.getMaxSize()).initialSize(pool.getInitialSize()).maxIdleTime(pool.getMaxIdleTime());
-			if (StringUtils.hasText(pool.getValidationQuery())) {
-				builder.validationQuery(pool.getValidationQuery());
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(ConnectionPool.class)
+		static class PooledConnectionFactoryConfiguration {
+
+			@Bean(destroyMethod = "dispose")
+			ConnectionPool connectionFactory(R2dbcProperties properties,
+					ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
+					ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
+				ConnectionFactory connectionFactory = createConnectionFactory(properties,
+						connectionDetails.getIfAvailable(), resourceLoader.getClassLoader(),
+						customizers.orderedStream().toList());
+				R2dbcProperties.Pool pool = properties.getPool();
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
+				map.from(pool.getMaxIdleTime()).to(builder::maxIdleTime);
+				map.from(pool.getMaxLifeTime()).to(builder::maxLifeTime);
+				map.from(pool.getMaxAcquireTime()).to(builder::maxAcquireTime);
+				map.from(pool.getMaxCreateConnectionTime()).to(builder::maxCreateConnectionTime);
+				map.from(pool.getInitialSize()).to(builder::initialSize);
+				map.from(pool.getMaxSize()).to(builder::maxSize);
+				map.from(pool.getValidationQuery()).whenHasText().to(builder::validationQuery);
+				map.from(pool.getValidationDepth()).to(builder::validationDepth);
+				map.from(pool.getMinIdle()).to(builder::minIdle);
+				map.from(pool.getMaxValidationTime()).to(builder::maxValidationTime);
+				return new ConnectionPool(builder.build());
 			}
-			return new ConnectionPool(builder.build());
+
 		}
 
 	}
@@ -82,39 +121,49 @@ abstract class ConnectionFactoryConfigurations {
 	@ConditionalOnProperty(prefix = "spring.r2dbc.pool", value = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
-	static class Generic {
+	static class GenericConfiguration {
 
 		@Bean
-		ConnectionFactory connectionFactory(R2dbcProperties properties, ResourceLoader resourceLoader,
+		ConnectionFactory connectionFactory(R2dbcProperties properties,
+				ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
-			return createConnectionFactory(properties, resourceLoader.getClassLoader(),
-					customizers.orderedStream().collect(Collectors.toList()));
+			return createConnectionFactory(properties, connectionDetails.getIfAvailable(),
+					resourceLoader.getClassLoader(), customizers.orderedStream().toList());
 		}
 
 	}
 
 	/**
 	 * {@link Condition} that checks that a {@link ConnectionPool} is requested. The
-	 * condition matches if pooling was opt-in via configuration and the r2dbc url does
-	 * not contain pooling-related options.
+	 * condition matches if pooling was opt-in through configuration. If any of the
+	 * spring.r2dbc.pool.* properties have been configured, an exception is thrown if the
+	 * URL also contains pooling-related options or io.r2dbc.pool.ConnectionPool is not on
+	 * the class path.
 	 */
 	static class PooledConnectionFactoryCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			boolean poolEnabled = context.getEnvironment().getProperty("spring.r2dbc.pool.enabled", Boolean.class,
-					true);
-			if (poolEnabled) {
-				// Make sure the URL does not have pool options
-				String url = context.getEnvironment().getProperty("spring.r2dbc.url");
-				boolean pooledUrl = StringUtils.hasText(url) && url.contains(":pool:");
-				if (pooledUrl) {
-					return ConditionOutcome.noMatch("R2DBC Connection URL contains pooling-related options");
+			BindResult<Pool> pool = Binder.get(context.getEnvironment())
+				.bind("spring.r2dbc.pool", Bindable.of(Pool.class));
+			if (hasPoolUrl(context.getEnvironment())) {
+				if (pool.isBound()) {
+					throw new MultipleConnectionPoolConfigurationsException();
 				}
-				return ConditionOutcome
-						.match("Pooling is enabled and R2DBC Connection URL does not contain pooling-related options");
+				return ConditionOutcome.noMatch("URL-based pooling has been configured");
 			}
-			return ConditionOutcome.noMatch("Pooling is disabled");
+			if (pool.isBound() && !ClassUtils.isPresent("io.r2dbc.pool.ConnectionPool", context.getClassLoader())) {
+				throw new MissingR2dbcPoolDependencyException();
+			}
+			if (pool.orElseGet(Pool::new).isEnabled()) {
+				return ConditionOutcome.match("Property-based pooling is enabled");
+			}
+			return ConditionOutcome.noMatch("Property-based pooling is disabled");
+		}
+
+		private boolean hasPoolUrl(Environment environment) {
+			String url = environment.getProperty("spring.r2dbc.url");
+			return StringUtils.hasText(url) && url.contains(":pool:");
 		}
 
 	}

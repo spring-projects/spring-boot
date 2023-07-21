@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link ImageConfig}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class ImageConfigTests extends AbstractJsonTests {
 
@@ -43,24 +44,42 @@ class ImageConfigTests extends AbstractJsonTests {
 	}
 
 	@Test
+	void whenConfigHasNoEnvThenImageConfigEnvIsEmpty() throws Exception {
+		ImageConfig imageConfig = getMinimalImageConfig();
+		Map<String, String> env = imageConfig.getEnv();
+		assertThat(env).isEmpty();
+	}
+
+	@Test
+	void whenConfigHasNoLabelsThenImageConfigLabelsIsEmpty() throws Exception {
+		ImageConfig imageConfig = getMinimalImageConfig();
+		Map<String, String> env = imageConfig.getLabels();
+		assertThat(env).isEmpty();
+	}
+
+	@Test
 	void getLabelsReturnsLabels() throws Exception {
 		ImageConfig imageConfig = getImageConfig();
-		Map<String, String> lables = imageConfig.getLabels();
-		assertThat(lables).hasSize(4).contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
+		Map<String, String> labels = imageConfig.getLabels();
+		assertThat(labels).hasSize(4).contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
 	}
 
 	@Test
 	void updateWithLabelUpdatesLabels() throws Exception {
 		ImageConfig imageConfig = getImageConfig();
 		ImageConfig updatedImageConfig = imageConfig
-				.copy((update) -> update.withLabel("io.buildpacks.stack.id", "test"));
+			.copy((update) -> update.withLabel("io.buildpacks.stack.id", "test"));
 		assertThat(imageConfig.getLabels()).hasSize(4)
-				.contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
+			.contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
 		assertThat(updatedImageConfig.getLabels()).hasSize(4).contains(entry("io.buildpacks.stack.id", "test"));
 	}
 
 	private ImageConfig getImageConfig() throws IOException {
 		return new ImageConfig(getObjectMapper().readTree(getContent("image-config.json")));
+	}
+
+	private ImageConfig getMinimalImageConfig() throws IOException {
+		return new ImageConfig(getObjectMapper().readTree(getContent("minimal-image-config.json")));
 	}
 
 }

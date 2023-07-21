@@ -5,6 +5,10 @@ plugins {
 
 description = "Spring Boot WebSocket Jetty smoke test"
 
+configurations.all {
+	resolutionStrategy.force("jakarta.servlet:jakarta.servlet-api:5.0.0")
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-websocket")) {

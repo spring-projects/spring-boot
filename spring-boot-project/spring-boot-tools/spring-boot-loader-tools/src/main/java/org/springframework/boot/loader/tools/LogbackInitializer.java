@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.loader.tools;
 import ch.qos.logback.classic.Level;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.ClassUtils;
 
@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
 public abstract class LogbackInitializer {
 
 	public static void initialize() {
-		if (ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", null)
+		if (ClassUtils.isPresent("org.slf4j.LoggerFactory", null)
 				&& ClassUtils.isPresent("ch.qos.logback.classic.Logger", null)) {
 			new Initializer().setRootLogLevel();
 		}
@@ -41,7 +41,7 @@ public abstract class LogbackInitializer {
 	private static class Initializer {
 
 		void setRootLogLevel() {
-			ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+			ILoggerFactory factory = LoggerFactory.getILoggerFactory();
 			Logger logger = factory.getLogger(Logger.ROOT_LOGGER_NAME);
 			((ch.qos.logback.classic.Logger) logger).setLevel(Level.INFO);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
@@ -37,10 +39,11 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.NullAdditiona
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * Generate a {@code build-info.properties} file based the content of the current
+ * Generate a {@code build-info.properties} file based on the content of the current
  * {@link MavenProject}.
  *
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.4.0
  */
 @Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
@@ -62,32 +65,53 @@ public class BuildInfoMojo extends AbstractMojo {
 	private MavenProject project;
 
 	/**
-	 * The location of the generated build-info.properties.
+	 * The location of the generated {@code build-info.properties} file.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
 
 	/**
 	 * The value used for the {@code build.time} property in a form suitable for
-	 * {@link Instant#parse(CharSequence)}. Defaults to {@code session.request.startTime}.
-	 * To disable the {@code build.time} property entirely, use {@code 'off'}.
+	 * {@link Instant#parse(CharSequence)}. Defaults to
+	 * {@code project.build.outputTimestamp} or {@code session.request.startTime} if the
+	 * former is not set. To disable the {@code build.time} property entirely, use
+	 * {@code 'off'} or add it to {@code excludeInfoProperties}.
 	 * @since 2.2.0
 	 */
-	@Parameter
+	@Parameter(defaultValue = "${project.build.outputTimestamp}")
 	private String time;
 
 	/**
-	 * Additional properties to store in the build-info.properties. Each entry is prefixed
-	 * by {@code build.} in the generated build-info.properties.
+	 * Additional properties to store in the {@code build-info.properties} file. Each
+	 * entry is prefixed by {@code build.} in the generated {@code build-info.properties}.
 	 */
 	@Parameter
 	private Map<String, String> additionalProperties;
 
+	/**
+	 * Properties that should be excluded {@code build-info.properties} file. Can be used
+	 * to exclude the standard {@code group}, {@code artifact}, {@code name},
+	 * {@code version} or {@code time} properties as well as items from
+	 * {@code additionalProperties}.
+	 */
+	@Parameter
+	private List<String> excludeInfoProperties;
+
+	/**
+	 * Skip the execution.
+	 * @since 3.1.0
+	 */
+	@Parameter(property = "spring-boot.build-info.skip", defaultValue = "false")
+	private boolean skip;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping build-info as per configuration.");
+			return;
+		}
 		try {
-			ProjectDetails details = new ProjectDetails(this.project.getGroupId(), this.project.getArtifactId(),
-					this.project.getVersion(), this.project.getName(), getBuildTime(), this.additionalProperties);
+			ProjectDetails details = getProjectDetails();
 			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(details);
 			this.buildContext.refresh(this.outputFile);
 		}
@@ -97,6 +121,29 @@ public class BuildInfoMojo extends AbstractMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
+	}
+
+	private ProjectDetails getProjectDetails() {
+		String group = getIfNotExcluded("group", this.project.getGroupId());
+		String artifact = getIfNotExcluded("artifact", this.project.getArtifactId());
+		String version = getIfNotExcluded("version", this.project.getVersion());
+		String name = getIfNotExcluded("name", this.project.getName());
+		Instant time = getIfNotExcluded("time", getBuildTime());
+		Map<String, String> additionalProperties = applyExclusions(this.additionalProperties);
+		return new ProjectDetails(group, artifact, version, name, time, additionalProperties);
+	}
+
+	private <T> T getIfNotExcluded(String name, T value) {
+		return (this.excludeInfoProperties == null || !this.excludeInfoProperties.contains(name)) ? value : null;
+	}
+
+	private Map<String, String> applyExclusions(Map<String, String> source) {
+		if (source == null || this.excludeInfoProperties == null) {
+			return source;
+		}
+		Map<String, String> result = new LinkedHashMap<>(source);
+		this.excludeInfoProperties.forEach(result::remove);
+		return result;
 	}
 
 	private Instant getBuildTime() {

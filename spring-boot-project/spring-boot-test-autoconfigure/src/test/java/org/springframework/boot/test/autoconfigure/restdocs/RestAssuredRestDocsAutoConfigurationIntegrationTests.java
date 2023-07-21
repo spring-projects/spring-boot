@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.BuildOutput;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.util.FileSystemUtils;
 
 import static io.restassured.RestAssured.given;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 /**
  * Integration tests for {@link RestDocsAutoConfiguration} with REST Assured.
@@ -63,9 +63,14 @@ class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 	@Test
 	void defaultSnippetsAreWritten() {
 		given(this.documentationSpec)
-				.filter(document("default-snippets",
-						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
-				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
+			.filter(document("default-snippets",
+					preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
+			.when()
+			.port(this.port)
+			.get("/")
+			.then()
+			.assertThat()
+			.statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc"))).contains("'https://api.example.com/'");

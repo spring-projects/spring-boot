@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
@@ -28,17 +29,96 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests for {@link PrometheusScrapeEndpoint}.
  *
  * @author Jon Schneider
+ * @author Johnny Lim
  */
 class PrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
-	void scrapeHasContentTypeText004(WebTestClient client) {
-		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004));
+	void scrapeHasContentTypeText004ByDefault(WebTestClient client) {
+		String expectedContentType = TextFormat.CONTENT_TYPE_004;
+		assertThat(TextFormat.chooseContentType(null)).isEqualTo(expectedContentType);
+		client.get()
+			.uri("/actuator/prometheus")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.parseMediaType(expectedContentType))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.contains("counter3_total"));
+	}
+
+	@WebEndpointTest
+	void scrapeHasContentTypeText004ByDefaultWhenClientAcceptsWildcardWithParameter(WebTestClient client) {
+		String expectedContentType = TextFormat.CONTENT_TYPE_004;
+		String accept = "*/*;q=0.8";
+		assertThat(TextFormat.chooseContentType(accept)).isEqualTo(expectedContentType);
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(MediaType.parseMediaType(accept))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.parseMediaType(expectedContentType))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.contains("counter3_total"));
+	}
+
+	@WebEndpointTest
+	void scrapeCanProduceOpenMetrics100(WebTestClient client) {
+		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(openMetrics)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(openMetrics)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.contains("counter3_total"));
+	}
+
+	@WebEndpointTest
+	void scrapePrefersToProduceOpenMetrics100(WebTestClient client) {
+		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
+		MediaType textPlain = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004);
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(openMetrics, textPlain)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(openMetrics);
+	}
+
+	@WebEndpointTest
+	void scrapeWithIncludedNames(WebTestClient client) {
+		client.get()
+			.uri("/actuator/prometheus?includedNames=counter1_total,counter2_total")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.doesNotContain("counter3_total"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -56,7 +136,11 @@ class PrometheusScrapeEndpointIntegrationTests {
 
 		@Bean
 		MeterRegistry registry(CollectorRegistry registry) {
-			return new PrometheusMeterRegistry((k) -> null, registry, Clock.SYSTEM);
+			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((k) -> null, registry, Clock.SYSTEM);
+			Counter.builder("counter1").register(meterRegistry);
+			Counter.builder("counter2").register(meterRegistry);
+			Counter.builder("counter3").register(meterRegistry);
+			return meterRegistry;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,14 @@ package org.springframework.boot.web.server;
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class Ssl {
 
 	private boolean enabled = true;
+
+	private String bundle;
 
 	private ClientAuth clientAuth;
 
@@ -54,6 +57,14 @@ public class Ssl {
 
 	private String trustStoreProvider;
 
+	private String certificate;
+
+	private String certificatePrivateKey;
+
+	private String trustCertificate;
+
+	private String trustCertificatePrivateKey;
+
 	private String protocol = "TLS";
 
 	/**
@@ -66,6 +77,24 @@ public class Ssl {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	/**
+	 * Return the name of the SSL bundle to use.
+	 * @return the SSL bundle name
+	 * @since 3.1.0
+	 */
+	public String getBundle() {
+		return this.bundle;
+	}
+
+	/**
+	 * Set the name of the SSL bundle to use.
+	 * @param bundle the SSL bundle name
+	 * @since 3.1.0
+	 */
+	public void setBundle(String bundle) {
+		this.bundle = bundle;
 	}
 
 	/**
@@ -227,6 +256,54 @@ public class Ssl {
 	}
 
 	/**
+	 * Return the location of the certificate in PEM format.
+	 * @return the certificate location
+	 */
+	public String getCertificate() {
+		return this.certificate;
+	}
+
+	public void setCertificate(String certificate) {
+		this.certificate = certificate;
+	}
+
+	/**
+	 * Return the location of the private key for the certificate in PEM format.
+	 * @return the location of the certificate private key
+	 */
+	public String getCertificatePrivateKey() {
+		return this.certificatePrivateKey;
+	}
+
+	public void setCertificatePrivateKey(String certificatePrivateKey) {
+		this.certificatePrivateKey = certificatePrivateKey;
+	}
+
+	/**
+	 * Return the location of the trust certificate authority chain in PEM format.
+	 * @return the location of the trust certificate
+	 */
+	public String getTrustCertificate() {
+		return this.trustCertificate;
+	}
+
+	public void setTrustCertificate(String trustCertificate) {
+		this.trustCertificate = trustCertificate;
+	}
+
+	/**
+	 * Return the location of the private key for the trust certificate in PEM format.
+	 * @return the location of the trust certificate private key
+	 */
+	public String getTrustCertificatePrivateKey() {
+		return this.trustCertificatePrivateKey;
+	}
+
+	public void setTrustCertificatePrivateKey(String trustCertificatePrivateKey) {
+		this.trustCertificatePrivateKey = trustCertificatePrivateKey;
+	}
+
+	/**
 	 * Return the SSL protocol to use.
 	 * @return the SSL protocol
 	 */
@@ -236,6 +313,28 @@ public class Ssl {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+
+	/**
+	 * Returns if SSL is enabled for the given instance.
+	 * @param ssl the {@link Ssl SSL} instance or {@code null}
+	 * @return {@code true} is SSL is enabled
+	 * @since 3.1.0
+	 */
+	public static boolean isEnabled(Ssl ssl) {
+		return (ssl != null) && ssl.isEnabled();
+	}
+
+	/**
+	 * Factory method to create an {@link Ssl} instance for a specific bundle name.
+	 * @param bundle the name of the bundle
+	 * @return a new {@link Ssl} instance with the bundle set
+	 * @since 3.1.0
+	 */
+	public static Ssl forBundle(String bundle) {
+		Ssl ssl = new Ssl();
+		ssl.setBundle(bundle);
+		return ssl;
 	}
 
 	/**
@@ -256,7 +355,25 @@ public class Ssl {
 		/**
 		 * Client authentication is needed and mandatory.
 		 */
-		NEED
+		NEED;
+
+		/**
+		 * Map an optional {@link ClientAuth} value to a different type.
+		 * @param <R> the result type
+		 * @param clientAuth the client auth to map (may be {@code null})
+		 * @param none the value for {@link ClientAuth#NONE} or {@code null}
+		 * @param want the value for {@link ClientAuth#WANT}
+		 * @param need the value for {@link ClientAuth#NEED}
+		 * @return the mapped value
+		 * @since 3.1.0
+		 */
+		public static <R> R map(ClientAuth clientAuth, R none, R want, R need) {
+			return switch ((clientAuth != null) ? clientAuth : NONE) {
+				case NONE -> none;
+				case WANT -> want;
+				case NEED -> need;
+			};
+		}
 
 	}
 

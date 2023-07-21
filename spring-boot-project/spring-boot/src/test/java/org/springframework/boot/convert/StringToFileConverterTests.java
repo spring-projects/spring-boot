@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ class StringToFileConverterTests {
 	@ConversionServiceTest
 	void convertWhenSimpleFileReturnsFile(ConversionService conversionService) {
 		assertThat(convert(conversionService, this.temp.getAbsolutePath() + "/test"))
-				.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
+			.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
 	}
 
 	@ConversionServiceTest
 	void convertWhenFilePrefixedReturnsFile(ConversionService conversionService) {
 		assertThat(convert(conversionService, "file:" + this.temp.getAbsolutePath() + "/test").getAbsoluteFile())
-				.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
+			.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
 	}
 
 	private File convert(ConversionService conversionService, String source) {
@@ -54,7 +54,7 @@ class StringToFileConverterTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((conversionService) -> conversionService.addConverter(new StringToFileConverter()));
+			.with((conversionService) -> conversionService.addConverter(new StringToFileConverter()));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ abstract class PropertyDescriptor<S extends Element> {
 		if (isCyclePresent(typeElement, getOwnerElement())) {
 			return false;
 		}
-		return isParentTheSame(typeElement, getOwnerElement());
+		return isParentTheSame(environment, typeElement, getOwnerElement());
 	}
 
 	ItemMetadata resolveItemMetadata(String prefix, MetadataGenerationEnvironment environment) {
@@ -169,11 +169,20 @@ abstract class PropertyDescriptor<S extends Element> {
 		return isCyclePresent(returnType, element.getEnclosingElement());
 	}
 
-	private boolean isParentTheSame(Element returnType, TypeElement element) {
+	private boolean isParentTheSame(MetadataGenerationEnvironment environment, Element returnType,
+			TypeElement element) {
 		if (returnType == null || element == null) {
 			return false;
 		}
-		return getTopLevelType(returnType).equals(getTopLevelType(element));
+		returnType = getTopLevelType(returnType);
+		Element candidate = element;
+		while (candidate != null && candidate instanceof TypeElement) {
+			if (returnType.equals(getTopLevelType(candidate))) {
+				return true;
+			}
+			candidate = environment.getTypeUtils().asElement(((TypeElement) candidate).getSuperclass());
+		}
+		return false;
 	}
 
 	private Element getTopLevelType(Element element) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
@@ -40,9 +39,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DevToolsDataSourceAutoConfiguration} with a pooled data source.
@@ -52,7 +50,7 @@ import static org.mockito.Mockito.verify;
 class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@BeforeEach
-	void before(@TempDir File tempDir) throws IOException {
+	void before(@TempDir File tempDir) {
 		System.setProperty("derby.stream.error.file", new File(tempDir, "derby.log").getAbsolutePath());
 	}
 
@@ -67,7 +65,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				() -> createContext(DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement).execute("SHUTDOWN");
+		then(statement).should().execute("SHUTDOWN");
 	}
 
 	@Test
@@ -76,7 +74,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -85,7 +83,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				"jdbc:h2:hsql://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -94,7 +92,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(1)).execute("SHUTDOWN");
+		then(statement).should().execute("SHUTDOWN");
 	}
 
 	@Test
@@ -103,7 +101,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				"jdbc:hsqldb:hsql://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -112,7 +110,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				"jdbc:hsqldb:mem:test", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(1)).execute("SHUTDOWN");
+		then(statement).should().execute("SHUTDOWN");
 	}
 
 	@Test
@@ -121,7 +119,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 				"jdbc:derby://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
 		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -134,16 +132,17 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 		jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
 		HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
 		// Prevent a race between Hikari's initialization and Derby shutdown
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(pool::getIdleConnections,
-				(idle) -> idle == dataSource.getMinimumIdle());
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(pool::getIdleConnections, (idle) -> idle == dataSource.getMinimumIdle());
 		context.close();
 		// Connect should fail as DB no longer exists
 		assertThatExceptionOfType(SQLException.class)
-				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
-				.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
+			.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
+			.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
 		// Shut Derby down fully so that it closes its log file
 		assertThatExceptionOfType(SQLException.class)
-				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:;shutdown=true", new Properties()));
+			.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:;shutdown=true", new Properties()));
 	}
 
 }

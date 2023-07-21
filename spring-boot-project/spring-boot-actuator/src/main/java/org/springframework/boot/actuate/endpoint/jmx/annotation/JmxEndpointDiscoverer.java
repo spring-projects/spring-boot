@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.util.Collection;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
@@ -28,7 +31,9 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer.JmxEndpointDiscovererRuntimeHints;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link EndpointDiscoverer} for {@link ExposableJmxEndpoint JMX endpoints}.
@@ -36,6 +41,7 @@ import org.springframework.context.ApplicationContext;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@ImportRuntimeHints(JmxEndpointDiscovererRuntimeHints.class)
 public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoint, JmxOperation>
 		implements JmxEndpointsSupplier {
 
@@ -67,6 +73,15 @@ public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoi
 	@Override
 	protected OperationKey createOperationKey(JmxOperation operation) {
 		return new OperationKey(operation.getName(), () -> "MBean call '" + operation.getName() + "'");
+	}
+
+	static class JmxEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(JmxEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+		}
+
 	}
 
 }

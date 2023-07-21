@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +50,6 @@ public abstract class PushRegistryProperties {
 	private Duration readTimeout = Duration.ofSeconds(10);
 
 	/**
-	 * Number of threads to use with the metrics publishing scheduler.
-	 */
-	private Integer numThreads = 2;
-
-	/**
 	 * Number of measurements per request to use for this backend. If more measurements
 	 * are found, then multiple requests will be made.
 	 */
@@ -90,14 +85,6 @@ public abstract class PushRegistryProperties {
 
 	public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
-	}
-
-	public Integer getNumThreads() {
-		return this.numThreads;
-	}
-
-	public void setNumThreads(Integer numThreads) {
-		this.numThreads = numThreads;
 	}
 
 	public Integer getBatchSize() {

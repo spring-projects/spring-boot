@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ class TomcatServletWebServerFactoryCustomizerTests {
 	@Test
 	void useRelativeRedirectsCanBeConfigured() {
 		bind("server.tomcat.use-relative-redirects=true");
-		assertThat(this.serverProperties.getTomcat().getUseRelativeRedirects()).isTrue();
+		assertThat(this.serverProperties.getTomcat().isUseRelativeRedirects()).isTrue();
 		TomcatWebServer server = customizeAndGetServer();
 		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getUseRelativeRedirects()).isTrue();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,15 @@ import org.springframework.boot.context.properties.PropertyMapper;
 public final class SimpleRabbitListenerContainerFactoryConfigurer
 		extends AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
 
+	/**
+	 * Creates a new configurer that will use the given {@code rabbitProperties}.
+	 * @param rabbitProperties properties to use
+	 * @since 2.6.0
+	 */
+	public SimpleRabbitListenerContainerFactoryConfigurer(RabbitProperties rabbitProperties) {
+		super(rabbitProperties);
+	}
+
 	@Override
 	public void configure(SimpleRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		PropertyMapper map = PropertyMapper.get();
@@ -39,6 +48,7 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 		map.from(config::getConcurrency).whenNonNull().to(factory::setConcurrentConsumers);
 		map.from(config::getMaxConcurrency).whenNonNull().to(factory::setMaxConcurrentConsumers);
 		map.from(config::getBatchSize).whenNonNull().to(factory::setBatchSize);
+		map.from(config::isConsumerBatchEnabled).to(factory::setConsumerBatchEnabled);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,27 +31,27 @@ class LifecycleVersionTests {
 	@Test
 	void parseWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void parseWhenTooLongThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse("v1.2.3.4"))
-				.withMessage("Malformed version number '1.2.3.4'");
+			.withMessage("Malformed version number '1.2.3.4'");
 	}
 
 	@Test
 	void parseWhenNonNumericThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse("v1.2.3a"))
-				.withMessage("Malformed version number '1.2.3a'");
+			.withMessage("Malformed version number '1.2.3a'");
 	}
 
 	@Test
 	void compareTo() {
 		LifecycleVersion v4 = LifecycleVersion.parse("0.0.4");
-		assertThat(LifecycleVersion.parse("0.0.3").compareTo(v4)).isNegative();
-		assertThat(LifecycleVersion.parse("0.0.4").compareTo(v4)).isZero();
-		assertThat(LifecycleVersion.parse("0.0.5").compareTo(v4)).isPositive();
+		assertThat(LifecycleVersion.parse("0.0.3")).isLessThan(v4);
+		assertThat(LifecycleVersion.parse("0.0.4")).isEqualByComparingTo(v4);
+		assertThat(LifecycleVersion.parse("0.0.5")).isGreaterThan(v4);
 	}
 
 	@Test
@@ -64,9 +64,9 @@ class LifecycleVersionTests {
 
 	@Test
 	void parseReturnsVersion() {
-		assertThat(LifecycleVersion.parse("1.2.3").toString()).isEqualTo("v1.2.3");
-		assertThat(LifecycleVersion.parse("1.2").toString()).isEqualTo("v1.2.0");
-		assertThat(LifecycleVersion.parse("1").toString()).isEqualTo("v1.0.0");
+		assertThat(LifecycleVersion.parse("1.2.3")).hasToString("v1.2.3");
+		assertThat(LifecycleVersion.parse("1.2")).hasToString("v1.2.0");
+		assertThat(LifecycleVersion.parse("1")).hasToString("v1.0.0");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.Filter;
-
+import jakarta.servlet.Filter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +40,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
-import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.web.filter.DelegatingFilterProxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -70,18 +67,20 @@ class FilterOrderingIntegrationTests {
 	void testFilterOrdering() {
 		load();
 		List<RegisteredFilter> registeredFilters = this.context.getBean(MockServletWebServerFactory.class)
-				.getWebServer().getRegisteredFilters();
-		List<Filter> filters = new ArrayList<>(registeredFilters.size());
-		for (RegisteredFilter registeredFilter : registeredFilters) {
-			filters.add(registeredFilter.getFilter());
-		}
-		Iterator<Filter> iterator = filters.iterator();
-		assertThat(iterator.next()).isInstanceOf(OrderedCharacterEncodingFilter.class);
-		assertThat(iterator.next()).isInstanceOf(SessionRepositoryFilter.class);
-		assertThat(iterator.next()).isInstanceOf(Filter.class);
-		assertThat(iterator.next()).isInstanceOf(Filter.class);
-		assertThat(iterator.next()).isInstanceOf(OrderedRequestContextFilter.class);
-		assertThat(iterator.next()).isInstanceOf(FilterChainProxy.class);
+			.getWebServer()
+			.getRegisteredFilters();
+		assertThat(registeredFilters.get(0).getFilter()).isInstanceOf(OrderedCharacterEncodingFilter.class);
+		assertThat(registeredFilters.get(1).getFilter()).isInstanceOf(DelegatingFilterProxy.class)
+			.extracting("targetBeanName")
+			.isEqualTo("springSessionRepositoryFilter");
+		assertThat(registeredFilters.get(2).getFilter()).isInstanceOf(Filter.class)
+			.extracting("beanName")
+			.isEqualTo("hiddenHttpMethodFilter");
+		assertThat(registeredFilters.get(3).getFilter()).isInstanceOf(Filter.class)
+			.extracting("beanName")
+			.isEqualTo("formContentFilter");
+		assertThat(registeredFilters.get(4).getFilter()).isInstanceOf(OrderedRequestContextFilter.class);
+		assertThat(registeredFilters.get(5).getFilter()).isInstanceOf(FilterChainProxy.class);
 	}
 
 	private void load() {

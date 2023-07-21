@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,8 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.List;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerAddress;
-import com.mongodb.connection.ClusterSettings;
-import com.mongodb.internal.async.client.AsyncMongoClient;
 import com.mongodb.reactivestreams.client.MongoClient;
-
-import org.springframework.core.env.Environment;
-import org.springframework.test.util.ReflectionTestUtils;
+import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
 
 /**
  * Tests for {@link ReactiveMongoClientFactory}.
@@ -37,22 +32,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<MongoClient> {
 
 	@Override
-	protected MongoClient createMongoClient(MongoProperties properties, Environment environment,
-			List<MongoClientSettingsBuilderCustomizer> customizers, MongoClientSettings settings) {
-		return new ReactiveMongoClientFactory(properties, environment, customizers).createMongoClient(settings);
-	}
-
-	@Override
-	protected List<ServerAddress> getAllAddresses(MongoClient client) {
-		MongoClientSettings settings = getClientSettings(client);
-		ClusterSettings clusterSettings = settings.getClusterSettings();
-		return clusterSettings.getHosts();
+	protected MongoClient createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+			MongoClientSettings settings) {
+		return new ReactiveMongoClientFactory(customizers).createMongoClient(settings);
 	}
 
 	@Override
 	protected MongoClientSettings getClientSettings(MongoClient client) {
-		AsyncMongoClient wrapped = (AsyncMongoClient) ReflectionTestUtils.getField(client, "wrapped");
-		return (MongoClientSettings) ReflectionTestUtils.getField(wrapped, "settings");
+		return ((MongoClientImpl) client).getSettings();
 	}
 
 }

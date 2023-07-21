@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Documented;
@@ -23,13 +24,24 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that can be used to specify the default value when binding to an immutable
- * property.
+ * property. This annotation can also be used with nested properties to indicate that a
+ * value should always be bound (rather than binding {@code null}). The value from this
+ * annotation will only be used if the property is not found in the property sources used
+ * by the {@link Binder}. For example, if the property is present in the
+ * {@link org.springframework.core.env.Environment} when binding to
+ * {@link org.springframework.boot.context.properties.ConfigurationProperties @ConfigurationProperties},
+ * the default value for the property will not be used even if the property value is
+ * empty.
+ * <p>
+ * NOTE: This annotation does not support property placeholder resolution and the value
+ * must be constant.
  *
  * @author Madhura Bhave
+ * @author Pavel Anisimov
  * @since 2.2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER })
+@Target({ ElementType.PARAMETER, ElementType.RECORD_COMPONENT })
 @Documented
 public @interface DefaultValue {
 
@@ -38,6 +50,6 @@ public @interface DefaultValue {
 	 * array-based properties.
 	 * @return the default value of the property.
 	 */
-	String[] value();
+	String[] value() default {};
 
 }

@@ -22,10 +22,9 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<layered>
-								<enabled>true</enabled>
+							<layers>
 								<includeLayerTools>false</includeLayerTools>
-							</layered>
+							</layers>
 						</configuration>
 					</execution>
 				</executions>

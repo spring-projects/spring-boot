@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.springframework.data.repository.Repository;
  * Indicates a {@link Configuration configuration} class that declares one or more
  * {@link Bean @Bean} methods and also triggers {@link EnableAutoConfiguration
  * auto-configuration} and {@link ComponentScan component scanning}. This is a convenience
- * annotation that is equivalent to declaring {@code @Configuration},
+ * annotation that is equivalent to declaring {@code @SpringBootConfiguration},
  * {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
  *
  * @author Phillip Webb

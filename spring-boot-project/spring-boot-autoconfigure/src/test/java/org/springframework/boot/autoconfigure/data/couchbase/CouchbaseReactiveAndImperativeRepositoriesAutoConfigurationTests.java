@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.ReactiveCityRepository;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -48,9 +47,9 @@ class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@Test
 	void shouldCreateInstancesForReactiveAndImperativeRepositories() {
 		new ApplicationContextRunner()
-				.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
-				.withPropertyValues("spring.datasource.initialization-mode:never").run((context) -> assertThat(context)
-						.hasSingleBean(CityRepository.class).hasSingleBean(ReactiveCityRepository.class));
+			.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
+				.hasSingleBean(ReactiveCityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -62,7 +61,7 @@ class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ CouchbaseTestConfigurer.class, Registrar.class })
+	@Import({ CouchbaseMockConfiguration.class, Registrar.class })
 	static class BaseConfiguration {
 
 	}

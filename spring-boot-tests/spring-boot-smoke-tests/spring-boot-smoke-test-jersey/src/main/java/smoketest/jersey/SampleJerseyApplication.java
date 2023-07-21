@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,17 @@ package smoketest.jersey;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
 public class SampleJerseyApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-		new SampleJerseyApplication().configure(new SpringApplicationBuilder(SampleJerseyApplication.class)).run(args);
+		new SampleJerseyApplication()
+			.configure(new SpringApplicationBuilder(SampleJerseyApplication.class)
+				.applicationStartup(new BufferingApplicationStartup(2048)))
+			.run(args);
 	}
 
 }

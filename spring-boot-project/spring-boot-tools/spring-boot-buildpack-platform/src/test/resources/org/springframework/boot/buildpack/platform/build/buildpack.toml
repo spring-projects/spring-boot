@@ -1,0 +1,8 @@
+[buildpack]
+id = "test";
+version = "1.0.0"
+name = "Example buildpack"
+homepage = "https://github.com/example/example-buildpack"
+
+[[stacks]]
+id = "io.buildpacks.stacks.bionic"

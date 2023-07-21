@@ -105,24 +105,16 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 		builder.up().withDetail("database", getProduct());
 		String validationQuery = this.query;
 		if (StringUtils.hasText(validationQuery)) {
-			try {
-				// Avoid calling getObject as it breaks MySQL on Java 7
-				List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
-				Object result = DataAccessUtils.requiredSingleResult(results);
-				builder.withDetail("result", result);
-			}
-			finally {
-				builder.withDetail("validationQuery", validationQuery);
-			}
+			builder.withDetail("validationQuery", validationQuery);
+			// Avoid calling getObject as it breaks MySQL on Java 7 and later
+			List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
+			Object result = DataAccessUtils.requiredSingleResult(results);
+			builder.withDetail("result", result);
 		}
 		else {
-			try {
-				boolean valid = isConnectionValid();
-				builder.status((valid) ? Status.UP : Status.DOWN);
-			}
-			finally {
-				builder.withDetail("validationQuery", "isValid()");
-			}
+			builder.withDetail("validationQuery", "isValid()");
+			boolean valid = isConnectionValid();
+			builder.status((valid) ? Status.UP : Status.DOWN);
 		}
 	}
 

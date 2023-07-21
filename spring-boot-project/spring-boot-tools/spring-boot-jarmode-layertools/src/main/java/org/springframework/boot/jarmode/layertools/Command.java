@@ -30,6 +30,7 @@ import java.util.stream.Stream;
  * A command that can be launched from the layertools jarmode.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 abstract class Command {
 
@@ -110,7 +111,7 @@ abstract class Command {
 	/**
 	 * Run the actual command.
 	 * @param options any options extracted from the arguments
-	 * @param parameters any parameters extracted from the arguements
+	 * @param parameters any parameters extracted from the arguments
 	 */
 	protected abstract void run(Map<Option, String> options, List<String> parameters);
 
@@ -192,6 +193,7 @@ abstract class Command {
 						return candidate;
 					}
 				}
+				throw new UnknownOptionException(name);
 			}
 			return null;
 		}
@@ -285,7 +287,13 @@ abstract class Command {
 		}
 
 		private String claimArg(Deque<String> args) {
-			return (this.valueDescription != null) ? args.removeFirst() : null;
+			if (this.valueDescription != null) {
+				if (args.isEmpty()) {
+					throw new MissingValueException(this.name);
+				}
+				return args.removeFirst();
+			}
+			return null;
 		}
 
 		@Override

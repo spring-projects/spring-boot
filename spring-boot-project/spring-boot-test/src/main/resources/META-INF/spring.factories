@@ -1,7 +1,8 @@
-# Spring Test ContextCustomizerFactories
+# Spring Test Context Customizer Factories
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.context.ImportsContextCustomizerFactory,\
 org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory,\
+org.springframework.boot.test.graphql.tester.HttpGraphQlTesterContextCustomizerFactory,\
 org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory,\
 org.springframework.boot.test.mock.mockito.MockitoContextCustomizerFactory,\
 org.springframework.boot.test.web.client.TestRestTemplateContextCustomizerFactory,\
@@ -15,3 +16,7 @@ org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.test.web.SpringBootTestRandomPortEnvironmentPostProcessor
+
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.test.context.filter.ExcludeFilterApplicationContextInitializer

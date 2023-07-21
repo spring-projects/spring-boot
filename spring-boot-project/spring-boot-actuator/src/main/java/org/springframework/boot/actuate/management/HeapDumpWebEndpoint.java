@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -77,7 +78,7 @@ public class HeapDumpWebEndpoint {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {
-					return new WebEndpointResponse<>(dumpHeap((live != null) ? live : true));
+					return new WebEndpointResponse<>(dumpHeap(live));
 				}
 				finally {
 					this.lock.unlock();
@@ -96,20 +97,12 @@ public class HeapDumpWebEndpoint {
 		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
 
-	private Resource dumpHeap(boolean live) throws IOException, InterruptedException {
+	private Resource dumpHeap(Boolean live) throws IOException, InterruptedException {
 		if (this.heapDumper == null) {
 			this.heapDumper = createHeapDumper();
 		}
-		File file = createTempFile(live);
-		this.heapDumper.dumpHeap(file, live);
+		File file = this.heapDumper.dumpHeap(live);
 		return new TemporaryFileSystemResource(file);
-	}
-
-	private File createTempFile(boolean live) throws IOException {
-		String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
-		File file = File.createTempFile("heapdump" + date + (live ? "-live" : ""), ".hprof");
-		file.delete();
-		return file;
 	}
 
 	/**
@@ -118,7 +111,12 @@ public class HeapDumpWebEndpoint {
 	 * @throws HeapDumperUnavailableException if the heap dumper cannot be created
 	 */
 	protected HeapDumper createHeapDumper() throws HeapDumperUnavailableException {
-		return new HotSpotDiagnosticMXBeanHeapDumper();
+		try {
+			return new HotSpotDiagnosticMXBeanHeapDumper();
+		}
+		catch (HeapDumperUnavailableException ex) {
+			return new OpenJ9DiagnosticsMXBeanHeapDumper();
+		}
 	}
 
 	/**
@@ -128,34 +126,37 @@ public class HeapDumpWebEndpoint {
 	protected interface HeapDumper {
 
 		/**
-		 * Dump the current heap to the specified file.
-		 * @param file the file to dump the heap to
+		 * Dump the current heap to a file.
 		 * @param live if only <em>live</em> objects (i.e. objects that are reachable from
-		 * others) should be dumped
+		 * others) should be dumped. May be {@code null} to use a JVM-specific default.
+		 * @return the file containing the heap dump
 		 * @throws IOException on IO error
 		 * @throws InterruptedException on thread interruption
+		 * @throws IllegalArgumentException if live is non-null and is not supported by
+		 * the JVM
+		 * @since 3.0.0
 		 */
-		void dumpHeap(File file, boolean live) throws IOException, InterruptedException;
+		File dumpHeap(Boolean live) throws IOException, InterruptedException;
 
 	}
 
 	/**
-	 * {@link HeapDumper} that uses {@code com.sun.management.HotSpotDiagnosticMXBean}
-	 * available on Oracle and OpenJDK to dump the heap to a file.
+	 * {@link HeapDumper} that uses {@code com.sun.management.HotSpotDiagnosticMXBean},
+	 * available on Oracle and OpenJDK, to dump the heap to a file.
 	 */
 	protected static class HotSpotDiagnosticMXBeanHeapDumper implements HeapDumper {
 
-		private Object diagnosticMXBean;
+		private final Object diagnosticMXBean;
 
-		private Method dumpHeapMethod;
+		private final Method dumpHeapMethod;
 
 		@SuppressWarnings("unchecked")
 		protected HotSpotDiagnosticMXBeanHeapDumper() {
 			try {
 				Class<?> diagnosticMXBeanClass = ClassUtils
-						.resolveClassName("com.sun.management.HotSpotDiagnosticMXBean", null);
+					.resolveClassName("com.sun.management.HotSpotDiagnosticMXBean", null);
 				this.diagnosticMXBean = ManagementFactory
-						.getPlatformMXBean((Class<PlatformManagedObject>) diagnosticMXBeanClass);
+					.getPlatformMXBean((Class<PlatformManagedObject>) diagnosticMXBeanClass);
 				this.dumpHeapMethod = ReflectionUtils.findMethod(diagnosticMXBeanClass, "dumpHeap", String.class,
 						Boolean.TYPE);
 			}
@@ -165,8 +166,52 @@ public class HeapDumpWebEndpoint {
 		}
 
 		@Override
-		public void dumpHeap(File file, boolean live) {
-			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, file.getAbsolutePath(), live);
+		public File dumpHeap(Boolean live) throws IOException {
+			File file = createTempFile();
+			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, file.getAbsolutePath(),
+					(live != null) ? live : true);
+			return file;
+		}
+
+		private File createTempFile() throws IOException {
+			String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
+			File file = File.createTempFile("heap-" + date, ".hprof");
+			file.delete();
+			return file;
+		}
+
+	}
+
+	/**
+	 * {@link HeapDumper} that uses
+	 * {@code openj9.lang.management.OpenJ9DiagnosticsMXBean}, available on OpenJ9, to
+	 * dump the heap to a file.
+	 */
+	private static final class OpenJ9DiagnosticsMXBeanHeapDumper implements HeapDumper {
+
+		private final Object diagnosticMXBean;
+
+		private final Method dumpHeapMethod;
+
+		@SuppressWarnings("unchecked")
+		private OpenJ9DiagnosticsMXBeanHeapDumper() {
+			try {
+				Class<?> mxBeanClass = ClassUtils.resolveClassName("openj9.lang.management.OpenJ9DiagnosticsMXBean",
+						null);
+				this.diagnosticMXBean = ManagementFactory.getPlatformMXBean((Class<PlatformManagedObject>) mxBeanClass);
+				this.dumpHeapMethod = ReflectionUtils.findMethod(mxBeanClass, "triggerDumpToFile", String.class,
+						String.class);
+			}
+			catch (Throwable ex) {
+				throw new HeapDumperUnavailableException("Unable to locate OpenJ9DiagnosticsMXBean", ex);
+			}
+		}
+
+		@Override
+		public File dumpHeap(Boolean live) throws IOException, InterruptedException {
+			Assert.isNull(live, "OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
+			return new File(
+					(String) ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, "heap", null));
 		}
 
 	}
@@ -240,7 +285,7 @@ public class HeapDumpWebEndpoint {
 			}
 			catch (IOException ex) {
 				TemporaryFileSystemResource.this.logger
-						.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
+					.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
 			}
 		}
 

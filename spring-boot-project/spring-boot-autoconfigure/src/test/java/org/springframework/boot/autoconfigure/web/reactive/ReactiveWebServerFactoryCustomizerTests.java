@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ReactiveWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
  * @author Yunkun Huang
+ * @author Scott Frederick
  */
 class ReactiveWebServerFactoryCustomizerTests {
 
-	private ServerProperties properties = new ServerProperties();
+	private final ServerProperties properties = new ServerProperties();
+
+	private final SslBundles sslBundles = new DefaultSslBundleRegistry();
 
 	private ReactiveWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
 	void setup() {
-		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties);
+		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties, this.sslBundles);
 	}
 
 	@Test
@@ -50,16 +58,16 @@ class ReactiveWebServerFactoryCustomizerTests {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.properties.setPort(9000);
 		this.customizer.customize(factory);
-		verify(factory).setPort(9000);
+		then(factory).should().setPort(9000);
 	}
 
 	@Test
 	void testCustomizeServerAddress() {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
-		InetAddress address = mock(InetAddress.class);
+		InetAddress address = InetAddress.getLoopbackAddress();
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
-		verify(factory).setAddress(address);
+		then(factory).should().setAddress(address);
 	}
 
 	@Test
@@ -68,7 +76,16 @@ class ReactiveWebServerFactoryCustomizerTests {
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
-		verify(factory).setSsl(ssl);
+		then(factory).should().setSsl(ssl);
+		then(factory).should().setSslBundles(this.sslBundles);
+	}
+
+	@Test
+	void whenShutdownPropertyIsSetThenShutdownIsCustomized() {
+		this.properties.setShutdown(Shutdown.GRACEFUL);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.GRACEFUL)));
 	}
 
 }

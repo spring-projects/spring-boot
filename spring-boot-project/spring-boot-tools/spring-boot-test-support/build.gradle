@@ -1,7 +1,6 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
-	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Testing Support"
@@ -9,20 +8,26 @@ description = "Spring Boot Testing Support"
 dependencies {
 	api(platform(project(path: ":spring-boot-project:spring-boot-parent")))
 
-	compileOnly("com.datastax.oss:java-driver-core")
-	compileOnly("javax.servlet:javax.servlet-api")
+	compileOnly("com.datastax.oss:java-driver-core") {
+		exclude(group: "org.slf4j", module: "jcl-over-slf4j")
+	}
+	compileOnly("jakarta.servlet:jakarta.servlet-api")
 	compileOnly("junit:junit")
 	compileOnly("org.junit.jupiter:junit-jupiter")
 	compileOnly("org.junit.platform:junit-platform-engine")
+	compileOnly("org.junit.platform:junit-platform-launcher")
 	compileOnly("org.mockito:mockito-core")
-	compileOnly("org.neo4j:neo4j-ogm-core")
 	compileOnly("org.springframework:spring-context")
 	compileOnly("org.springframework.data:spring-data-redis")
+	compileOnly("org.testcontainers:cassandra")
 	compileOnly("org.testcontainers:testcontainers")
 
+	implementation("jakarta.inject:jakarta.inject-api")
 	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
 	implementation("org.apache.maven.resolver:maven-resolver-impl")
-	implementation("org.apache.maven:maven-resolver-provider")
+	implementation("org.apache.maven:maven-resolver-provider") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
@@ -30,10 +35,13 @@ dependencies {
 	implementation("org.hamcrest:hamcrest-core")
 	implementation("org.hamcrest:hamcrest-library")
 	implementation("org.springframework:spring-core")
+	implementation("org.springframework:spring-test")
+	implementation("org.springframework:spring-core-test")
 
+	testImplementation("jakarta.servlet:jakarta.servlet-api")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.springframework:spring-context")
 
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.mockito:mockito-core")
 }

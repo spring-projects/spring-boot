@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -37,6 +40,7 @@ import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationI
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperationParameter;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer.JmxEndpointDiscovererRuntimeHints;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class JmxEndpointDiscovererTests {
 
@@ -79,18 +84,18 @@ class JmxEndpointDiscovererTests {
 			assertThat(getSomething.getDescription()).isEqualTo("Invoke getSomething for endpoint test");
 			assertThat(getSomething.getOutputType()).isEqualTo(String.class);
 			assertThat(getSomething.getParameters()).hasSize(1);
-			hasDefaultParameter(getSomething, 0, String.class);
+			assertThat(getSomething.getParameters().get(0).getType()).isEqualTo(String.class);
 			JmxOperation update = operationByName.get("update");
 			assertThat(update.getDescription()).isEqualTo("Invoke update for endpoint test");
 			assertThat(update.getOutputType()).isEqualTo(Void.TYPE);
 			assertThat(update.getParameters()).hasSize(2);
-			hasDefaultParameter(update, 0, String.class);
-			hasDefaultParameter(update, 1, String.class);
+			assertThat(update.getParameters().get(0).getType()).isEqualTo(String.class);
+			assertThat(update.getParameters().get(1).getType()).isEqualTo(String.class);
 			JmxOperation deleteSomething = operationByName.get("deleteSomething");
 			assertThat(deleteSomething.getDescription()).isEqualTo("Invoke deleteSomething for endpoint test");
 			assertThat(deleteSomething.getOutputType()).isEqualTo(Void.TYPE);
 			assertThat(deleteSomething.getParameters()).hasSize(1);
-			hasDefaultParameter(deleteSomething, 0, String.class);
+			assertThat(deleteSomething.getParameters().get(0).getType()).isEqualTo(String.class);
 		});
 	}
 
@@ -105,8 +110,9 @@ class JmxEndpointDiscovererTests {
 	@Test
 	void getEndpointsWhenJmxExtensionIsMissingEndpointShouldThrowException() {
 		load(TestJmxEndpointExtension.class, (discoverer) -> assertThatIllegalStateException()
-				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
-						"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'"));
+			.isThrownBy(discoverer::getEndpoints)
+			.withMessageContaining(
+					"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'"));
 	}
 
 	@Test
@@ -169,36 +175,49 @@ class JmxEndpointDiscovererTests {
 	@Test
 	void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
 		load(ClashingJmxEndpointConfiguration.class, (discoverer) -> assertThatIllegalStateException()
-				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
-						"Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)"));
+			.isThrownBy(discoverer::getEndpoints)
+			.withMessageContaining(
+					"Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
 	void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class,
 				(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
-						.withMessageContaining("Found two endpoints with the id 'test': "));
+					.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 
 	@Test
 	void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(ClashingOperationsEndpoint.class, (discoverer) -> assertThatIllegalStateException()
-				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
-						"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint"));
+			.isThrownBy(discoverer::getEndpoints)
+			.withMessageContaining(
+					"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint"));
 	}
 
 	@Test
 	void getEndpointsWhenWhenExtensionHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(AdditionalClashingOperationsConfiguration.class, (discoverer) -> assertThatIllegalStateException()
-				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
-						"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)"));
+			.isThrownBy(discoverer::getEndpoints)
+			.withMessageContaining(
+					"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)"));
 	}
 
 	@Test
 	void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
 		load(InvalidJmxExtensionConfiguration.class, (discoverer) -> assertThatIllegalStateException()
-				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
-						"Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'"));
+			.isThrownBy(discoverer::getEndpoints)
+			.withMessageContaining(
+					"Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'"));
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new JmxEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(JmxEndpointFilter.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 
 	private Object getInvoker(JmxOperation operation) {
@@ -237,12 +256,6 @@ class JmxEndpointDiscovererTests {
 		assertThat(parameter.getName()).isEqualTo(name);
 		assertThat(parameter.getType()).isEqualTo(type);
 		assertThat(parameter.getDescription()).isEqualTo(description);
-	}
-
-	// FIXME rename
-	private void hasDefaultParameter(JmxOperation operation, int index, Class<?> type) {
-		JmxOperationParameter parameter = operation.getParameters().get(index);
-		assertThat(parameter.getType()).isEqualTo(type);
 	}
 
 	private Map<EndpointId, ExposableJmxEndpoint> discover(JmxEndpointDiscoverer discoverer) {

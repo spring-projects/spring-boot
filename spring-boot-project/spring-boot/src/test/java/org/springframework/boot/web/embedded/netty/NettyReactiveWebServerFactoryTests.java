@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,32 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.net.ConnectException;
+import java.net.SocketAddress;
 import java.time.Duration;
 import java.util.Arrays;
 
+import io.netty.channel.Channel;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import reactor.core.CoreSubscriber;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
+import reactor.netty.DisposableChannel;
+import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -49,11 +60,6 @@ import static org.mockito.Mockito.mock;
  */
 class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
-	@Override
-	protected NettyReactiveWebServerFactory getFactory() {
-		return new NettyReactiveWebServerFactory(0);
-	}
-
 	@Test
 	void exceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
@@ -62,7 +68,16 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
 		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
-				.satisfies(this::portMatchesRequirement);
+			.satisfies(this::portMatchesRequirement)
+			.withCauseInstanceOf(Throwable.class);
+	}
+
+	@Test
+	void getPortWhenDisposableServerPortOperationIsUnsupportedReturnsMinusOne() {
+		NettyReactiveWebServerFactory factory = new NoPortNettyReactiveWebServerFactory(0);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(this.webServer.getPort()).isEqualTo(-1);
 	}
 
 	private void portMatchesRequirement(PortInUseException exception) {
@@ -95,8 +110,36 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Test
 	void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
 		Mono<String> result = testSslWithAlias("test-alias");
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(30));
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+			blockingHandler.stopBlocking();
+			try {
+				webClient.get().retrieve().toBodilessEntity().block();
+				return false;
+			}
+			catch (RuntimeException ex) {
+				return ex.getCause() instanceof ConnectException;
+			}
+		});
+		this.webServer.stop();
+	}
+
+	@Override
+	@Test
+	@Disabled("Reactor Netty does not support mutiple ports")
+	protected void startedLogMessageWithMultiplePorts() {
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {
@@ -111,10 +154,124 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
-		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
-				.clientConnector(connector).build();
-		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
-				.exchange().flatMap((response) -> response.bodyToMono(String.class));
+		WebClient client = WebClient.builder()
+			.baseUrl("https://localhost:" + this.webServer.getPort())
+			.clientConnector(connector)
+			.build();
+		return client.post()
+			.uri("/test")
+			.contentType(MediaType.TEXT_PLAIN)
+			.body(BodyInserters.fromValue("Hello World"))
+			.retrieve()
+			.bodyToMono(String.class);
+	}
+
+	@Override
+	protected NettyReactiveWebServerFactory getFactory() {
+		return new NettyReactiveWebServerFactory(0);
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((NettyWebServer) this.webServer).getStartedLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		throw new UnsupportedOperationException("Reactor Netty does not support multiple ports");
+	}
+
+	static class NoPortNettyReactiveWebServerFactory extends NettyReactiveWebServerFactory {
+
+		NoPortNettyReactiveWebServerFactory(int port) {
+			super(port);
+		}
+
+		@Override
+		NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+				Duration lifecycleTimeout, Shutdown shutdown) {
+			return new NoPortNettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
+		}
+
+	}
+
+	static class NoPortNettyWebServer extends NettyWebServer {
+
+		NoPortNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
+				Shutdown shutdown) {
+			super(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
+		}
+
+		@Override
+		DisposableServer startHttpServer() {
+			return new NoPortDisposableServer(super.startHttpServer());
+		}
+
+	}
+
+	static class NoPortDisposableServer implements DisposableServer {
+
+		private final DisposableServer delegate;
+
+		NoPortDisposableServer(DisposableServer delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public SocketAddress address() {
+			return this.delegate.address();
+		}
+
+		@Override
+		public String host() {
+			return this.delegate.host();
+		}
+
+		@Override
+		public String path() {
+			return this.delegate.path();
+		}
+
+		@Override
+		public Channel channel() {
+			return this.delegate.channel();
+		}
+
+		@Override
+		public void dispose() {
+			this.delegate.dispose();
+		}
+
+		@Override
+		public void disposeNow() {
+			this.delegate.disposeNow();
+		}
+
+		@Override
+		public void disposeNow(Duration timeout) {
+			this.delegate.disposeNow(timeout);
+		}
+
+		@Override
+		public CoreSubscriber<Void> disposeSubscriber() {
+			return this.delegate.disposeSubscriber();
+		}
+
+		@Override
+		public boolean isDisposed() {
+			return this.delegate.isDisposed();
+		}
+
+		@Override
+		public Mono<Void> onDispose() {
+			return this.delegate.onDispose();
+		}
+
+		@Override
+		public DisposableChannel onDispose(Disposable onDispose) {
+			return this.delegate.onDispose(onDispose);
+		}
+
 	}
 
 }

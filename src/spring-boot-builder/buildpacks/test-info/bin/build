@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "---> Test Info buildpack building"
+
+# INPUT ARGUMENTS
+platform_dir=$2
+env_dir=${platform_dir}/env
+bindings_dir=${platform_dir}/bindings
+
+if [[ -f ${env_dir}/FORCE_FAILURE ]]; then
+  echo "Forced builder failure"
+  exit 1
+fi
+
+if compgen -G "${env_dir}/*" > /dev/null; then
+  for var in ${env_dir}/*; do
+    echo "env: $(basename ${var})=$(<${var})"
+  done
+fi
+
+if compgen -G "${bindings_dir}/*" > /dev/null; then
+  for binding in ${bindings_dir}/*; do
+    for f in ${binding}/*; do
+      echo "binding: $(basename ${binding})/$(basename ${f})=$(<${f})"
+    done
+  done
+fi
+
+echo "META-INF/MANIFEST.MF: "
+if [[ -f META-INF/MANIFEST.MF ]]; then
+    cat META-INF/MANIFEST.MF
+fi
+
+echo "Network status: $(curl --silent --head https://spring.io | grep -E '^HTTP' || echo "curl failed")"
+
+echo "---> Test Info buildpack done"

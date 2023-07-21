@@ -47,7 +47,7 @@ public enum UpgradePolicy implements BiPredicate<DependencyVersion, DependencyVe
 	 */
 	SAME_MINOR_VERSION(DependencyVersion::isSameMinorAndNewerThan);
 
-	private BiPredicate<DependencyVersion, DependencyVersion> delegate;
+	private final BiPredicate<DependencyVersion, DependencyVersion> delegate;
 
 	UpgradePolicy(BiPredicate<DependencyVersion, DependencyVersion> delegate) {
 		this.delegate = delegate;

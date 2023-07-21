@@ -1,0 +1,37 @@
+[[features]]
+= Core Features
+include::attributes.adoc[]
+
+
+
+This section dives into the details of Spring Boot.
+Here you can learn about the key features that you may want to use and customize.
+If you have not already done so, you might want to read the "<<getting-started#getting-started, Getting Started>>" and "<<using#using, Developing with Spring Boot>>" sections, so that you have a good grounding of the basics.
+
+
+
+include::features/spring-application.adoc[]
+
+include::features/external-config.adoc[]
+
+include::features/profiles.adoc[]
+
+include::features/logging.adoc[]
+
+include::features/internationalization.adoc[]
+
+include::features/json.adoc[]
+
+include::features/task-execution-and-scheduling.adoc[]
+
+include::features/testing.adoc[]
+
+include::features/docker-compose.adoc[]
+
+include::features/developing-auto-configuration.adoc[]
+
+include::features/kotlin.adoc[]
+
+include::features/ssl.adoc[]
+
+include::features/whats-next.adoc[]

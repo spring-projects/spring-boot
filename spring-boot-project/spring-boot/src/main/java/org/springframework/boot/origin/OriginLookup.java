@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,20 @@ public interface OriginLookup<K> {
 	}
 
 	/**
-	 * Attempt to lookup the origin from the given source. If the source is not a
+	 * Return the implicit prefix that is applied when performing a lookup or {@code null}
+	 * if no prefix is used. Prefixes can be used to disambiguate keys that would
+	 * otherwise clash. For example, if multiple applications are running on the same
+	 * machine a different prefix can be set on each application to ensure that different
+	 * environment variables are used.
+	 * @return the prefix applied by the lookup class or {@code null}.
+	 * @since 2.5.0
+	 */
+	default String getPrefix() {
+		return null;
+	}
+
+	/**
+	 * Attempt to look up the origin from the given source. If the source is not a
 	 * {@link OriginLookup} or if an exception occurs during lookup then {@code null} is
 	 * returned.
 	 * @param source the source object

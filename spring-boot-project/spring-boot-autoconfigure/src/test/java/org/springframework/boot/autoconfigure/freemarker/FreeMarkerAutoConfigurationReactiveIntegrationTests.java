@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
 
 	@Test
 	void defaultConfiguration() {
@@ -87,20 +87,20 @@ class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	@Test
 	void customTemplateLoaderPath() {
 		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:classpath:/custom-templates/")
-				.run((context) -> {
-					MockServerWebExchange exchange = render(context, "custom");
-					String result = exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30));
-					assertThat(result).contains("custom");
-				});
+			.run((context) -> {
+				MockServerWebExchange exchange = render(context, "custom");
+				String result = exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30));
+				assertThat(result).contains("custom");
+			});
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
 	void customFreeMarkerSettings() {
 		this.contextRunner.withPropertyValues("spring.freemarker.settings.boolean_format:yup,nope")
-				.run((context) -> assertThat(
-						context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
-								.isEqualTo("yup,nope"));
+			.run((context) -> assertThat(
+					context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
+				.isEqualTo("yup,nope"));
 	}
 
 	@Test

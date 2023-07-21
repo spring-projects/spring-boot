@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,25 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 
 /**
- * Maintains a collection of {@link ExitCodeGenerator} instances and allows the final exit
- * code to be calculated.
+ * Maintains an ordered collection of {@link ExitCodeGenerator} instances and allows the
+ * final exit code to be calculated. Generators are ordered by {@link Order @Order} and
+ * {@link Ordered}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author GenKui Du
  * @see #getExitCode()
  * @see ExitCodeGenerator
  */
 class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
-	private List<ExitCodeGenerator> generators = new ArrayList<>();
+	private final List<ExitCodeGenerator> generators = new ArrayList<>();
 
 	void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
 		Assert.notNull(exception, "Exception must not be null");
@@ -71,6 +76,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	void add(ExitCodeGenerator generator) {
 		Assert.notNull(generator, "Generator must not be null");
 		this.generators.add(generator);
+		AnnotationAwareOrderComparator.sort(this.generators);
 	}
 
 	@Override
@@ -79,7 +85,8 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	}
 
 	/**
-	 * Get the final exit code that should be returned based on all contained generators.
+	 * Get the final exit code that should be returned. The final exit code is the first
+	 * non-zero exit code that is {@link ExitCodeGenerator#getExitCode generated}.
 	 * @return the final exit code.
 	 */
 	int getExitCode() {
@@ -87,12 +94,13 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 		for (ExitCodeGenerator generator : this.generators) {
 			try {
 				int value = generator.getExitCode();
-				if (value > 0 && value > exitCode || value < 0 && value < exitCode) {
+				if (value != 0) {
 					exitCode = value;
+					break;
 				}
 			}
 			catch (Exception ex) {
-				exitCode = (exitCode != 0) ? exitCode : 1;
+				exitCode = 1;
 				ex.printStackTrace();
 			}
 		}

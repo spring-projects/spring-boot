@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,33 +29,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ManagementServerPropertiesTests {
 
 	@Test
-	void defaultManagementServerProperties() {
+	void defaultPortIsNull() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort()).isNull();
-		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
 	}
 
 	@Test
-	void definedManagementServerProperties() {
+	void definedPort() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setPort(123);
-		properties.getServlet().setContextPath("/foo");
 		assertThat(properties.getPort()).isEqualTo(123);
-		assertThat(properties.getServlet().getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
-	void trailingSlashOfContextPathIsRemoved() {
+	void defaultBasePathIsEmptyString() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		properties.getServlet().setContextPath("/foo/");
-		assertThat(properties.getServlet().getContextPath()).isEqualTo("/foo");
+		assertThat(properties.getBasePath()).isEmpty();
 	}
 
 	@Test
-	void slashOfContextPathIsDefaultValue() {
+	void definedBasePath() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		properties.getServlet().setContextPath("/");
-		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
+		properties.setBasePath("/foo");
+		assertThat(properties.getBasePath()).isEqualTo("/foo");
+	}
+
+	@Test
+	void trailingSlashOfBasePathIsRemoved() {
+		ManagementServerProperties properties = new ManagementServerProperties();
+		properties.setBasePath("/foo/");
+		assertThat(properties.getBasePath()).isEqualTo("/foo");
+	}
+
+	@Test
+	void slashOfBasePathIsDefaultValue() {
+		ManagementServerProperties properties = new ManagementServerProperties();
+		properties.setBasePath("/");
+		assertThat(properties.getBasePath()).isEmpty();
 	}
 
 }

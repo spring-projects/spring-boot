@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import io.rsocket.RSocketFactory;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.messaging.rsocket.RSocketRequester.Builder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 /**
@@ -40,16 +41,18 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * @author Brian Clozel
  * @since 2.2.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class, HttpServer.class, TcpServerTransport.class })
-@AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
+@AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
+@ConditionalOnClass({ RSocketRequester.class, io.rsocket.RSocket.class, HttpServer.class, TcpServerTransport.class })
 public class RSocketRequesterAutoConfiguration {
 
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies) {
-		return RSocketRequester.builder().rsocketStrategies(strategies);
+	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,
+			ObjectProvider<RSocketConnectorConfigurer> connectorConfigurers) {
+		Builder builder = RSocketRequester.builder().rsocketStrategies(strategies);
+		connectorConfigurers.orderedStream().forEach(builder::rsocketConnector);
+		return builder;
 	}
 
 }

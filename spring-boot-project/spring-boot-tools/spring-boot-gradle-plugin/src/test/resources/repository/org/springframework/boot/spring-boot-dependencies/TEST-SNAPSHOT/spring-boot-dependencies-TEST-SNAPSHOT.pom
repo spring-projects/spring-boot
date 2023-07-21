@@ -22,6 +22,11 @@
 				<artifactId>spring-boot-starter</artifactId>
 				<version>TEST-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>org.junit.platform</groupId>
+				<artifactId>junit-platform-launcher</artifactId>
+				<version>1.9.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>

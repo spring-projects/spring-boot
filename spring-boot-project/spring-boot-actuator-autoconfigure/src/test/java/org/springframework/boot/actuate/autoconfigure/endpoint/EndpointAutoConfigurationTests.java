@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
@@ -46,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class EndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class));
 
 	@Test
 	void mapShouldUseConfigurationConverter() {
@@ -198,6 +199,11 @@ class EndpointAutoConfigurationTests {
 		@Override
 		public boolean isMandatory() {
 			return false;
+		}
+
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotation) {
+			return null;
 		}
 
 	}

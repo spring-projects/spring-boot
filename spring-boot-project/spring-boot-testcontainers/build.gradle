@@ -1,0 +1,57 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Testcontainers Support"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api("org.testcontainers:testcontainers")
+
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional("org.springframework:spring-test")
+	optional("org.springframework.data:spring-data-mongodb")
+	optional("org.springframework.data:spring-data-neo4j")
+	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:couchbase")
+	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:influxdb")
+	optional("org.testcontainers:jdbc")
+	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:mariadb")
+	optional("org.testcontainers:mongodb")
+	optional("org.testcontainers:mssqlserver")
+	optional("org.testcontainers:mysql")
+	optional("org.testcontainers:neo4j")
+	optional("org.testcontainers:oracle-xe")
+	optional("org.testcontainers:postgresql")
+	optional("org.testcontainers:rabbitmq")
+	optional("org.testcontainers:redpanda")
+	optional("org.testcontainers:r2dbc")
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation("ch.qos.logback:logback-classic")
+	testImplementation("org.apache.activemq:activemq-client-jakarta")
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.influxdb:influxdb-java")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.junit.platform:junit-platform-engine")
+	testImplementation("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework:spring-jms")
+	testImplementation("org.springframework:spring-r2dbc")
+	testImplementation("org.springframework.amqp:spring-rabbit")
+	testImplementation("org.springframework.kafka:spring-kafka")
+	testImplementation("org.testcontainers:junit-jupiter")
+
+	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
+}
+

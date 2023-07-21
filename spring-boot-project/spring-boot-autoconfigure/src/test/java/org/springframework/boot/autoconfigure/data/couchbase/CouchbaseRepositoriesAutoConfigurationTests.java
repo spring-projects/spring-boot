@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
@@ -40,8 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CouchbaseRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class,
-					CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
+				CouchbaseRepositoriesAutoConfiguration.class));
 
 	@Test
 	void couchbaseNotAvailable() {
@@ -51,27 +50,27 @@ class CouchbaseRepositoriesAutoConfigurationTests {
 	@Test
 	void defaultRepository() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
 	}
 
 	@Test
 	void reactiveRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.repositories.type=reactive")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.withPropertyValues("spring.data.couchbase.repositories.type=reactive")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
 	void disabledRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.withPropertyValues("spring.data.couchbase.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
 	void noRepositoryAvailable() {
 		this.contextRunner.withUserConfiguration(NoRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -82,14 +81,14 @@ class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class NoRepositoryConfiguration {
 
 	}

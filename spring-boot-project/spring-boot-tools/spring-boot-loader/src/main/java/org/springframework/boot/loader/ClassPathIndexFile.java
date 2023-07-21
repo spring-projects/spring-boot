@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A class path index file that provides ordering information for JARs.
@@ -45,31 +42,20 @@ final class ClassPathIndexFile {
 
 	private final List<String> lines;
 
-	private final Set<String> folders;
-
 	private ClassPathIndexFile(File root, List<String> lines) {
 		this.root = root;
-		this.lines = lines;
-		this.folders = this.lines.stream().map(this::getFolder).filter(Objects::nonNull).collect(Collectors.toSet());
+		this.lines = lines.stream().map(this::extractName).toList();
 	}
 
-	private String getFolder(String name) {
-		int lastSlash = name.lastIndexOf('/');
-		return (lastSlash != -1) ? name.substring(0, lastSlash) : null;
+	private String extractName(String line) {
+		if (line.startsWith("- \"") && line.endsWith("\"")) {
+			return line.substring(3, line.length() - 1);
+		}
+		throw new IllegalStateException("Malformed classpath index line [" + line + "]");
 	}
 
 	int size() {
 		return this.lines.size();
-	}
-
-	boolean containsFolder(String name) {
-		if (name == null || name.isEmpty()) {
-			return false;
-		}
-		if (name.endsWith("/")) {
-			return containsFolder(name.substring(0, name.length() - 1));
-		}
-		return this.folders.contains(name);
 	}
 
 	boolean containsEntry(String name) {
@@ -80,7 +66,7 @@ final class ClassPathIndexFile {
 	}
 
 	List<URL> getUrls() {
-		return Collections.unmodifiableList(this.lines.stream().map(this::asUrl).collect(Collectors.toList()));
+		return this.lines.stream().map(this::asUrl).toList();
 	}
 
 	private URL asUrl(String line) {
