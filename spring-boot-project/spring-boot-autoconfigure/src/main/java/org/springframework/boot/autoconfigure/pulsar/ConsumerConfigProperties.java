@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 
 import org.apache.pulsar.client.api.ConsumerCryptoFailureAction;
 import org.apache.pulsar.client.api.DeadLetterPolicy;
-import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.RegexSubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionInitialPosition;
 import org.apache.pulsar.client.api.SubscriptionMode;
@@ -177,9 +176,8 @@ public class ConsumerConfigProperties {
 	private Boolean replicateSubscriptionState = false;
 
 	/**
-	 * Whether to include the given position of any reset operation like
-	 * {@link org.apache.pulsar.client.api.Consumer#seek(long) or
-	 * {@link ConsumerConfigProperties#seek(MessageId)}}.
+	 * Whether to include the given position of any reset operation (eg. the various seek
+	 * APIs on the Pulsar consumer).
 	 */
 	private Boolean resetIncludeHead = false;
 
