@@ -34,7 +34,6 @@ import org.apache.pulsar.client.api.MessageRoutingMode;
 import org.apache.pulsar.client.api.ProducerAccessMode;
 import org.apache.pulsar.client.api.ProducerBuilder;
 import org.apache.pulsar.client.api.ProducerCryptoFailureAction;
-import org.apache.pulsar.client.api.ProxyProtocol;
 import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticationException;
 import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.RegexSubscriptionMode;
@@ -119,7 +118,6 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.client.enable-busy-wait", "true");
 			props.put("spring.pulsar.client.memory-limit", "16B");
 			props.put("spring.pulsar.client.proxy-service-url", "my-proxy-service-url");
-			props.put("spring.pulsar.client.proxy-protocol", "sni");
 			props.put("spring.pulsar.client.enable-transaction", "true");
 			props.put("spring.pulsar.client.dns-lookup-bind-address", "my-dns-lookup-bind-address");
 			props.put("spring.pulsar.client.dns-lookup-bind-port", "17");
@@ -162,7 +160,6 @@ class PulsarPropertiesTests {
 			assertThat(clientProps.getEnableBusyWait()).isTrue();
 			assertThat(clientProps.getMemoryLimit()).isEqualTo(DataSize.ofBytes(16));
 			assertThat(clientProps.getProxyServiceUrl()).isEqualTo("my-proxy-service-url");
-			assertThat(clientProps.getProxyProtocol()).isEqualTo(ProxyProtocol.SNI);
 			assertThat(clientProps.getEnableTransaction()).isTrue();
 			assertThat(clientProps.getDnsLookupBindAddress()).isEqualTo("my-dns-lookup-bind-address");
 			assertThat(clientProps.getDnsLookupBindPort()).isEqualTo(17);

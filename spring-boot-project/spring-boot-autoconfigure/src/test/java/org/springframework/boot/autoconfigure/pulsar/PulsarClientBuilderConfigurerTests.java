@@ -106,7 +106,6 @@ class PulsarClientBuilderConfigurerTests {
 		clientProps.setEnableBusyWait(true);
 		clientProps.setMemoryLimit(DataSize.ofBytes(15));
 		clientProps.setProxyServiceUrl("my-proxy-service-url");
-		clientProps.setProxyProtocol(ProxyProtocol.SNI);
 		clientProps.setEnableTransaction(true);
 		clientProps.setDnsLookupBindAddress("my-dns-lookup-bind-address");
 		clientProps.setDnsLookupBindPort(16);

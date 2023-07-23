@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
-import org.apache.pulsar.client.api.ProxyProtocol;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.common.schema.SchemaType;
 
@@ -370,12 +369,6 @@ public class PulsarProperties {
 		private String proxyServiceUrl;
 
 		/**
-		 * Protocol of proxy service. proxyServiceUrl and proxyProtocol must be mutually
-		 * inclusive.
-		 */
-		private ProxyProtocol proxyProtocol;
-
-		/**
 		 * Enables transactions. To use this, start the transactionCoordinatorClient with
 		 * the pulsar client.
 		 */
@@ -700,14 +693,6 @@ public class PulsarProperties {
 
 		public void setProxyServiceUrl(String proxyServiceUrl) {
 			this.proxyServiceUrl = proxyServiceUrl;
-		}
-
-		public ProxyProtocol getProxyProtocol() {
-			return this.proxyProtocol;
-		}
-
-		public void setProxyProtocol(ProxyProtocol proxyProtocol) {
-			this.proxyProtocol = proxyProtocol;
 		}
 
 		public Boolean getEnableTransaction() {

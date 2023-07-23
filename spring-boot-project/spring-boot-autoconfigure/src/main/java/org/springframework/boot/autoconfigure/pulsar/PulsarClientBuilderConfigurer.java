@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.pulsar.client.api.ClientBuilder;
+import org.apache.pulsar.client.api.ProxyProtocol;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.SizeUnit;
 
@@ -131,7 +132,7 @@ public class PulsarClientBuilderConfigurer {
 			.to(clientBuilder, (cb, val) -> cb.memoryLimit(val, SizeUnit.BYTES));
 		map.from(clientProperties::getEnableTransaction).to(clientBuilder::enableTransaction);
 		map.from(clientProperties::getProxyServiceUrl)
-			.to((proxyUrl) -> clientBuilder.proxyServiceUrl(proxyUrl, clientProperties.getProxyProtocol()));
+			.to((proxyUrl) -> clientBuilder.proxyServiceUrl(proxyUrl, ProxyProtocol.SNI));
 		map.from(clientProperties::getDnsLookupBindAddress)
 			.to((bindAddr) -> clientBuilder.dnsLookupBind(bindAddr, clientProperties.getDnsLookupBindPort()));
 		map.from(clientProperties::getSocks5ProxyAddress)
