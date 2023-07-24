@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -105,7 +104,7 @@ class SonatypeServiceTests {
 					.filter((artifact) -> !artifact.startsWith("build-info.json"))
 					.map((artifact) -> requestTo(
 							"/service/local/staging/deployByRepositoryId/example-6789/" + artifact.toString()))
-					.collect(Collectors.toCollection(HashSet::new));
+					.collect(Collectors.toSet());
 			AnyOfRequestMatcher uploadRequestsMatcher = anyOf(uploads);
 			assertThat(uploadRequestsMatcher.candidates).hasSize(150);
 			this.server.expect(ExpectedCount.times(150), uploadRequestsMatcher).andExpect(method(HttpMethod.PUT))
@@ -157,7 +156,7 @@ class SonatypeServiceTests {
 					.filter((artifact) -> !"build-info.json".equals(artifact.toString()))
 					.map((artifact) -> requestTo(
 							"/service/local/staging/deployByRepositoryId/example-6789/" + artifact.toString()))
-					.collect(Collectors.toCollection(HashSet::new));
+					.collect(Collectors.toSet());
 			AnyOfRequestMatcher uploadRequestsMatcher = anyOf(uploads);
 			assertThat(uploadRequestsMatcher.candidates).hasSize(150);
 			this.server.expect(ExpectedCount.times(150), uploadRequestsMatcher).andExpect(method(HttpMethod.PUT))

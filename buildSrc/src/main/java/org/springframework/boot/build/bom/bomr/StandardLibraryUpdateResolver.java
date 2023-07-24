@@ -19,12 +19,10 @@ package org.springframework.boot.build.bom.bomr;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.slf4j.Logger;
@@ -98,19 +96,14 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 						getLaterVersionsForModule(group.getId(), plugin, libraryVersion));
 			}
 		}
-		List<DependencyVersion> allVersions = moduleVersions.values()
+		return moduleVersions.values()
 			.stream()
 			.flatMap(SortedSet::stream)
 			.distinct()
 			.filter((dependencyVersion) -> isPermitted(dependencyVersion, library.getProhibitedVersions()))
-			.toList();
-		if (allVersions.isEmpty()) {
-			return Collections.emptyList();
-		}
-		return allVersions.stream()
-			.map((version) -> new VersionOption.ResolvedVersionOption(version,
+			.map((version) -> (VersionOption) new VersionOption.ResolvedVersionOption(version,
 					getMissingModules(moduleVersions, version)))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private boolean isPermitted(DependencyVersion dependencyVersion, List<ProhibitedVersion> prohibitedVersions) {
