@@ -735,6 +735,12 @@ public class RabbitProperties {
 		private boolean deBatchingEnabled = true;
 
 		/**
+		 * Whether the container (when stopped) should stop immediately after processing
+		 * the current message or stop after processing all pre-fetched messages.
+		 */
+		private boolean forceStop;
+
+		/**
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
@@ -779,6 +785,14 @@ public class RabbitProperties {
 
 		public void setDeBatchingEnabled(boolean deBatchingEnabled) {
 			this.deBatchingEnabled = deBatchingEnabled;
+		}
+
+		public boolean isForceStop() {
+			return forceStop;
+		}
+
+		public void setForceStop(boolean forceStop) {
+			this.forceStop = forceStop;
 		}
 
 		public ListenerRetry getRetry() {
