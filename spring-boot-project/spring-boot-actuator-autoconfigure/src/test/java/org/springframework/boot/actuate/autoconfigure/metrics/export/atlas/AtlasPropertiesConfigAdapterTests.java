@@ -116,4 +116,18 @@ class AtlasPropertiesConfigAdapterTests {
 			.isEqualTo("https://atlas.example.com/evaluate");
 	}
 
+	@Test
+	void whenPropertiesLwcStepIsSetAdapterLwcStepReturnsIt() {
+		AtlasProperties properties = new AtlasProperties();
+		properties.setLwcStep(Duration.ofSeconds(30));
+		assertThat(new AtlasPropertiesConfigAdapter(properties).lwcStep()).isEqualTo(Duration.ofSeconds(30));
+	}
+
+	@Test
+	void whenPropertiesLwcIgnorePublishStepIsSetAdapterLwcIgnorePublishStepReturnsIt() {
+		AtlasProperties properties = new AtlasProperties();
+		properties.setLwcIgnorePublishStep(false);
+		assertThat(new AtlasPropertiesConfigAdapter(properties).lwcIgnorePublishStep()).isFalse();
+	}
+
 }
