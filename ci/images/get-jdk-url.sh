@@ -9,7 +9,7 @@ case "$1" in
 		 echo "https://github.com/bell-sw/Liberica/releases/download/11.0.20+8/bellsoft-jdk11.0.20+8-linux-amd64.tar.gz"
 	;;
 	java17)
-		 echo "https://github.com/bell-sw/Liberica/releases/download/17.0.7+7/bellsoft-jdk17.0.7+7-linux-amd64.tar.gz"
+		 echo "https://github.com/bell-sw/Liberica/releases/download/17.0.8+7/bellsoft-jdk17.0.8+7-linux-amd64.tar.gz"
 	;;
 	java20)
 		 echo "https://github.com/bell-sw/Liberica/releases/download/20.0.1+10/bellsoft-jdk20.0.1+10-linux-amd64.tar.gz"
