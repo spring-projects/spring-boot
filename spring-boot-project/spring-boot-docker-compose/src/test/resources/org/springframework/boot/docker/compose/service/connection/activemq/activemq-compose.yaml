@@ -1,6 +1,6 @@
 services:
   activemq:
-    image: 'symptoma/activemq:5.18.0'
+    image: '{imageName}'
     ports:
       - '61616'
     environment:

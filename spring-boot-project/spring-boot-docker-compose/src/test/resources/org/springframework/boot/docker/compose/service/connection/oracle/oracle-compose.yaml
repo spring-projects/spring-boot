@@ -1,6 +1,6 @@
 services:
   database:
-    image: 'gvenzl/oracle-xe:18.4.0-slim'
+    image: '{imageName}'
     ports:
       - '1521'
     environment:

@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.ClassUtils;
@@ -43,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("oracle-compose.yaml");
+		super("oracle-compose.yaml", DockerImageNames.oracleXe());
 	}
 
 	@Test

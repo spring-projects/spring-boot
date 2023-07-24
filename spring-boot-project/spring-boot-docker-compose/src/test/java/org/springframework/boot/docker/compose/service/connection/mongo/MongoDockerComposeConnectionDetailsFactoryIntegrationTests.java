@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	MongoDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mongo-compose.yaml");
+		super("mongo-compose.yaml", DockerImageNames.mongo());
 	}
 
 	@Test

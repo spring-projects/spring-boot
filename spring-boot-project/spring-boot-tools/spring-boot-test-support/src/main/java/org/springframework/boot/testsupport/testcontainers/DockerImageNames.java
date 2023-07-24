@@ -36,9 +36,15 @@ public final class DockerImageNames {
 
 	private static final String ELASTICSEARCH_VERSION = "7.17.5";
 
+	private static final String ELASTICSEARCH_8_VERSION = "8.6.1";
+
 	private static final String KAFKA_VERSION = "7.4.0";
 
+	private static final String MARIADB_VERSION = "10.10";
+
 	private static final String MONGO_VERSION = "5.0.17";
+
+	private static final String MYSQL_VERSION = "8.0";
 
 	private static final String NEO4J_VERSION = "4.4.11";
 
@@ -84,11 +90,19 @@ public final class DockerImageNames {
 	}
 
 	/**
-	 * Return a {@link DockerImageName} suitable for running Elasticsearch.
+	 * Return a {@link DockerImageName} suitable for running Elasticsearch 7.
 	 * @return a docker image name for running elasticsearch
 	 */
 	public static DockerImageName elasticsearch() {
 		return DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch").withTag(ELASTICSEARCH_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Elasticsearch 8.
+	 * @return a docker image name for running elasticsearch
+	 */
+	public static DockerImageName elasticsearch8() {
+		return DockerImageName.parse("elasticsearch").withTag(ELASTICSEARCH_8_VERSION);
 	}
 
 	/**
@@ -100,11 +114,27 @@ public final class DockerImageNames {
 	}
 
 	/**
+	 * Return a {@link DockerImageName} suitable for running MariaDB.
+	 * @return a docker image name for running Mariadb
+	 */
+	public static DockerImageName mariadb() {
+		return DockerImageName.parse("mariadb").withTag(MARIADB_VERSION);
+	}
+
+	/**
 	 * Return a {@link DockerImageName} suitable for running Mongo.
 	 * @return a docker image name for running mongo
 	 */
 	public static DockerImageName mongo() {
 		return DockerImageName.parse("mongo").withTag(MONGO_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running MySQL.
+	 * @return a docker image name for running MySQL
+	 */
+	public static DockerImageName mysql() {
+		return DockerImageName.parse("mysql").withTag(MYSQL_VERSION);
 	}
 
 	/**
@@ -155,6 +185,14 @@ public final class DockerImageNames {
 		return DockerImageName.parse("redpandadata/redpanda")
 			.withTag(REDPANDA_VERSION)
 			.asCompatibleSubstituteFor("docker.redpanda.com/redpandadata/redpanda");
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Microsoft SQLServer.
+	 * @return a docker image name for running SQLServer
+	 */
+	public static DockerImageName sqlserver() {
+		return DockerImageName.parse("mcr.microsoft.com/mssql/server");
 	}
 
 	/**

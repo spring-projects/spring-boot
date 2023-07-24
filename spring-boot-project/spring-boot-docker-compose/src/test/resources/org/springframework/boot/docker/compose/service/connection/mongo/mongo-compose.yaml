@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: 'mongo:6.0'
+    image: '{imageName}'
     ports:
       - '27017'
     environment:

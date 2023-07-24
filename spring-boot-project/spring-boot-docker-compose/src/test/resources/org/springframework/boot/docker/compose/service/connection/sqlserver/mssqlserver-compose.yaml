@@ -1,6 +1,6 @@
 services:
   database:
-    image: 'mcr.microsoft.com/mssql/server'
+    image: '{imageName}'
     ports:
       - '1433'
     environment:

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	RabbitDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("rabbit-compose.yaml");
+		super("rabbit-compose.yaml", DockerImageNames.rabbit());
 	}
 
 	@Test
