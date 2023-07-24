@@ -47,13 +47,14 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 		if (result instanceof List) {
 			return ((List<Object>) result).stream()
 				.filter(Objects::nonNull)
-				.map(e -> (e instanceof ConfigDataLocation) ? withOrigin(context, (ConfigDataLocation) e) : e)
+				.map((element) -> (element instanceof ConfigDataLocation)
+						? withOrigin(context, (ConfigDataLocation) element) : element)
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
 		if (result instanceof ConfigDataLocation[]) {
 			return Arrays.stream((ConfigDataLocation[]) result)
 				.filter(Objects::nonNull)
-				.map(e -> withOrigin(context, e))
+				.map((element) -> withOrigin(context, element))
 				.toArray(ConfigDataLocation[]::new);
 		}
 		return result;
