@@ -18,11 +18,9 @@ package org.springframework.boot.launchscript;
 
 import java.util.List;
 
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @DisabledIfDockerUnavailable
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The docker images have no ARM support")
 class JarLaunchScriptIntegrationTests extends AbstractLaunchScriptIntegrationTests {
 
 	JarLaunchScriptIntegrationTests() {
