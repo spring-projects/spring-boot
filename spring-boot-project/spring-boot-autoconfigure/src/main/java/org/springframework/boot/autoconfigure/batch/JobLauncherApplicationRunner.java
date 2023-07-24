@@ -24,8 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,11 +41,11 @@ import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobParametersNotFoundException;
-import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -71,7 +69,8 @@ import org.springframework.util.StringUtils;
  * @author Akshay Dubey
  * @since 2.3.0
  */
-public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered, ApplicationEventPublisherAware {
+public class JobLauncherApplicationRunner
+		implements ApplicationRunner, InitializingBean, Ordered, ApplicationEventPublisherAware {
 
 	/**
 	 * The default order for the command line runner.
@@ -114,15 +113,14 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		this.jobRepository = jobRepository;
 	}
 
-	@PostConstruct
-	public void validate() {
+	@Override
+	public void afterPropertiesSet() {
 		if (StringUtils.hasText(this.jobNames)) {
-			String[] jobsToRun = this.jobNames.split(",");
-			for(String jobName: jobsToRun) {
+			for (String jobName : jobsToRun()) {
 				if (!isLocalJob(jobName) && !isRegisteredJob(jobName)) {
-						throw new IllegalArgumentException("No job instances were found for job name [" + jobName + "]");
+					throw new IllegalArgumentException("No job found with name '" + jobName + "'");
 				}
-			}	
+			}
 		}
 	}
 
@@ -187,7 +185,7 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 	private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
 		for (Job job : this.jobs) {
 			if (StringUtils.hasText(this.jobNames)) {
-				String[] jobsToRun = this.jobNames.split(",");
+				String[] jobsToRun = jobsToRun();
 				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
 					logger.debug(LogMessage.format("Skipped job: %s", job.getName()));
 					continue;
@@ -199,9 +197,9 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 
 	private void executeRegisteredJobs(JobParameters jobParameters) throws JobExecutionException {
 		if (this.jobRegistry != null && StringUtils.hasText(this.jobNames)) {
-			String[] jobsToRun = this.jobNames.split(",");
+			String[] jobsToRun = jobsToRun();
 			for (String jobName : jobsToRun) {
-				if(isRegisteredJob(jobName) && !isLocalJob(jobName)) {
+				if (!isLocalJob(jobName)) {
 					Job job = this.jobRegistry.getJob(jobName);
 					execute(job, jobParameters);
 				}
@@ -261,6 +259,10 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals.getParameters());
 		return new JobParameters(merged);
+	}
+
+	private String[] jobsToRun() {
+		return this.jobNames.split(",");
 	}
 
 }
