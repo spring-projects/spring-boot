@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,6 +81,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -398,6 +401,53 @@ class BatchAutoConfigurationTests {
 					DataSourceTransactionManagerAutoConfiguration.class))
 			.run((context) -> assertThat(context).hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
 				.hasBean("customInitializer"));
+	}
+
+	@Test
+	void whenTheUserDefinesAJobNameAsJobInstanceValidates() {
+		JobLauncherApplicationRunner runner = createInstance("another");
+		runner.setJobs(Collections.singletonList(mockJob("test")));
+		runner.setJobName("test");
+		runner.afterPropertiesSet();
+	}
+
+	@Test
+	void whenTheUserDefinesAJobNameAsRegisteredJobValidates() {
+		JobLauncherApplicationRunner runner = createInstance("test");
+		runner.setJobName("test");
+		runner.afterPropertiesSet();
+	}
+
+	@Test
+	void whenTheUserDefinesAJobNameThatDoesNotExistWithJobInstancesFailsFast() {
+		JobLauncherApplicationRunner runner = createInstance();
+		runner.setJobs(Arrays.asList(mockJob("one"), mockJob("two")));
+		runner.setJobName("three");
+		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
+			.withMessage("No job found with name 'three'");
+	}
+
+	@Test
+	void whenTheUserDefinesAJobNameThatDoesNotExistWithRegisteredJobFailsFast() {
+		JobLauncherApplicationRunner runner = createInstance("one", "two");
+		runner.setJobName("three");
+		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
+			.withMessage("No job found with name 'three'");
+	}
+
+	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
+		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobLauncher.class),
+				mock(JobExplorer.class), mock(JobRepository.class));
+		JobRegistry jobRegistry = mock(JobRegistry.class);
+		given(jobRegistry.getJobNames()).willReturn(Arrays.asList(registeredJobNames));
+		runner.setJobRegistry(jobRegistry);
+		return runner;
+	}
+
+	private Job mockJob(String name) {
+		Job job = mock(Job.class);
+		given(job.getName()).willReturn(name);
+		return job;
 	}
 
 	@Configuration(proxyBeanMethods = false)

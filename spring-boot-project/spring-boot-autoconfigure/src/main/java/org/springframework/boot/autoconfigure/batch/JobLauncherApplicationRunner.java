@@ -40,7 +40,6 @@ import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
@@ -65,6 +64,7 @@ import org.springframework.util.StringUtils;
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
  * @author Stephane Nicoll
+ * @author Akshay Dubey
  * @since 2.3.0
  */
 public class JobLauncherApplicationRunner
@@ -115,6 +115,11 @@ public class JobLauncherApplicationRunner
 	public void afterPropertiesSet() {
 		if (this.jobs.size() > 1 && !StringUtils.hasText(this.jobName)) {
 			throw new IllegalArgumentException("Job name must be specified in case of multiple jobs");
+		}
+		if (StringUtils.hasText(this.jobName)) {
+			if (!isLocalJob(this.jobName) && !isRegisteredJob(this.jobName)) {
+				throw new IllegalArgumentException("No job found with name '" + this.jobName + "'");
+			}
 		}
 	}
 
@@ -173,6 +178,14 @@ public class JobLauncherApplicationRunner
 		executeRegisteredJobs(jobParameters);
 	}
 
+	private boolean isLocalJob(String jobName) {
+		return this.jobs.stream().anyMatch((job) -> job.getName().equals(jobName));
+	}
+
+	private boolean isRegisteredJob(String jobName) {
+		return this.jobRegistry != null && this.jobRegistry.getJobNames().contains(jobName);
+	}
+
 	private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
 		for (Job job : this.jobs) {
 			if (StringUtils.hasText(this.jobName)) {
@@ -187,14 +200,9 @@ public class JobLauncherApplicationRunner
 
 	private void executeRegisteredJobs(JobParameters jobParameters) throws JobExecutionException {
 		if (this.jobRegistry != null && StringUtils.hasText(this.jobName)) {
-			try {
+			if (!isLocalJob(this.jobName)) {
 				Job job = this.jobRegistry.getJob(this.jobName);
-				if (!this.jobs.contains(job)) {
-					execute(job, jobParameters);
-				}
-			}
-			catch (NoSuchJobException ex) {
-				logger.debug(LogMessage.format("No job found in registry for job name: %s", this.jobName));
+				execute(job, jobParameters);
 			}
 		}
 	}
