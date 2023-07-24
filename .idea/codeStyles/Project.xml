@@ -6,7 +6,7 @@
         <option name="USE_TAB_CHARACTER" value="true" />
       </value>
     </option>
-    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="50" />
+    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
     <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
     <option name="IMPORT_LAYOUT_TABLE">
       <value>
@@ -43,7 +43,7 @@
     <JavaCodeStyleSettings>
       <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
       <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
-      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="50" />
+      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
       <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
       <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
         <value />

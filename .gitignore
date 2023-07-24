@@ -12,10 +12,6 @@
 .classpath
 .factorypath
 .gradle
-!.idea/
-.idea/*
-!.idea/codeStyles
-!.idea/inspectionProfiles
 .metadata
 .project
 .recommenders
