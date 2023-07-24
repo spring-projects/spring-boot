@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,12 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 */
 	private boolean useSemanticMetricTypes = false;
 
+	/**
+	 * Prefix for metric type. Valid prefixes are described in the Google Cloud
+	 * documentation (https://cloud.google.com/monitoring/custom-metrics#identifier).
+	 */
+	private String metricTypePrefix = "custom.googleapis.com/";
+
 	public String getProjectId() {
 		return this.projectId;
 	}
@@ -84,6 +90,14 @@ public class StackdriverProperties extends StepRegistryProperties {
 
 	public void setUseSemanticMetricTypes(boolean useSemanticMetricTypes) {
 		this.useSemanticMetricTypes = useSemanticMetricTypes;
+	}
+
+	public String getMetricTypePrefix() {
+		return this.metricTypePrefix;
+	}
+
+	public void setMetricTypePrefix(String metricTypePrefix) {
+		this.metricTypePrefix = metricTypePrefix;
 	}
 
 }
