@@ -118,6 +118,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		}
 		factory.setMissingQueuesFatal(configuration.isMissingQueuesFatal());
 		factory.setDeBatchingEnabled(configuration.isDeBatchingEnabled());
+		factory.setForceStop(configuration.isForceStop());
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()
