@@ -1,0 +1,121 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <option name="AUTODETECT_INDENTS" value="false" />
+    <option name="OTHER_INDENT_OPTIONS">
+      <value>
+        <option name="USE_TAB_CHARACTER" value="true" />
+      </value>
+    </option>
+    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+    <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+    <option name="IMPORT_LAYOUT_TABLE">
+      <value>
+        <package name="java" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="javax" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="org.springframework" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="true" />
+      </value>
+    </option>
+    <option name="RIGHT_MARGIN" value="90" />
+    <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
+    <GroovyCodeStyleSettings>
+      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+      <option name="IMPORT_LAYOUT_TABLE">
+        <value>
+          <emptyLine />
+          <package name="javax" withSubpackages="true" static="false" />
+          <package name="java" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="org.springframework" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="" withSubpackages="true" static="true" />
+        </value>
+      </option>
+    </GroovyCodeStyleSettings>
+    <JavaCodeStyleSettings>
+      <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
+      <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
+      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+      <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+        <value />
+      </option>
+      <option name="IMPORT_LAYOUT_TABLE">
+        <value>
+          <package name="java" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="javax" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="org.springframework" withSubpackages="true" static="false" />
+          <emptyLine />
+          <package name="" withSubpackages="true" static="true" />
+        </value>
+      </option>
+      <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
+      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
+      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
+      <option name="JD_KEEP_INVALID_TAGS" value="false" />
+      <option name="JD_KEEP_EMPTY_LINES" value="false" />
+    </JavaCodeStyleSettings>
+    <JetCodeStyleSettings>
+      <option name="PACKAGES_TO_USE_STAR_IMPORTS">
+        <value>
+          <package name="java.util" alias="false" withSubpackages="false" />
+          <package name="kotlinx.android.synthetic" alias="false" withSubpackages="false" />
+        </value>
+      </option>
+      <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="20" />
+      <option name="NAME_COUNT_TO_USE_STAR_IMPORT_FOR_MEMBERS" value="20" />
+    </JetCodeStyleSettings>
+    <editorconfig>
+      <option name="ENABLED" value="false" />
+    </editorconfig>
+    <codeStyleSettings language="Groovy">
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="JAVA">
+      <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
+      <option name="BLANK_LINES_AROUND_FIELD" value="1" />
+      <option name="BLANK_LINES_AROUND_FIELD_IN_INTERFACE" value="1" />
+      <option name="ELSE_ON_NEW_LINE" value="true" />
+      <option name="CATCH_ON_NEW_LINE" value="true" />
+      <option name="FINALLY_ON_NEW_LINE" value="true" />
+      <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+      <option name="SPACE_WITHIN_ARRAY_INITIALIZER_BRACES" value="true" />
+      <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
+      <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
+      <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
+      <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="JSON">
+      <indentOptions>
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="XML">
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="kotlin">
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+  </code_scheme>
+</component>
