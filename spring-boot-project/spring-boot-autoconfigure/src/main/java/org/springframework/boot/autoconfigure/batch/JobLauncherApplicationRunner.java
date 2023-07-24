@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,6 +45,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -67,7 +67,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.3.0
  */
-public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered, ApplicationEventPublisherAware {
+public class JobLauncherApplicationRunner
+		implements ApplicationRunner, InitializingBean, Ordered, ApplicationEventPublisherAware {
 
 	/**
 	 * The default order for the command line runner.
@@ -110,11 +111,16 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		this.jobRepository = jobRepository;
 	}
 
-	@PostConstruct
-	public void validate() {
+	@Override
+	public void afterPropertiesSet() {
 		if (this.jobs.size() > 1 && !StringUtils.hasText(this.jobName)) {
 			throw new IllegalArgumentException("Job name must be specified in case of multiple jobs");
 		}
+	}
+
+	@Deprecated(since = "3.0.10", forRemoval = true)
+	public void validate() {
+		afterPropertiesSet();
 	}
 
 	public void setOrder(int order) {
