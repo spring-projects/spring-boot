@@ -625,6 +625,8 @@ class PulsarPropertiesTests {
 			then(consumerBuilder).should().subscriptionInitialPosition(SubscriptionInitialPosition.Earliest);
 			then(consumerBuilder).should().patternAutoDiscoveryPeriod(9);
 			then(consumerBuilder).should().subscriptionTopicsMode(RegexSubscriptionMode.AllTopics);
+
+			// TODO here
 			then(consumerBuilder).should()
 				.deadLetterPolicy(DeadLetterPolicy.builder()
 					.maxRedeliverCount(4)

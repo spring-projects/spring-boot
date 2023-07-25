@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ public class ConsumerConfigProperties {
 	 * Dead letter policy to use.
 	 */
 	@NestedConfigurationProperty
-	private DeadLetterPolicy deadLetterPolicy;
+	private DeadLetterPolicyConfig deadLetterPolicy = new DeadLetterPolicyConfig();
 
 	/**
 	 * Whether to auto retry messages.
@@ -377,11 +377,11 @@ public class ConsumerConfigProperties {
 		this.regexSubscriptionMode = regexSubscriptionMode;
 	}
 
-	public DeadLetterPolicy getDeadLetterPolicy() {
+	public DeadLetterPolicyConfig getDeadLetterPolicy() {
 		return this.deadLetterPolicy;
 	}
 
-	public void setDeadLetterPolicy(DeadLetterPolicy deadLetterPolicy) {
+	public void setDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicy) {
 		this.deadLetterPolicy = deadLetterPolicy;
 	}
 
@@ -514,7 +514,9 @@ public class ConsumerConfigProperties {
 			map.from(this::getSubscriptionInitialPosition).to(consumerBuilder::subscriptionInitialPosition);
 			map.from(this::getPatternAutoDiscoveryPeriod).to(consumerBuilder::patternAutoDiscoveryPeriod);
 			map.from(this::getRegexSubscriptionMode).to(consumerBuilder::subscriptionTopicsMode);
-			map.from(this::getDeadLetterPolicy).to(consumerBuilder::deadLetterPolicy);
+			map.from(this::getDeadLetterPolicy)
+				.as(this::toPulsarDeadLetterPolicy)
+				.to(consumerBuilder::deadLetterPolicy);
 			map.from(this::getRetryEnable).to(consumerBuilder::enableRetry);
 			map.from(this::getAutoUpdatePartitions).to(consumerBuilder::autoUpdatePartitions);
 			map.from(this::getAutoUpdatePartitionsInterval)
@@ -533,6 +535,23 @@ public class ConsumerConfigProperties {
 				.as(Duration::toMillis)
 				.to(consumerBuilder, (cb, val) -> cb.expireTimeOfIncompleteChunkedMessage(val, TimeUnit.MILLISECONDS));
 		};
+	}
+
+	/**
+	 * Maps from a dead letter policy config props to a 'DeadLetterPolicy' expected by
+	 * Pulsar.
+	 * @param deadLetterPolicyConfig the config props defining the DLP to construct
+	 * @return the Pulsar expected dead letter policy
+	 */
+	private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicyConfig) {
+		var map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		var dlpBuilder = DeadLetterPolicy.builder();
+		var dlpConfigProps = this.getDeadLetterPolicy();
+		map.from(dlpConfigProps::getMaxRedeliverCount).to(dlpBuilder::maxRedeliverCount);
+		map.from(dlpConfigProps::getRetryLetterTopic).to(dlpBuilder::retryLetterTopic);
+		map.from(dlpConfigProps::getDeadLetterTopic).to(dlpBuilder::deadLetterTopic);
+		map.from(dlpConfigProps::getInitialSubscriptionName).to(dlpBuilder::initialSubscriptionName);
+		return dlpBuilder.build();
 	}
 
 }
