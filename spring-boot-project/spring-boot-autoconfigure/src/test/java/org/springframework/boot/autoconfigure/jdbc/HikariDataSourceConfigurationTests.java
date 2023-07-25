@@ -23,7 +23,9 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -120,6 +122,19 @@ class HikariDataSourceConfigurationTests {
 							.isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 					});
 			});
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	void whenCheckpointRestoreIsNotAvailableHikariAutoConfigDoesNotRegisterLifecycleBean() {
+		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
+			.run((context) -> assertThat(context).doesNotHaveBean(HikariCheckpointRestoreLifecycle.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
