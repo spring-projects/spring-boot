@@ -344,6 +344,7 @@ public class TomcatWebServer implements WebServer {
 		}
 	}
 
+	@Override
 	public void destroy() throws WebServerException {
 		try {
 			stopTomcat();
