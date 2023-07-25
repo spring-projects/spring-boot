@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.lang.management.ManagementFactory;
-import java.sql.Connection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,7 +35,6 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -109,8 +107,7 @@ class DataSourceJmxConfigurationTests {
 				assertThat(hikariDataSource.isRegisterMbeans()).isTrue();
 				// Ensure that the pool has been initialized, triggering MBean
 				// registration
-				Connection connection = hikariDataSource.getConnection();
-				hikariDataSource.evictConnection(connection);
+				hikariDataSource.getConnection().close();
 				// Hikari can still register mBeans
 				validateHikariMBeansRegistration(ManagementFactory.getPlatformMBeanServer(), poolName, true);
 			});
@@ -133,21 +130,6 @@ class DataSourceJmxConfigurationTests {
 				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 				validateHikariMBeansRegistration(mBeanServer, poolName, true);
 			});
-	}
-
-	@Test
-	void hikariAutoConfigRegistersLifecycleBean() {
-
-		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
-			.run((context) -> assertThat(context).hasSingleBean(HikariLifecycle.class));
-	}
-
-	@Test
-	void hikariAutoConfigConditionallyRegistersLifecycleBean() {
-
-		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
-			.withClassLoader(new FilteredClassLoader("org.crac"))
-			.run((context) -> assertThat(context).doesNotHaveBean(HikariLifecycle.class));
 	}
 
 	private void validateHikariMBeansRegistration(MBeanServer mBeanServer, String poolName, boolean expected)
@@ -214,10 +196,7 @@ class DataSourceJmxConfigurationTests {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (bean instanceof javax.sql.DataSource) {
-
-				ProxyFactory pf = new ProxyFactory(bean);
-				pf.setProxyTargetClass(true);
-				return pf.getProxy();
+				return new ProxyFactory(bean).getProxy();
 			}
 			return bean;
 		}

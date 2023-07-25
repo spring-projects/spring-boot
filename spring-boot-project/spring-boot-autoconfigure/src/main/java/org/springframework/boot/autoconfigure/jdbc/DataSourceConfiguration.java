@@ -25,12 +25,14 @@ import oracle.jdbc.OracleConnection;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCheckpointRestore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -123,9 +125,9 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnClass(name = "org.crac.Resource")
-		HikariLifecycle dataSourceLifecycle(HikariDataSource hikariDataSource) {
-			return new HikariLifecycle(hikariDataSource);
+		@ConditionalOnCheckpointRestore
+		HikariCheckpointRestoreLifecycle hikariCheckpointRestoreLifecycle(HikariDataSource hikariDataSource) {
+			return new HikariCheckpointRestoreLifecycle(hikariDataSource);
 		}
 
 	}
