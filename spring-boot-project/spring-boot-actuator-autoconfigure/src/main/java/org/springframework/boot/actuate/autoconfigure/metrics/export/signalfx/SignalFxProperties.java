@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,11 @@ public class SignalFxProperties extends StepRegistryProperties {
 	 */
 	private String source;
 
+	/**
+	 * Type of histogram to publish.
+	 */
+	private HistogramType publishedHistogramType = HistogramType.DEFAULT;
+
 	@Override
 	public Duration getStep() {
 		return this.step;
@@ -86,6 +91,33 @@ public class SignalFxProperties extends StepRegistryProperties {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	public HistogramType getPublishedHistogramType() {
+		return this.publishedHistogramType;
+	}
+
+	public void setPublishedHistogramType(HistogramType publishedHistogramType) {
+		this.publishedHistogramType = publishedHistogramType;
+	}
+
+	public enum HistogramType {
+
+		/**
+		 * Default, time-based histogram.
+		 */
+		DEFAULT,
+
+		/**
+		 * Cumulative histogram.
+		 */
+		CUMULATIVE,
+
+		/**
+		 * Delta histogram.
+		 */
+		DELTA;
+
 	}
 
 }
