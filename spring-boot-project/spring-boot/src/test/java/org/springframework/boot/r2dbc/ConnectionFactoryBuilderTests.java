@@ -26,7 +26,9 @@ import io.r2dbc.h2.H2ConnectionFactoryMetadata;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.pool.PoolingConnectionFactoryProvider;
+import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.ConnectionFactoryMetadata;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
 import io.r2dbc.spi.ValidationDepth;
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.reactivestreams.Publisher;
 
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder.PoolingAwareOptionsCapableWrapper;
 import org.springframework.core.ResolvableType;
@@ -50,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Mark Paluch
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class ConnectionFactoryBuilderTests {
 
@@ -235,6 +239,15 @@ class ConnectionFactoryBuilderTests {
 		assertThat(configuration).extracting(expectedOption.property).isEqualTo(expectedOption.value);
 	}
 
+	@Test
+	void shouldApplyDecorators() {
+		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID();
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder.withUrl(url)
+			.decorator((ignored) -> new MyConnectionFactory())
+			.build();
+		assertThat(connectionFactory).isInstanceOf(MyConnectionFactory.class);
+	}
+
 	private static Iterable<Arguments> primitivePoolingConnectionProviderOptions() {
 		return extractPoolingConnectionProviderOptions((field) -> {
 			ResolvableType type = ResolvableType.forField(field);
@@ -316,6 +329,20 @@ class ConnectionFactoryBuilderTests {
 				}
 			}
 			throw new IllegalArgumentException("Unexpected option: '" + option + "'");
+		}
+
+	}
+
+	private static class MyConnectionFactory implements ConnectionFactory {
+
+		@Override
+		public Publisher<? extends Connection> create() {
+			return null;
+		}
+
+		@Override
+		public ConnectionFactoryMetadata getMetadata() {
+			return null;
 		}
 
 	}
