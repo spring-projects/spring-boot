@@ -1369,7 +1369,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "3.0.6") {
+	library("Spring AMQP", "3.0.7") {
 		group("org.springframework.amqp") {
 			imports = [
 				"spring-amqp-bom"
