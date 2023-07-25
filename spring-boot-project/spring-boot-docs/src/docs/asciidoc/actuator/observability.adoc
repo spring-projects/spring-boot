@@ -24,7 +24,7 @@ For R2DBC, the https://github.com/spring-projects-experimental/r2dbc-micrometer-
 [[actuator.observability.common-key-values]]
 === Common Key-Values
 Common key-values are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
-Commons key-values are applied to all observations as low cardinality key-values and can be configured, as the following example shows:
+Common key-values are applied to all observations as low cardinality key-values and can be configured, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -48,15 +48,15 @@ If you'd like to prevent some observations from being reported, you can use the 
 	  observations:
 	    enable:
 	      denied:
-            prefix: false
+	        prefix: false
 	      another:
-            denied:
-              prefix: false
+	        denied:
+	          prefix: false
 ----
 
 The preceding example will prevent all observations with a name starting with `denied.prefix` or `another.denied.prefix`.
 
-TIP: If you want to prevent Spring Security from reporting observations, set the property configprop:management.observations.enable.spring.security[] to `false`.
+TIP: If you want to prevent Spring Security from reporting observations, set the property `management.observations.enable.spring.security` to `false`.
 
 If you need greater control over the prevention of observations, you can register beans of type `ObservationPredicate`.
 Observations are only reported if all the `ObservationPredicate` beans return `true` for that observation.
