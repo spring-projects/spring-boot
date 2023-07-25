@@ -35,7 +35,6 @@ import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
-import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.MeterProvider;
@@ -83,7 +82,9 @@ import static org.mockito.Mockito.mock;
 class OpenTelemetryAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(
+				org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class,
+				OpenTelemetryAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
@@ -91,7 +92,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtelTracer.class);
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-			assertThat(context).hasSingleBean(OpenTelemetry.class);
 			assertThat(context).hasSingleBean(SdkTracerProvider.class);
 			assertThat(context).hasSingleBean(ContextPropagators.class);
 			assertThat(context).hasSingleBean(Sampler.class);
@@ -123,7 +123,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(OtelTracer.class);
 			assertThat(context).doesNotHaveBean(EventPublisher.class);
 			assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
-			assertThat(context).doesNotHaveBean(OpenTelemetry.class);
 			assertThat(context).doesNotHaveBean(SdkTracerProvider.class);
 			assertThat(context).doesNotHaveBean(ContextPropagators.class);
 			assertThat(context).doesNotHaveBean(Sampler.class);
@@ -148,8 +147,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasBean("customOtelCurrentTraceContext");
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-			assertThat(context).hasBean("customOpenTelemetry");
-			assertThat(context).hasSingleBean(OpenTelemetry.class);
 			assertThat(context).hasBean("customSdkTracerProvider");
 			assertThat(context).hasSingleBean(SdkTracerProvider.class);
 			assertThat(context).hasBean("customContextPropagators");
@@ -367,11 +364,6 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		OtelCurrentTraceContext customOtelCurrentTraceContext() {
 			return mock(OtelCurrentTraceContext.class);
-		}
-
-		@Bean
-		OpenTelemetry customOpenTelemetry() {
-			return mock(OpenTelemetry.class);
 		}
 
 		@Bean

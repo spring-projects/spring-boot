@@ -67,4 +67,15 @@ include::code:MyObservationPredicate[]
 
 The preceding example will prevent all observations whose name contains "denied".
 
+[[actuator.observability.opentelemetry]]
+=== OpenTelemetry Support
+Spring Boot's actuator module includes basic support for https://opentelemetry.io/[OpenTelemetry].
+
+It provides a bean of type `OpenTelemetry`, and if there are beans of type `SdkTracerProvider`, `ContextPropagators`, `SdkLoggerProvider` or `SdkMeterProvider` in the application context, they automatically get registered.
+Additionally, it provides a `Resource` bean.
+The attributes of the `Resource` can be configured via the configprop:management.opentelemetry.resource-attributes[] configuration property.
+
+NOTE: Spring Boot does not provide auto-configuration for OpenTelemetry metrics or logging.
+OpenTelemetry tracing is only auto-configured when used together with <<actuator#actuator.micrometer-tracing, Micrometer Tracing>>.
+
 The next sections will provide more details about logging, metrics and traces.

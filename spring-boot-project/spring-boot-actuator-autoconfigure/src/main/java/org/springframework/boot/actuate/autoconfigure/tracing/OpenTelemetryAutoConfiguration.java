@@ -36,13 +36,11 @@ import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
@@ -51,7 +49,6 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessorBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
-import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringBootVersion;
@@ -63,25 +60,19 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
+ * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry tracing.
  *
  * @author Moritz Halbritter
  * @author Marcin Grzejszczak
  * @author Yanming Zhou
  * @since 3.0.0
  */
-@AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
+@AutoConfiguration(value = "openTelemetryTracingAutoConfiguration", before = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class })
 @EnableConfigurationProperties(TracingProperties.class)
 public class OpenTelemetryAutoConfiguration {
-
-	/**
-	 * Default value for application name if {@code spring.application.name} is not set.
-	 */
-	private static final String DEFAULT_APPLICATION_NAME = "application";
 
 	private final TracingProperties tracingProperties;
 
@@ -91,22 +82,9 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	OpenTelemetry openTelemetry(SdkTracerProvider sdkTracerProvider, ContextPropagators contextPropagators) {
-		return OpenTelemetrySdk.builder()
-			.setTracerProvider(sdkTracerProvider)
-			.setPropagators(contextPropagators)
-			.build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	SdkTracerProvider otelSdkTracerProvider(Environment environment, SpanProcessors spanProcessors, Sampler sampler,
+	SdkTracerProvider otelSdkTracerProvider(Resource resource, SpanProcessors spanProcessors, Sampler sampler,
 			ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
-		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		Resource springResource = Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName));
-		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
-			.setSampler(sampler)
-			.setResource(Resource.getDefault().merge(springResource));
+		SdkTracerProviderBuilder builder = SdkTracerProvider.builder().setSampler(sampler).setResource(resource);
 		spanProcessors.forEach(builder::addSpanProcessor);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();

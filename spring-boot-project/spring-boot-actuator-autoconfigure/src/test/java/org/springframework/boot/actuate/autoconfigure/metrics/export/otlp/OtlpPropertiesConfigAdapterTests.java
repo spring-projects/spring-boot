@@ -16,69 +16,93 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link OtlpPropertiesConfigAdapter}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class OtlpPropertiesConfigAdapterTests {
 
+	private OtlpProperties properties;
+
+	private OpenTelemetryProperties openTelemetryProperties;
+
+	@BeforeEach
+	void setUp() {
+		this.properties = new OtlpProperties();
+		this.openTelemetryProperties = new OpenTelemetryProperties();
+	}
+
 	@Test
 	void whenPropertiesUrlIsSetAdapterUrlReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setUrl("http://another-url:4318/v1/metrics");
-		assertThat(new OtlpPropertiesConfigAdapter(properties).url()).isEqualTo("http://another-url:4318/v1/metrics");
+		this.properties.setUrl("http://another-url:4318/v1/metrics");
+		assertThat(createAdapter().url()).isEqualTo("http://another-url:4318/v1/metrics");
 	}
 
 	@Test
 	void whenPropertiesAggregationTemporalityIsNotSetAdapterAggregationTemporalityReturnsCumulative() {
-		OtlpProperties properties = new OtlpProperties();
-		assertThat(new OtlpPropertiesConfigAdapter(properties).aggregationTemporality())
-			.isSameAs(AggregationTemporality.CUMULATIVE);
+		assertThat(createAdapter().aggregationTemporality()).isSameAs(AggregationTemporality.CUMULATIVE);
 	}
 
 	@Test
 	void whenPropertiesAggregationTemporalityIsSetAdapterAggregationTemporalityReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setAggregationTemporality(AggregationTemporality.DELTA);
-		assertThat(new OtlpPropertiesConfigAdapter(properties).aggregationTemporality())
-			.isSameAs(AggregationTemporality.DELTA);
+		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
+		assertThat(createAdapter().aggregationTemporality()).isSameAs(AggregationTemporality.DELTA);
 	}
 
 	@Test
 	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setResourceAttributes(Map.of("service.name", "boot-service"));
-		assertThat(new OtlpPropertiesConfigAdapter(properties).resourceAttributes()).containsEntry("service.name",
-				"boot-service");
+		this.properties.setResourceAttributes(Map.of("service.name", "boot-service"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "boot-service");
 	}
 
 	@Test
 	void whenPropertiesHeadersIsSetAdapterHeadersReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setHeaders(Map.of("header", "value"));
-		assertThat(new OtlpPropertiesConfigAdapter(properties).headers()).containsEntry("header", "value");
+		this.properties.setHeaders(Map.of("header", "value"));
+		assertThat(createAdapter().headers()).containsEntry("header", "value");
 	}
 
 	@Test
 	void whenPropertiesBaseTimeUnitIsNotSetAdapterBaseTimeUnitReturnsMillis() {
-		OtlpProperties properties = new OtlpProperties();
-		assertThat(new OtlpPropertiesConfigAdapter(properties).baseTimeUnit()).isSameAs(TimeUnit.MILLISECONDS);
+		assertThat(createAdapter().baseTimeUnit()).isSameAs(TimeUnit.MILLISECONDS);
 	}
 
 	@Test
 	void whenPropertiesBaseTimeUnitIsSetAdapterBaseTimeUnitReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setBaseTimeUnit(TimeUnit.SECONDS);
-		assertThat(new OtlpPropertiesConfigAdapter(properties).baseTimeUnit()).isSameAs(TimeUnit.SECONDS);
+		this.properties.setBaseTimeUnit(TimeUnit.SECONDS);
+		assertThat(createAdapter().baseTimeUnit()).isSameAs(TimeUnit.SECONDS);
+	}
+
+	@Test
+	void openTelemetryPropertiesShouldOverrideOtlpPropertiesIfNotEmpty() {
+		this.properties.setResourceAttributes(Map.of("a", "alpha"));
+		this.openTelemetryProperties.setResourceAttributes(Map.of("b", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsExactly(entry("b", "beta"));
+	}
+
+	@Test
+	void openTelemetryPropertiesShouldNotOverrideOtlpPropertiesIfEmpty() {
+		this.properties.setResourceAttributes(Map.of("a", "alpha"));
+		this.openTelemetryProperties.setResourceAttributes(Collections.emptyMap());
+		assertThat(createAdapter().resourceAttributes()).containsExactly(entry("a", "alpha"));
+	}
+
+	private OtlpPropertiesConfigAdapter createAdapter() {
+		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties);
 	}
 
 }

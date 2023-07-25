@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to OTLP.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  * @since 3.0.0
  */
 @AutoConfiguration(
@@ -44,19 +46,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(OtlpMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("otlp")
-@EnableConfigurationProperties(OtlpProperties.class)
+@EnableConfigurationProperties({ OtlpProperties.class, OpenTelemetryProperties.class })
 public class OtlpMetricsExportAutoConfiguration {
 
 	private final OtlpProperties properties;
 
-	public OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
+	private final OpenTelemetryProperties openTelemetryProperties;
+
+	public OtlpMetricsExportAutoConfiguration(OtlpProperties properties,
+			OpenTelemetryProperties openTelemetryProperties) {
 		this.properties = properties;
+		this.openTelemetryProperties = openTelemetryProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public OtlpConfig otlpConfig() {
-		return new OtlpPropertiesConfigAdapter(this.properties);
+		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties);
 	}
 
 	@Bean

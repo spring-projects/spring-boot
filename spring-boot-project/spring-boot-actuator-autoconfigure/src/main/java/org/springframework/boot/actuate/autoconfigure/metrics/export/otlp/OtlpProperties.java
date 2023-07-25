@@ -23,6 +23,7 @@ import io.micrometer.registry.otlp.AggregationTemporality;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring OTLP metrics
@@ -77,6 +78,7 @@ public class OtlpProperties extends StepRegistryProperties {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "management.opentelemetry.resource-attributes")
 	public Map<String, String> getResourceAttributes() {
 		return this.resourceAttributes;
 	}

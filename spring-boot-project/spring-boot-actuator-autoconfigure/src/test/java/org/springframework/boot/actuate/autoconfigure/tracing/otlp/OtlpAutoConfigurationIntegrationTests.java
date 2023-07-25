@@ -34,8 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -50,9 +50,10 @@ class OtlpAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.tracing.sampling.probability=1.0")
-		.withConfiguration(
-				AutoConfigurations.of(ObservationAutoConfiguration.class, MicrometerTracingAutoConfiguration.class,
-						OpenTelemetryAutoConfiguration.class, OtlpAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+				MicrometerTracingAutoConfiguration.class, OpenTelemetryAutoConfiguration.class,
+				org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration.class,
+				OtlpAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 
