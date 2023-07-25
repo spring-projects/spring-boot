@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxProperties.HistogramType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,6 +61,22 @@ class SignalFxPropertiesConfigAdapterTests
 		SignalFxProperties properties = createProperties();
 		properties.setSource("DESKTOP-GA5");
 		assertThat(createConfigAdapter(properties).source()).isEqualTo("DESKTOP-GA5");
+	}
+
+	@Test
+	void whenPropertiesPublishHistogramTypeIsCumulativePublishCumulativeHistogramReturnsIt() {
+		SignalFxProperties properties = createProperties();
+		properties.setPublishedHistogramType(HistogramType.CUMULATIVE);
+		assertThat(createConfigAdapter(properties).publishCumulativeHistogram()).isTrue();
+		assertThat(createConfigAdapter(properties).publishDeltaHistogram()).isFalse();
+	}
+
+	@Test
+	void whenPropertiesPublishHistogramTypeIsDeltaPublishDeltaHistogramReturnsIt() {
+		SignalFxProperties properties = createProperties();
+		properties.setPublishedHistogramType(HistogramType.DELTA);
+		assertThat(createConfigAdapter(properties).publishDeltaHistogram()).isTrue();
+		assertThat(createConfigAdapter(properties).publishCumulativeHistogram()).isFalse();
 	}
 
 }
