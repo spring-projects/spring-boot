@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,10 @@ public class WavefrontPropertiesConfigAdapter extends PushRegistryPropertiesConf
 		return get(this::getUriAsString, WavefrontConfig.DEFAULT_DIRECT::uri);
 	}
 
+	private String getUriAsString(WavefrontProperties properties) {
+		return (properties.getUri() != null) ? properties.getUri().toString() : null;
+	}
+
 	@Override
 	public String source() {
 		return get(WavefrontProperties::getSource, WavefrontConfig.super::source);
@@ -63,8 +67,19 @@ public class WavefrontPropertiesConfigAdapter extends PushRegistryPropertiesConf
 		return get(WavefrontProperties::getGlobalPrefix, WavefrontConfig.super::globalPrefix);
 	}
 
-	private String getUriAsString(WavefrontProperties properties) {
-		return (properties.getUri() != null) ? properties.getUri().toString() : null;
+	@Override
+	public boolean reportMinuteDistribution() {
+		return get(WavefrontProperties::isReportMinuteDistribution, WavefrontConfig.super::reportMinuteDistribution);
+	}
+
+	@Override
+	public boolean reportHourDistribution() {
+		return get(WavefrontProperties::isReportHourDistribution, WavefrontConfig.super::reportHourDistribution);
+	}
+
+	@Override
+	public boolean reportDayDistribution() {
+		return get(WavefrontProperties::isReportDayDistribution, WavefrontConfig.super::reportDayDistribution);
 	}
 
 }

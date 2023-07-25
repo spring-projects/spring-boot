@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,21 @@ public class WavefrontProperties extends PushRegistryProperties {
 	 */
 	private String globalPrefix;
 
+	/**
+	 * Whether to report histogram distributions aggregated into minute intervals.
+	 */
+	private boolean reportMinuteDistribution = true;
+
+	/**
+	 * Whether to report histogram distributions aggregated into hour intervals.
+	 */
+	private boolean reportHourDistribution;
+
+	/**
+	 * Whether to report histogram distributions aggregated into day intervals.
+	 */
+	private boolean reportDayDistribution;
+
 	private final Sender sender = new Sender();
 
 	public URI getUri() {
@@ -93,6 +108,30 @@ public class WavefrontProperties extends PushRegistryProperties {
 
 	public Sender getSender() {
 		return this.sender;
+	}
+
+	public boolean isReportMinuteDistribution() {
+		return this.reportMinuteDistribution;
+	}
+
+	public void setReportMinuteDistribution(boolean reportMinuteDistribution) {
+		this.reportMinuteDistribution = reportMinuteDistribution;
+	}
+
+	public boolean isReportHourDistribution() {
+		return this.reportHourDistribution;
+	}
+
+	public void setReportHourDistribution(boolean reportHourDistribution) {
+		this.reportHourDistribution = reportHourDistribution;
+	}
+
+	public boolean isReportDayDistribution() {
+		return this.reportDayDistribution;
+	}
+
+	public void setReportDayDistribution(boolean reportDayDistribution) {
+		this.reportDayDistribution = reportDayDistribution;
 	}
 
 	public static class Sender {
