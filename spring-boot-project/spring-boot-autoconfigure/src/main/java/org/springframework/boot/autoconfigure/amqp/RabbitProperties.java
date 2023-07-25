@@ -788,7 +788,7 @@ public class RabbitProperties {
 		}
 
 		public boolean isForceStop() {
-			return forceStop;
+			return this.forceStop;
 		}
 
 		public void setForceStop(boolean forceStop) {
