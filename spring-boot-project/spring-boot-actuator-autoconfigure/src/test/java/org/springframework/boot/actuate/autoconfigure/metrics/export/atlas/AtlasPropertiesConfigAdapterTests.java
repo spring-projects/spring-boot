@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,7 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class AtlasPropertiesConfigAdapterTests {
+class AtlasPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<AtlasProperties, AtlasPropertiesConfigAdapter> {
+
+	AtlasPropertiesConfigAdapterTests() {
+		super(AtlasPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
@@ -128,6 +135,13 @@ class AtlasPropertiesConfigAdapterTests {
 		AtlasProperties properties = new AtlasProperties();
 		properties.setLwcIgnorePublishStep(false);
 		assertThat(new AtlasPropertiesConfigAdapter(properties).lwcIgnorePublishStep()).isFalse();
+	}
+
+	@Test
+	@Override
+	protected void adapterOverridesAllConfigMethods() {
+		adapterOverridesAllConfigMethodsExcept("autoStart", "commonTags", "debugRegistry", "publisher", "rollupPolicy",
+				"validTagCharacters");
 	}
 
 }
