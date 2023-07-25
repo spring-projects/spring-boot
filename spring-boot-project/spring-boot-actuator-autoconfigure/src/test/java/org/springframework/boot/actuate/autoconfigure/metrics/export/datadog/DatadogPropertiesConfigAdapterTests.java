@@ -31,6 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DatadogPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<DatadogProperties, DatadogPropertiesConfigAdapter> {
 
+	DatadogPropertiesConfigAdapterTests() {
+		super(DatadogPropertiesConfigAdapter.class);
+	}
+
 	@Override
 	protected DatadogProperties createProperties() {
 		return new DatadogProperties();

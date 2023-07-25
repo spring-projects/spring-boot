@@ -21,6 +21,8 @@ import java.time.Duration;
 import io.micrometer.prometheus.HistogramFlavor;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -28,7 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class PrometheusPropertiesConfigAdapterTests {
+class PrometheusPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<PrometheusProperties, PrometheusPropertiesConfigAdapter> {
+
+	PrometheusPropertiesConfigAdapterTests() {
+		super(PrometheusPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesDescriptionsIsSetAdapterDescriptionsReturnsIt() {
