@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,21 @@ public class WavefrontPropertiesConfigAdapter
 	@Override
 	public String globalPrefix() {
 		return get(Export::getGlobalPrefix, WavefrontConfig.super::globalPrefix);
+	}
+
+	@Override
+	public boolean reportMinuteDistribution() {
+		return get(Export::isReportMinuteDistribution, WavefrontConfig.super::reportMinuteDistribution);
+	}
+
+	@Override
+	public boolean reportHourDistribution() {
+		return get(Export::isReportHourDistribution, WavefrontConfig.super::reportHourDistribution);
+	}
+
+	@Override
+	public boolean reportDayDistribution() {
+		return get(Export::isReportDayDistribution, WavefrontConfig.super::reportDayDistribution);
 	}
 
 }
