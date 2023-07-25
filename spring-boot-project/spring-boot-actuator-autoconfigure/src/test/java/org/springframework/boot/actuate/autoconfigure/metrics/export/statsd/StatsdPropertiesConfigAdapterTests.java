@@ -22,6 +22,8 @@ import io.micrometer.statsd.StatsdFlavor;
 import io.micrometer.statsd.StatsdProtocol;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -29,7 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Johnny Lim
  */
-class StatsdPropertiesConfigAdapterTests {
+class StatsdPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<StatsdProperties, StatsdPropertiesConfigAdapter> {
+
+	protected StatsdPropertiesConfigAdapterTests() {
+		super(StatsdPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {

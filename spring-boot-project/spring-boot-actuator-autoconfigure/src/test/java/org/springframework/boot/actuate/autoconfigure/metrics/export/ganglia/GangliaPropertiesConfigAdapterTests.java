@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import info.ganglia.gmetric4j.gmetric.GMetric.UDPAddressingMode;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -29,7 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class GangliaPropertiesConfigAdapterTests {
+class GangliaPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<GangliaProperties, GangliaPropertiesConfigAdapter> {
+
+	GangliaPropertiesConfigAdapterTests() {
+		super(GangliaPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {

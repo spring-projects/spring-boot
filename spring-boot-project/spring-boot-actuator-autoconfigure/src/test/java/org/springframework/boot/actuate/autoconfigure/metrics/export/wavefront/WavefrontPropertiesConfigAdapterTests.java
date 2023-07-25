@@ -35,6 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WavefrontPropertiesConfigAdapterTests extends
 		PushRegistryPropertiesConfigAdapterTests<WavefrontProperties.Metrics.Export, WavefrontPropertiesConfigAdapter> {
 
+	protected WavefrontPropertiesConfigAdapterTests() {
+		super(WavefrontPropertiesConfigAdapter.class);
+	}
+
 	@Override
 	protected WavefrontProperties.Metrics.Export createProperties() {
 		return new WavefrontProperties.Metrics.Export();
