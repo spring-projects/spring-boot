@@ -42,11 +42,14 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 
 	private ConsumerFactory<Object, Object> consumerFactory;
 
+	private KafkaProperties properties;
+
 	@BeforeEach
 	@SuppressWarnings("unchecked")
 	void setUp() {
 		this.configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
-		this.configurer.setKafkaProperties(new KafkaProperties());
+		this.properties = new KafkaProperties();
+		this.configurer.setKafkaProperties(this.properties);
 		this.factory = spy(new ConcurrentKafkaListenerContainerFactory<>());
 		this.consumerFactory = mock(ConsumerFactory.class);
 
@@ -58,6 +61,13 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 		this.configurer.setThreadNameSupplier(function);
 		this.configurer.configure(this.factory, this.consumerFactory);
 		then(this.factory).should().setThreadNameSupplier(function);
+	}
+
+	@Test
+	void shouldApplyChangeConsumerThreadName() {
+		this.properties.getListener().setChangeConsumerThreadName(true);
+		this.configurer.configure(this.factory, this.consumerFactory);
+		then(this.factory).should().setChangeConsumerThreadName(true);
 	}
 
 }

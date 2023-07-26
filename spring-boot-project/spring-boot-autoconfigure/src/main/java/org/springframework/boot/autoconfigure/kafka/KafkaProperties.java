@@ -1043,6 +1043,12 @@ public class KafkaProperties {
 		 */
 		private boolean autoStartup = true;
 
+		/**
+		 * Whether to instruct the container to change the consumer thread name during
+		 * initialization.
+		 */
+		private Boolean changeConsumerThreadName;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1177,6 +1183,14 @@ public class KafkaProperties {
 
 		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
+		}
+
+		public Boolean getChangeConsumerThreadName() {
+			return this.changeConsumerThreadName;
+		}
+
+		public void setChangeConsumerThreadName(Boolean changeConsumerThreadName) {
+			this.changeConsumerThreadName = changeConsumerThreadName;
 		}
 
 	}

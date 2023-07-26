@@ -199,6 +199,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
 		map.from(this.batchInterceptor).to(factory::setBatchInterceptor);
 		map.from(this.threadNameSupplier).to(factory::setThreadNameSupplier);
+		map.from(properties::getChangeConsumerThreadName).to(factory::setChangeConsumerThreadName);
 	}
 
 	private void configureContainer(ContainerProperties container) {
