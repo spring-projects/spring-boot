@@ -96,7 +96,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	private void configureEnabledProtocols(AbstractHttp11JsseProtocol<?> protocol) {
 		SslOptions options = this.sslBundle.getOptions();
 		if (options.getEnabledProtocols() != null) {
-			String enabledProtocols = StringUtils.arrayToCommaDelimitedString(options.getEnabledProtocols());
+			String enabledProtocols = StringUtils.arrayToDelimitedString(options.getEnabledProtocols(), "+");
 			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
 				sslHostConfig.setProtocols(enabledProtocols);
 			}
