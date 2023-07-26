@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.rsocket;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import io.rsocket.SocketAcceptor;
@@ -25,8 +26,8 @@ import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.WebsocketRouteTransport;
 import reactor.netty.http.server.HttpServerRoutes;
 import reactor.netty.http.server.WebsocketServerSpec;
+import reactor.netty.http.server.WebsocketServerSpec.Builder;
 
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server.Spec;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 
@@ -44,14 +45,14 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final List<RSocketServerCustomizer> customizers;
 
-	private final Spec spec;
+	private final Consumer<Builder> serverSpecCustomizer;
 
-	RSocketWebSocketNettyRouteProvider(String mappingPath, Spec spec, SocketAcceptor socketAcceptor,
-			Stream<RSocketServerCustomizer> customizers) {
+	RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor,
+			Consumer<Builder> serverSpecCustomizer, Stream<RSocketServerCustomizer> customizers) {
 		this.mappingPath = mappingPath;
 		this.socketAcceptor = socketAcceptor;
+		this.serverSpecCustomizer = serverSpecCustomizer;
 		this.customizers = customizers.toList();
-		this.spec = spec;
 	}
 
 	@Override
@@ -59,11 +60,14 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 		RSocketServer server = RSocketServer.create(this.socketAcceptor);
 		this.customizers.forEach((customizer) -> customizer.customize(server));
 		ServerTransport.ConnectionAcceptor connectionAcceptor = server.asConnectionAcceptor();
-		WebsocketServerSpec.Builder build = (this.spec.getProtocols() == null) ? WebsocketServerSpec.builder()
-				: WebsocketServerSpec.builder().protocols(this.spec.getProtocols());
 		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(connectionAcceptor),
-				build.maxFramePayloadLength(this.spec.getMaxFramePayloadLength()).handlePing(this.spec.isHandlePing())
-						.compress(this.spec.isCompress()).build());
+				createWebsocketServerSpec());
+	}
+
+	private WebsocketServerSpec createWebsocketServerSpec() {
+		WebsocketServerSpec.Builder builder = WebsocketServerSpec.builder();
+		this.serverSpecCustomizer.accept(builder);
+		return builder.build();
 	}
 
 }

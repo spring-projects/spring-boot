@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class RSocketProperties {
 		@NestedConfigurationProperty
 		private Ssl ssl;
 
-		private Spec spec = new Spec();
+		private final Spec spec = new Spec();
 
 		public Integer getPort() {
 			return this.port;
@@ -127,10 +127,6 @@ public class RSocketProperties {
 			return this.spec;
 		}
 
-		public void setSpec(Spec spec) {
-			this.spec = spec;
-		}
-
 		public static class Spec {
 
 			/**
@@ -139,19 +135,17 @@ public class RSocketProperties {
 			private String protocols;
 
 			/**
-			 * Specifies a custom maximum allowable frame payload length. 65536 by
-			 * default.
+			 * Maximum allowable frame payload length.
 			 */
-			private int maxFramePayloadLength = 65536;
+			private DataSize maxFramePayloadLength = DataSize.ofBytes(65536);
 
 			/**
-			 * Flag whether to proxy websocket ping frames or respond to them.
+			 * Whether to proxy websocket ping frames or respond to them.
 			 */
 			private boolean handlePing;
 
 			/**
-			 * Flag whether the websocket compression extension is enabled if the client
-			 * request presents websocket extensions headers.
+			 * Whether the websocket compression extension is enabled.
 			 */
 			private boolean compress;
 
@@ -163,11 +157,11 @@ public class RSocketProperties {
 				this.protocols = protocols;
 			}
 
-			public int getMaxFramePayloadLength() {
+			public DataSize getMaxFramePayloadLength() {
 				return this.maxFramePayloadLength;
 			}
 
-			public void setMaxFramePayloadLength(int maxFramePayloadLength) {
+			public void setMaxFramePayloadLength(DataSize maxFramePayloadLength) {
 				this.maxFramePayloadLength = maxFramePayloadLength;
 			}
 
