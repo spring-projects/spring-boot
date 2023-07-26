@@ -2004,24 +2004,24 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
-      "name": "spring.pulsar.consumer.dead-letter-policy.dead-letter-topic",
-      "type": "java.lang.String",
-      "description": "Name of the dead topic where the failing messages will be sent."
+      "name": "spring.pulsar.consumer.crypto-failure-action",
+      "defaultValue": "Fail"
     },
     {
-      "name": "spring.pulsar.consumer.dead-letter-policy.initial-subscription-name",
-      "type": "java.lang.String",
-      "description": "Name of the initial subscription name of the dead letter topic - must be set for the initial subscription for the dead letter topic to be created."
+      "name": "spring.pulsar.consumer.regex-subscription-mode",
+      "defaultValue":  "PersistentOnly"
     },
     {
-      "name": "spring.pulsar.consumer.dead-letter-policy.max-redeliver-count",
-      "type": "java.lang.Integer",
-      "description": "Maximum number of times that a message will be redelivered before being sent to the dead letter queue."
+      "name": "spring.pulsar.consumer.subscription-initial-position",
+      "defaultValue": "Latest"
     },
     {
-      "name": "spring.pulsar.consumer.dead-letter-policy.retry-letter-topic",
-      "type": "java.lang.String",
-      "description": "Name of the retry topic where the failing messages will be sent."
+      "name": "spring.pulsar.consumer.subscription-mode",
+      "defaultValue":  "Durable"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription-type",
+      "defaultValue":  "Exclusive"
     },
     {
       "name": "spring.pulsar.function.enabled",
@@ -2036,30 +2036,62 @@
       "defaultValue": true
     },
     {
-      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.dead-letter-topic",
-      "type": "java.lang.String",
-      "description": "Name of the dead topic where the failing messages will be sent."
+      "name": "spring.pulsar.producer.crypto-failure-action",
+      "defaultValue": "Fail"
     },
     {
-      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.initial-subscription-name",
-      "type": "java.lang.String",
-      "description": "Name of the initial subscription name of the dead letter topic - must be set for the initial subscription for the dead letter topic to be created."
+      "name": "spring.pulsar.producer.hashing-scheme",
+      "defaultValue": "JavaStringHash"
     },
     {
-      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.max-redeliver-count",
-      "type": "java.lang.Integer",
-      "description": "Maximum number of times that a message will be redelivered before being sent to the dead letter queue."
+      "name": "spring.pulsar.producer.message-routing-mode",
+      "defaultValue": "RoundRobinPartition"
     },
     {
-      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.retry-letter-topic",
-      "type": "java.lang.String",
-      "description": "Name of the retry topic where the failing messages will be sent."
+      "name": "spring.pulsar.producer.producer-access-mode",
+      "defaultValue": "Shared"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.crypto-failure-action",
+      "defaultValue": "Fail"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.subscription-initial-position",
+      "defaultValue": "Latest"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.subscription-mode",
+      "defaultValue":  "Durable"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.subscription-type",
+      "defaultValue":  "Exclusive"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.topics-pattern-subscription-mode",
+      "defaultValue":  "PersistentOnly"
     },
     {
       "name": "spring.pulsar.reactive.sender.cache.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable caching in the ReactivePulsarSenderFactory.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.crypto-failure-action",
+      "defaultValue": "Fail"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.hashing-scheme",
+      "defaultValue": "JavaStringHash"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.message-routing-mode",
+      "defaultValue": "RoundRobinPartition"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.producer-access-mode",
+      "defaultValue": "Shared"
     },
     {
       "name": "spring.quartz.jdbc.comment-prefix",

@@ -636,10 +636,10 @@ public class PulsarReactiveProperties {
 		private Duration negativeAckRedeliveryDelay = Duration.ofMinutes(1);
 
 		/**
-		 * Configuration for the dead letter queue.
+		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicy deadLetterPolicy;
+		private DeadLetterPolicyConfig deadLetterPolicy = new DeadLetterPolicyConfig();
 
 		/**
 		 * Whether the retry letter topic is enabled.
@@ -830,11 +830,11 @@ public class PulsarReactiveProperties {
 			this.negativeAckRedeliveryDelay = negativeAckRedeliveryDelay;
 		}
 
-		public DeadLetterPolicy getDeadLetterPolicy() {
+		public DeadLetterPolicyConfig getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicy deadLetterPolicy) {
+		public void setDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicy) {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
@@ -1012,7 +1012,7 @@ public class PulsarReactiveProperties {
 				case immediate -> Schedulers.immediate();
 			}).to(spec::setAcknowledgeScheduler);
 			map.from(this::getNegativeAckRedeliveryDelay).to(spec::setNegativeAckRedeliveryDelay);
-			map.from(this::getDeadLetterPolicy).to(spec::setDeadLetterPolicy);
+			map.from(this::getDeadLetterPolicy).as(this::toPulsarDeadLetterPolicy).to(spec::setDeadLetterPolicy);
 			map.from(this::getRetryLetterTopicEnable).to(spec::setRetryLetterTopicEnable);
 			map.from(this::getMaxTotalReceiverQueueSizeAcrossPartitions)
 				.to(spec::setMaxTotalReceiverQueueSizeAcrossPartitions);
@@ -1035,6 +1035,23 @@ public class PulsarReactiveProperties {
 			map.from(this::getMaxPendingChunkedMessage).to(spec::setMaxPendingChunkedMessage);
 			map.from(this::getExpireTimeOfIncompleteChunkedMessage).to(spec::setExpireTimeOfIncompleteChunkedMessage);
 			return new ImmutableReactiveMessageConsumerSpec(spec);
+		}
+
+		/**
+		 * Maps from a dead letter policy config props to a 'DeadLetterPolicy' expected by
+		 * Pulsar.
+		 * @param deadLetterPolicyConfig the config props defining the DLP to construct
+		 * @return the Pulsar expected dead letter policy
+		 */
+		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicyConfig) {
+			var map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			var dlpBuilder = DeadLetterPolicy.builder();
+			var dlpConfigProps = this.getDeadLetterPolicy();
+			map.from(dlpConfigProps::getMaxRedeliverCount).to(dlpBuilder::maxRedeliverCount);
+			map.from(dlpConfigProps::getRetryLetterTopic).to(dlpBuilder::retryLetterTopic);
+			map.from(dlpConfigProps::getDeadLetterTopic).to(dlpBuilder::deadLetterTopic);
+			map.from(dlpConfigProps::getInitialSubscriptionName).to(dlpBuilder::initialSubscriptionName);
+			return dlpBuilder.build();
 		}
 
 	}
