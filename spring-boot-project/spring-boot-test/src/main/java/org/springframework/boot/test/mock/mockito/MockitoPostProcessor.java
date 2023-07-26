@@ -263,7 +263,6 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		}
 		beans.removeIf(this::isScopedTarget);
 		return beans;
-
 	}
 
 	private boolean isScopedTarget(String beanName) {

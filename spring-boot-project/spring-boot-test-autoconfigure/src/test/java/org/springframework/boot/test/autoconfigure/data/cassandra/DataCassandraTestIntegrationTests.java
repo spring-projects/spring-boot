@@ -91,7 +91,7 @@ class DataCassandraTestIntegrationTests {
 		CqlSession cqlSession(CqlSessionBuilder cqlSessionBuilder) {
 			try (CqlSession session = cqlSessionBuilder.build()) {
 				session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
-						+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
+						+ " WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
 			}
 			return cqlSessionBuilder.withKeyspace("boot_test").build();
 		}
