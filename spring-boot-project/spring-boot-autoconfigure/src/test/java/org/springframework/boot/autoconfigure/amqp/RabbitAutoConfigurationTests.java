@@ -519,7 +519,8 @@ class RabbitAutoConfigurationTests {
 					"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
 					"spring.rabbitmq.listener.simple.idleEventInterval:5",
 					"spring.rabbitmq.listener.simple.batchSize:20",
-					"spring.rabbitmq.listener.simple.missingQueuesFatal:false")
+					"spring.rabbitmq.listener.simple.missingQueuesFatal:false",
+					"spring.rabbitmq.listener.simple.force-stop:true")
 			.run((context) -> {
 				SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
@@ -528,6 +529,17 @@ class RabbitAutoConfigurationTests {
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", false);
 				checkCommonProps(context, rabbitListenerContainerFactory);
+			});
+	}
+
+	@Test
+	void testSimpleRabbitListenerContainerFactoryWithDefaultForceStop() {
+		this.contextRunner
+			.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
+			.run((context) -> {
+				SimpleRabbitListenerContainerFactory containerFactory = context
+					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
+				assertThat(containerFactory).hasFieldOrPropertyWithValue("forceStop", false);
 			});
 	}
 
@@ -547,13 +559,26 @@ class RabbitAutoConfigurationTests {
 					"spring.rabbitmq.listener.direct.prefetch:40",
 					"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
 					"spring.rabbitmq.listener.direct.idleEventInterval:5",
-					"spring.rabbitmq.listener.direct.missingQueuesFatal:true")
+					"spring.rabbitmq.listener.direct.missingQueuesFatal:true",
+					"spring.rabbitmq.listener.direct.force-stop:true")
 			.run((context) -> {
 				DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", DirectRabbitListenerContainerFactory.class);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("consumersPerQueue", 5);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", true);
 				checkCommonProps(context, rabbitListenerContainerFactory);
+			});
+	}
+
+	@Test
+	void testDirectRabbitListenerContainerFactoryWithDefaultForceStop() {
+		this.contextRunner
+			.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.listener.type:direct")
+			.run((context) -> {
+				DirectRabbitListenerContainerFactory containerFactory = context
+					.getBean("rabbitListenerContainerFactory", DirectRabbitListenerContainerFactory.class);
+				assertThat(containerFactory).hasFieldOrPropertyWithValue("forceStop", false);
 			});
 	}
 
@@ -662,6 +687,7 @@ class RabbitAutoConfigurationTests {
 				context.getBean("myMessageConverter"));
 		assertThat(containerFactory).hasFieldOrPropertyWithValue("defaultRequeueRejected", Boolean.FALSE);
 		assertThat(containerFactory).hasFieldOrPropertyWithValue("idleEventInterval", 5L);
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("forceStop", true);
 		Advice[] adviceChain = containerFactory.getAdviceChain();
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain).hasSize(1);
