@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.util.function.Function;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,6 +35,7 @@ import org.springframework.kafka.listener.BatchInterceptor;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
+import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
@@ -73,6 +76,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final BatchInterceptor<Object, Object> batchInterceptor;
 
+	private final Function<MessageListenerContainer, String> threadNameSupplier;
+
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> recordMessageConverter,
 			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
@@ -83,7 +88,8 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<CommonErrorHandler> commonErrorHandler,
 			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor,
 			ObjectProvider<RecordInterceptor<Object, Object>> recordInterceptor,
-			ObjectProvider<BatchInterceptor<Object, Object>> batchInterceptor) {
+			ObjectProvider<BatchInterceptor<Object, Object>> batchInterceptor,
+			ObjectProvider<Function<MessageListenerContainer, String>> threadNameSupplier) {
 		this.properties = properties;
 		this.recordMessageConverter = recordMessageConverter.getIfUnique();
 		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
@@ -96,6 +102,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.afterRollbackProcessor = afterRollbackProcessor.getIfUnique();
 		this.recordInterceptor = recordInterceptor.getIfUnique();
 		this.batchInterceptor = batchInterceptor.getIfUnique();
+		this.threadNameSupplier = threadNameSupplier.getIfUnique();
 	}
 
 	@Bean
@@ -113,6 +120,7 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setAfterRollbackProcessor(this.afterRollbackProcessor);
 		configurer.setRecordInterceptor(this.recordInterceptor);
 		configurer.setBatchInterceptor(this.batchInterceptor);
+		configurer.setThreadNameSupplier(this.threadNameSupplier);
 		return configurer;
 	}
 

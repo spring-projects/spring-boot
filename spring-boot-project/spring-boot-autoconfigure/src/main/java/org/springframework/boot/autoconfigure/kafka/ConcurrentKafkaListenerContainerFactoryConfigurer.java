@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -28,6 +29,7 @@ import org.springframework.kafka.listener.BatchInterceptor;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
@@ -65,6 +67,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private RecordInterceptor<Object, Object> recordInterceptor;
 
 	private BatchInterceptor<Object, Object> batchInterceptor;
+
+	private Function<MessageListenerContainer, String> threadNameSupplier;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -157,6 +161,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the thread name supplier to use.
+	 * @param threadNameSupplier the thread name supplier to use
+	 */
+	void setThreadNameSupplier(Function<MessageListenerContainer, String> threadNameSupplier) {
+		this.threadNameSupplier = threadNameSupplier;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -186,6 +198,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
 		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
 		map.from(this.batchInterceptor).to(factory::setBatchInterceptor);
+		map.from(this.threadNameSupplier).to(factory::setThreadNameSupplier);
 	}
 
 	private void configureContainer(ContainerProperties container) {
