@@ -119,6 +119,7 @@ org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfigurati
 org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration
+org.springframework.boot.autoconfigure.thread.VirtualThreadsAutoConfiguration
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration
