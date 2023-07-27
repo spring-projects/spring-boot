@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.task;
 
-import java.util.concurrent.Executor;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,10 +27,8 @@ import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
@@ -73,14 +69,6 @@ public class TaskExecutionAutoConfiguration {
 		builder = builder.customizers(taskExecutorCustomizers.orderedStream()::iterator);
 		builder = builder.taskDecorator(taskDecorator.getIfUnique());
 		return builder;
-	}
-
-	@Lazy
-	@Bean(name = { APPLICATION_TASK_EXECUTOR_BEAN_NAME,
-			AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
-	@ConditionalOnMissingBean(Executor.class)
-	public ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder builder) {
-		return builder.build();
 	}
 
 }
