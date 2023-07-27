@@ -50,7 +50,7 @@ class TaskExecutorConfigurations {
 				ObjectProvider<TaskDecorator> taskDecorator) {
 			SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor(properties.getThreadNamePrefix());
 			executor.setVirtualThreads(true);
-			executor.setTaskDecorator(taskDecorator.getIfUnique());
+			taskDecorator.ifUnique(executor::setTaskDecorator);
 			return executor;
 		}
 
