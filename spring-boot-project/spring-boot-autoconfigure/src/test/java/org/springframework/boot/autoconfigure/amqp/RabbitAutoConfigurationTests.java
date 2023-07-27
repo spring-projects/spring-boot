@@ -30,6 +30,8 @@ import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 
@@ -58,6 +60,7 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.thread.VirtualThreadsAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -529,6 +532,19 @@ class RabbitAutoConfigurationTests {
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", false);
 				checkCommonProps(context, rabbitListenerContainerFactory);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldConfigureVirtualThreads() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(VirtualThreadsAutoConfiguration.class))
+			.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run((context) -> {
+				SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
+				Object executor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+				assertThat(executor).as("rabbitListenerContainerFactory.taskExecutor").isNotNull();
 			});
 	}
 

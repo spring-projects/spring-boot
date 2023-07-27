@@ -30,6 +30,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.thread.VirtualThreads;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,13 +52,17 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final RabbitProperties properties;
 
+	private final ObjectProvider<VirtualThreads> virtualThreads;
+
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
-			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers, RabbitProperties properties) {
+			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers, RabbitProperties properties,
+			ObjectProvider<VirtualThreads> virtualThreads) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
 		this.properties = properties;
+		this.virtualThreads = virtualThreads;
 	}
 
 	@Bean
@@ -68,6 +73,7 @@ class RabbitAnnotationDrivenConfiguration {
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
 		configurer.setRetryTemplateCustomizers(this.retryTemplateCustomizers.orderedStream().toList());
+		this.virtualThreads.ifAvailable((virtualThreads) -> configurer.setTaskExecutor(virtualThreads.getExecutor()));
 		return configurer;
 	}
 
@@ -92,6 +98,7 @@ class RabbitAnnotationDrivenConfiguration {
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
 		configurer.setRetryTemplateCustomizers(this.retryTemplateCustomizers.orderedStream().toList());
+		this.virtualThreads.ifAvailable((virtualThreads) -> configurer.setTaskExecutor(virtualThreads.getExecutor()));
 		return configurer;
 	}
 
