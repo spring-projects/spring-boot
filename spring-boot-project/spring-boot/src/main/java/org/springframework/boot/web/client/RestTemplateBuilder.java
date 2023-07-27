@@ -33,8 +33,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import reactor.netty.http.client.HttpClientRequest;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
@@ -396,7 +394,7 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Add a default header that will be set if not already present on the outgoing
-	 * {@link HttpClientRequest}.
+	 * {@link ClientHttpRequest}.
 	 * @param name the name of the header
 	 * @param values the header values
 	 * @return a new builder instance
