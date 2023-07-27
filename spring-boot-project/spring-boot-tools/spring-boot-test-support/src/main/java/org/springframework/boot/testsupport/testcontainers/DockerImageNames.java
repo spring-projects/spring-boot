@@ -38,6 +38,8 @@ public final class DockerImageNames {
 
 	private static final String POSTGRESQL_VERSION = "14.0";
 
+	private static final String RABBIT_VERSION = "3.11-alpine";
+
 	private static final String REDIS_VERSION = "4.0.14";
 
 	private static final String REGISTRY_VERSION = "2.7.1";
@@ -91,6 +93,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName postgresql() {
 		return DockerImageName.parse("postgres").withTag(POSTGRESQL_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running RabbitMQ.
+	 * @return a docker image name for running redis
+	 */
+	public static DockerImageName rabbit() {
+		return DockerImageName.parse("rabbitmq").withTag(RABBIT_VERSION);
 	}
 
 	/**
