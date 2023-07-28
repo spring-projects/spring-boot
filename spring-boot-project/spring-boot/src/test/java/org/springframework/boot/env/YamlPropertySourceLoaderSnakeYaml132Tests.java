@@ -19,7 +19,7 @@ package org.springframework.boot.env;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 
 /**
- * Tests for {@link YamlPropertySourceLoader} with SnakeYAML 1.33.
+ * Tests for {@link YamlPropertySourceLoader} with SnakeYAML 1.32.
  *
  * @author Andy Wilkinson
  */

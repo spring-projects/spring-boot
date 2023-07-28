@@ -181,7 +181,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurations() {
+	void getLoggerConfigurations() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -191,7 +191,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurationsShouldReturnAllLoggers() {
+	void getLoggerConfigurationsShouldReturnAllLoggers() {
 		LogManager.getLogger("org.springframework.boot.logging.log4j2.Log4J2LoggingSystemTests$Nested");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
@@ -208,7 +208,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test // gh-35227
-	void getLoggingConfigurationsWhenHasCustomLevel() {
+	void getLoggerConfigurationWhenHasCustomLevel() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
@@ -225,7 +225,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfiguration() {
+	void getLoggerConfiguration() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -235,7 +235,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurationShouldReturnLoggerWithNullConfiguredLevel() {
+	void getLoggerConfigurationShouldReturnLoggerWithNullConfiguredLevel() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -244,7 +244,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurationForNonExistentLoggerShouldReturnNull() {
+	void getLoggerConfigurationForNonExistentLoggerShouldReturnNull() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -367,7 +367,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurationWithResetLevelReturnsNull() {
+	void getLoggerConfigurationWithResetLevelReturnsNull() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
@@ -381,7 +381,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurationWithResetLevelWhenAlreadyConfiguredReturnsParentConfiguredLevel() {
+	void getLoggerConfigurationWithResetLevelWhenAlreadyConfiguredReturnsParentConfiguredLevel() {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);

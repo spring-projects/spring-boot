@@ -31,7 +31,7 @@ import org.gradle.util.GradleVersion;
  * <p>
  * To accommodate the differences, we use {@code org.gradle.util.internal.ConfigureUtil}
  * with Gradle 7.1 and later. With earlier versions, {@code org.gradle.util.ConfigureUtil}
- * is used. This avoids users by nagged about deprecated API usage in our plugin.
+ * is used. This avoids users to be nagged about deprecated API usage in our plugin.
  *
  * @author Andy Wilkinson
  */
