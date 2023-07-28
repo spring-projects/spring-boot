@@ -37,6 +37,7 @@ When this module is included as a dependency Spring Boot will do the following:
 
 NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
 
+NOTE: If you wish to run docker compose via `spring-boot-docker-compose` when using `@SpringBootTest` 's tests, the property `spring.docker.compose.skip.in-tests` must be set to `false`
 
 
 [[features.docker-compose.service-connections]]
