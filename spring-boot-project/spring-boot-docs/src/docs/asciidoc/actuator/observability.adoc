@@ -58,7 +58,7 @@ If you'd like to prevent some observations from being reported, you can use the 
 
 The preceding example will prevent all observations with a name starting with `denied.prefix` or `another.denied.prefix`.
 
-TIP: If you want to prevent Spring Security from reporting observations, set the property `management.observations.enable.spring.security` to `false`.
+TIP: If you want to prevent Spring Security from reporting observations, set the property configprop:management.observations.enable.spring.security[] to `false`.
 
 If you need greater control over the prevention of observations, you can register beans of type `ObservationPredicate`.
 Observations are only reported if all the `ObservationPredicate` beans return `true` for that observation.
