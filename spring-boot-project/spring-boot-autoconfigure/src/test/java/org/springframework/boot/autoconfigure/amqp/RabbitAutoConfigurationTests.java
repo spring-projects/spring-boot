@@ -60,7 +60,6 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.thread.VirtualThreadsAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -71,6 +70,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -538,14 +538,13 @@ class RabbitAutoConfigurationTests {
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void shouldConfigureVirtualThreads() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(VirtualThreadsAutoConfiguration.class))
-			.withPropertyValues("spring.threads.virtual.enabled=true")
-			.run((context) -> {
-				SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
-					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
-				Object executor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
-				assertThat(executor).as("rabbitListenerContainerFactory.taskExecutor").isNotNull();
-			});
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+				.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
+			Object executor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			assertThat(executor).as("rabbitListenerContainerFactory.taskExecutor")
+				.isInstanceOf(VirtualThreadTaskExecutor.class);
+		});
 	}
 
 	@Test
