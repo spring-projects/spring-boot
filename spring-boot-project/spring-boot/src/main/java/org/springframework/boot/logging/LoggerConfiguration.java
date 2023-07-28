@@ -60,7 +60,7 @@ public final class LoggerConfiguration {
 	public LoggerConfiguration(String name, LevelConfiguration levelConfiguration,
 			LevelConfiguration inheritedLevelConfiguration) {
 		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(inheritedLevelConfiguration, "EffectiveLevelConfiguration must not be null");
+		Assert.notNull(inheritedLevelConfiguration, "InheritedLevelConfiguration must not be null");
 		this.name = name;
 		this.levelConfiguration = levelConfiguration;
 		this.inheritedLevelConfiguration = inheritedLevelConfiguration;
@@ -140,15 +140,15 @@ public final class LoggerConfiguration {
 	}
 
 	/**
-	 * Supported logger configurations scopes.
+	 * Supported logger configuration scopes.
 	 *
 	 * @since 2.7.13
 	 */
 	public enum ConfigurationScope {
 
 		/**
-		 * Only return configuration that has been applied directly applied. Often
-		 * referred to as 'configured' or 'assigned' configuration.
+		 * Only return configuration that has been applied directly. Often referred to as
+		 * 'configured' or 'assigned' configuration.
 		 */
 		DIRECT,
 
