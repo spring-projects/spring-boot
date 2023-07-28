@@ -227,8 +227,8 @@ public class GradleBuild {
 		GradleRunner gradleRunner = GradleRunner.create()
 			.withProjectDir(this.projectDir)
 			.withPluginClasspath(pluginClasspath());
-		if (this.dsl != Dsl.KOTLIN && !this.configurationCache) {
-			// see https://github.com/gradle/gradle/issues/6862
+		if (!this.configurationCache) {
+			// See https://github.com/gradle/gradle/issues/14125
 			gradleRunner.withDebug(true);
 		}
 		if (this.gradleVersion != null) {
