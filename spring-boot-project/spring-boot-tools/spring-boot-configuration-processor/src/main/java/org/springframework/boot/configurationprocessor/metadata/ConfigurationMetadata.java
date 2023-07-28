@@ -136,6 +136,9 @@ public class ConfigurationMetadata {
 					if (deprecation.getLevel() != null) {
 						matchingDeprecation.setLevel(deprecation.getLevel());
 					}
+					if (deprecation.getSince() != null) {
+						matchingDeprecation.setSince(deprecation.getSince());
+					}
 				}
 			}
 		}

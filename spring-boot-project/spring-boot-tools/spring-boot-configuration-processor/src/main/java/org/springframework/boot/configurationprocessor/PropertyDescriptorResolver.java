@@ -91,7 +91,7 @@ class PropertyDescriptorResolver {
 	private String getParameterName(VariableElement parameter) {
 		AnnotationMirror nameAnnotation = this.environment.getNameAnnotation(parameter);
 		if (nameAnnotation != null) {
-			return (String) this.environment.getAnnotationElementValues(nameAnnotation).get("value");
+			return this.environment.getAnnotationElementStringValue(nameAnnotation, "value");
 		}
 		return parameter.getSimpleName().toString();
 	}

@@ -31,6 +31,7 @@ import java.lang.annotation.Target;
  * This annotation <strong>must</strong> be used on the getter of the deprecated element.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.3.0
  */
 @Target(ElementType.METHOD)
@@ -49,5 +50,11 @@ public @interface DeprecatedConfigurationProperty {
 	 * @return the replacement field
 	 */
 	String replacement() default "";
+
+	/**
+	 * The version in which the property became deprecated.
+	 * @return the version
+	 */
+	String since() default "";
 
 }

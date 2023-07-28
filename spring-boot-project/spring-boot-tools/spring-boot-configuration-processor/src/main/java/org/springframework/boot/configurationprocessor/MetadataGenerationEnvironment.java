@@ -49,6 +49,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  * Provide utilities to detect and validate configuration properties.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class MetadataGenerationEnvironment {
 
@@ -174,14 +175,13 @@ class MetadataGenerationEnvironment {
 		AnnotationMirror annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 		String reason = null;
 		String replacement = null;
+		String since = null;
 		if (annotation != null) {
-			Map<String, Object> elementValues = getAnnotationElementValues(annotation);
-			reason = (String) elementValues.get("reason");
-			replacement = (String) elementValues.get("replacement");
+			reason = getAnnotationElementStringValue(annotation, "reason");
+			replacement = getAnnotationElementStringValue(annotation, "replacement");
+			since = getAnnotationElementStringValue(annotation, "since");
 		}
-		reason = (reason == null || reason.isEmpty()) ? null : reason;
-		replacement = (replacement == null || replacement.isEmpty()) ? null : replacement;
-		return new ItemDeprecation(reason, replacement);
+		return new ItemDeprecation(reason, replacement, since);
 	}
 
 	boolean hasConstructorBindingAnnotation(ExecutableElement element) {
@@ -279,6 +279,16 @@ class MetadataGenerationEnvironment {
 		return values;
 	}
 
+	String getAnnotationElementStringValue(AnnotationMirror annotation, String name) {
+		return annotation.getElementValues()
+			.entrySet()
+			.stream()
+			.filter((element) -> element.getKey().getSimpleName().toString().equals(name))
+			.map((element) -> asString(getAnnotationValue(element.getValue())))
+			.findFirst()
+			.orElse(null);
+	}
+
 	private Object getAnnotationValue(AnnotationValue annotationValue) {
 		Object value = annotationValue.getValue();
 		if (value instanceof List) {
@@ -287,6 +297,10 @@ class MetadataGenerationEnvironment {
 			return values;
 		}
 		return value;
+	}
+
+	private String asString(Object value) {
+		return (value == null || value.toString().isEmpty()) ? null : (String) value;
 	}
 
 	TypeElement getConfigurationPropertiesAnnotationElement() {

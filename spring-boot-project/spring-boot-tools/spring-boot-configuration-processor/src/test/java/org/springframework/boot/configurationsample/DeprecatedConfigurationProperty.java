@@ -50,4 +50,10 @@ public @interface DeprecatedConfigurationProperty {
 	 */
 	String replacement() default "";
 
+	/**
+	 * The version in which the property became deprecated.
+	 * @return the version
+	 */
+	String since() default "";
+
 }

@@ -83,6 +83,9 @@ class JsonConverter {
 			if (deprecation.getReplacement() != null) {
 				deprecationJsonObject.put("replacement", deprecation.getReplacement());
 			}
+			if (deprecation.getSince() != null) {
+				deprecationJsonObject.put("since", deprecation.getSince());
+			}
 			jsonObject.put("deprecation", deprecationJsonObject);
 		}
 		return jsonObject;

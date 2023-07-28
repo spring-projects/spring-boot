@@ -139,10 +139,8 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.withDescription("Name description."));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".description"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".counter"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".number")
-			.fromSource(source)
-			.withDefaultValue(0)
-			.withDeprecation(null, null));
+		assertThat(metadata)
+			.has(Metadata.withProperty(prefix + ".number").fromSource(source).withDefaultValue(0).withDeprecation());
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}

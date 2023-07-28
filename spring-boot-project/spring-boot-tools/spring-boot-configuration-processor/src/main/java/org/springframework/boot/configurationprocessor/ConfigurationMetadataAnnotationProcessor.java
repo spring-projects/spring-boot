@@ -57,6 +57,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @author Phillip Webb
  * @author Kris De Volder
  * @author Jonas Keßler
+ * @author Scott Frederick
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.AUTO_CONFIGURATION_ANNOTATION,
@@ -322,16 +323,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private String getPrefix(AnnotationMirror annotation) {
-		Map<String, Object> elementValues = this.metadataEnv.getAnnotationElementValues(annotation);
-		Object prefix = elementValues.get("prefix");
-		if (prefix != null && !"".equals(prefix)) {
-			return (String) prefix;
+		String prefix = this.metadataEnv.getAnnotationElementStringValue(annotation, "prefix");
+		if (prefix != null) {
+			return prefix;
 		}
-		Object value = elementValues.get("value");
-		if (value != null && !"".equals(value)) {
-			return (String) value;
-		}
-		return null;
+		return this.metadataEnv.getAnnotationElementStringValue(annotation, "value");
 	}
 
 	protected ConfigurationMetadata writeMetadata() throws Exception {

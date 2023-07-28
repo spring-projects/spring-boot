@@ -104,12 +104,12 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.fromSource(SimpleProperties.class)
 			.withDescription("The name of this simple properties.")
 			.withDefaultValue("boot")
-			.withDeprecation(null, null));
+			.withDeprecation());
 		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
 			.withDefaultValue(false)
 			.fromSource(SimpleProperties.class)
 			.withDescription("A simple flag.")
-			.withDeprecation(null, null));
+			.withDeprecation());
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.counter"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
@@ -188,10 +188,9 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("deprecated").fromSource(type));
 		assertThat(metadata)
-			.has(Metadata.withProperty("deprecated.name", String.class).fromSource(type).withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("deprecated.description", String.class)
-			.fromSource(type)
-			.withDeprecation(null, null));
+			.has(Metadata.withProperty("deprecated.name", String.class).fromSource(type).withDeprecation());
+		assertThat(metadata)
+			.has(Metadata.withProperty("deprecated.description", String.class).fromSource(type).withDeprecation());
 	}
 
 	@Test
@@ -202,7 +201,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("singledeprecated.new-name", String.class).fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class)
 			.fromSource(type)
-			.withDeprecation("renamed", "singledeprecated.new-name"));
+			.withDeprecation("renamed", "singledeprecated.new-name", "1.2.3"));
 	}
 
 	@Test
@@ -210,9 +209,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		Class<?> type = DeprecatedFieldSingleProperty.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("singlefielddeprecated").fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("singlefielddeprecated.name", String.class)
-			.fromSource(type)
-			.withDeprecation(null, null));
+		assertThat(metadata)
+			.has(Metadata.withProperty("singlefielddeprecated.name", String.class).fromSource(type).withDeprecation());
 	}
 
 	@Test
@@ -246,7 +244,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withGroup("deprecated-record").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("deprecated-record.alpha", String.class)
 			.fromSource(type)
-			.withDeprecation("some-reason", null));
+			.withDeprecation("some-reason", null, null));
 		assertThat(metadata).has(Metadata.withProperty("deprecated-record.bravo", String.class).fromSource(type));
 	}
 
