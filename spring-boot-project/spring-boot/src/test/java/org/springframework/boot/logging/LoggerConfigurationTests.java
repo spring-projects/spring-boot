@@ -53,10 +53,10 @@ class LoggerConfigurationTests {
 	}
 
 	@Test
-	void createWithLevelConfigurationWhenEffectiveLevelIsNullThrowsException() {
+	void createWithLevelConfigurationWhenInheritedLevelConfigurationIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration("test", null, (LevelConfiguration) null))
-			.withMessage("EffectiveLevelConfiguration must not be null");
+			.withMessage("InheritedLevelConfiguration must not be null");
 	}
 
 	@Test

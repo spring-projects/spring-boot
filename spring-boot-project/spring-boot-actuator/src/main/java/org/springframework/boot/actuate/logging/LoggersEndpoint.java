@@ -151,7 +151,7 @@ public class LoggersEndpoint {
 	 */
 	public static class GroupLoggerLevels extends LoggerLevels {
 
-		private List<String> members;
+		private final List<String> members;
 
 		public GroupLoggerLevels(LogLevel configuredLevel, List<String> members) {
 			super(configuredLevel);
@@ -165,7 +165,7 @@ public class LoggersEndpoint {
 	}
 
 	/**
-	 * Levels configured for single logger group exposed in a JSON friendly way.
+	 * Levels configured for single logger exposed in a JSON friendly way.
 	 */
 	public static class SingleLoggerLevels extends LoggerLevels {
 
