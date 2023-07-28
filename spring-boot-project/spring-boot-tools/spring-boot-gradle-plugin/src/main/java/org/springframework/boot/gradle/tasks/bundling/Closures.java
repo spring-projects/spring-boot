@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.gradle.util.GradleVersion;
  * <p>
  * To accommodate the differences, we use {@code org.gradle.util.internal.ConfigureUtil}
  * with Gradle 7.1 and later. With earlier versions, {@code org.gradle.util.ConfigureUtil}
- * is used. This avoids users to be nagged about deprecated API usage in our plugin.
+ * is used. This avoids users being nagged about deprecated API usage in our plugin.
  *
  * @author Andy Wilkinson
  */
