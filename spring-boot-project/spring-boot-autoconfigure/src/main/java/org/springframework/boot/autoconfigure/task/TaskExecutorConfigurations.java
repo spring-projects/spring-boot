@@ -20,7 +20,8 @@ import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnVirtualThreads;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 class TaskExecutorConfigurations {
 
-	@ConditionalOnVirtualThreads
+	@ConditionalOnThreading(Threading.VIRTUAL)
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Executor.class)
 	static class VirtualThreadTaskExecutorConfiguration {
