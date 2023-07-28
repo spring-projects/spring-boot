@@ -187,7 +187,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.6.1") {
+	library("Spring Asciidoctor Extensions", "0.6.2") {
 		group("io.spring.asciidoctor") {
 			modules = [
 				"spring-asciidoctor-extensions-spring-boot",
