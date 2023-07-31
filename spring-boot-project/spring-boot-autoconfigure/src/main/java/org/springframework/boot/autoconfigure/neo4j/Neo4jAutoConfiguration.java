@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.neo4j.driver.AuthToken;
+import org.neo4j.driver.AuthTokenManager;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;
 import org.neo4j.driver.Config.TrustStrategy;
@@ -70,11 +71,16 @@ public class Neo4jAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
-			Neo4jConnectionDetails connectionDetails,
-			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
-		AuthToken authToken = connectionDetails.getAuthToken();
+			Neo4jConnectionDetails connectionDetails, ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers,
+			ObjectProvider<AuthTokenManager> authTokenManagers) {
+
 		Config config = mapDriverConfig(properties, connectionDetails,
 				configBuilderCustomizers.orderedStream().toList());
+		AuthTokenManager authTokenManager = authTokenManagers.getIfUnique();
+		if (authTokenManager != null) {
+			return GraphDatabase.driver(connectionDetails.getUri(), authTokenManager, config);
+		}
+		AuthToken authToken = connectionDetails.getAuthToken();
 		return GraphDatabase.driver(connectionDetails.getUri(), authToken, config);
 	}
 
