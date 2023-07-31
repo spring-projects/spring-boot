@@ -41,6 +41,8 @@ import org.springframework.util.unit.DataSize;
  */
 public class ProducerConfigProperties {
 
+	private final Batching batch = new Batching();
+
 	/**
 	 * Topic the producer will publish to.
 	 */
@@ -49,7 +51,7 @@ public class ProducerConfigProperties {
 	/**
 	 * Name for the producer. If not assigned, a unique name is generated.
 	 */
-	private String producerName;
+	private String name;
 
 	/**
 	 * Time before a message has to be acknowledged by the broker.
@@ -86,32 +88,6 @@ public class ProducerConfigProperties {
 	 * Action the producer will take in case of encryption failure.
 	 */
 	private ProducerCryptoFailureAction cryptoFailureAction = ProducerCryptoFailureAction.FAIL;
-
-	/**
-	 * Time period within which the messages sent will be batched.
-	 */
-	private Duration batchingMaxPublishDelay = Duration.ofMillis(1);
-
-	/**
-	 * Partition switch frequency while batching of messages is enabled and using
-	 * round-robin routing mode for non-keyed message.
-	 */
-	private Integer batchingPartitionSwitchFrequencyByPublishDelay = 10;
-
-	/**
-	 * Maximum number of messages to be batched.
-	 */
-	private Integer batchingMaxMessages = 1000;
-
-	/**
-	 * Maximum number of bytes permitted in a batch.
-	 */
-	private DataSize batchingMaxBytes = DataSize.ofKilobytes(128);
-
-	/**
-	 * Whether to automatically batch messages.
-	 */
-	private Boolean batchingEnabled = true;
 
 	/**
 	 * Whether to split large-size messages into multiple chunks.
@@ -151,7 +127,7 @@ public class ProducerConfigProperties {
 	/**
 	 * Type of access to the topic the producer requires.
 	 */
-	private ProducerAccessMode producerAccessMode = ProducerAccessMode.Shared;
+	private ProducerAccessMode accessMode = ProducerAccessMode.Shared;
 
 	/**
 	 * Whether producers in Shared mode register and connect immediately to the owner
@@ -166,6 +142,10 @@ public class ProducerConfigProperties {
 
 	private final PulsarProperties.Cache cache = new PulsarProperties.Cache();
 
+	public Batching getBatch() {
+		return this.batch;
+	}
+
 	public String getTopicName() {
 		return this.topicName;
 	}
@@ -174,12 +154,12 @@ public class ProducerConfigProperties {
 		this.topicName = topicName;
 	}
 
-	public String getProducerName() {
-		return this.producerName;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setProducerName(String producerName) {
-		this.producerName = producerName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Duration getSendTimeout() {
@@ -238,47 +218,6 @@ public class ProducerConfigProperties {
 		this.cryptoFailureAction = cryptoFailureAction;
 	}
 
-	public Duration getBatchingMaxPublishDelay() {
-		return this.batchingMaxPublishDelay;
-	}
-
-	public void setBatchingMaxPublishDelay(Duration batchingMaxPublishDelay) {
-		this.batchingMaxPublishDelay = batchingMaxPublishDelay;
-	}
-
-	public Integer getBatchingPartitionSwitchFrequencyByPublishDelay() {
-		return this.batchingPartitionSwitchFrequencyByPublishDelay;
-	}
-
-	public void setBatchingPartitionSwitchFrequencyByPublishDelay(
-			Integer batchingPartitionSwitchFrequencyByPublishDelay) {
-		this.batchingPartitionSwitchFrequencyByPublishDelay = batchingPartitionSwitchFrequencyByPublishDelay;
-	}
-
-	public Integer getBatchingMaxMessages() {
-		return this.batchingMaxMessages;
-	}
-
-	public void setBatchingMaxMessages(Integer batchingMaxMessages) {
-		this.batchingMaxMessages = batchingMaxMessages;
-	}
-
-	public DataSize getBatchingMaxBytes() {
-		return this.batchingMaxBytes;
-	}
-
-	public void setBatchingMaxBytes(DataSize batchingMaxBytes) {
-		this.batchingMaxBytes = batchingMaxBytes;
-	}
-
-	public Boolean getBatchingEnabled() {
-		return this.batchingEnabled;
-	}
-
-	public void setBatchingEnabled(Boolean batchingEnabled) {
-		this.batchingEnabled = batchingEnabled;
-	}
-
 	public Boolean getChunkingEnabled() {
 		return this.chunkingEnabled;
 	}
@@ -335,12 +274,12 @@ public class ProducerConfigProperties {
 		this.multiSchema = multiSchema;
 	}
 
-	public ProducerAccessMode getProducerAccessMode() {
-		return this.producerAccessMode;
+	public ProducerAccessMode getAccessMode() {
+		return this.accessMode;
 	}
 
-	public void setProducerAccessMode(ProducerAccessMode producerAccessMode) {
-		this.producerAccessMode = producerAccessMode;
+	public void setAccessMode(ProducerAccessMode accessMode) {
+		this.accessMode = accessMode;
 	}
 
 	public Boolean getLazyStartPartitionedProducers() {
@@ -368,7 +307,7 @@ public class ProducerConfigProperties {
 		return (producerBuilder) -> {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getTopicName).to(producerBuilder::topic);
-			map.from(this::getProducerName).to(producerBuilder::producerName);
+			map.from(this::getName).to(producerBuilder::producerName);
 			map.from(this::getSendTimeout)
 				.asInt(Duration::toMillis)
 				.to(producerBuilder, (pb, val) -> pb.sendTimeout(val, TimeUnit.MILLISECONDS));
@@ -379,14 +318,19 @@ public class ProducerConfigProperties {
 			map.from(this::getMessageRoutingMode).to(producerBuilder::messageRoutingMode);
 			map.from(this::getHashingScheme).to(producerBuilder::hashingScheme);
 			map.from(this::getCryptoFailureAction).to(producerBuilder::cryptoFailureAction);
-			map.from(this::getBatchingMaxPublishDelay)
+			map.from(this::getBatch)
+				.as(Batching::getMaxPublishDelay)
 				.as(Duration::toMillis)
 				.to(producerBuilder, (pb, val) -> pb.batchingMaxPublishDelay(val, TimeUnit.MILLISECONDS));
-			map.from(this::getBatchingPartitionSwitchFrequencyByPublishDelay)
+			map.from(this::getBatch)
+				.as(Batching::getPartitionSwitchFrequencyByPublishDelay)
 				.to(producerBuilder::roundRobinRouterBatchingPartitionSwitchFrequency);
-			map.from(this::getBatchingMaxMessages).to(producerBuilder::batchingMaxMessages);
-			map.from(this::getBatchingMaxBytes).asInt(DataSize::toBytes).to(producerBuilder::batchingMaxBytes);
-			map.from(this::getBatchingEnabled).to(producerBuilder::enableBatching);
+			map.from(this::getBatch).as(Batching::getMaxMessages).to(producerBuilder::batchingMaxMessages);
+			map.from(this::getBatch)
+				.as(Batching::getMaxBytes)
+				.asInt(DataSize::toBytes)
+				.to(producerBuilder::batchingMaxBytes);
+			map.from(this::getBatch).as(Batching::getEnabled).to(producerBuilder::enableBatching);
 			map.from(this::getChunkingEnabled).to(producerBuilder::enableChunking);
 			map.from(this::getEncryptionKeys)
 				.to((encryptionKeys) -> encryptionKeys.forEach(producerBuilder::addEncryptionKey));
@@ -397,10 +341,80 @@ public class ProducerConfigProperties {
 				.asInt(Duration::toMillis)
 				.to(producerBuilder, (pb, val) -> pb.autoUpdatePartitionsInterval(val, TimeUnit.MILLISECONDS));
 			map.from(this::getMultiSchema).to(producerBuilder::enableMultiSchema);
-			map.from(this::getProducerAccessMode).to(producerBuilder::accessMode);
+			map.from(this::getAccessMode).to(producerBuilder::accessMode);
 			map.from(this::getLazyStartPartitionedProducers).to(producerBuilder::enableLazyStartPartitionedProducers);
 			map.from(this::getProperties).to(producerBuilder::properties);
 		};
+	}
+
+	public static class Batching {
+
+		/**
+		 * Time period within which the messages sent will be batched.
+		 */
+		private Duration maxPublishDelay = Duration.ofMillis(1);
+
+		/**
+		 * Partition switch frequency while batching of messages is enabled and using
+		 * round-robin routing mode for non-keyed message.
+		 */
+		private Integer partitionSwitchFrequencyByPublishDelay = 10;
+
+		/**
+		 * Maximum number of messages to be batched.
+		 */
+		private Integer maxMessages = 1000;
+
+		/**
+		 * Maximum number of bytes permitted in a batch.
+		 */
+		private DataSize maxBytes = DataSize.ofKilobytes(128);
+
+		/**
+		 * Whether to automatically batch messages.
+		 */
+		private Boolean enabled = true;
+
+		public Duration getMaxPublishDelay() {
+			return this.maxPublishDelay;
+		}
+
+		public void setMaxPublishDelay(Duration maxPublishDelay) {
+			this.maxPublishDelay = maxPublishDelay;
+		}
+
+		public Integer getPartitionSwitchFrequencyByPublishDelay() {
+			return this.partitionSwitchFrequencyByPublishDelay;
+		}
+
+		public void setPartitionSwitchFrequencyByPublishDelay(Integer partitionSwitchFrequencyByPublishDelay) {
+			this.partitionSwitchFrequencyByPublishDelay = partitionSwitchFrequencyByPublishDelay;
+		}
+
+		public Integer getMaxMessages() {
+			return this.maxMessages;
+		}
+
+		public void setMaxMessages(Integer maxMessages) {
+			this.maxMessages = maxMessages;
+		}
+
+		public DataSize getMaxBytes() {
+			return this.maxBytes;
+		}
+
+		public void setMaxBytes(DataSize maxBytes) {
+			this.maxBytes = maxBytes;
+		}
+
+		public Boolean getEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(Boolean enabled) {
+			this.enabled = enabled;
+		}
+
 	}
 
 }

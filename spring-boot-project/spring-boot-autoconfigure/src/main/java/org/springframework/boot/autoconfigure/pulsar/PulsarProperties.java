@@ -1211,7 +1211,7 @@ public class PulsarProperties {
 		/**
 		 * Reader name.
 		 */
-		private String readerName;
+		private String name;
 
 		/**
 		 * Subscription name.
@@ -1250,12 +1250,12 @@ public class PulsarProperties {
 			this.receiverQueueSize = receiverQueueSize;
 		}
 
-		public String getReaderName() {
-			return this.readerName;
+		public String getName() {
+			return this.name;
 		}
 
-		public void setReaderName(String readerName) {
-			this.readerName = readerName;
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		public String getSubscriptionName() {
@@ -1295,7 +1295,7 @@ public class PulsarProperties {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(this::getTopicNames).as(ArrayList::new).to(readerBuilder::topics);
 				map.from(this::getReceiverQueueSize).to(readerBuilder::receiverQueueSize);
-				map.from(this::getReaderName).to(readerBuilder::readerName);
+				map.from(this::getName).to(readerBuilder::readerName);
 				map.from(this::getSubscriptionName).to(readerBuilder::subscriptionName);
 				map.from(this::getSubscriptionRolePrefix).to(readerBuilder::subscriptionRolePrefix);
 				map.from(this::getReadCompacted).to(readerBuilder::readCompacted);

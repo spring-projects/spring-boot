@@ -426,7 +426,7 @@ class PulsarPropertiesTests {
 		void producerTestProps() {
 			var props = new HashMap<String, String>();
 			props.put("spring.pulsar.producer.topic-name", "my-topic");
-			props.put("spring.pulsar.producer.producer-name", "my-producer");
+			props.put("spring.pulsar.producer.name", "my-producer");
 			props.put("spring.pulsar.producer.send-timeout", "2s");
 			props.put("spring.pulsar.producer.block-if-queue-full", "true");
 			props.put("spring.pulsar.producer.max-pending-messages", "3");
@@ -434,16 +434,16 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.producer.message-routing-mode", "custompartition");
 			props.put("spring.pulsar.producer.hashing-scheme", "murmur3_32hash");
 			props.put("spring.pulsar.producer.crypto-failure-action", "send");
-			props.put("spring.pulsar.producer.batching-max-publish-delay", "5s");
-			props.put("spring.pulsar.producer.batching-partition-switch-frequency-by-publish-delay", "6");
-			props.put("spring.pulsar.producer.batching-max-messages", "7");
-			props.put("spring.pulsar.producer.batching-max-bytes", "8");
-			props.put("spring.pulsar.producer.batching-enabled", "false");
+			props.put("spring.pulsar.producer.batch.max-publish-delay", "5s");
+			props.put("spring.pulsar.producer.batch.partition-switch-frequency-by-publish-delay", "6");
+			props.put("spring.pulsar.producer.batch.max-messages", "7");
+			props.put("spring.pulsar.producer.batch.max-bytes", "8");
+			props.put("spring.pulsar.producer.batch.enabled", "false");
 			props.put("spring.pulsar.producer.chunking-enabled", "true");
 			props.put("spring.pulsar.producer.encryption-keys[0]", "my-key");
 			props.put("spring.pulsar.producer.compression-type", "lz4");
 			props.put("spring.pulsar.producer.initial-sequence-id", "9");
-			props.put("spring.pulsar.producer.producer-access-mode", "exclusive");
+			props.put("spring.pulsar.producer.access-mode", "exclusive");
 			props.put("spring.pulsar.producer.lazy-start=partitioned-producers", "true");
 			props.put("spring.pulsar.producer.properties[my-prop]", "my-prop-value");
 			this.producerProps = newConfigPropsFromUserProps(props).getProducer();
@@ -452,7 +452,7 @@ class PulsarPropertiesTests {
 		@Test
 		void producerProperties() {
 			assertThat(this.producerProps.getTopicName()).isEqualTo("my-topic");
-			assertThat(this.producerProps.getProducerName()).isEqualTo("my-producer");
+			assertThat(this.producerProps.getName()).isEqualTo("my-producer");
 			assertThat(this.producerProps.getSendTimeout()).isEqualTo(Duration.ofMillis(2000));
 			assertThat(this.producerProps.getBlockIfQueueFull()).isTrue();
 			assertThat(this.producerProps.getMaxPendingMessages()).isEqualTo(3);
@@ -460,16 +460,16 @@ class PulsarPropertiesTests {
 			assertThat(this.producerProps.getMessageRoutingMode()).isEqualTo(MessageRoutingMode.CustomPartition);
 			assertThat(this.producerProps.getHashingScheme()).isEqualTo(HashingScheme.Murmur3_32Hash);
 			assertThat(this.producerProps.getCryptoFailureAction()).isEqualTo(ProducerCryptoFailureAction.SEND);
-			assertThat(this.producerProps.getBatchingMaxPublishDelay()).isEqualTo(Duration.ofMillis(5000));
-			assertThat(this.producerProps.getBatchingPartitionSwitchFrequencyByPublishDelay()).isEqualTo(6);
-			assertThat(this.producerProps.getBatchingMaxMessages()).isEqualTo(7);
-			assertThat(this.producerProps.getBatchingMaxBytes()).isEqualTo(DataSize.ofBytes(8));
-			assertThat(this.producerProps.getBatchingEnabled()).isFalse();
+			assertThat(this.producerProps.getBatch().getMaxPublishDelay()).isEqualTo(Duration.ofMillis(5000));
+			assertThat(this.producerProps.getBatch().getPartitionSwitchFrequencyByPublishDelay()).isEqualTo(6);
+			assertThat(this.producerProps.getBatch().getMaxMessages()).isEqualTo(7);
+			assertThat(this.producerProps.getBatch().getMaxBytes()).isEqualTo(DataSize.ofBytes(8));
+			assertThat(this.producerProps.getBatch().getEnabled()).isFalse();
 			assertThat(this.producerProps.getChunkingEnabled()).isTrue();
 			assertThat(this.producerProps.getEncryptionKeys()).containsExactly("my-key");
 			assertThat(this.producerProps.getCompressionType()).isEqualTo(CompressionType.LZ4);
 			assertThat(this.producerProps.getInitialSequenceId()).isEqualTo(9);
-			assertThat(this.producerProps.getProducerAccessMode()).isEqualTo(ProducerAccessMode.Exclusive);
+			assertThat(this.producerProps.getAccessMode()).isEqualTo(ProducerAccessMode.Exclusive);
 			assertThat(this.producerProps.getLazyStartPartitionedProducers()).isTrue();
 			assertThat(this.producerProps.getProperties()).containsExactly(entry("my-prop", "my-prop-value"));
 		}
@@ -515,24 +515,14 @@ class PulsarPropertiesTests {
 			var props = new HashMap<String, String>();
 			props.put("spring.pulsar.consumer.topics[0]", "my-topic");
 			props.put("spring.pulsar.consumer.topics-pattern", "my-pattern");
-			props.put("spring.pulsar.consumer.subscription-name", "my-subscription");
-			props.put("spring.pulsar.consumer.subscription-type", "shared");
-			props.put("spring.pulsar.consumer.subscription-properties[my-sub-prop]", "my-sub-prop-value");
-			props.put("spring.pulsar.consumer.subscription-mode", "nondurable");
 			props.put("spring.pulsar.consumer.receiver-queue-size", "1");
-			props.put("spring.pulsar.consumer.acknowledgements-group-time", "2s");
-			props.put("spring.pulsar.consumer.negative-ack-redelivery-delay", "3s");
 			props.put("spring.pulsar.consumer.max-total-receiver-queue-size-across-partitions", "5");
-			props.put("spring.pulsar.consumer.consumer-name", "my-consumer");
-			props.put("spring.pulsar.consumer.ack-timeout", "6s");
-			props.put("spring.pulsar.consumer.tick-duration", "7s");
+			props.put("spring.pulsar.consumer.name", "my-consumer");
 			props.put("spring.pulsar.consumer.priority-level", "8");
 			props.put("spring.pulsar.consumer.crypto-failure-action", "discard");
 			props.put("spring.pulsar.consumer.properties[my-prop]", "my-prop-value");
 			props.put("spring.pulsar.consumer.read-compacted", "true");
-			props.put("spring.pulsar.consumer.subscription-initial-position", "earliest");
 			props.put("spring.pulsar.consumer.pattern-auto-discovery-period", "9");
-			props.put("spring.pulsar.consumer.regex-subscription-mode", "all-topics");
 			props.put("spring.pulsar.consumer.dead-letter-policy.max-redeliver-count", "4");
 			props.put("spring.pulsar.consumer.dead-letter-policy.retry-letter-topic", "my-retry-topic");
 			props.put("spring.pulsar.consumer.dead-letter-policy.dead-letter-topic", "my-dlt-topic");
@@ -540,15 +530,25 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.consumer.retry-enable", "true");
 			props.put("spring.pulsar.consumer.auto-update-partitions", "false");
 			props.put("spring.pulsar.consumer.auto-update-partitions-interval", "10s");
-			props.put("spring.pulsar.consumer.replicate-subscription-state", "true");
 			props.put("spring.pulsar.consumer.reset-include-head", "true");
-			props.put("spring.pulsar.consumer.batch-index-ack-enabled", "true");
-			props.put("spring.pulsar.consumer.ack-receipt-enabled", "true");
 			props.put("spring.pulsar.consumer.pool-messages", "true");
 			props.put("spring.pulsar.consumer.start-paused", "true");
-			props.put("spring.pulsar.consumer.auto-ack-oldest-chunked-message-on-queue-full", "false");
-			props.put("spring.pulsar.consumer.max-pending-chunked-message", "11");
-			props.put("spring.pulsar.consumer.expire-time-of-incomplete-chunked-message", "12s");
+			props.put("spring.pulsar.consumer.ack.batch-index-enabled", "true");
+			props.put("spring.pulsar.consumer.ack.group-time", "2s");
+			props.put("spring.pulsar.consumer.ack.receipt-enabled", "true");
+			props.put("spring.pulsar.consumer.ack.redelivery-delay", "3s");
+			props.put("spring.pulsar.consumer.ack.timeout", "6s");
+			props.put("spring.pulsar.consumer.ack.timeout-tick-duration", "7s");
+			props.put("spring.pulsar.consumer.chunk.auto-ack-oldest-on-queue-full", "false");
+			props.put("spring.pulsar.consumer.chunk.expire-time-incomplete", "12s");
+			props.put("spring.pulsar.consumer.chunk.max-pending-messages", "11");
+			props.put("spring.pulsar.consumer.subscription.initial-position", "earliest");
+			props.put("spring.pulsar.consumer.subscription.mode", "nondurable");
+			props.put("spring.pulsar.consumer.subscription.name", "my-subscription");
+			props.put("spring.pulsar.consumer.subscription.properties[my-sub-prop]", "my-sub-prop-value");
+			props.put("spring.pulsar.consumer.subscription.topics-mode", "all-topics");
+			props.put("spring.pulsar.consumer.subscription.type", "shared");
+			props.put("spring.pulsar.consumer.subscription.replicate-state", "true");
 			this.consumerProps = newConfigPropsFromUserProps(props).getConsumer();
 		}
 
@@ -556,26 +556,14 @@ class PulsarPropertiesTests {
 		void consumerProperties() {
 			assertThat(this.consumerProps.getTopics()).containsExactly("my-topic");
 			assertThat(this.consumerProps.getTopicsPattern().toString()).isEqualTo("my-pattern");
-			assertThat(this.consumerProps.getSubscriptionName()).isEqualTo("my-subscription");
-			assertThat(this.consumerProps.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
-			assertThat(this.consumerProps.getSubscriptionProperties())
-				.containsExactly(entry("my-sub-prop", "my-sub-prop-value"));
-			assertThat(this.consumerProps.getSubscriptionMode()).isEqualTo(SubscriptionMode.NonDurable);
 			assertThat(this.consumerProps.getReceiverQueueSize()).isEqualTo(1);
-			assertThat(this.consumerProps.getAcknowledgementsGroupTime()).isEqualTo(Duration.ofMillis(2_000));
-			assertThat(this.consumerProps.getNegativeAckRedeliveryDelay()).isEqualTo(Duration.ofMillis(3_000));
 			assertThat(this.consumerProps.getMaxTotalReceiverQueueSizeAcrossPartitions()).isEqualTo(5);
-			assertThat(this.consumerProps.getConsumerName()).isEqualTo("my-consumer");
-			assertThat(this.consumerProps.getAckTimeout()).isEqualTo(Duration.ofMillis(6_000));
-			assertThat(this.consumerProps.getTickDuration()).isEqualTo(Duration.ofMillis(7_000));
+			assertThat(this.consumerProps.getName()).isEqualTo("my-consumer");
 			assertThat(this.consumerProps.getPriorityLevel()).isEqualTo(8);
 			assertThat(this.consumerProps.getCryptoFailureAction()).isEqualTo(ConsumerCryptoFailureAction.DISCARD);
 			assertThat(this.consumerProps.getProperties()).containsExactly(entry("my-prop", "my-prop-value"));
 			assertThat(this.consumerProps.getReadCompacted()).isTrue();
-			assertThat(this.consumerProps.getSubscriptionInitialPosition())
-				.isEqualTo(SubscriptionInitialPosition.Earliest);
 			assertThat(this.consumerProps.getPatternAutoDiscoveryPeriod()).isEqualTo(9);
-			assertThat(this.consumerProps.getRegexSubscriptionMode()).isEqualTo(RegexSubscriptionMode.AllTopics);
 			assertThat(this.consumerProps.getDeadLetterPolicy()).satisfies((dlp) -> {
 				assertThat(dlp.getMaxRedeliverCount()).isEqualTo(4);
 				assertThat(dlp.getRetryLetterTopic()).isEqualTo("my-retry-topic");
@@ -585,16 +573,31 @@ class PulsarPropertiesTests {
 			assertThat(this.consumerProps.getRetryEnable()).isTrue();
 			assertThat(this.consumerProps.getAutoUpdatePartitions()).isFalse();
 			assertThat(this.consumerProps.getAutoUpdatePartitionsInterval()).isEqualTo(Duration.ofMillis(10_000));
-			assertThat(this.consumerProps.getReplicateSubscriptionState()).isTrue();
 			assertThat(this.consumerProps.getResetIncludeHead()).isTrue();
-			assertThat(this.consumerProps.getBatchIndexAckEnabled()).isTrue();
-			assertThat(this.consumerProps.getAckReceiptEnabled()).isTrue();
 			assertThat(this.consumerProps.getPoolMessages()).isTrue();
 			assertThat(this.consumerProps.getStartPaused()).isTrue();
-			assertThat(this.consumerProps.getAutoAckOldestChunkedMessageOnQueueFull()).isFalse();
-			assertThat(this.consumerProps.getMaxPendingChunkedMessage()).isEqualTo(11);
-			assertThat(this.consumerProps.getExpireTimeOfIncompleteChunkedMessage())
-				.isEqualTo(Duration.ofMillis(12_000));
+			assertThat(this.consumerProps.getAck()).satisfies((ack) -> {
+				assertThat(ack.getGroupTime()).isEqualTo(Duration.ofMillis(2_000));
+				assertThat(ack.getRedeliveryDelay()).isEqualTo(Duration.ofMillis(3_000));
+				assertThat(ack.getTimeout()).isEqualTo(Duration.ofMillis(6_000));
+				assertThat(ack.getTimeoutTickDuration()).isEqualTo(Duration.ofMillis(7_000));
+				assertThat(ack.getBatchIndexEnabled()).isTrue();
+				assertThat(ack.getReceiptEnabled()).isTrue();
+			});
+			assertThat(this.consumerProps.getChunk()).satisfies((chunk) -> {
+				assertThat(chunk.getAutoAckOldestOnQueueFull()).isFalse();
+				assertThat(chunk.getMaxPendingMessages()).isEqualTo(11);
+				assertThat(chunk.getExpireTimeIncomplete()).isEqualTo(Duration.ofMillis(12_000));
+			});
+			assertThat(this.consumerProps.getSubscription()).satisfies((subscription) -> {
+				assertThat(subscription.getName()).isEqualTo("my-subscription");
+				assertThat(subscription.getType()).isEqualTo(SubscriptionType.Shared);
+				assertThat(subscription.getProperties()).containsExactly(entry("my-sub-prop", "my-sub-prop-value"));
+				assertThat(subscription.getMode()).isEqualTo(SubscriptionMode.NonDurable);
+				assertThat(subscription.getInitialPosition()).isEqualTo(SubscriptionInitialPosition.Earliest);
+				assertThat(subscription.getTopicsMode()).isEqualTo(RegexSubscriptionMode.AllTopics);
+				assertThat(subscription.getReplicateState()).isTrue();
+			});
 		}
 
 		@SuppressWarnings("unchecked")
@@ -607,26 +610,14 @@ class PulsarPropertiesTests {
 			var argCaptor = ArgumentCaptor.forClass(Pattern.class);
 			then(consumerBuilder).should().topicsPattern(argCaptor.capture());
 			assertThat(argCaptor.getValue().pattern()).isEqualTo("my-pattern");
-			then(consumerBuilder).should().subscriptionName("my-subscription");
-			then(consumerBuilder).should().subscriptionType(SubscriptionType.Shared);
-			then(consumerBuilder).should().subscriptionProperties(Map.of("my-sub-prop", "my-sub-prop-value"));
-			then(consumerBuilder).should().subscriptionMode(SubscriptionMode.NonDurable);
 			then(consumerBuilder).should().receiverQueueSize(1);
-			then(consumerBuilder).should().acknowledgmentGroupTime(2_000, TimeUnit.MILLISECONDS);
-			then(consumerBuilder).should().negativeAckRedeliveryDelay(3_000, TimeUnit.MILLISECONDS);
 			then(consumerBuilder).should().maxTotalReceiverQueueSizeAcrossPartitions(5);
 			then(consumerBuilder).should().consumerName("my-consumer");
-			then(consumerBuilder).should().ackTimeout(6_000, TimeUnit.MILLISECONDS);
-			then(consumerBuilder).should().ackTimeoutTickTime(7_000, TimeUnit.MILLISECONDS);
 			then(consumerBuilder).should().priorityLevel(8);
 			then(consumerBuilder).should().cryptoFailureAction(ConsumerCryptoFailureAction.DISCARD);
 			then(consumerBuilder).should().properties(Map.of("my-prop", "my-prop-value"));
 			then(consumerBuilder).should().readCompacted(true);
-			then(consumerBuilder).should().subscriptionInitialPosition(SubscriptionInitialPosition.Earliest);
 			then(consumerBuilder).should().patternAutoDiscoveryPeriod(9);
-			then(consumerBuilder).should().subscriptionTopicsMode(RegexSubscriptionMode.AllTopics);
-
-			// TODO here
 			then(consumerBuilder).should()
 				.deadLetterPolicy(DeadLetterPolicy.builder()
 					.maxRedeliverCount(4)
@@ -637,15 +628,25 @@ class PulsarPropertiesTests {
 			then(consumerBuilder).should().enableRetry(true);
 			then(consumerBuilder).should().autoUpdatePartitions(false);
 			then(consumerBuilder).should().autoUpdatePartitionsInterval(10_000, TimeUnit.MILLISECONDS);
-			then(consumerBuilder).should().replicateSubscriptionState(true);
 			then(consumerBuilder).should().startMessageIdInclusive();
-			then(consumerBuilder).should().enableBatchIndexAcknowledgment(true);
-			then(consumerBuilder).should().isAckReceiptEnabled(true);
 			then(consumerBuilder).should().poolMessages(true);
 			then(consumerBuilder).should().startPaused(true);
+			then(consumerBuilder).should().acknowledgmentGroupTime(2_000, TimeUnit.MILLISECONDS);
+			then(consumerBuilder).should().negativeAckRedeliveryDelay(3_000, TimeUnit.MILLISECONDS);
+			then(consumerBuilder).should().ackTimeout(6_000, TimeUnit.MILLISECONDS);
+			then(consumerBuilder).should().ackTimeoutTickTime(7_000, TimeUnit.MILLISECONDS);
+			then(consumerBuilder).should().enableBatchIndexAcknowledgment(true);
+			then(consumerBuilder).should().isAckReceiptEnabled(true);
 			then(consumerBuilder).should().autoAckOldestChunkedMessageOnQueueFull(false);
 			then(consumerBuilder).should().maxPendingChunkedMessage(11);
 			then(consumerBuilder).should().expireTimeOfIncompleteChunkedMessage(12_000, TimeUnit.MILLISECONDS);
+			then(consumerBuilder).should().subscriptionName("my-subscription");
+			then(consumerBuilder).should().subscriptionType(SubscriptionType.Shared);
+			then(consumerBuilder).should().subscriptionProperties(Map.of("my-sub-prop", "my-sub-prop-value"));
+			then(consumerBuilder).should().subscriptionMode(SubscriptionMode.NonDurable);
+			then(consumerBuilder).should().subscriptionInitialPosition(SubscriptionInitialPosition.Earliest);
+			then(consumerBuilder).should().subscriptionTopicsMode(RegexSubscriptionMode.AllTopics);
+			then(consumerBuilder).should().replicateSubscriptionState(true);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -696,7 +697,7 @@ class PulsarPropertiesTests {
 			var props = new HashMap<String, String>();
 			props.put("spring.pulsar.reader.topic-names", "my-topic");
 			props.put("spring.pulsar.reader.receiver-queue-size", "100");
-			props.put("spring.pulsar.reader.reader-name", "my-reader");
+			props.put("spring.pulsar.reader.name", "my-reader");
 			props.put("spring.pulsar.reader.subscription-name", "my-subscription");
 			props.put("spring.pulsar.reader.subscription-role-prefix", "sub-role");
 			props.put("spring.pulsar.reader.read-compacted", "true");
@@ -708,7 +709,7 @@ class PulsarPropertiesTests {
 		void readerProperties() {
 			assertThat(this.readerProps.getTopicNames()).containsExactly("my-topic");
 			assertThat(this.readerProps.getReceiverQueueSize()).isEqualTo(100);
-			assertThat(this.readerProps.getReaderName()).isEqualTo("my-reader");
+			assertThat(this.readerProps.getName()).isEqualTo("my-reader");
 			assertThat(this.readerProps.getSubscriptionName()).isEqualTo("my-subscription");
 			assertThat(this.readerProps.getSubscriptionRolePrefix()).isEqualTo("sub-role");
 			assertThat(this.readerProps.getReadCompacted()).isTrue();

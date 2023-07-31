@@ -2008,19 +2008,19 @@
       "defaultValue": "Fail"
     },
     {
-      "name": "spring.pulsar.consumer.regex-subscription-mode",
-      "defaultValue":  "PersistentOnly"
-    },
-    {
-      "name": "spring.pulsar.consumer.subscription-initial-position",
+      "name": "spring.pulsar.consumer.subscription.initial-position",
       "defaultValue": "Latest"
     },
     {
-      "name": "spring.pulsar.consumer.subscription-mode",
+      "name": "spring.pulsar.consumer.subscription.mode",
       "defaultValue":  "Durable"
     },
     {
-      "name": "spring.pulsar.consumer.subscription-type",
+      "name": "spring.pulsar.consumer.subscription.topics-mode",
+      "defaultValue":  "PersistentOnly"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.type",
       "defaultValue":  "Exclusive"
     },
     {
@@ -2028,6 +2028,10 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable function support.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.producer.access-mode",
+      "defaultValue": "Shared"
     },
     {
       "name": "spring.pulsar.producer.cache.enabled",
@@ -2048,28 +2052,28 @@
       "defaultValue": "RoundRobinPartition"
     },
     {
-      "name": "spring.pulsar.producer.producer-access-mode",
-      "defaultValue": "Shared"
-    },
-    {
       "name": "spring.pulsar.reactive.consumer.crypto-failure-action",
       "defaultValue": "Fail"
     },
     {
-      "name": "spring.pulsar.reactive.consumer.subscription-initial-position",
+      "name": "spring.pulsar.reactive.consumer.subscription.initial-position",
       "defaultValue": "Latest"
     },
     {
-      "name": "spring.pulsar.reactive.consumer.subscription-mode",
+      "name": "spring.pulsar.reactive.consumer.subscription.mode",
       "defaultValue":  "Durable"
     },
     {
-      "name": "spring.pulsar.reactive.consumer.subscription-type",
+      "name": "spring.pulsar.reactive.consumer.subscription.type",
       "defaultValue":  "Exclusive"
     },
     {
       "name": "spring.pulsar.reactive.consumer.topics-pattern-subscription-mode",
       "defaultValue":  "PersistentOnly"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.access-mode",
+      "defaultValue": "Shared"
     },
     {
       "name": "spring.pulsar.reactive.sender.cache.enabled",
@@ -2088,10 +2092,6 @@
     {
       "name": "spring.pulsar.reactive.sender.message-routing-mode",
       "defaultValue": "RoundRobinPartition"
-    },
-    {
-      "name": "spring.pulsar.reactive.sender.producer-access-mode",
-      "defaultValue": "Shared"
     },
     {
       "name": "spring.quartz.jdbc.comment-prefix",

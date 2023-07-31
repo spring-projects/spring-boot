@@ -61,7 +61,7 @@ class PulsarAnnotationDrivenConfiguration {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
-		containerProperties.setSubscriptionType(this.pulsarProperties.getConsumer().getSubscriptionType());
+		containerProperties.setSubscriptionType(this.pulsarProperties.getConsumer().getSubscription().getType());
 		containerProperties.setObservationEnabled(this.pulsarProperties.getListener().isObservationsEnabled());
 
 		PulsarProperties.Listener listenerProperties = this.pulsarProperties.getListener();

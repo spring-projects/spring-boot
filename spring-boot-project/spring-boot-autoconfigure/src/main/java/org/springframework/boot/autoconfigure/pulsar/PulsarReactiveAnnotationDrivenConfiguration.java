@@ -54,7 +54,7 @@ class PulsarReactiveAnnotationDrivenConfiguration {
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
-		containerProperties.setSubscriptionType(this.properties.getConsumer().getSubscriptionType());
+		containerProperties.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
 
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		PulsarReactiveProperties.Listener listenerProperties = this.properties.getListener();

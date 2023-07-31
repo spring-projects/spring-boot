@@ -458,7 +458,7 @@ class PulsarAutoConfigurationTests {
 			PulsarAutoConfigurationTests.this.contextRunner
 				.withPropertyValues("spring.pulsar.listener.ack-mode=manual", "spring.pulsar.listener.schema-type=avro",
 						"spring.pulsar.listener.max-num-messages=10", "spring.pulsar.listener.max-num-bytes=101B",
-						"spring.pulsar.listener.batch-timeout=50ms", "spring.pulsar.consumer.subscription-type=shared")
+						"spring.pulsar.listener.batch-timeout=50ms", "spring.pulsar.consumer.subscription.type=shared")
 				.run((context) -> {
 					AbstractObjectAssert<?, PulsarContainerProperties> properties = assertThat(context).hasNotFailed()
 						.getBean(ConcurrentPulsarListenerContainerFactory.class)

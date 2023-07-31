@@ -209,7 +209,7 @@ class PulsarReactiveAutoConfigurationTests {
 	@SuppressWarnings("rawtypes")
 	void beansAreInjectedInReactivePulsarConsumerFactory() {
 		var client = mock(ReactivePulsarClient.class);
-		this.contextRunner.withPropertyValues("spring.pulsar.reactive.consumer.consumer-name=test-consumer")
+		this.contextRunner.withPropertyValues("spring.pulsar.reactive.consumer.name=test-consumer")
 			.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
 			.run((context) -> assertThat(context).getBean(DefaultReactivePulsarConsumerFactory.class)
 				.satisfies((consumerFactory) -> {
@@ -228,7 +228,7 @@ class PulsarReactiveAutoConfigurationTests {
 	@SuppressWarnings("rawtypes")
 	void beansAreInjectedInReactivePulsarReaderFactory() {
 		var client = mock(ReactivePulsarClient.class);
-		this.contextRunner.withPropertyValues("spring.pulsar.reactive.reader.reader-name=test-reader")
+		this.contextRunner.withPropertyValues("spring.pulsar.reactive.reader.name=test-reader")
 			.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
 			.run((context) -> assertThat(context).getBean(DefaultReactivePulsarReaderFactory.class)
 				.satisfies((readerFactory) -> {
@@ -272,7 +272,7 @@ class PulsarReactiveAutoConfigurationTests {
 			.withPropertyValues("spring.pulsar.reactive.listener.schema-type=avro",
 					"spring.pulsar.reactive.listener.handling-timeout=10s",
 					"spring.pulsar.reactive.listener.use-key-ordered-processing=true",
-					"spring.pulsar.reactive.consumer.subscription-type=shared")
+					"spring.pulsar.reactive.consumer.subscription.type=shared")
 			.run((context) -> assertThat(context).getBean(DefaultReactivePulsarListenerContainerFactory.class)
 				.extracting(DefaultReactivePulsarListenerContainerFactory<Object>::getContainerProperties)
 				.satisfies((properties) -> {
