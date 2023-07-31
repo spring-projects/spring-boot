@@ -65,13 +65,13 @@ public class ConsumerConfigProperties {
 	/**
 	 * Number of messages that can be accumulated before the consumer calls "receive".
 	 */
-	private Integer receiverQueueSize = 1000;
+	private int receiverQueueSize = 1000;
 
 	/**
 	 * Maximum number of messages that a consumer can be pushed at once from a broker
 	 * across all partitions.
 	 */
-	private Integer maxTotalReceiverQueueSizeAcrossPartitions = 50000;
+	private int maxTotalReceiverQueueSizeAcrossPartitions = 50000;
 
 	/**
 	 * Consumer name to identify a particular consumer from the topic stats.
@@ -81,7 +81,7 @@ public class ConsumerConfigProperties {
 	/**
 	 * Priority level for shared subscription consumers.
 	 */
-	private Integer priorityLevel = 0;
+	private int priorityLevel = 0;
 
 	/**
 	 * Action the consumer will take in case of decryption failure.
@@ -97,12 +97,12 @@ public class ConsumerConfigProperties {
 	 * Whether to read messages from the compacted topic rather than the full message
 	 * backlog.
 	 */
-	private Boolean readCompacted = false;
+	private boolean readCompacted = false;
 
 	/**
 	 * Auto-discovery period for topics when topic pattern is used in minutes.
 	 */
-	private Integer patternAutoDiscoveryPeriod = 1;
+	private int patternAutoDiscoveryPeriod = 1;
 
 	/**
 	 * Dead letter policy to use.
@@ -113,13 +113,13 @@ public class ConsumerConfigProperties {
 	/**
 	 * Whether to auto retry messages.
 	 */
-	private Boolean retryEnable = false;
+	private boolean retryEnable = false;
 
 	/**
 	 * Whether the consumer auto-subscribes for partition increase. This is only for
 	 * partitioned consumers.
 	 */
-	private Boolean autoUpdatePartitions = true;
+	private boolean autoUpdatePartitions = true;
 
 	/**
 	 * Interval of partitions discovery updates.
@@ -130,17 +130,17 @@ public class ConsumerConfigProperties {
 	 * Whether to include the given position of any reset operation (eg. the various seek
 	 * APIs on the Pulsar consumer).
 	 */
-	private Boolean resetIncludeHead = false;
+	private boolean resetIncludeHead = false;
 
 	/**
 	 * Whether pooling of messages and the underlying data buffers is enabled.
 	 */
-	private Boolean poolMessages = false;
+	private boolean poolMessages = false;
 
 	/**
 	 * Whether to start the consumer in a paused state.
 	 */
-	private Boolean startPaused = false;
+	private boolean startPaused = false;
 
 	public Acknowledgement getAck() {
 		return this.ack;
@@ -170,19 +170,19 @@ public class ConsumerConfigProperties {
 		this.topicsPattern = topicsPattern;
 	}
 
-	public Integer getReceiverQueueSize() {
+	public int getReceiverQueueSize() {
 		return this.receiverQueueSize;
 	}
 
-	public void setReceiverQueueSize(Integer receiverQueueSize) {
+	public void setReceiverQueueSize(int receiverQueueSize) {
 		this.receiverQueueSize = receiverQueueSize;
 	}
 
-	public Integer getMaxTotalReceiverQueueSizeAcrossPartitions() {
+	public int getMaxTotalReceiverQueueSizeAcrossPartitions() {
 		return this.maxTotalReceiverQueueSizeAcrossPartitions;
 	}
 
-	public void setMaxTotalReceiverQueueSizeAcrossPartitions(Integer maxTotalReceiverQueueSizeAcrossPartitions) {
+	public void setMaxTotalReceiverQueueSizeAcrossPartitions(int maxTotalReceiverQueueSizeAcrossPartitions) {
 		this.maxTotalReceiverQueueSizeAcrossPartitions = maxTotalReceiverQueueSizeAcrossPartitions;
 	}
 
@@ -194,11 +194,11 @@ public class ConsumerConfigProperties {
 		this.name = name;
 	}
 
-	public Integer getPriorityLevel() {
+	public int getPriorityLevel() {
 		return this.priorityLevel;
 	}
 
-	public void setPriorityLevel(Integer priorityLevel) {
+	public void setPriorityLevel(int priorityLevel) {
 		this.priorityLevel = priorityLevel;
 	}
 
@@ -218,19 +218,19 @@ public class ConsumerConfigProperties {
 		this.properties = properties;
 	}
 
-	public Boolean getReadCompacted() {
+	public boolean getReadCompacted() {
 		return this.readCompacted;
 	}
 
-	public void setReadCompacted(Boolean readCompacted) {
+	public void setReadCompacted(boolean readCompacted) {
 		this.readCompacted = readCompacted;
 	}
 
-	public Integer getPatternAutoDiscoveryPeriod() {
+	public int getPatternAutoDiscoveryPeriod() {
 		return this.patternAutoDiscoveryPeriod;
 	}
 
-	public void setPatternAutoDiscoveryPeriod(Integer patternAutoDiscoveryPeriod) {
+	public void setPatternAutoDiscoveryPeriod(int patternAutoDiscoveryPeriod) {
 		this.patternAutoDiscoveryPeriod = patternAutoDiscoveryPeriod;
 	}
 
@@ -242,19 +242,19 @@ public class ConsumerConfigProperties {
 		this.deadLetterPolicy = deadLetterPolicy;
 	}
 
-	public Boolean getRetryEnable() {
+	public boolean getRetryEnable() {
 		return this.retryEnable;
 	}
 
-	public void setRetryEnable(Boolean retryEnable) {
+	public void setRetryEnable(boolean retryEnable) {
 		this.retryEnable = retryEnable;
 	}
 
-	public Boolean getAutoUpdatePartitions() {
+	public boolean getAutoUpdatePartitions() {
 		return this.autoUpdatePartitions;
 	}
 
-	public void setAutoUpdatePartitions(Boolean autoUpdatePartitions) {
+	public void setAutoUpdatePartitions(boolean autoUpdatePartitions) {
 		this.autoUpdatePartitions = autoUpdatePartitions;
 	}
 
@@ -266,27 +266,27 @@ public class ConsumerConfigProperties {
 		this.autoUpdatePartitionsInterval = autoUpdatePartitionsInterval;
 	}
 
-	public Boolean getResetIncludeHead() {
+	public boolean getResetIncludeHead() {
 		return this.resetIncludeHead;
 	}
 
-	public void setResetIncludeHead(Boolean resetIncludeHead) {
+	public void setResetIncludeHead(boolean resetIncludeHead) {
 		this.resetIncludeHead = resetIncludeHead;
 	}
 
-	public Boolean getPoolMessages() {
+	public boolean getPoolMessages() {
 		return this.poolMessages;
 	}
 
-	public void setPoolMessages(Boolean poolMessages) {
+	public void setPoolMessages(boolean poolMessages) {
 		this.poolMessages = poolMessages;
 	}
 
-	public Boolean getStartPaused() {
+	public boolean getStartPaused() {
 		return this.startPaused;
 	}
 
-	public void setStartPaused(Boolean startPaused) {
+	public void setStartPaused(boolean startPaused) {
 		this.startPaused = startPaused;
 	}
 

@@ -116,13 +116,13 @@ public class PulsarProperties {
 		 * Whether to record observations for send operations when the Observations API is
 		 * available.
 		 */
-		private Boolean observationsEnabled = true;
+		private boolean observationsEnabled = true;
 
 		public Boolean isObservationsEnabled() {
 			return this.observationsEnabled;
 		}
 
-		public void setObservationsEnabled(Boolean observationsEnabled) {
+		public void setObservationsEnabled(boolean observationsEnabled) {
 			this.observationsEnabled = observationsEnabled;
 		}
 
@@ -134,10 +134,10 @@ public class PulsarProperties {
 		private Duration expireAfterAccess = Duration.ofMinutes(1);
 
 		/** Maximum size of cache (entries). */
-		private Long maximumSize = 1000L;
+		private long maximumSize = 1000L;
 
 		/** Initial size of cache. */
-		private Integer initialCapacity = 50;
+		private int initialCapacity = 50;
 
 		public Duration getExpireAfterAccess() {
 			return this.expireAfterAccess;
@@ -147,19 +147,19 @@ public class PulsarProperties {
 			this.expireAfterAccess = expireAfterAccess;
 		}
 
-		public Long getMaximumSize() {
+		public long getMaximumSize() {
 			return this.maximumSize;
 		}
 
-		public void setMaximumSize(Long maximumSize) {
+		public void setMaximumSize(long maximumSize) {
 			this.maximumSize = maximumSize;
 		}
 
-		public Integer getInitialCapacity() {
+		public int getInitialCapacity() {
 			return this.initialCapacity;
 		}
 
-		public void setInitialCapacity(Integer initialCapacity) {
+		public void setInitialCapacity(int initialCapacity) {
 			this.initialCapacity = initialCapacity;
 		}
 
@@ -208,7 +208,7 @@ public class PulsarProperties {
 		/**
 		 * Number of threads to be used for handling connections to brokers.
 		 */
-		private Integer numIoThreads = 1;
+		private int numIoThreads = 1;
 
 		/**
 		 * Number of threads to be used for message listeners. The listener thread pool is
@@ -216,28 +216,28 @@ public class PulsarProperties {
 		 * to get messages. For a given consumer, the listener will always be invoked from
 		 * the same thread, to ensure ordering.
 		 */
-		private Integer numListenerThreads = 1;
+		private int numListenerThreads = 1;
 
 		/**
 		 * Maximum number of connections that the client will open to a single broker.
 		 */
-		private Integer numConnectionsPerBroker = 1;
+		private int numConnectionsPerBroker = 1;
 
 		/**
 		 * Whether to use TCP no-delay flag on the connection, to disable Nagle algorithm.
 		 */
-		private Boolean useTcpNoDelay = true;
+		private boolean useTcpNoDelay = true;
 
 		/**
 		 * Whether to use TLS encryption on the connection.
 		 */
-		private Boolean useTls = false;
+		private boolean useTls = false;
 
 		/**
 		 * Whether the hostname is validated when the proxy creates a TLS connection with
 		 * brokers.
 		 */
-		private Boolean tlsHostnameVerificationEnable = false;
+		private boolean tlsHostnameVerificationEnable = false;
 
 		/**
 		 * Path to the trusted TLS certificate file.
@@ -262,7 +262,7 @@ public class PulsarProperties {
 		/**
 		 * Enable KeyStore instead of PEM type configuration if TLS is enabled.
 		 */
-		private Boolean useKeyStoreTls = false;
+		private boolean useKeyStoreTls = false;
 
 		/**
 		 * Name of the security provider used for SSL connections.
@@ -307,24 +307,24 @@ public class PulsarProperties {
 		 * Number of concurrent lookup-requests allowed to send on each broker-connection
 		 * to prevent overload on broker.
 		 */
-		private Integer maxConcurrentLookupRequest = 5000;
+		private int maxConcurrentLookupRequest = 5000;
 
 		/**
 		 * Number of max lookup-requests allowed on each broker-connection to prevent
 		 * overload on broker.
 		 */
-		private Integer maxLookupRequest = 50000;
+		private int maxLookupRequest = 50000;
 
 		/**
 		 * Maximum number of times a lookup-request to a broker will be redirected.
 		 */
-		private Integer maxLookupRedirects = 20;
+		private int maxLookupRedirects = 20;
 
 		/**
 		 * Maximum number of broker-rejected requests in a certain timeframe, after which
 		 * the current connection is closed and a new connection is created by the client.
 		 */
-		private Integer maxNumberOfRejectedRequestPerConnection = 50;
+		private int maxNumberOfRejectedRequestPerConnection = 50;
 
 		/**
 		 * Keep alive interval for broker-client connection.
@@ -355,7 +355,7 @@ public class PulsarProperties {
 		 * Enables spin-waiting on executors and IO threads in order to reduce latency
 		 * during context switches.
 		 */
-		private Boolean enableBusyWait = false;
+		private boolean enableBusyWait = false;
 
 		/**
 		 * Limit of direct memory that will be allocated by the client.
@@ -372,7 +372,7 @@ public class PulsarProperties {
 		 * Enables transactions. To use this, start the transactionCoordinatorClient with
 		 * the pulsar client.
 		 */
-		private Boolean enableTransaction = false;
+		private boolean enableTransaction = false;
 
 		/**
 		 * DNS lookup bind address.
@@ -382,7 +382,7 @@ public class PulsarProperties {
 		/**
 		 * DNS lookup bind port.
 		 */
-		private Integer dnsLookupBindPort = 0;
+		private int dnsLookupBindPort = 0;
 
 		/**
 		 * SOCKS5 proxy address.
@@ -455,51 +455,51 @@ public class PulsarProperties {
 			this.lookupTimeout = lookupTimeout;
 		}
 
-		public Integer getNumIoThreads() {
+		public int getNumIoThreads() {
 			return this.numIoThreads;
 		}
 
-		public void setNumIoThreads(Integer numIoThreads) {
+		public void setNumIoThreads(int numIoThreads) {
 			this.numIoThreads = numIoThreads;
 		}
 
-		public Integer getNumListenerThreads() {
+		public int getNumListenerThreads() {
 			return this.numListenerThreads;
 		}
 
-		public void setNumListenerThreads(Integer numListenerThreads) {
+		public void setNumListenerThreads(int numListenerThreads) {
 			this.numListenerThreads = numListenerThreads;
 		}
 
-		public Integer getNumConnectionsPerBroker() {
+		public int getNumConnectionsPerBroker() {
 			return this.numConnectionsPerBroker;
 		}
 
-		public void setNumConnectionsPerBroker(Integer numConnectionsPerBroker) {
+		public void setNumConnectionsPerBroker(int numConnectionsPerBroker) {
 			this.numConnectionsPerBroker = numConnectionsPerBroker;
 		}
 
-		public Boolean getUseTcpNoDelay() {
+		public boolean getUseTcpNoDelay() {
 			return this.useTcpNoDelay;
 		}
 
-		public void setUseTcpNoDelay(Boolean useTcpNoDelay) {
+		public void setUseTcpNoDelay(boolean useTcpNoDelay) {
 			this.useTcpNoDelay = useTcpNoDelay;
 		}
 
-		public Boolean getUseTls() {
+		public boolean getUseTls() {
 			return this.useTls;
 		}
 
-		public void setUseTls(Boolean useTls) {
+		public void setUseTls(boolean useTls) {
 			this.useTls = useTls;
 		}
 
-		public Boolean getTlsHostnameVerificationEnable() {
+		public boolean getTlsHostnameVerificationEnable() {
 			return this.tlsHostnameVerificationEnable;
 		}
 
-		public void setTlsHostnameVerificationEnable(Boolean tlsHostnameVerificationEnable) {
+		public void setTlsHostnameVerificationEnable(boolean tlsHostnameVerificationEnable) {
 			this.tlsHostnameVerificationEnable = tlsHostnameVerificationEnable;
 		}
 
@@ -535,11 +535,11 @@ public class PulsarProperties {
 			this.tlsAllowInsecureConnection = tlsAllowInsecureConnection;
 		}
 
-		public Boolean getUseKeyStoreTls() {
+		public boolean getUseKeyStoreTls() {
 			return this.useKeyStoreTls;
 		}
 
-		public void setUseKeyStoreTls(Boolean useKeyStoreTls) {
+		public void setUseKeyStoreTls(boolean useKeyStoreTls) {
 			this.useKeyStoreTls = useKeyStoreTls;
 		}
 
@@ -599,35 +599,35 @@ public class PulsarProperties {
 			this.statsInterval = statsInterval;
 		}
 
-		public Integer getMaxConcurrentLookupRequest() {
+		public int getMaxConcurrentLookupRequest() {
 			return this.maxConcurrentLookupRequest;
 		}
 
-		public void setMaxConcurrentLookupRequest(Integer maxConcurrentLookupRequest) {
+		public void setMaxConcurrentLookupRequest(int maxConcurrentLookupRequest) {
 			this.maxConcurrentLookupRequest = maxConcurrentLookupRequest;
 		}
 
-		public Integer getMaxLookupRequest() {
+		public int getMaxLookupRequest() {
 			return this.maxLookupRequest;
 		}
 
-		public void setMaxLookupRequest(Integer maxLookupRequest) {
+		public void setMaxLookupRequest(int maxLookupRequest) {
 			this.maxLookupRequest = maxLookupRequest;
 		}
 
-		public Integer getMaxLookupRedirects() {
+		public int getMaxLookupRedirects() {
 			return this.maxLookupRedirects;
 		}
 
-		public void setMaxLookupRedirects(Integer maxLookupRedirects) {
+		public void setMaxLookupRedirects(int maxLookupRedirects) {
 			this.maxLookupRedirects = maxLookupRedirects;
 		}
 
-		public Integer getMaxNumberOfRejectedRequestPerConnection() {
+		public int getMaxNumberOfRejectedRequestPerConnection() {
 			return this.maxNumberOfRejectedRequestPerConnection;
 		}
 
-		public void setMaxNumberOfRejectedRequestPerConnection(Integer maxNumberOfRejectedRequestPerConnection) {
+		public void setMaxNumberOfRejectedRequestPerConnection(int maxNumberOfRejectedRequestPerConnection) {
 			this.maxNumberOfRejectedRequestPerConnection = maxNumberOfRejectedRequestPerConnection;
 		}
 
@@ -671,11 +671,11 @@ public class PulsarProperties {
 			this.maxBackoffInterval = maxBackoffInterval;
 		}
 
-		public Boolean getEnableBusyWait() {
+		public boolean getEnableBusyWait() {
 			return this.enableBusyWait;
 		}
 
-		public void setEnableBusyWait(Boolean enableBusyWait) {
+		public void setEnableBusyWait(boolean enableBusyWait) {
 			this.enableBusyWait = enableBusyWait;
 		}
 
@@ -695,11 +695,11 @@ public class PulsarProperties {
 			this.proxyServiceUrl = proxyServiceUrl;
 		}
 
-		public Boolean getEnableTransaction() {
+		public boolean getEnableTransaction() {
 			return this.enableTransaction;
 		}
 
-		public void setEnableTransaction(Boolean enableTransaction) {
+		public void setEnableTransaction(boolean enableTransaction) {
 			this.enableTransaction = enableTransaction;
 		}
 
@@ -711,11 +711,11 @@ public class PulsarProperties {
 			this.dnsLookupBindAddress = dnsLookupBindAddress;
 		}
 
-		public Integer getDnsLookupBindPort() {
+		public int getDnsLookupBindPort() {
 			return this.dnsLookupBindPort;
 		}
 
-		public void setDnsLookupBindPort(Integer dnsLookupBindPort) {
+		public void setDnsLookupBindPort(int dnsLookupBindPort) {
 			this.dnsLookupBindPort = dnsLookupBindPort;
 		}
 
@@ -751,41 +751,41 @@ public class PulsarProperties {
 		 * Whether to stop processing further function creates/updates when a failure
 		 * occurs.
 		 */
-		private Boolean failFast = Boolean.TRUE;
+		private boolean failFast = true;
 
 		/**
 		 * Whether to throw an exception if any failure is encountered during server
 		 * startup while creating/updating functions.
 		 */
-		private Boolean propagateFailures = Boolean.TRUE;
+		private boolean propagateFailures = true;
 
 		/**
 		 * Whether to throw an exception if any failure is encountered during server
 		 * shutdown while enforcing stop policy on functions.
 		 */
-		private Boolean propagateStopFailures = Boolean.FALSE;
+		private boolean propagateStopFailures = false;
 
-		public Boolean getFailFast() {
+		public boolean getFailFast() {
 			return this.failFast;
 		}
 
-		public void setFailFast(Boolean failFast) {
+		public void setFailFast(boolean failFast) {
 			this.failFast = failFast;
 		}
 
-		public Boolean getPropagateFailures() {
+		public boolean getPropagateFailures() {
 			return this.propagateFailures;
 		}
 
-		public void setPropagateFailures(Boolean propagateFailures) {
+		public void setPropagateFailures(boolean propagateFailures) {
 			this.propagateFailures = propagateFailures;
 		}
 
-		public Boolean getPropagateStopFailures() {
+		public boolean getPropagateStopFailures() {
 			return this.propagateStopFailures;
 		}
 
-		public void setPropagateStopFailures(Boolean propagateStopFailures) {
+		public void setPropagateStopFailures(boolean propagateStopFailures) {
 			this.propagateStopFailures = propagateStopFailures;
 		}
 
@@ -806,7 +806,7 @@ public class PulsarProperties {
 		/**
 		 * Max number of messages in a single batch request.
 		 */
-		private Integer maxNumMessages = -1;
+		private int maxNumMessages = -1;
 
 		/**
 		 * Max size in a single batch request.
@@ -840,11 +840,11 @@ public class PulsarProperties {
 			this.schemaType = schemaType;
 		}
 
-		public Integer getMaxNumMessages() {
+		public int getMaxNumMessages() {
 			return this.maxNumMessages;
 		}
 
-		public void setMaxNumMessages(Integer maxNumMessages) {
+		public void setMaxNumMessages(int maxNumMessages) {
 			this.maxNumMessages = maxNumMessages;
 		}
 
@@ -915,18 +915,18 @@ public class PulsarProperties {
 		/**
 		 * Whether the client accepts untrusted TLS certificates from the broker.
 		 */
-		private Boolean tlsAllowInsecureConnection = false;
+		private boolean tlsAllowInsecureConnection = false;
 
 		/**
 		 * Whether the hostname is validated when the proxy creates a TLS connection with
 		 * brokers.
 		 */
-		private Boolean tlsHostnameVerificationEnable = false;
+		private boolean tlsHostnameVerificationEnable = false;
 
 		/**
 		 * Enable KeyStore instead of PEM type configuration if TLS is enabled.
 		 */
-		private Boolean useKeyStoreTls = false;
+		private boolean useKeyStoreTls = false;
 
 		/**
 		 * Name of the security provider used for SSL connections.
@@ -1042,7 +1042,7 @@ public class PulsarProperties {
 			return this.tlsAllowInsecureConnection;
 		}
 
-		public void setTlsAllowInsecureConnection(Boolean tlsAllowInsecureConnection) {
+		public void setTlsAllowInsecureConnection(boolean tlsAllowInsecureConnection) {
 			this.tlsAllowInsecureConnection = tlsAllowInsecureConnection;
 		}
 
@@ -1050,7 +1050,7 @@ public class PulsarProperties {
 			return this.tlsHostnameVerificationEnable;
 		}
 
-		public void setTlsHostnameVerificationEnable(Boolean tlsHostnameVerificationEnable) {
+		public void setTlsHostnameVerificationEnable(boolean tlsHostnameVerificationEnable) {
 			this.tlsHostnameVerificationEnable = tlsHostnameVerificationEnable;
 		}
 
@@ -1058,7 +1058,7 @@ public class PulsarProperties {
 			return this.useKeyStoreTls;
 		}
 
-		public void setUseKeyStoreTls(Boolean useKeyStoreTls) {
+		public void setUseKeyStoreTls(boolean useKeyStoreTls) {
 			this.useKeyStoreTls = useKeyStoreTls;
 		}
 

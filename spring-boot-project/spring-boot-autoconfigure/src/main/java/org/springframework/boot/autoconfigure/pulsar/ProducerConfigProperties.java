@@ -62,17 +62,17 @@ public class ProducerConfigProperties {
 	 * Whether the "send" and "sendAsync" methods should block if the outgoing message
 	 * queue is full.
 	 */
-	private Boolean blockIfQueueFull = false;
+	private boolean blockIfQueueFull;
 
 	/**
 	 * Maximum number of pending messages for the producer.
 	 */
-	private Integer maxPendingMessages = 1000;
+	private int maxPendingMessages = 1000;
 
 	/**
 	 * Maximum number of pending messages across all the partitions.
 	 */
-	private Integer maxPendingMessagesAcrossPartitions = 50000;
+	private int maxPendingMessagesAcrossPartitions = 50000;
 
 	/**
 	 * Message routing mode for a partitioned producer.
@@ -92,7 +92,7 @@ public class ProducerConfigProperties {
 	/**
 	 * Whether to split large-size messages into multiple chunks.
 	 */
-	private Boolean chunkingEnabled = false;
+	private boolean chunkingEnabled;
 
 	/**
 	 * Names of the public encryption keys to use when encrypting data.
@@ -112,7 +112,7 @@ public class ProducerConfigProperties {
 	/**
 	 * Whether partitioned producer automatically discover new partitions at runtime.
 	 */
-	private Boolean autoUpdatePartitions = true;
+	private boolean autoUpdatePartitions = true;
 
 	/**
 	 * Interval of partitions discovery updates.
@@ -122,7 +122,7 @@ public class ProducerConfigProperties {
 	/**
 	 * Whether the multiple schema mode is enabled.
 	 */
-	private Boolean multiSchema = true;
+	private boolean multiSchema = true;
 
 	/**
 	 * Type of access to the topic the producer requires.
@@ -133,7 +133,7 @@ public class ProducerConfigProperties {
 	 * Whether producers in Shared mode register and connect immediately to the owner
 	 * broker of each partition or start lazily on demand.
 	 */
-	private Boolean lazyStartPartitionedProducers = false;
+	private boolean lazyStartPartitionedProducers = false;
 
 	/**
 	 * Map of properties to add to the producer.
@@ -170,27 +170,27 @@ public class ProducerConfigProperties {
 		this.sendTimeout = sendTimeout;
 	}
 
-	public Boolean getBlockIfQueueFull() {
+	public boolean getBlockIfQueueFull() {
 		return this.blockIfQueueFull;
 	}
 
-	public void setBlockIfQueueFull(Boolean blockIfQueueFull) {
+	public void setBlockIfQueueFull(boolean blockIfQueueFull) {
 		this.blockIfQueueFull = blockIfQueueFull;
 	}
 
-	public Integer getMaxPendingMessages() {
+	public int getMaxPendingMessages() {
 		return this.maxPendingMessages;
 	}
 
-	public void setMaxPendingMessages(Integer maxPendingMessages) {
+	public void setMaxPendingMessages(int maxPendingMessages) {
 		this.maxPendingMessages = maxPendingMessages;
 	}
 
-	public Integer getMaxPendingMessagesAcrossPartitions() {
+	public int getMaxPendingMessagesAcrossPartitions() {
 		return this.maxPendingMessagesAcrossPartitions;
 	}
 
-	public void setMaxPendingMessagesAcrossPartitions(Integer maxPendingMessagesAcrossPartitions) {
+	public void setMaxPendingMessagesAcrossPartitions(int maxPendingMessagesAcrossPartitions) {
 		this.maxPendingMessagesAcrossPartitions = maxPendingMessagesAcrossPartitions;
 	}
 
@@ -218,11 +218,11 @@ public class ProducerConfigProperties {
 		this.cryptoFailureAction = cryptoFailureAction;
 	}
 
-	public Boolean getChunkingEnabled() {
+	public boolean getChunkingEnabled() {
 		return this.chunkingEnabled;
 	}
 
-	public void setChunkingEnabled(Boolean chunkingEnabled) {
+	public void setChunkingEnabled(boolean chunkingEnabled) {
 		this.chunkingEnabled = chunkingEnabled;
 	}
 
@@ -250,11 +250,11 @@ public class ProducerConfigProperties {
 		this.initialSequenceId = initialSequenceId;
 	}
 
-	public Boolean getAutoUpdatePartitions() {
+	public boolean getAutoUpdatePartitions() {
 		return this.autoUpdatePartitions;
 	}
 
-	public void setAutoUpdatePartitions(Boolean autoUpdatePartitions) {
+	public void setAutoUpdatePartitions(boolean autoUpdatePartitions) {
 		this.autoUpdatePartitions = autoUpdatePartitions;
 	}
 
@@ -266,11 +266,11 @@ public class ProducerConfigProperties {
 		this.autoUpdatePartitionsInterval = autoUpdatePartitionsInterval;
 	}
 
-	public Boolean getMultiSchema() {
+	public boolean getMultiSchema() {
 		return this.multiSchema;
 	}
 
-	public void setMultiSchema(Boolean multiSchema) {
+	public void setMultiSchema(boolean multiSchema) {
 		this.multiSchema = multiSchema;
 	}
 
@@ -282,11 +282,11 @@ public class ProducerConfigProperties {
 		this.accessMode = accessMode;
 	}
 
-	public Boolean getLazyStartPartitionedProducers() {
+	public boolean getLazyStartPartitionedProducers() {
 		return this.lazyStartPartitionedProducers;
 	}
 
-	public void setLazyStartPartitionedProducers(Boolean lazyStartPartitionedProducers) {
+	public void setLazyStartPartitionedProducers(boolean lazyStartPartitionedProducers) {
 		this.lazyStartPartitionedProducers = lazyStartPartitionedProducers;
 	}
 

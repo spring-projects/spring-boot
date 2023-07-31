@@ -126,12 +126,12 @@ public class PulsarReactiveProperties {
 		/**
 		 * Maximum number of pending messages for the producer.
 		 */
-		private Integer maxPendingMessages = 1000;
+		private int maxPendingMessages = 1000;
 
 		/**
 		 * Maximum number of pending messages across all the partitions.
 		 */
-		private Integer maxPendingMessagesAcrossPartitions = 50000;
+		private int maxPendingMessagesAcrossPartitions = 50000;
 
 		/**
 		 * Message routing mode for a partitioned producer.
@@ -152,7 +152,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Whether to split large-size messages into multiple chunks.
 		 */
-		private Boolean chunkingEnabled = false;
+		private boolean chunkingEnabled = false;
 
 		/**
 		 * Names of the public encryption keys to use when encrypting data.
@@ -172,7 +172,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Whether partitioned producer automatically discover new partitions at runtime.
 		 */
-		private Boolean autoUpdatePartitions = true;
+		private boolean autoUpdatePartitions = true;
 
 		/**
 		 * Interval of partitions discovery updates.
@@ -182,7 +182,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Whether the multiple schema mode is enabled.
 		 */
-		private Boolean multiSchema = true;
+		private boolean multiSchema = true;
 
 		/**
 		 * Type of access to the topic the producer requires.
@@ -193,7 +193,7 @@ public class PulsarReactiveProperties {
 		 * Whether producers in Shared mode register and connect immediately to the owner
 		 * broker of each partition or start lazily on demand.
 		 */
-		private Boolean lazyStartPartitionedProducers = false;
+		private boolean lazyStartPartitionedProducers = false;
 
 		/**
 		 * Map of properties to add to the producer.
@@ -226,19 +226,19 @@ public class PulsarReactiveProperties {
 			this.sendTimeout = sendTimeout;
 		}
 
-		public Integer getMaxPendingMessages() {
+		public int getMaxPendingMessages() {
 			return this.maxPendingMessages;
 		}
 
-		public void setMaxPendingMessages(Integer maxPendingMessages) {
+		public void setMaxPendingMessages(int maxPendingMessages) {
 			this.maxPendingMessages = maxPendingMessages;
 		}
 
-		public Integer getMaxPendingMessagesAcrossPartitions() {
+		public int getMaxPendingMessagesAcrossPartitions() {
 			return this.maxPendingMessagesAcrossPartitions;
 		}
 
-		public void setMaxPendingMessagesAcrossPartitions(Integer maxPendingMessagesAcrossPartitions) {
+		public void setMaxPendingMessagesAcrossPartitions(int maxPendingMessagesAcrossPartitions) {
 			this.maxPendingMessagesAcrossPartitions = maxPendingMessagesAcrossPartitions;
 		}
 
@@ -270,11 +270,11 @@ public class PulsarReactiveProperties {
 			return this.batch;
 		}
 
-		public Boolean getChunkingEnabled() {
+		public boolean getChunkingEnabled() {
 			return this.chunkingEnabled;
 		}
 
-		public void setChunkingEnabled(Boolean chunkingEnabled) {
+		public void setChunkingEnabled(boolean chunkingEnabled) {
 			this.chunkingEnabled = chunkingEnabled;
 		}
 
@@ -302,11 +302,11 @@ public class PulsarReactiveProperties {
 			this.initialSequenceId = initialSequenceId;
 		}
 
-		public Boolean getAutoUpdatePartitions() {
+		public boolean getAutoUpdatePartitions() {
 			return this.autoUpdatePartitions;
 		}
 
-		public void setAutoUpdatePartitions(Boolean autoUpdatePartitions) {
+		public void setAutoUpdatePartitions(boolean autoUpdatePartitions) {
 			this.autoUpdatePartitions = autoUpdatePartitions;
 		}
 
@@ -318,11 +318,11 @@ public class PulsarReactiveProperties {
 			this.autoUpdatePartitionsInterval = autoUpdatePartitionsInterval;
 		}
 
-		public Boolean getMultiSchema() {
+		public boolean getMultiSchema() {
 			return this.multiSchema;
 		}
 
-		public void setMultiSchema(Boolean multiSchema) {
+		public void setMultiSchema(boolean multiSchema) {
 			this.multiSchema = multiSchema;
 		}
 
@@ -334,11 +334,11 @@ public class PulsarReactiveProperties {
 			this.accessMode = accessMode;
 		}
 
-		public Boolean getLazyStartPartitionedProducers() {
+		public boolean getLazyStartPartitionedProducers() {
 			return this.lazyStartPartitionedProducers;
 		}
 
-		public void setLazyStartPartitionedProducers(Boolean lazyStartPartitionedProducers) {
+		public void setLazyStartPartitionedProducers(boolean lazyStartPartitionedProducers) {
 			this.lazyStartPartitionedProducers = lazyStartPartitionedProducers;
 		}
 
@@ -403,7 +403,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Maximum number of messages to be batched.
 		 */
-		private Integer maxMessages = 1000;
+		private int maxMessages = 1000;
 
 		/**
 		 * Maximum number of bytes permitted in a batch.
@@ -413,7 +413,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Whether to automatically batch messages.
 		 */
-		private Boolean enabled = true;
+		private boolean enabled = true;
 
 		public Duration getMaxPublishDelay() {
 			return this.maxPublishDelay;
@@ -431,11 +431,11 @@ public class PulsarReactiveProperties {
 			this.roundRobinRouterPartitionSwitchFrequency = roundRobinRouterPartitionSwitchFrequency;
 		}
 
-		public Integer getMaxMessages() {
+		public int getMaxMessages() {
 			return this.maxMessages;
 		}
 
-		public void setMaxMessages(Integer maxMessages) {
+		public void setMaxMessages(int maxMessages) {
 			this.maxMessages = maxMessages;
 		}
 
@@ -447,11 +447,11 @@ public class PulsarReactiveProperties {
 			this.maxBytes = maxBytes;
 		}
 
-		public Boolean getEnabled() {
+		public boolean getEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
@@ -604,7 +604,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Number of messages that can be accumulated before the consumer calls "receive".
 		 */
-		private Integer receiverQueueSize = 1000;
+		private int receiverQueueSize = 1000;
 
 		/**
 		 * Dead letter policy to use.
@@ -615,13 +615,13 @@ public class PulsarReactiveProperties {
 		/**
 		 * Whether the retry letter topic is enabled.
 		 */
-		private Boolean retryLetterTopicEnable = false;
+		private boolean retryLetterTopicEnable = false;
 
 		/**
 		 * Maximum number of messages that a consumer can be pushed at once from a broker
 		 * across all partitions.
 		 */
-		private Integer maxTotalReceiverQueueSizeAcrossPartitions = 50000;
+		private int maxTotalReceiverQueueSizeAcrossPartitions = 50000;
 
 		/**
 		 * Consumer name to identify a particular consumer from the topic stats.
@@ -631,7 +631,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Priority level for shared subscription consumers.
 		 */
-		private Integer priorityLevel = 0;
+		private int priorityLevel = 0;
 
 		/**
 		 * Action the consumer will take in case of decryption failure.
@@ -647,7 +647,7 @@ public class PulsarReactiveProperties {
 		 * Whether to read messages from the compacted topic rather than the full message
 		 * backlog.
 		 */
-		private Boolean readCompacted = false;
+		private boolean readCompacted = false;
 
 		/**
 		 * Auto-discovery period for topics when topic pattern is used.
@@ -664,7 +664,7 @@ public class PulsarReactiveProperties {
 		 * Whether the consumer auto-subscribes for partition increase. This is only for
 		 * partitioned consumers.
 		 */
-		private Boolean autoUpdatePartitions = true;
+		private boolean autoUpdatePartitions = true;
 
 		/**
 		 * Interval of partitions discovery updates.
@@ -687,11 +687,11 @@ public class PulsarReactiveProperties {
 			this.topicsPattern = topicsPattern;
 		}
 
-		public Integer getReceiverQueueSize() {
+		public int getReceiverQueueSize() {
 			return this.receiverQueueSize;
 		}
 
-		public void setReceiverQueueSize(Integer receiverQueueSize) {
+		public void setReceiverQueueSize(int receiverQueueSize) {
 			this.receiverQueueSize = receiverQueueSize;
 		}
 
@@ -703,19 +703,19 @@ public class PulsarReactiveProperties {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
-		public Boolean getRetryLetterTopicEnable() {
+		public boolean getRetryLetterTopicEnable() {
 			return this.retryLetterTopicEnable;
 		}
 
-		public void setRetryLetterTopicEnable(Boolean retryLetterTopicEnable) {
+		public void setRetryLetterTopicEnable(boolean retryLetterTopicEnable) {
 			this.retryLetterTopicEnable = retryLetterTopicEnable;
 		}
 
-		public Integer getMaxTotalReceiverQueueSizeAcrossPartitions() {
+		public int getMaxTotalReceiverQueueSizeAcrossPartitions() {
 			return this.maxTotalReceiverQueueSizeAcrossPartitions;
 		}
 
-		public void setMaxTotalReceiverQueueSizeAcrossPartitions(Integer maxTotalReceiverQueueSizeAcrossPartitions) {
+		public void setMaxTotalReceiverQueueSizeAcrossPartitions(int maxTotalReceiverQueueSizeAcrossPartitions) {
 			this.maxTotalReceiverQueueSizeAcrossPartitions = maxTotalReceiverQueueSizeAcrossPartitions;
 		}
 
@@ -727,11 +727,11 @@ public class PulsarReactiveProperties {
 			this.name = name;
 		}
 
-		public Integer getPriorityLevel() {
+		public int getPriorityLevel() {
 			return this.priorityLevel;
 		}
 
-		public void setPriorityLevel(Integer priorityLevel) {
+		public void setPriorityLevel(int priorityLevel) {
 			this.priorityLevel = priorityLevel;
 		}
 
@@ -751,11 +751,11 @@ public class PulsarReactiveProperties {
 			this.properties = properties;
 		}
 
-		public Boolean getReadCompacted() {
+		public boolean getReadCompacted() {
 			return this.readCompacted;
 		}
 
-		public void setReadCompacted(Boolean readCompacted) {
+		public void setReadCompacted(boolean readCompacted) {
 			this.readCompacted = readCompacted;
 		}
 
@@ -775,11 +775,11 @@ public class PulsarReactiveProperties {
 			this.topicsPatternSubscriptionMode = topicsPatternSubscriptionMode;
 		}
 
-		public Boolean getAutoUpdatePartitions() {
+		public boolean getAutoUpdatePartitions() {
 			return this.autoUpdatePartitions;
 		}
 
-		public void setAutoUpdatePartitions(Boolean autoUpdatePartitions) {
+		public void setAutoUpdatePartitions(boolean autoUpdatePartitions) {
 			this.autoUpdatePartitions = autoUpdatePartitions;
 		}
 
@@ -892,7 +892,7 @@ public class PulsarReactiveProperties {
 		 * allowing the acknowledges and message processing to interleave. Defaults to
 		 * true.
 		 */
-		private Boolean async = true;
+		private boolean async = true;
 
 		/**
 		 * Type of acknowledge scheduler.
@@ -935,11 +935,11 @@ public class PulsarReactiveProperties {
 			this.groupTime = groupTime;
 		}
 
-		public Boolean getAsync() {
+		public boolean getAsync() {
 			return this.async;
 		}
 
-		public void setAsync(Boolean async) {
+		public void setAsync(boolean async) {
 			this.async = async;
 		}
 
@@ -983,7 +983,7 @@ public class PulsarReactiveProperties {
 		 * Whether to automatically drop outstanding uncompleted chunked messages once the
 		 * consumer queue reaches the threshold set by the 'maxPendingMessages' property.
 		 */
-		private Boolean autoAckOldestOnQueueFull = true;
+		private boolean autoAckOldestOnQueueFull = true;
 
 		/**
 		 * The maximum time period for a consumer to receive all chunks of a message - if
@@ -994,13 +994,13 @@ public class PulsarReactiveProperties {
 		/**
 		 * Maximum number of chunked messages to be kept in memory.
 		 */
-		private Integer maxPendingMessages = 10;
+		private int maxPendingMessages = 10;
 
-		public Boolean getAutoAckOldestOnQueueFull() {
+		public boolean getAutoAckOldestOnQueueFull() {
 			return this.autoAckOldestOnQueueFull;
 		}
 
-		public void setAutoAckOldestOnQueueFull(Boolean autoAckOldestOnQueueFull) {
+		public void setAutoAckOldestOnQueueFull(boolean autoAckOldestOnQueueFull) {
 			this.autoAckOldestOnQueueFull = autoAckOldestOnQueueFull;
 		}
 
@@ -1012,11 +1012,11 @@ public class PulsarReactiveProperties {
 			this.expireTimeIncomplete = expireTimeIncomplete;
 		}
 
-		public Integer getMaxPendingMessages() {
+		public int getMaxPendingMessages() {
 			return this.maxPendingMessages;
 		}
 
-		public void setMaxPendingMessages(Integer maxPendingMessages) {
+		public void setMaxPendingMessages(int maxPendingMessages) {
 			this.maxPendingMessages = maxPendingMessages;
 		}
 
@@ -1032,7 +1032,7 @@ public class PulsarReactiveProperties {
 		/**
 		 * Whether to replicate subscription state.
 		 */
-		private Boolean replicateState = false;
+		private boolean replicateState = false;
 
 		/**
 		 * Subscription name for the consumer.
@@ -1062,11 +1062,11 @@ public class PulsarReactiveProperties {
 			this.initialPosition = initialPosition;
 		}
 
-		public Boolean getReplicateState() {
+		public boolean getReplicateState() {
 			return this.replicateState;
 		}
 
-		public void setReplicateState(Boolean replicateState) {
+		public void setReplicateState(boolean replicateState) {
 			this.replicateState = replicateState;
 		}
 
@@ -1137,10 +1137,10 @@ public class PulsarReactiveProperties {
 		private Duration expireAfterWrite = Duration.ofMinutes(10);
 
 		/** Maximum size of cache (entries). */
-		private Long maximumSize = 1000L;
+		private long maximumSize = 1000L;
 
 		/** Initial size of cache. */
-		private Integer initialCapacity = 50;
+		private int initialCapacity = 50;
 
 		public Duration getExpireAfterAccess() {
 			return this.expireAfterAccess;
@@ -1158,19 +1158,19 @@ public class PulsarReactiveProperties {
 			this.expireAfterWrite = expireAfterWrite;
 		}
 
-		public Long getMaximumSize() {
+		public long getMaximumSize() {
 			return this.maximumSize;
 		}
 
-		public void setMaximumSize(Long maximumSize) {
+		public void setMaximumSize(long maximumSize) {
 			this.maximumSize = maximumSize;
 		}
 
-		public Integer getInitialCapacity() {
+		public int getInitialCapacity() {
 			return this.initialCapacity;
 		}
 
-		public void setInitialCapacity(Integer initialCapacity) {
+		public void setInitialCapacity(int initialCapacity) {
 			this.initialCapacity = initialCapacity;
 		}
 
@@ -1192,7 +1192,7 @@ public class PulsarReactiveProperties {
 		 * Whether per-key message ordering should be maintained when concurrent
 		 * processing is used.
 		 */
-		private Boolean useKeyOrderedProcessing = false;
+		private boolean useKeyOrderedProcessing = false;
 
 		public SchemaType getSchemaType() {
 			return this.schemaType;
@@ -1210,11 +1210,11 @@ public class PulsarReactiveProperties {
 			this.handlingTimeout = handlingTimeout;
 		}
 
-		public Boolean getUseKeyOrderedProcessing() {
+		public boolean getUseKeyOrderedProcessing() {
 			return this.useKeyOrderedProcessing;
 		}
 
-		public void setUseKeyOrderedProcessing(Boolean useKeyOrderedProcessing) {
+		public void setUseKeyOrderedProcessing(boolean useKeyOrderedProcessing) {
 			this.useKeyOrderedProcessing = useKeyOrderedProcessing;
 		}
 
