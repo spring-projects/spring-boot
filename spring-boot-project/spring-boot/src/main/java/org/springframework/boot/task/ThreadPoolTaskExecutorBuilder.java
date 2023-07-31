@@ -25,29 +25,24 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.task.TaskDecorator;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Builder that can be used to configure and create a {@link TaskExecutor}. Provides
- * convenience methods to set common {@link ThreadPoolTaskExecutor} settings and register
- * {@link #taskDecorator(TaskDecorator)}). For advanced configuration, consider using
- * {@link TaskExecutorCustomizer}.
+ * Builder that can be used to configure and create a {@link ThreadPoolTaskExecutor}.
+ * Provides convenience methods to set common {@link ThreadPoolTaskExecutor} settings and
+ * register {@link #taskDecorator(TaskDecorator)}). For advanced configuration, consider
+ * using {@link ThreadPoolTaskExecutorCustomizer}.
  * <p>
  * In a typical auto-configured Spring Boot application this builder is available as a
- * bean and can be injected whenever a {@link TaskExecutor} is needed.
+ * bean and can be injected whenever a {@link ThreadPoolTaskExecutor} is needed.
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
- * @since 2.1.0
- * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
- * {@link ThreadPoolTaskExecutorBuilder}
+ * @since 3.2.0
  */
-@Deprecated(since = "3.2.0", forRemoval = true)
-@SuppressWarnings("removal")
-public class TaskExecutorBuilder {
+public class ThreadPoolTaskExecutorBuilder {
 
 	private final Integer queueCapacity;
 
@@ -67,9 +62,9 @@ public class TaskExecutorBuilder {
 
 	private final TaskDecorator taskDecorator;
 
-	private final Set<TaskExecutorCustomizer> customizers;
+	private final Set<ThreadPoolTaskExecutorCustomizer> customizers;
 
-	public TaskExecutorBuilder() {
+	public ThreadPoolTaskExecutorBuilder() {
 		this.queueCapacity = null;
 		this.corePoolSize = null;
 		this.maxPoolSize = null;
@@ -82,10 +77,10 @@ public class TaskExecutorBuilder {
 		this.customizers = null;
 	}
 
-	private TaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
+	private ThreadPoolTaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
 			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean awaitTermination,
 			Duration awaitTerminationPeriod, String threadNamePrefix, TaskDecorator taskDecorator,
-			Set<TaskExecutorCustomizer> customizers) {
+			Set<ThreadPoolTaskExecutorCustomizer> customizers) {
 		this.queueCapacity = queueCapacity;
 		this.corePoolSize = corePoolSize;
 		this.maxPoolSize = maxPoolSize;
@@ -104,10 +99,10 @@ public class TaskExecutorBuilder {
 	 * @param queueCapacity the queue capacity to set
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder queueCapacity(int queueCapacity) {
-		return new TaskExecutorBuilder(queueCapacity, this.corePoolSize, this.maxPoolSize, this.allowCoreThreadTimeOut,
-				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
-				this.taskDecorator, this.customizers);
+	public ThreadPoolTaskExecutorBuilder queueCapacity(int queueCapacity) {
+		return new ThreadPoolTaskExecutorBuilder(queueCapacity, this.corePoolSize, this.maxPoolSize,
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -119,10 +114,10 @@ public class TaskExecutorBuilder {
 	 * @param corePoolSize the core pool size to set
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder corePoolSize(int corePoolSize) {
-		return new TaskExecutorBuilder(this.queueCapacity, corePoolSize, this.maxPoolSize, this.allowCoreThreadTimeOut,
-				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
-				this.taskDecorator, this.customizers);
+	public ThreadPoolTaskExecutorBuilder corePoolSize(int corePoolSize) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, corePoolSize, this.maxPoolSize,
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -134,10 +129,10 @@ public class TaskExecutorBuilder {
 	 * @param maxPoolSize the max pool size to set
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder maxPoolSize(int maxPoolSize) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, maxPoolSize, this.allowCoreThreadTimeOut,
-				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
-				this.taskDecorator, this.customizers);
+	public ThreadPoolTaskExecutorBuilder maxPoolSize(int maxPoolSize) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, maxPoolSize,
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -146,10 +141,10 @@ public class TaskExecutorBuilder {
 	 * @param allowCoreThreadTimeOut if core threads are allowed to time out
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder allowCoreThreadTimeOut(boolean allowCoreThreadTimeOut) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize, allowCoreThreadTimeOut,
-				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
-				this.taskDecorator, this.customizers);
+	public ThreadPoolTaskExecutorBuilder allowCoreThreadTimeOut(boolean allowCoreThreadTimeOut) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+				allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -157,8 +152,8 @@ public class TaskExecutorBuilder {
 	 * @param keepAlive the keep alive to set
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder keepAlive(Duration keepAlive) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+	public ThreadPoolTaskExecutorBuilder keepAlive(Duration keepAlive) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
@@ -171,8 +166,8 @@ public class TaskExecutorBuilder {
 	 * @return a new builder instance
 	 * @see #awaitTerminationPeriod(Duration)
 	 */
-	public TaskExecutorBuilder awaitTermination(boolean awaitTermination) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+	public ThreadPoolTaskExecutorBuilder awaitTermination(boolean awaitTermination) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
@@ -186,8 +181,8 @@ public class TaskExecutorBuilder {
 	 * @param awaitTerminationPeriod the await termination period to set
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+	public ThreadPoolTaskExecutorBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, awaitTerminationPeriod,
 				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
@@ -197,8 +192,8 @@ public class TaskExecutorBuilder {
 	 * @param threadNamePrefix the thread name prefix to set
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder threadNamePrefix(String threadNamePrefix) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+	public ThreadPoolTaskExecutorBuilder threadNamePrefix(String threadNamePrefix) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
 				threadNamePrefix, this.taskDecorator, this.customizers);
 	}
@@ -208,66 +203,67 @@ public class TaskExecutorBuilder {
 	 * @param taskDecorator the task decorator to use
 	 * @return a new builder instance
 	 */
-	public TaskExecutorBuilder taskDecorator(TaskDecorator taskDecorator) {
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+	public ThreadPoolTaskExecutorBuilder taskDecorator(TaskDecorator taskDecorator) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, taskDecorator, this.customizers);
 	}
 
 	/**
-	 * Set the {@link TaskExecutorCustomizer TaskExecutorCustomizers} that should be
-	 * applied to the {@link ThreadPoolTaskExecutor}. Customizers are applied in the order
-	 * that they were added after builder configuration has been applied. Setting this
-	 * value will replace any previously configured customizers.
+	 * Set the {@link ThreadPoolTaskExecutorCustomizer ThreadPoolTaskExecutorCustomizers}
+	 * that should be applied to the {@link ThreadPoolTaskExecutor}. Customizers are
+	 * applied in the order that they were added after builder configuration has been
+	 * applied. Setting this value will replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
-	 * @see #additionalCustomizers(TaskExecutorCustomizer...)
+	 * @see #additionalCustomizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
-	public TaskExecutorBuilder customizers(TaskExecutorCustomizer... customizers) {
+	public ThreadPoolTaskExecutorBuilder customizers(ThreadPoolTaskExecutorCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return customizers(Arrays.asList(customizers));
 	}
 
 	/**
-	 * Set the {@link TaskExecutorCustomizer TaskExecutorCustomizers} that should be
-	 * applied to the {@link ThreadPoolTaskExecutor}. Customizers are applied in the order
-	 * that they were added after builder configuration has been applied. Setting this
-	 * value will replace any previously configured customizers.
+	 * Set the {@link ThreadPoolTaskExecutorCustomizer ThreadPoolTaskExecutorCustomizers}
+	 * that should be applied to the {@link ThreadPoolTaskExecutor}. Customizers are
+	 * applied in the order that they were added after builder configuration has been
+	 * applied. Setting this value will replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
-	 * @see #additionalCustomizers(TaskExecutorCustomizer...)
+	 * @see #additionalCustomizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
-	public TaskExecutorBuilder customizers(Iterable<TaskExecutorCustomizer> customizers) {
+	public ThreadPoolTaskExecutorBuilder customizers(Iterable<? extends ThreadPoolTaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, this.taskDecorator, append(null, customizers));
 	}
 
 	/**
-	 * Add {@link TaskExecutorCustomizer TaskExecutorCustomizers} that should be applied
-	 * to the {@link ThreadPoolTaskExecutor}. Customizers are applied in the order that
-	 * they were added after builder configuration has been applied.
+	 * Add {@link ThreadPoolTaskExecutorCustomizer ThreadPoolTaskExecutorCustomizers} that
+	 * should be applied to the {@link ThreadPoolTaskExecutor}. Customizers are applied in
+	 * the order that they were added after builder configuration has been applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
-	 * @see #customizers(TaskExecutorCustomizer...)
+	 * @see #customizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
-	public TaskExecutorBuilder additionalCustomizers(TaskExecutorCustomizer... customizers) {
+	public ThreadPoolTaskExecutorBuilder additionalCustomizers(ThreadPoolTaskExecutorCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
 
 	/**
-	 * Add {@link TaskExecutorCustomizer TaskExecutorCustomizers} that should be applied
-	 * to the {@link ThreadPoolTaskExecutor}. Customizers are applied in the order that
-	 * they were added after builder configuration has been applied.
+	 * Add {@link ThreadPoolTaskExecutorCustomizer ThreadPoolTaskExecutorCustomizers} that
+	 * should be applied to the {@link ThreadPoolTaskExecutor}. Customizers are applied in
+	 * the order that they were added after builder configuration has been applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
-	 * @see #customizers(TaskExecutorCustomizer...)
+	 * @see #customizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
-	public TaskExecutorBuilder additionalCustomizers(Iterable<TaskExecutorCustomizer> customizers) {
+	public ThreadPoolTaskExecutorBuilder additionalCustomizers(
+			Iterable<? extends ThreadPoolTaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, this.taskDecorator, append(this.customizers, customizers));
 	}

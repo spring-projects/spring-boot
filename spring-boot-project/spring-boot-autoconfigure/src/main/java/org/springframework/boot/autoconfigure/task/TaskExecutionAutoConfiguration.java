@@ -16,18 +16,11 @@
 
 package org.springframework.boot.autoconfigure.task;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.task.TaskExecutorBuilder;
-import org.springframework.boot.task.TaskExecutorCustomizer;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -36,12 +29,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  *
  * @author Stephane Nicoll
  * @author Camille Vienot
+ * @author Moritz Halbritter
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
 @AutoConfiguration
 @EnableConfigurationProperties(TaskExecutionProperties.class)
-@Import({ TaskExecutorConfigurations.VirtualThreadTaskExecutorConfiguration.class,
+@Import({ TaskExecutorConfigurations.ThreadPoolTaskExecutorBuilderConfiguration.class,
+		TaskExecutorConfigurations.TaskExecutorBuilderConfiguration.class,
+		TaskExecutorConfigurations.VirtualThreadTaskExecutorConfiguration.class,
 		TaskExecutorConfigurations.ThreadPoolTaskExecutorConfiguration.class })
 public class TaskExecutionAutoConfiguration {
 
@@ -49,26 +45,5 @@ public class TaskExecutionAutoConfiguration {
 	 * Bean name of the application {@link TaskExecutor}.
 	 */
 	public static final String APPLICATION_TASK_EXECUTOR_BEAN_NAME = "applicationTaskExecutor";
-
-	@Bean
-	@ConditionalOnMissingBean
-	public TaskExecutorBuilder taskExecutorBuilder(TaskExecutionProperties properties,
-			ObjectProvider<TaskExecutorCustomizer> taskExecutorCustomizers,
-			ObjectProvider<TaskDecorator> taskDecorator) {
-		TaskExecutionProperties.Pool pool = properties.getPool();
-		TaskExecutorBuilder builder = new TaskExecutorBuilder();
-		builder = builder.queueCapacity(pool.getQueueCapacity());
-		builder = builder.corePoolSize(pool.getCoreSize());
-		builder = builder.maxPoolSize(pool.getMaxSize());
-		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
-		builder = builder.keepAlive(pool.getKeepAlive());
-		Shutdown shutdown = properties.getShutdown();
-		builder = builder.awaitTermination(shutdown.isAwaitTermination());
-		builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
-		builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-		builder = builder.customizers(taskExecutorCustomizers.orderedStream()::iterator);
-		builder = builder.taskDecorator(taskDecorator.getIfUnique());
-		return builder;
-	}
 
 }

@@ -32,15 +32,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
- * Tests for {@link TaskExecutorBuilder}.
+ * Tests for {@link ThreadPoolTaskExecutorBuilder}.
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
  */
-@SuppressWarnings("removal")
-class TaskExecutorBuilderTests {
+class ThreadPoolTaskExecutorBuilderTests {
 
-	private final TaskExecutorBuilder builder = new TaskExecutorBuilder();
+	private final ThreadPoolTaskExecutorBuilder builder = new ThreadPoolTaskExecutorBuilder();
 
 	@Test
 	void poolSettingsShouldApply() {
@@ -85,20 +84,21 @@ class TaskExecutorBuilderTests {
 
 	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.customizers((TaskExecutorCustomizer[]) null))
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> this.builder.customizers((ThreadPoolTaskExecutorCustomizer[]) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
+			.isThrownBy(() -> this.builder.customizers((Set<ThreadPoolTaskExecutorCustomizer>) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersShouldApply() {
-		TaskExecutorCustomizer customizer = mock(TaskExecutorCustomizer.class);
+		ThreadPoolTaskExecutorCustomizer customizer = mock(ThreadPoolTaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer).build();
 		then(customizer).should().customize(executor);
 	}
@@ -132,8 +132,8 @@ class TaskExecutorBuilderTests {
 
 	@Test
 	void customizersShouldReplaceExisting() {
-		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
-		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
+		ThreadPoolTaskExecutorCustomizer customizer1 = mock(ThreadPoolTaskExecutorCustomizer.class);
+		ThreadPoolTaskExecutorCustomizer customizer2 = mock(ThreadPoolTaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
 			.customizers(Collections.singleton(customizer2))
 			.build();
@@ -144,21 +144,21 @@ class TaskExecutorBuilderTests {
 	@Test
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null))
+			.isThrownBy(() -> this.builder.additionalCustomizers((ThreadPoolTaskExecutorCustomizer[]) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskExecutorCustomizer>) null))
+			.isThrownBy(() -> this.builder.additionalCustomizers((Set<ThreadPoolTaskExecutorCustomizer>) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersShouldAddToExisting() {
-		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
-		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
+		ThreadPoolTaskExecutorCustomizer customizer1 = mock(ThreadPoolTaskExecutorCustomizer.class);
+		ThreadPoolTaskExecutorCustomizer customizer2 = mock(ThreadPoolTaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
 			.additionalCustomizers(customizer2)
 			.build();

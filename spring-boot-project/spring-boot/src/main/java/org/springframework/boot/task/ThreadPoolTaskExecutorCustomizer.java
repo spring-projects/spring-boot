@@ -22,14 +22,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * Callback interface that can be used to customize a {@link ThreadPoolTaskExecutor}.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
- * @see TaskExecutorBuilder
- * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
- * {@link ThreadPoolTaskExecutorCustomizer}
+ * @since 3.2.0
+ * @see ThreadPoolTaskExecutorBuilder
  */
 @FunctionalInterface
-@Deprecated(since = "3.2.0", forRemoval = true)
-public interface TaskExecutorCustomizer {
+public interface ThreadPoolTaskExecutorCustomizer {
 
 	/**
 	 * Callback to customize a {@link ThreadPoolTaskExecutor} instance.

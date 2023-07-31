@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -33,6 +33,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
+import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -57,12 +58,32 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  * @author Camille Vienot
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
+@SuppressWarnings("removal")
 class TaskExecutionAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
+
+	@Test
+	void shouldSupplyBeans() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
+			assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
+			assertThat(context).hasSingleBean(ThreadPoolTaskExecutor.class);
+		});
+	}
+
+	@Test
+	void shouldNotSupplyThreadPoolTaskExecutorBuilderIfCustomTaskExecutorBuilderIsPresent() {
+		this.contextRunner.withBean(TaskExecutorBuilder.class, TaskExecutorBuilder::new).run((context) -> {
+			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
+			assertThat(context).doesNotHaveBean(ThreadPoolTaskExecutorBuilder.class);
+			assertThat(context).hasSingleBean(ThreadPoolTaskExecutor.class);
+		});
+	}
 
 	@Test
 	void taskExecutorBuilderShouldApplyCustomSettings() {
@@ -86,6 +107,27 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	void threadPoolTaskExecutorBuilderShouldApplyCustomSettings() {
+		this.contextRunner
+			.withPropertyValues("spring.task.execution.pool.queue-capacity=10",
+					"spring.task.execution.pool.core-size=2", "spring.task.execution.pool.max-size=4",
+					"spring.task.execution.pool.allow-core-thread-timeout=true",
+					"spring.task.execution.pool.keep-alive=5s", "spring.task.execution.shutdown.await-termination=true",
+					"spring.task.execution.shutdown.await-termination-period=30s",
+					"spring.task.execution.thread-name-prefix=mytest-")
+			.run(assertThreadPoolTaskExecutor((taskExecutor) -> {
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity", 10);
+				assertThat(taskExecutor.getCorePoolSize()).isEqualTo(2);
+				assertThat(taskExecutor.getMaxPoolSize()).isEqualTo(4);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
+				assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationMillis", 30000L);
+				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
+			}));
+	}
+
+	@Test
 	void taskExecutorBuilderWhenHasCustomBuilderShouldUseCustomBuilder() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorBuilderConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
@@ -95,10 +137,28 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	void threadPoolTaskExecutorBuilderWhenHasCustomBuilderShouldUseCustomBuilder() {
+		this.contextRunner.withUserConfiguration(CustomThreadPoolTaskExecutorBuilderConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
+			assertThat(context.getBean(ThreadPoolTaskExecutorBuilder.class))
+				.isSameAs(context.getBean(CustomThreadPoolTaskExecutorBuilderConfig.class).builder);
+		});
+	}
+
+	@Test
 	void taskExecutorBuilderShouldUseTaskDecorator() {
 		this.contextRunner.withUserConfiguration(TaskDecoratorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
+			assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
+		});
+	}
+
+	@Test
+	void threadPoolTaskExecutorBuilderShouldUseTaskDecorator() {
+		this.contextRunner.withUserConfiguration(TaskDecoratorConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
+			ThreadPoolTaskExecutor executor = context.getBean(ThreadPoolTaskExecutorBuilder.class).build();
 			assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
 		});
 	}
@@ -116,7 +176,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	@DisabledForJreRange(max = JRE.JAVA_20)
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenVirtualThreadsAreEnabledThenSimpleAsyncTaskExecutorWithVirtualThreadsIsAutoConfigured() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
@@ -128,7 +188,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	@DisabledForJreRange(max = JRE.JAVA_20)
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenTaskNamePrefixIsConfiguredThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesIt() {
 		this.contextRunner
 			.withPropertyValues("spring.threads.virtual.enabled=true",
@@ -141,7 +201,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	@DisabledForJreRange(max = JRE.JAVA_20)
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenVirtualThreadsAreAvailableButNotEnabledThenThreadPoolTaskExecutorIsAutoConfigured() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
@@ -150,7 +210,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	@DisabledForJreRange(max = JRE.JAVA_20)
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenTaskDecoratorIsDefinedThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesIt() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
 			.withUserConfiguration(TaskDecoratorConfig.class)
@@ -169,7 +229,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	@DisabledForJreRange(max = JRE.JAVA_20)
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenVirtualThreadsAreEnabledAndCustomTaskExecutorIsDefinedThenSimpleAsyncTaskExecutorThatUsesVirtualThreadsBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class)
 			.withPropertyValues("spring.threads.virtual.enabled=true")
@@ -184,6 +244,15 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class).run((context) -> {
 			TaskExecutorCustomizer customizer = context.getBean(TaskExecutorCustomizer.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
+			then(customizer).should().customize(executor);
+		});
+	}
+
+	@Test
+	void threadPoolTaskExecutorBuilderShouldApplyCustomizer() {
+		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class).run((context) -> {
+			TaskExecutorCustomizer customizer = context.getBean(TaskExecutorCustomizer.class);
+			ThreadPoolTaskExecutor executor = context.getBean(ThreadPoolTaskExecutorBuilder.class).build();
 			then(customizer).should().customize(executor);
 		});
 	}
@@ -212,11 +281,39 @@ class TaskExecutionAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void customTaskExecutorBuilderOverridesThreadPoolTaskExecutorBuilder() {
+		this.contextRunner.withUserConfiguration(CustomTaskExecutorBuilderConfig.class).run((context) -> {
+			ThreadPoolTaskExecutor bean = context.getBean(ThreadPoolTaskExecutor.class);
+			assertThat(bean.getThreadNamePrefix()).isEqualTo("CustomTaskExecutorBuilderConfig-");
+		});
+	}
+
+	@Test
+	void threadPoolTaskExecutorBuilderAppliesTaskExecutorCustomizer() {
+		this.contextRunner
+			.withBean(TaskExecutorCustomizer.class,
+					() -> (taskExecutor) -> taskExecutor.setThreadNamePrefix("custom-prefix-"))
+			.run((context) -> {
+				ThreadPoolTaskExecutor bean = context.getBean(ThreadPoolTaskExecutor.class);
+				assertThat(bean.getThreadNamePrefix()).isEqualTo("custom-prefix-");
+			});
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertTaskExecutor(
 			Consumer<ThreadPoolTaskExecutor> taskExecutor) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			TaskExecutorBuilder builder = context.getBean(TaskExecutorBuilder.class);
+			taskExecutor.accept(builder.build());
+		};
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertThreadPoolTaskExecutor(
+			Consumer<ThreadPoolTaskExecutor> taskExecutor) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
+			ThreadPoolTaskExecutorBuilder builder = context.getBean(ThreadPoolTaskExecutorBuilder.class);
 			taskExecutor.accept(builder.build());
 		};
 	}
@@ -238,11 +335,24 @@ class TaskExecutionAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorBuilderConfig {
 
-		private final TaskExecutorBuilder taskExecutorBuilder = new TaskExecutorBuilder();
+		private final TaskExecutorBuilder taskExecutorBuilder = new TaskExecutorBuilder()
+			.threadNamePrefix("CustomTaskExecutorBuilderConfig-");
 
 		@Bean
 		TaskExecutorBuilder customTaskExecutorBuilder() {
 			return this.taskExecutorBuilder;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomThreadPoolTaskExecutorBuilderConfig {
+
+		private final ThreadPoolTaskExecutorBuilder builder = new ThreadPoolTaskExecutorBuilder();
+
+		@Bean
+		ThreadPoolTaskExecutorBuilder customThreadPoolTaskExecutorBuilder() {
+			return this.builder;
 		}
 
 	}
