@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Security.Tru
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -110,7 +109,7 @@ class Neo4jAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesNeo4jConnectionDetails.class));
 	}
 
-	@Bean
+	@Test
 	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner.withBean(Neo4jConnectionDetails.class, () -> new Neo4jConnectionDetails() {
 
