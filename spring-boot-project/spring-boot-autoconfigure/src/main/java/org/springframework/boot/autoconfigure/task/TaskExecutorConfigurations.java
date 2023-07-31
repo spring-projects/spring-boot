@@ -23,6 +23,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown;
 import org.springframework.boot.autoconfigure.thread.Threading;
+import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
+import org.springframework.boot.task.SimpleAsyncTaskExecutorCustomizer;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
@@ -52,12 +54,8 @@ class TaskExecutorConfigurations {
 
 		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
-		SimpleAsyncTaskExecutor applicationTaskExecutor(TaskExecutionProperties properties,
-				ObjectProvider<TaskDecorator> taskDecorator) {
-			SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor(properties.getThreadNamePrefix());
-			executor.setVirtualThreads(true);
-			taskDecorator.ifUnique(executor::setTaskDecorator);
-			return executor;
+		SimpleAsyncTaskExecutor applicationTaskExecutor(SimpleAsyncTaskExecutorBuilder builder) {
+			return builder.build();
 		}
 
 	}
@@ -140,6 +138,51 @@ class TaskExecutorConfigurations {
 
 		private ThreadPoolTaskExecutorCustomizer adapt(TaskExecutorCustomizer customizer) {
 			return customizer::customize;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SimpleAsyncTaskExecutorBuilderConfiguration {
+
+		private final TaskExecutionProperties properties;
+
+		private final ObjectProvider<SimpleAsyncTaskExecutorCustomizer> taskExecutorCustomizers;
+
+		private final ObjectProvider<TaskDecorator> taskDecorator;
+
+		SimpleAsyncTaskExecutorBuilderConfiguration(TaskExecutionProperties properties,
+				ObjectProvider<SimpleAsyncTaskExecutorCustomizer> taskExecutorCustomizers,
+				ObjectProvider<TaskDecorator> taskDecorator) {
+			this.properties = properties;
+			this.taskExecutorCustomizers = taskExecutorCustomizers;
+			this.taskDecorator = taskDecorator;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnThreading(Threading.PLATFORM)
+		SimpleAsyncTaskExecutorBuilder simpleAsyncTaskExecutorBuilder() {
+			return builder();
+		}
+
+		@Bean(name = "simpleAsyncTaskExecutorBuilder")
+		@ConditionalOnMissingBean
+		@ConditionalOnThreading(Threading.VIRTUAL)
+		SimpleAsyncTaskExecutorBuilder simpleAsyncTaskExecutorBuilderVirtualThreads() {
+			SimpleAsyncTaskExecutorBuilder builder = builder();
+			builder = builder.virtualThreads(true);
+			return builder;
+		}
+
+		private SimpleAsyncTaskExecutorBuilder builder() {
+			SimpleAsyncTaskExecutorBuilder builder = new SimpleAsyncTaskExecutorBuilder();
+			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+			builder = builder.customizers(this.taskExecutorCustomizers.orderedStream()::iterator);
+			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
+			TaskExecutionProperties.Simple simple = this.properties.getSimple();
+			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
+			return builder;
 		}
 
 	}

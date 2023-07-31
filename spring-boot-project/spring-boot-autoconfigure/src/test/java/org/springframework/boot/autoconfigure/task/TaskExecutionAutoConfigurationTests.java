@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
@@ -50,6 +51,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -73,6 +75,7 @@ class TaskExecutionAutoConfigurationTests {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
 			assertThat(context).hasSingleBean(ThreadPoolTaskExecutor.class);
+			assertThat(context).hasSingleBean(SimpleAsyncTaskExecutorBuilder.class);
 		});
 	}
 
@@ -102,6 +105,17 @@ class TaskExecutionAutoConfigurationTests {
 				assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationMillis", 30000L);
+				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
+			}));
+	}
+
+	@Test
+	void simpleAsyncTaskExecutorBuilderShouldReadProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.task.execution.thread-name-prefix=mytest-",
+					"spring.task.execution.simple.concurrency-limit=1")
+			.run(assertSimpleAsyncTaskExecutor((taskExecutor) -> {
+				assertThat(taskExecutor.getConcurrencyLimit()).isEqualTo(1);
 				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 			}));
 	}
@@ -221,6 +235,23 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	void simpleAsyncTaskExecutorBuilderUsesPlatformThreadsByDefault() {
+		this.contextRunner.run((context) -> {
+			SimpleAsyncTaskExecutorBuilder builder = context.getBean(SimpleAsyncTaskExecutorBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", null);
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void simpleAsyncTaskExecutorBuilderUsesVirtualThreadsWhenEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			SimpleAsyncTaskExecutorBuilder builder = context.getBean(SimpleAsyncTaskExecutorBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", true);
+		});
+	}
+
+	@Test
 	void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class);
@@ -318,6 +349,15 @@ class TaskExecutionAutoConfigurationTests {
 		};
 	}
 
+	private ContextConsumer<AssertableApplicationContext> assertSimpleAsyncTaskExecutor(
+			Consumer<SimpleAsyncTaskExecutor> taskExecutor) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(SimpleAsyncTaskExecutorBuilder.class);
+			SimpleAsyncTaskExecutorBuilder builder = context.getBean(SimpleAsyncTaskExecutorBuilder.class);
+			taskExecutor.accept(builder.build());
+		};
+	}
+
 	private String virtualThreadName(SimpleAsyncTaskExecutor taskExecutor) throws InterruptedException {
 		AtomicReference<Thread> threadReference = new AtomicReference<>();
 		CountDownLatch latch = new CountDownLatch(1);
@@ -326,7 +366,9 @@ class TaskExecutionAutoConfigurationTests {
 			threadReference.set(currentThread);
 			latch.countDown();
 		});
-		latch.await(30, TimeUnit.SECONDS);
+		if (!latch.await(30, TimeUnit.SECONDS)) {
+			fail("Timeout while waiting for latch");
+		}
 		Thread thread = threadReference.get();
 		assertThat(thread).extracting("virtual").as("%s is virtual", thread).isEqualTo(true);
 		return thread.getName();
