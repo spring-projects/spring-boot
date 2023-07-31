@@ -49,4 +49,5 @@ The thread pool uses one thread by default and its settings can be fine-tuned us
 	        size: 2
 ----
 
-Both a `ThreadPoolTaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the context if a custom executor or scheduler needs to be created.
+A `ThreadPoolTaskExecutorBuilder` bean, a `SimpleAsyncTaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the context if a custom executor or scheduler needs to be created.
+The `SimpleAsyncTaskExecutorBuilder` is auto-configured to use virtual threads if they are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`).
