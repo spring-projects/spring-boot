@@ -376,7 +376,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		contextCustomizers.add(new SpringBootTestAnnotation(mergedConfig.getTestClass()));
 		return new MergedContextConfiguration(mergedConfig.getTestClass(), mergedConfig.getLocations(), classes,
 				mergedConfig.getContextInitializerClasses(), mergedConfig.getActiveProfiles(),
-				mergedConfig.getPropertySourceLocations(), propertySourceProperties, contextCustomizers,
+				mergedConfig.getPropertySourceDescriptors(), propertySourceProperties, contextCustomizers,
 				mergedConfig.getContextLoader(), getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
 	}
 

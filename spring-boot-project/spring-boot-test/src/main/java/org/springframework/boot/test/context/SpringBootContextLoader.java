@@ -230,8 +230,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		setActiveProfiles(environment, mergedConfig.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
-		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
-				mergedConfig.getPropertySourceLocations());
+		TestPropertySourceUtils.addPropertySourcesToEnvironment(environment, resourceLoader,
+				mergedConfig.getPropertySourceDescriptors());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(mergedConfig));
 	}
 
