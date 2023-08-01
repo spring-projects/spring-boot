@@ -40,7 +40,8 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
 @Import({ TaskSchedulingConfigurations.ThreadPoolTaskSchedulerBuilderConfiguration.class,
 		TaskSchedulingConfigurations.TaskSchedulerBuilderConfiguration.class,
-		TaskSchedulingConfigurations.ThreadPoolTaskSchedulerConfiguration.class })
+		TaskSchedulingConfigurations.SimpleAsyncTaskSchedulerBuilderConfiguration.class,
+		TaskSchedulingConfigurations.TaskSchedulerConfiguration.class })
 public class TaskSchedulingAutoConfiguration {
 
 	@Bean

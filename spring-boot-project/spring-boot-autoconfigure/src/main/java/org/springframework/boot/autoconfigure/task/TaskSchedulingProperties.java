@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ public class TaskSchedulingProperties {
 
 	private final Pool pool = new Pool();
 
+	private final Simple simple = new Simple();
+
 	private final Shutdown shutdown = new Shutdown();
 
 	/**
@@ -40,6 +42,10 @@ public class TaskSchedulingProperties {
 
 	public Pool getPool() {
 		return this.pool;
+	}
+
+	public Simple getSimple() {
+		return this.simple;
 	}
 
 	public Shutdown getShutdown() {
@@ -67,6 +73,24 @@ public class TaskSchedulingProperties {
 
 		public void setSize(int size) {
 			this.size = size;
+		}
+
+	}
+
+	public static class Simple {
+
+		/**
+		 * Set the maximum number of parallel accesses allowed. -1 indicates no
+		 * concurrency limit at all.
+		 */
+		private Integer concurrencyLimit;
+
+		public Integer getConcurrencyLimit() {
+			return this.concurrencyLimit;
+		}
+
+		public void setConcurrencyLimit(Integer concurrencyLimit) {
+			this.concurrencyLimit = concurrencyLimit;
 		}
 
 	}
