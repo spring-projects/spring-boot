@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ import org.springframework.data.cassandra.core.CassandraTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
  * Integration test for {@link DataCassandraTest @DataCassandraTest}.
@@ -82,6 +84,11 @@ class DataCassandraTestIntegrationTests {
 		assertThat(getEntity.getId()).isNotNull();
 		assertThat(getEntity.getId()).isEqualTo(savedEntity.getId());
 		this.exampleRepository.deleteAll();
+	}
+
+	@Test
+	void serviceConnectionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)

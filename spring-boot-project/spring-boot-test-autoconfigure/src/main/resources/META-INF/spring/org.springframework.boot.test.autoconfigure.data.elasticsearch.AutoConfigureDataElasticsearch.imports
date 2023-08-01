@@ -8,3 +8,4 @@ org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClient
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
+optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
