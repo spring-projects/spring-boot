@@ -38,8 +38,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Import({ TaskExecutorConfigurations.ThreadPoolTaskExecutorBuilderConfiguration.class,
 		TaskExecutorConfigurations.TaskExecutorBuilderConfiguration.class,
 		TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration.class,
-		TaskExecutorConfigurations.VirtualThreadTaskExecutorConfiguration.class,
-		TaskExecutorConfigurations.ThreadPoolTaskExecutorConfiguration.class })
+		TaskExecutorConfigurations.TaskExecutorConfiguration.class })
 public class TaskExecutionAutoConfiguration {
 
 	/**

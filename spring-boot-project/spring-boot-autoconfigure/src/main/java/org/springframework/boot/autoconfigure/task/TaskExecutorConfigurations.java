@@ -47,27 +47,22 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 class TaskExecutorConfigurations {
 
-	@ConditionalOnThreading(Threading.VIRTUAL)
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(Executor.class)
-	static class VirtualThreadTaskExecutorConfiguration {
-
-		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
-				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
-		SimpleAsyncTaskExecutor applicationTaskExecutor(SimpleAsyncTaskExecutorBuilder builder) {
-			return builder.build();
-		}
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Executor.class)
 	@SuppressWarnings("removal")
-	static class ThreadPoolTaskExecutorConfiguration {
+	static class TaskExecutorConfiguration {
+
+		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
+		@ConditionalOnThreading(Threading.VIRTUAL)
+		SimpleAsyncTaskExecutor applicationTaskExecutorVirtualThreads(SimpleAsyncTaskExecutorBuilder builder) {
+			return builder.build();
+		}
 
 		@Lazy
 		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
+		@ConditionalOnThreading(Threading.PLATFORM)
 		ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder taskExecutorBuilder,
 				ObjectProvider<ThreadPoolTaskExecutorBuilder> threadPoolTaskExecutorBuilderProvider) {
 			ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder = threadPoolTaskExecutorBuilderProvider
