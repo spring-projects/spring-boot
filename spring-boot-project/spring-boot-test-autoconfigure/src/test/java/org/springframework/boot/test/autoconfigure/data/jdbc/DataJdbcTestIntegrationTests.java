@@ -24,6 +24,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -81,6 +82,11 @@ class DataJdbcTestIntegrationTests {
 	@Test
 	void liquibaseAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+	}
+
+	@Test
+	void serviceConnectionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
 	}
 
 }

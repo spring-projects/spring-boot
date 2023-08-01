@@ -27,12 +27,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
  * Integration test for {@link DataCouchbaseTest @DataCouchbaseTest}.
@@ -79,6 +81,11 @@ class DataCouchbaseTestIntegrationTests {
 		assertThat(document.getId()).isNotNull();
 		assertThat(this.couchbaseTemplate.getBucketName()).isEqualTo(BUCKET_NAME);
 		this.exampleRepository.deleteAll();
+	}
+
+	@Test
+	void serviceConnectionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
 	}
 
 }
