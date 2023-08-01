@@ -70,6 +70,8 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0")
+	@SuppressWarnings("removal")
 	void getOfOkHttpFactoryReturnsOkHttpFactory() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(OkHttp3ClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);

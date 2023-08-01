@@ -17,13 +17,14 @@
 package smoketest.data.couchbase;
 
 import java.time.Duration;
+import java.util.Base64;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -33,6 +34,7 @@ import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
  * A {@link CouchbaseContainer} for Couchbase with SSL configuration.
  *
  * @author Scott Frederick
+ * @author Stephane Nicoll
  */
 public class SecureCouchbaseContainer extends CouchbaseContainer {
 
@@ -69,19 +71,25 @@ public class SecureCouchbaseContainer extends CouchbaseContainer {
 	}
 
 	private void doHttpRequest(String path) {
-		Response response;
-		try {
+		HttpResponse response = post(path);
+		if (response.getCode() != 200) {
+			throw new IllegalStateException("Error calling Couchbase HTTP endpoint: " + response);
+		}
+	}
+
+	private HttpResponse post(String path) {
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+			String basicAuth = "Basic "
+					+ Base64.getEncoder().encodeToString("%s:%s".formatted(ADMIN_USER, ADMIN_PASSWORD).getBytes());
 			String url = "http://%s:%d/%s".formatted(getHost(), getMappedPort(MANAGEMENT_PORT), path);
-			Request.Builder requestBuilder = new Request.Builder().url(url)
-				.header("Authorization", Credentials.basic(ADMIN_USER, ADMIN_PASSWORD))
-				.post(RequestBody.create("".getBytes()));
-			response = new OkHttpClient().newCall(requestBuilder.build()).execute();
+			ClassicHttpRequest httpPost = ClassicRequestBuilder.post(url)
+				.addHeader("Authorization", basicAuth)
+				.setEntity("")
+				.build();
+			return httpclient.execute(httpPost, (response) -> response);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Error calling Couchbase HTTP endpoint", ex);
-		}
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException("Error calling Couchbase HTTP endpoint: " + response);
 		}
 	}
 

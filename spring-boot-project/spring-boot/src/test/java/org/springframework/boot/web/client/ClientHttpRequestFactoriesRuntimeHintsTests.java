@@ -63,6 +63,8 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0")
+	@SuppressWarnings("removal")
 	void shouldRegisterOkHttpHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());

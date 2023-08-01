@@ -33,7 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ClassPathExclusions("httpclient5-*.jar")
+@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+@Deprecated(since = "3.2.0")
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesOkHttp4Tests
 		extends AbstractClientHttpRequestFactoriesTests<OkHttp3ClientHttpRequestFactory> {
 

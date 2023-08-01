@@ -18,12 +18,12 @@ package org.springframework.boot.webservices.client;
 
 import java.time.Duration;
 
-import okhttp3.OkHttpClient;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
@@ -42,9 +42,9 @@ class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	void buildUseOkHttp3ByDefault() {
+	void buildUseJettyClientIfHttpComponentsIsNotAvailable() {
 		WebServiceMessageSender messageSender = this.builder.build();
-		assertOkHttp3RequestFactory(messageSender);
+		assertJettyClientHttpRequestFactory(messageSender);
 	}
 
 	@Test
@@ -52,19 +52,19 @@ class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
 			.setReadTimeout(Duration.ofSeconds(2))
 			.build();
-		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(messageSender);
-		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory, "client");
+		JettyClientHttpRequestFactory factory = assertJettyClientHttpRequestFactory(messageSender);
+		HttpClient client = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
 		assertThat(client).isNotNull();
-		assertThat(client.connectTimeoutMillis()).isEqualTo(5000);
-		assertThat(client.readTimeoutMillis()).isEqualTo(2000);
+		assertThat(client.getConnectTimeout()).isEqualTo(5000);
+		assertThat(factory).hasFieldOrPropertyWithValue("readTimeout", 2000L);
 	}
 
-	private OkHttp3ClientHttpRequestFactory assertOkHttp3RequestFactory(WebServiceMessageSender messageSender) {
+	private JettyClientHttpRequestFactory assertJettyClientHttpRequestFactory(WebServiceMessageSender messageSender) {
 		assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
 		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) messageSender;
 		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();
-		assertThat(requestFactory).isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
-		return (OkHttp3ClientHttpRequestFactory) requestFactory;
+		assertThat(requestFactory).isInstanceOf(JettyClientHttpRequestFactory.class);
+		return (JettyClientHttpRequestFactory) requestFactory;
 	}
 
 }

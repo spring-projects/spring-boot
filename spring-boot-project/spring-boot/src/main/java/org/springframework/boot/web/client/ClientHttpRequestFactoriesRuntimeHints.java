@@ -56,10 +56,6 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS));
 			registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class);
 		});
-		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
-			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
-			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class);
-		});
 		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.JETTY_CLIENT_CLASS, (typeHint) -> {
 			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.JETTY_CLIENT_CLASS));
 			registerReflectionHints(hints, JettyClientHttpRequestFactory.class, long.class);
@@ -68,6 +64,17 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 			typeHint.onReachableType(HttpURLConnection.class);
 			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
 		});
+		registerOkHttpHints(hints, classLoader);
+	}
+
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	private void registerOkHttpHints(ReflectionHints hints, ClassLoader classLoader) {
+		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
+			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class);
+		});
+
 	}
 
 	private void registerReflectionHints(ReflectionHints hints,

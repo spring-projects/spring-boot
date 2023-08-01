@@ -89,23 +89,24 @@ public final class ClientHttpRequestFactories {
 	 * dependencies {@link ClassUtils#isPresent are available} is returned:
 	 * <ol>
 	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
-	 * <li>{@link OkHttp3ClientHttpRequestFactory}</li>
 	 * <li>{@link JettyClientHttpRequestFactory}</li>
+	 * <li>{@link OkHttp3ClientHttpRequestFactory} (deprecated)</li>
 	 * <li>{@link SimpleClientHttpRequestFactory}</li>
 	 * </ol>
 	 * @param settings the settings to apply
 	 * @return a new {@link ClientHttpRequestFactory}
 	 */
+	@SuppressWarnings("removal")
 	public static ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
 		if (APACHE_HTTP_CLIENT_PRESENT) {
 			return HttpComponents.get(settings);
 		}
-		if (OKHTTP_CLIENT_PRESENT) {
-			return OkHttp.get(settings);
-		}
 		if (JETTY_CLIENT_PRESENT) {
 			return Jetty.get(settings);
+		}
+		if (OKHTTP_CLIENT_PRESENT) {
+			return OkHttp.get(settings);
 		}
 		return Simple.get(settings);
 	}
@@ -119,7 +120,7 @@ public final class ClientHttpRequestFactories {
 	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
 	 * <li>{@link JdkClientHttpRequestFactory}</li>
 	 * <li>{@link JettyClientHttpRequestFactory}</li>
-	 * <li>{@link OkHttp3ClientHttpRequestFactory}</li>
+	 * <li>{@link OkHttp3ClientHttpRequestFactory} (deprecated)</li>
 	 * <li>{@link SimpleClientHttpRequestFactory}</li>
 	 * </ul>
 	 * A {@code requestFactoryType} of {@link ClientHttpRequestFactory} is equivalent to
@@ -129,7 +130,7 @@ public final class ClientHttpRequestFactories {
 	 * @param settings the settings to apply
 	 * @return a new {@link ClientHttpRequestFactory} instance
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "removal" })
 	public static <T extends ClientHttpRequestFactory> T get(Class<T> requestFactoryType,
 			ClientHttpRequestFactorySettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
@@ -139,9 +140,6 @@ public final class ClientHttpRequestFactories {
 		if (requestFactoryType == HttpComponentsClientHttpRequestFactory.class) {
 			return (T) HttpComponents.get(settings);
 		}
-		if (requestFactoryType == OkHttp3ClientHttpRequestFactory.class) {
-			return (T) OkHttp.get(settings);
-		}
 		if (requestFactoryType == JettyClientHttpRequestFactory.class) {
 			return (T) Jetty.get(settings);
 		}
@@ -150,6 +148,9 @@ public final class ClientHttpRequestFactories {
 		}
 		if (requestFactoryType == SimpleClientHttpRequestFactory.class) {
 			return (T) Simple.get(settings);
+		}
+		if (requestFactoryType == OkHttp3ClientHttpRequestFactory.class) {
+			return (T) OkHttp.get(settings);
 		}
 		return get(() -> createRequestFactory(requestFactoryType), settings);
 	}
@@ -220,6 +221,8 @@ public final class ClientHttpRequestFactories {
 	/**
 	 * Support for {@link OkHttp3ClientHttpRequestFactory}.
 	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	static class OkHttp {
 
 		static OkHttp3ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
