@@ -1,6 +1,6 @@
 [[data.sql]]
 == SQL Databases
-The {spring-framework}[Spring Framework] provides extensive support for working with SQL databases, from direct JDBC access using `JdbcTemplate` to complete "`object relational mapping`" technologies such as Hibernate.
+The {spring-framework}[Spring Framework] provides extensive support for working with SQL databases, from direct JDBC access using `JdbcClient` or `JdbcTemplate` to complete "`object relational mapping`" technologies such as Hibernate.
 {spring-data}[Spring Data] provides an additional level of functionality: creating `Repository` implementations directly from interfaces and using conventions to generate queries from your method names.
 
 
@@ -173,6 +173,17 @@ You can customize some properties of the template by using the `spring.jdbc.temp
 
 NOTE: The `NamedParameterJdbcTemplate` reuses the same `JdbcTemplate` instance behind the scenes.
 If more than one `JdbcTemplate` is defined and no primary candidate exists, the `NamedParameterJdbcTemplate` is not auto-configured.
+
+
+
+[[data.sql.jdbc-client]]
+=== Using JdbcClient
+Spring's `JdbcClient` is auto-configured based on the presence of a `NamedParameterJdbcTemplate`.
+You can inject it directly in your own beans as well, as shown in the following example:
+
+include::code:MyBean[]
+
+If you rely on auto-configuration to create the underlying `JdbcTemplate`, any customization using `spring.jdbc.template.*` properties are taken into account in the client as well.
 
 
 

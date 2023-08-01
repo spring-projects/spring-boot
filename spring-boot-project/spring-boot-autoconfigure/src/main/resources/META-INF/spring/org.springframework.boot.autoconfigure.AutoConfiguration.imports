@@ -68,6 +68,7 @@ org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
