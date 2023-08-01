@@ -1,2 +1,0 @@
-# AutoConfigureJooq auto-configuration imports
-org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
