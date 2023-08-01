@@ -44,8 +44,8 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@DataCouchbaseTest(
-		properties = { "spring.couchbase.env.timeouts.connect=2m", "spring.data.couchbase.bucket-name=cbbucket" })
+@DataCouchbaseTest(properties = { "spring.couchbase.env.timeouts.connect=2m",
+		"spring.couchbase.env.timeouts.key-value=1m", "spring.data.couchbase.bucket-name=cbbucket" })
 @Testcontainers(disabledWithoutDocker = true)
 class DataCouchbaseTestIntegrationTests {
 
