@@ -84,6 +84,7 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat properties = this.serverProperties.getTomcat();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

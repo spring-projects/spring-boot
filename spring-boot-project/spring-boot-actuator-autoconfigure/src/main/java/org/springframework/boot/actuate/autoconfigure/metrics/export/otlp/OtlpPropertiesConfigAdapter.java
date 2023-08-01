@@ -58,6 +58,7 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public Map<String, String> resourceAttributes() {
 		if (!CollectionUtils.isEmpty(this.openTelemetryProperties.getResourceAttributes())) {
 			return this.openTelemetryProperties.getResourceAttributes();

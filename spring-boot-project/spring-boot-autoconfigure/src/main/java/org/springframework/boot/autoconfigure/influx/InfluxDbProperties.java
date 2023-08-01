@@ -48,7 +48,8 @@ public class InfluxDbProperties {
 	 */
 	private String password;
 
-	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration")
+	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
+			since = "3.2.0")
 	public String getUrl() {
 		return this.url;
 	}
@@ -57,7 +58,8 @@ public class InfluxDbProperties {
 		this.url = url;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration")
+	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
+			since = "3.2.0")
 	public String getUser() {
 		return this.user;
 	}
@@ -66,7 +68,8 @@ public class InfluxDbProperties {
 		this.user = user;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration")
+	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
+			since = "3.2.0")
 	public String getPassword() {
 		return this.password;
 	}

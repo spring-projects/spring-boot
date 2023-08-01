@@ -114,6 +114,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void testTomcatBinding() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.conditionIf", "foo");
@@ -423,6 +424,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void tomcatRejectIllegalHeaderMatchesProtocolDefault() throws Exception {
 		assertThat(getDefaultProtocol()).hasFieldOrPropertyWithValue("rejectIllegalHeader",
 				this.properties.getTomcat().isRejectIllegalHeader());

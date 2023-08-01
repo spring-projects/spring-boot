@@ -65,6 +65,7 @@ class OtlpPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
 		this.properties.setResourceAttributes(Map.of("service.name", "boot-service"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "boot-service");
@@ -88,6 +89,7 @@ class OtlpPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void openTelemetryPropertiesShouldOverrideOtlpPropertiesIfNotEmpty() {
 		this.properties.setResourceAttributes(Map.of("a", "alpha"));
 		this.openTelemetryProperties.setResourceAttributes(Map.of("b", "beta"));
@@ -95,6 +97,7 @@ class OtlpPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void openTelemetryPropertiesShouldNotOverrideOtlpPropertiesIfEmpty() {
 		this.properties.setResourceAttributes(Map.of("a", "alpha"));
 		this.openTelemetryProperties.setResourceAttributes(Collections.emptyMap());

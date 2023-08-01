@@ -623,11 +623,13 @@ public class ServerProperties {
 			this.connectionTimeout = connectionTimeout;
 		}
 
-		@DeprecatedConfigurationProperty(reason = "The setting has been deprecated in Tomcat")
+		@Deprecated(since = "3.2.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(reason = "The setting has been deprecated in Tomcat", since = "3.2.0")
 		public boolean isRejectIllegalHeader() {
 			return this.rejectIllegalHeader;
 		}
 
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public void setRejectIllegalHeader(boolean rejectIllegalHeader) {
 			this.rejectIllegalHeader = rejectIllegalHeader;
 		}
@@ -1634,7 +1636,7 @@ public class ServerProperties {
 			this.maxCookies = maxCookies;
 		}
 
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.decode-slash")
+		@DeprecatedConfigurationProperty(replacement = "server.undertow.decode-slash", since = "3.0.3")
 		@Deprecated(forRemoval = true, since = "3.0.3")
 		public boolean isAllowEncodedSlash() {
 			return this.allowEncodedSlash;

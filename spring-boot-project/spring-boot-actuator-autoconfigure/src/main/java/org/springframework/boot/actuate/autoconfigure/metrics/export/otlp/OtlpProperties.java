@@ -78,11 +78,13 @@ public class OtlpProperties extends StepRegistryProperties {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "management.opentelemetry.resource-attributes")
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(replacement = "management.opentelemetry.resource-attributes", since = "3.2.0")
 	public Map<String, String> getResourceAttributes() {
 		return this.resourceAttributes;
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setResourceAttributes(Map<String, String> resourceAttributes) {
 		this.resourceAttributes = resourceAttributes;
 	}

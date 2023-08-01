@@ -126,7 +126,8 @@ public class WebMvcProperties {
 
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	@DeprecatedConfigurationProperty(
-			reason = "DispatcherServlet property is deprecated for removal and should no longer need to be configured")
+			reason = "DispatcherServlet property is deprecated for removal and should no longer need to be configured",
+			since = "3.2.0")
 	public boolean isThrowExceptionIfNoHandlerFound() {
 		return this.throwExceptionIfNoHandlerFound;
 	}
