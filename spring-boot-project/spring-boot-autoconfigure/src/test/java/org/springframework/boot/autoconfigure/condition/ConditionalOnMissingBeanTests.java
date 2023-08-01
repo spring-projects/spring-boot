@@ -468,18 +468,6 @@ class ConditionalOnMissingBeanTests {
 
 	}
 
-	static class NonspecificFactoryBeanStringAttributeRegistrar implements ImportBeanDefinitionRegistrar {
-
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(NonspecificFactoryBean.class);
-			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, ExampleBean.class.getName());
-			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
-		}
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@Import(FactoryBeanRegistrar.class)
 	static class RegisteredFactoryBeanConfiguration {
