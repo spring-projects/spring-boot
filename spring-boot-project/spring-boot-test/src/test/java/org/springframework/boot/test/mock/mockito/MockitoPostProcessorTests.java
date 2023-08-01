@@ -74,6 +74,18 @@ class MockitoPostProcessorTests {
 	}
 
 	@Test
+	void canMockBeanProducedByFactoryBeanWithStringObjectTypeAttribute() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		MockitoPostProcessor.register(context);
+		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
+		factoryBeanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, SomeInterface.class.getName());
+		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
+		context.register(MockedFactoryBean.class);
+		context.refresh();
+		assertThat(Mockito.mockingDetails(context.getBean("beanToBeMocked")).isMock()).isTrue();
+	}
+
+	@Test
 	void canMockBeanProducedByFactoryBeanWithClassObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
