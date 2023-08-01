@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -43,6 +44,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.task.TaskSchedulerBuilder;
+import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -168,11 +170,18 @@ public class IntegrationAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(TaskSchedulerBuilder.class)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+	@SuppressWarnings("removal")
 	protected static class IntegrationTaskSchedulerConfiguration {
 
 		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-		public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
-			return builder.build();
+		public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder taskSchedulerBuilder,
+				ObjectProvider<ThreadPoolTaskSchedulerBuilder> threadPoolTaskSchedulerBuilderProvider) {
+			ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder = threadPoolTaskSchedulerBuilderProvider
+				.getIfUnique();
+			if (threadPoolTaskSchedulerBuilder != null) {
+				return threadPoolTaskSchedulerBuilder.build();
+			}
+			return taskSchedulerBuilder.build();
 		}
 
 	}

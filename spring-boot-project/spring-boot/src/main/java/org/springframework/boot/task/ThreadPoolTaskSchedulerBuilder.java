@@ -23,27 +23,22 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Builder that can be used to configure and create a {@link TaskScheduler}. Provides
- * convenience methods to set common {@link ThreadPoolTaskScheduler} settings. For
- * advanced configuration, consider using {@link TaskSchedulerCustomizer}.
+ * Builder that can be used to configure and create a {@link ThreadPoolTaskScheduler}.
+ * Provides convenience methods to set common {@link ThreadPoolTaskScheduler} settings.
+ * For advanced configuration, consider using {@link ThreadPoolTaskSchedulerCustomizer}.
  * <p>
  * In a typical auto-configured Spring Boot application this builder is available as a
- * bean and can be injected whenever a {@link TaskScheduler} is needed.
+ * bean and can be injected whenever a {@link ThreadPoolTaskScheduler} is needed.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
- * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
- * {@link ThreadPoolTaskSchedulerBuilder}
+ * @since 3.2.0
  */
-@Deprecated(since = "3.2.0", forRemoval = true)
-@SuppressWarnings("removal")
-public class TaskSchedulerBuilder {
+public class ThreadPoolTaskSchedulerBuilder {
 
 	private final Integer poolSize;
 
@@ -53,9 +48,9 @@ public class TaskSchedulerBuilder {
 
 	private final String threadNamePrefix;
 
-	private final Set<TaskSchedulerCustomizer> customizers;
+	private final Set<ThreadPoolTaskSchedulerCustomizer> customizers;
 
-	public TaskSchedulerBuilder() {
+	public ThreadPoolTaskSchedulerBuilder() {
 		this.poolSize = null;
 		this.awaitTermination = null;
 		this.awaitTerminationPeriod = null;
@@ -63,8 +58,8 @@ public class TaskSchedulerBuilder {
 		this.customizers = null;
 	}
 
-	public TaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
-			String threadNamePrefix, Set<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
+	public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
+			String threadNamePrefix, Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
 		this.awaitTermination = awaitTermination;
 		this.awaitTerminationPeriod = awaitTerminationPeriod;
@@ -77,8 +72,8 @@ public class TaskSchedulerBuilder {
 	 * @param poolSize the pool size to set
 	 * @return a new builder instance
 	 */
-	public TaskSchedulerBuilder poolSize(int poolSize) {
-		return new TaskSchedulerBuilder(poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+	public ThreadPoolTaskSchedulerBuilder poolSize(int poolSize) {
+		return new ThreadPoolTaskSchedulerBuilder(poolSize, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, this.customizers);
 	}
 
@@ -90,8 +85,8 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #awaitTerminationPeriod(Duration)
 	 */
-	public TaskSchedulerBuilder awaitTermination(boolean awaitTermination) {
-		return new TaskSchedulerBuilder(this.poolSize, awaitTermination, this.awaitTerminationPeriod,
+	public ThreadPoolTaskSchedulerBuilder awaitTermination(boolean awaitTermination) {
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, this.customizers);
 	}
 
@@ -104,8 +99,8 @@ public class TaskSchedulerBuilder {
 	 * @param awaitTerminationPeriod the await termination period to set
 	 * @return a new builder instance
 	 */
-	public TaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
+	public ThreadPoolTaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
 				this.threadNamePrefix, this.customizers);
 	}
 
@@ -114,64 +109,70 @@ public class TaskSchedulerBuilder {
 	 * @param threadNamePrefix the thread name prefix to set
 	 * @return a new builder instance
 	 */
-	public TaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+	public ThreadPoolTaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
 				threadNamePrefix, this.customizers);
 	}
 
 	/**
-	 * Set the {@link TaskSchedulerCustomizer TaskSchedulerCustomizers} that should be
-	 * applied to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the
-	 * order that they were added after builder configuration has been applied. Setting
-	 * this value will replace any previously configured customizers.
+	 * Set the {@link ThreadPoolTaskSchedulerCustomizer
+	 * threadPoolTaskSchedulerCustomizers} that should be applied to the
+	 * {@link ThreadPoolTaskScheduler}. Customizers are applied in the order that they
+	 * were added after builder configuration has been applied. Setting this value will
+	 * replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
-	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
+	 * @see #additionalCustomizers(ThreadPoolTaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder customizers(TaskSchedulerCustomizer... customizers) {
+	public ThreadPoolTaskSchedulerBuilder customizers(ThreadPoolTaskSchedulerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return customizers(Arrays.asList(customizers));
 	}
 
 	/**
-	 * Set the {@link TaskSchedulerCustomizer taskSchedulerCustomizers} that should be
-	 * applied to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the
-	 * order that they were added after builder configuration has been applied. Setting
-	 * this value will replace any previously configured customizers.
+	 * Set the {@link ThreadPoolTaskSchedulerCustomizer
+	 * threadPoolTaskSchedulerCustomizers} that should be applied to the
+	 * {@link ThreadPoolTaskScheduler}. Customizers are applied in the order that they
+	 * were added after builder configuration has been applied. Setting this value will
+	 * replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
-	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
+	 * @see #additionalCustomizers(ThreadPoolTaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder customizers(Iterable<TaskSchedulerCustomizer> customizers) {
+	public ThreadPoolTaskSchedulerBuilder customizers(
+			Iterable<? extends ThreadPoolTaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, append(null, customizers));
 	}
 
 	/**
-	 * Add {@link TaskSchedulerCustomizer taskSchedulerCustomizers} that should be applied
-	 * to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the order that
-	 * they were added after builder configuration has been applied.
+	 * Add {@link ThreadPoolTaskSchedulerCustomizer threadPoolTaskSchedulerCustomizers}
+	 * that should be applied to the {@link ThreadPoolTaskScheduler}. Customizers are
+	 * applied in the order that they were added after builder configuration has been
+	 * applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
-	 * @see #customizers(TaskSchedulerCustomizer...)
+	 * @see #customizers(ThreadPoolTaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(TaskSchedulerCustomizer... customizers) {
+	public ThreadPoolTaskSchedulerBuilder additionalCustomizers(ThreadPoolTaskSchedulerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
 
 	/**
-	 * Add {@link TaskSchedulerCustomizer taskSchedulerCustomizers} that should be applied
-	 * to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the order that
-	 * they were added after builder configuration has been applied.
+	 * Add {@link ThreadPoolTaskSchedulerCustomizer threadPoolTaskSchedulerCustomizers}
+	 * that should be applied to the {@link ThreadPoolTaskScheduler}. Customizers are
+	 * applied in the order that they were added after builder configuration has been
+	 * applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
-	 * @see #customizers(TaskSchedulerCustomizer...)
+	 * @see #customizers(ThreadPoolTaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(Iterable<TaskSchedulerCustomizer> customizers) {
+	public ThreadPoolTaskSchedulerBuilder additionalCustomizers(
+			Iterable<? extends ThreadPoolTaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, append(this.customizers, customizers));
 	}
 

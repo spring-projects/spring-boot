@@ -31,14 +31,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
- * Tests for {@link TaskSchedulerBuilder}.
+ * Tests for {@link ThreadPoolTaskSchedulerBuilder}.
  *
  * @author Stephane Nicoll
  */
-@SuppressWarnings("removal")
-class TaskSchedulerBuilderTests {
+class ThreadPoolTaskSchedulerBuilderTests {
 
-	private final TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
+	private final ThreadPoolTaskSchedulerBuilder builder = new ThreadPoolTaskSchedulerBuilder();
 
 	@Test
 	void poolSettingsShouldApply() {
@@ -68,20 +67,20 @@ class TaskSchedulerBuilderTests {
 	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.customizers((TaskSchedulerCustomizer[]) null))
+			.isThrownBy(() -> this.builder.customizers((ThreadPoolTaskSchedulerCustomizer[]) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.customizers((Set<TaskSchedulerCustomizer>) null))
+			.isThrownBy(() -> this.builder.customizers((Set<ThreadPoolTaskSchedulerCustomizer>) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersShouldApply() {
-		TaskSchedulerCustomizer customizer = mock(TaskSchedulerCustomizer.class);
+		ThreadPoolTaskSchedulerCustomizer customizer = mock(ThreadPoolTaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer).build();
 		then(customizer).should().customize(scheduler);
 	}
@@ -98,8 +97,8 @@ class TaskSchedulerBuilderTests {
 
 	@Test
 	void customizersShouldReplaceExisting() {
-		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
-		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
+		ThreadPoolTaskSchedulerCustomizer customizer1 = mock(ThreadPoolTaskSchedulerCustomizer.class);
+		ThreadPoolTaskSchedulerCustomizer customizer2 = mock(ThreadPoolTaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 			.customizers(Collections.singleton(customizer2))
 			.build();
@@ -110,21 +109,21 @@ class TaskSchedulerBuilderTests {
 	@Test
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.additionalCustomizers((TaskSchedulerCustomizer[]) null))
+			.isThrownBy(() -> this.builder.additionalCustomizers((ThreadPoolTaskSchedulerCustomizer[]) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskSchedulerCustomizer>) null))
+			.isThrownBy(() -> this.builder.additionalCustomizers((Set<ThreadPoolTaskSchedulerCustomizer>) null))
 			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersShouldAddToExisting() {
-		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
-		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
+		ThreadPoolTaskSchedulerCustomizer customizer1 = mock(ThreadPoolTaskSchedulerCustomizer.class);
+		ThreadPoolTaskSchedulerCustomizer customizer2 = mock(ThreadPoolTaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 			.additionalCustomizers(customizer2)
 			.build();
