@@ -3,12 +3,13 @@
 https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configuration of the {spring-pulsar-docs}[Spring for Apache Pulsar] project.
 
 Spring Boot will auto-configure and register the classic (imperative) Spring Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
-It will do the same for the reactive components when both `org.springframework.pulsar:spring-pulsar-reactive` and Project Reactor are on the classpath.
+It will do the same for the reactive components when `org.springframework.pulsar:spring-pulsar-reactive` is on the classpath.
 
 There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive` "`Starters`" for conveniently collecting the dependencies for imperative and reactive use, respectively.
 
-TIP: The Reactive support is built on top of the imperative support and therefore the reactive starter includes the imperative starter.
+TIP: The Reactive auto-configuration relies on the imperative auto-configuration and therefore the reactive starter includes the imperative starter.
 As such, the imperative components are auto-configured and available in both reactive and imperative scenarios.
+However, using the imperative components in a fully reactive app is not recommended as it could cause blocking issues.
 
 [[messaging.pulsar.connecting]]
 === Connecting to Pulsar
