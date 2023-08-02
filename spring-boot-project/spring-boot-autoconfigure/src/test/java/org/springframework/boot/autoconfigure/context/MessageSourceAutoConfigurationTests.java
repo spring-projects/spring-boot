@@ -21,7 +21,10 @@ import java.util.Locale;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.MessageSourceRuntimeHints;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -40,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Kedar Joshi
+ * @author Marc Becker
  */
 class MessageSourceAutoConfigurationTests {
 
@@ -178,6 +182,15 @@ class MessageSourceAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 			.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
 			.run((context) -> assertThat(context.getMessage("foo", null, Locale.US)).isEqualTo("bar"));
+	}
+
+	@Test
+	void shouldRegisterDefaultHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new MessageSourceRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("messages.properties")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("messages_de.properties")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("messages_zh-CN.properties")).accepts(hints);
 	}
 
 	@Configuration(proxyBeanMethods = false)
