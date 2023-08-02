@@ -21,10 +21,12 @@ import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.MessageListenerContainer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -68,6 +70,14 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 		this.properties.getListener().setChangeConsumerThreadName(true);
 		this.configurer.configure(this.factory, this.consumerFactory);
 		then(this.factory).should().setChangeConsumerThreadName(true);
+	}
+
+	@Test
+	void shouldApplyListenerTaskExecutor() {
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+		this.configurer.setListenerTaskExecutor(executor);
+		this.configurer.configure(this.factory, this.consumerFactory);
+		assertThat(this.factory.getContainerProperties().getListenerTaskExecutor()).isEqualTo(executor);
 	}
 
 }

@@ -21,8 +21,11 @@ import java.util.function.Function;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ContainerCustomizer;
@@ -49,6 +52,7 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  * @author Gary Russell
  * @author Eddú Meléndez
  * @author Thomas Kåsene
+ * @author Moritz Halbritter
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableKafka.class)
@@ -107,7 +111,23 @@ class KafkaAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.PLATFORM)
 	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
+		return configurer();
+	}
+
+	@Bean(name = "kafkaListenerContainerFactoryConfigurer")
+	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurerVirtualThreads() {
+		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = configurer();
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("kafka-");
+		executor.setVirtualThreads(true);
+		configurer.setListenerTaskExecutor(executor);
+		return configurer;
+	}
+
+	private ConcurrentKafkaListenerContainerFactoryConfigurer configurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
 		configurer.setBatchMessageConverter(this.batchMessageConverter);
