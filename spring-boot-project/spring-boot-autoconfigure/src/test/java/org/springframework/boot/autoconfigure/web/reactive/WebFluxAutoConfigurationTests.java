@@ -31,13 +31,13 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -50,6 +50,8 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -674,21 +676,14 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void problemDetailsIsOrderedBetweenLowestAndHighestOrderedControllerHandlers() {
+	void problemDetailsExceptionHandlerIsOrderedAt0() {
 		this.contextRunner.withPropertyValues("spring.webflux.problemdetails.enabled:true")
 			.withUserConfiguration(OrderedControllerAdviceBeansConfiguration.class)
-			.run((context) -> {
-
-				List<Class<?>> controllerAdviceClasses = ControllerAdviceBean.findAnnotatedBeans(context)
-					.stream()
-					.map(ControllerAdviceBean::getBeanType)
-					.collect(Collectors.toList());
-
-				assertThat(controllerAdviceClasses).containsExactly(
-						OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice.class,
-						ProblemDetailsExceptionHandler.class,
-						OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class);
-			});
+			.run((context) -> assertThat(
+					ControllerAdviceBean.findAnnotatedBeans(context).stream().map(ControllerAdviceBean::getBeanType))
+				.asInstanceOf(InstanceOfAssertFactories.list(Class.class))
+				.containsExactly(HighestOrderedControllerAdvice.class, ProblemDetailsExceptionHandler.class,
+						LowestOrderedControllerAdvice.class));
 	}
 
 	@Test

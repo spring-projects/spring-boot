@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +39,7 @@ import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.support.AopUtils;
@@ -979,19 +979,14 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void problemDetailsIsOrderedBetweenLowestAndHighestOrderedControllerHandlers() {
+	void problemDetailsExceptionHandlerIsOrderedAt0() {
 		this.contextRunner.withPropertyValues("spring.mvc.problemdetails.enabled:true")
 			.withUserConfiguration(OrderedControllerAdviceBeansConfiguration.class)
-			.run((context) -> {
-
-				List<Class<?>> controllerAdviceClasses = ControllerAdviceBean.findAnnotatedBeans(context)
-					.stream()
-					.map(ControllerAdviceBean::getBeanType)
-					.collect(Collectors.toList());
-
-				assertThat(controllerAdviceClasses).containsExactly(HighestOrderedControllerAdvice.class,
-						ProblemDetailsExceptionHandler.class, LowestOrderedControllerAdvice.class);
-			});
+			.run((context) -> assertThat(
+					ControllerAdviceBean.findAnnotatedBeans(context).stream().map(ControllerAdviceBean::getBeanType))
+				.asInstanceOf(InstanceOfAssertFactories.list(Class.class))
+				.containsExactly(HighestOrderedControllerAdvice.class, ProblemDetailsExceptionHandler.class,
+						OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class));
 	}
 
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
