@@ -16,7 +16,6 @@
 
 package org.springframework.boot.task;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Set;
 
@@ -24,9 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -55,11 +54,7 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void virtualThreadsShouldApply() {
 		SimpleAsyncTaskExecutor executor = this.builder.virtualThreads(true).build();
-		Field field = ReflectionUtils.findField(SimpleAsyncTaskExecutor.class, "virtualThreadDelegate");
-		assertThat(field).as("executor.virtualThreadDelegate").isNotNull();
-		field.setAccessible(true);
-		Object virtualThreadDelegate = ReflectionUtils.getField(field, executor);
-		assertThat(virtualThreadDelegate).as("executor.virtualThreadDelegate").isNotNull();
+		SimpleAsyncTaskExecutorAssert.assertThat(executor).usesVirtualThreads();
 	}
 
 	@Test
