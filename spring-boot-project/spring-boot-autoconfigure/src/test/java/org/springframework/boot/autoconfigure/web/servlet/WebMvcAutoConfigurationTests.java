@@ -39,6 +39,7 @@ import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.support.AopUtils;
@@ -51,6 +52,8 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -65,6 +68,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -89,6 +94,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
+import org.springframework.web.method.ControllerAdviceBean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.FlashMapManager;
@@ -972,6 +978,17 @@ class WebMvcAutoConfigurationTests {
 				.hasSingleBean(CustomExceptionHandler.class));
 	}
 
+	@Test
+	void problemDetailsExceptionHandlerIsOrderedAt0() {
+		this.contextRunner.withPropertyValues("spring.mvc.problemdetails.enabled:true")
+			.withUserConfiguration(OrderedControllerAdviceBeansConfiguration.class)
+			.run((context) -> assertThat(
+					ControllerAdviceBean.findAnnotatedBeans(context).stream().map(ControllerAdviceBean::getBeanType))
+				.asInstanceOf(InstanceOfAssertFactories.list(Class.class))
+				.containsExactly(HighestOrderedControllerAdvice.class, ProblemDetailsExceptionHandler.class,
+						OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class));
+	}
+
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
 			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
@@ -1492,6 +1509,24 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		CustomExceptionHandler customExceptionHandler() {
 			return new CustomExceptionHandler();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import({ LowestOrderedControllerAdvice.class, HighestOrderedControllerAdvice.class })
+	static class OrderedControllerAdviceBeansConfiguration {
+
+		@ControllerAdvice
+		@Order
+		static class LowestOrderedControllerAdvice {
+
+		}
+
+		@ControllerAdvice
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		static class HighestOrderedControllerAdvice {
+
 		}
 
 	}

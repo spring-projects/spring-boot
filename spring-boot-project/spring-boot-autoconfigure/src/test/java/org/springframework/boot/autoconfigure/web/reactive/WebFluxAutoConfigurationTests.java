@@ -37,6 +37,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -49,6 +50,8 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -80,6 +83,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
+import org.springframework.web.method.ControllerAdviceBean;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
@@ -672,6 +676,17 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void problemDetailsExceptionHandlerIsOrderedAt0() {
+		this.contextRunner.withPropertyValues("spring.webflux.problemdetails.enabled:true")
+			.withUserConfiguration(OrderedControllerAdviceBeansConfiguration.class)
+			.run((context) -> assertThat(
+					ControllerAdviceBean.findAnnotatedBeans(context).stream().map(ControllerAdviceBean::getBeanType))
+				.asInstanceOf(InstanceOfAssertFactories.list(Class.class))
+				.containsExactly(HighestOrderedControllerAdvice.class, ProblemDetailsExceptionHandler.class,
+						LowestOrderedControllerAdvice.class));
+	}
+
+	@Test
 	void asyncTaskExecutorWithApplicationTaskExecutor() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
@@ -1013,6 +1028,25 @@ class WebFluxAutoConfigurationTests {
 
 	@ControllerAdvice
 	static class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import({ OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class,
+			OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice.class })
+	static class OrderedControllerAdviceBeansConfiguration {
+
+		@ControllerAdvice
+		@Order
+		static class LowestOrderedControllerAdvice {
+
+		}
+
+		@ControllerAdvice
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		static class HighestOrderedControllerAdvice {
+
+		}
 
 	}
 
