@@ -53,8 +53,9 @@ public class R2dbcObservationAutoConfiguration {
 			ObjectProvider<QueryObservationConvention> queryObservationConvention,
 			ObjectProvider<QueryParametersTagProvider> queryParametersTagProvider) {
 		return (connectionFactory) -> {
+			HostAndPort hostAndPort = extractHostAndPort(connectionFactory);
 			ObservationProxyExecutionListener listener = new ObservationProxyExecutionListener(observationRegistry,
-					connectionFactory, extractUrl(connectionFactory));
+					connectionFactory, hostAndPort.host(), hostAndPort.port());
 			listener.setIncludeParameterValues(properties.isIncludeParameterValues());
 			queryObservationConvention.ifAvailable(listener::setQueryObservationConvention);
 			queryParametersTagProvider.ifAvailable(listener::setQueryParametersTagProvider);
@@ -62,20 +63,25 @@ public class R2dbcObservationAutoConfiguration {
 		};
 	}
 
-	private String extractUrl(ConnectionFactory connectionFactory) {
+	private HostAndPort extractHostAndPort(ConnectionFactory connectionFactory) {
 		OptionsCapableConnectionFactory optionsCapableConnectionFactory = OptionsCapableConnectionFactory
 			.unwrapFrom(connectionFactory);
 		if (optionsCapableConnectionFactory == null) {
-			return null;
+			return HostAndPort.empty();
 		}
 		ConnectionFactoryOptions options = optionsCapableConnectionFactory.getOptions();
 		Object host = options.getValue(ConnectionFactoryOptions.HOST);
 		Object port = options.getValue(ConnectionFactoryOptions.PORT);
-		if (host == null || !(port instanceof Integer portAsInt)) {
-			return null;
+		if ((!(host instanceof String hostAsString) || !(port instanceof Integer portAsInt))) {
+			return HostAndPort.empty();
 		}
-		// See https://github.com/r2dbc/r2dbc-proxy/issues/135
-		return "r2dbc:dummy://%s:%d/".formatted(host, portAsInt);
+		return new HostAndPort(hostAsString, portAsInt);
+	}
+
+	private record HostAndPort(String host, Integer port) {
+		static HostAndPort empty() {
+			return new HostAndPort(null, null);
+		}
 	}
 
 }
