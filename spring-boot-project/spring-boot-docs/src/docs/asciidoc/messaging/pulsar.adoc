@@ -73,7 +73,7 @@ Spring Boot auto-configuration also provides this producer factory, which by def
 You can configure the producer factory and cache settings by specifying any of the `spring.pulsar.producer.\*` and `spring.pulsar.producer.cache.*` prefixed application properties.
 
 [[messaging.pulsar.sending-reactive]]
-=== Sending a Message (Reactively)
+=== Sending a Message Reactively
 When the Reactive auto-configuration is activated, Spring's `ReactivePulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include::code:MyBean[]
@@ -119,7 +119,7 @@ Spring Boot auto-configuration provides this reader factory which can be customi
 
 
 [[messaging.pulsar.reading-reactive]]
-=== Reading a Message (Reactively)
+=== Reading a Message Reactively
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, Spring's `ReactivePulsarReaderFactory` is provided, and you can use it to create a reader in order to read messages in a reactive fashion.
 The following component creates a reader using the provided factory and reads a single message from 5 minutes ago from the `someTopic` topic:
 
