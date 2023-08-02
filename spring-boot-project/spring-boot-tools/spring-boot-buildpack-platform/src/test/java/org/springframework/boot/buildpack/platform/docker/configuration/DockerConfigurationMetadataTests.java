@@ -16,11 +16,13 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
@@ -76,7 +78,8 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 		DockerContext context = config.forContext("test-context");
 		assertThat(context.getDockerHost()).isEqualTo("unix:///home/user/.docker/docker.sock");
 		assertThat(context.isTlsVerify()).isTrue();
-		assertThat(context.getTlsPath()).matches("^.*/with-default-context/contexts/tls/[a-zA-z0-9]*/docker$");
+		assertThat(context.getTlsPath()).matches(String.join(Pattern.quote(File.separator), "^.*",
+				"with-default-context", "contexts", "tls", "[a-zA-z0-9]*", "docker$"));
 	}
 
 	@Test
