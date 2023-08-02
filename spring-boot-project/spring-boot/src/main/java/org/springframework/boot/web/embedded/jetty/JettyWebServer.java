@@ -290,15 +290,15 @@ public class JettyWebServer implements WebServer {
 	public int getPort() {
 		Connector[] connectors = this.server.getConnectors();
 		for (Connector connector : connectors) {
-			Integer localPort = getLocalPort(connector);
-			if (localPort != null && localPort > 0) {
+			int localPort = getLocalPort(connector);
+			if (localPort > 0) {
 				return localPort;
 			}
 		}
 		return -1;
 	}
 
-	private Integer getLocalPort(Connector connector) {
+	private int getLocalPort(Connector connector) {
 		if (connector instanceof NetworkConnector networkConnector) {
 			return networkConnector.getLocalPort();
 		}
