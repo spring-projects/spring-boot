@@ -3,7 +3,7 @@ plugins {
 	id "org.springframework.boot.conventions"
 }
 
-description = "Spring Boot Pulsar smoke test"
+description = "Spring Boot Pulsar Reactive smoke test"
 
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-pulsar-reactive"))
