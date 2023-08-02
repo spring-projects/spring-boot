@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
@@ -60,7 +62,7 @@ public class TomcatWebServer implements WebServer {
 
 	private static final AtomicInteger containerCounter = new AtomicInteger(-1);
 
-	private final Object monitor = new Object();
+	private final Lock lock = new ReentrantLock();
 
 	private final Map<Service, Connector[]> serviceConnectors = new HashMap<>();
 
@@ -106,41 +108,43 @@ public class TomcatWebServer implements WebServer {
 
 	private void initialize() throws WebServerException {
 		logger.info("Tomcat initialized with " + getPortsDescription(false));
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
+			addInstanceIdToEngineName();
+
+			Context context = findContext();
+			context.addLifecycleListener((event) -> {
+				if (context.equals(event.getSource()) && Lifecycle.START_EVENT.equals(event.getType())) {
+					// Remove service connectors so that protocol binding doesn't
+					// happen when the service is started.
+					removeServiceConnectors();
+				}
+			});
+
+			// Start the server to trigger initialization listeners
+			this.tomcat.start();
+
+			// We can re-throw failure exception directly in the main thread
+			rethrowDeferredStartupExceptions();
+
 			try {
-				addInstanceIdToEngineName();
-
-				Context context = findContext();
-				context.addLifecycleListener((event) -> {
-					if (context.equals(event.getSource()) && Lifecycle.START_EVENT.equals(event.getType())) {
-						// Remove service connectors so that protocol binding doesn't
-						// happen when the service is started.
-						removeServiceConnectors();
-					}
-				});
-
-				// Start the server to trigger initialization listeners
-				this.tomcat.start();
-
-				// We can re-throw failure exception directly in the main thread
-				rethrowDeferredStartupExceptions();
-
-				try {
-					ContextBindings.bindClassLoader(context, context.getNamingToken(), getClass().getClassLoader());
-				}
-				catch (NamingException ex) {
-					// Naming is not enabled. Continue
-				}
-
-				// Unlike Jetty, all Tomcat threads are daemon threads. We create a
-				// blocking non-daemon to stop immediate shutdown
-				startDaemonAwaitThread();
+				ContextBindings.bindClassLoader(context, context.getNamingToken(), getClass().getClassLoader());
 			}
-			catch (Exception ex) {
-				stopSilently();
-				destroySilently();
-				throw new WebServerException("Unable to start embedded Tomcat", ex);
+			catch (NamingException ex) {
+				// Naming is not enabled. Continue
 			}
+
+			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
+			// blocking non-daemon to stop immediate shutdown
+			startDaemonAwaitThread();
+		}
+		catch (Exception ex) {
+			stopSilently();
+			destroySilently();
+			throw new WebServerException("Unable to start embedded Tomcat", ex);
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
@@ -205,7 +209,8 @@ public class TomcatWebServer implements WebServer {
 
 	@Override
 	public void start() throws WebServerException {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			if (this.started) {
 				return;
 			}
@@ -232,6 +237,9 @@ public class TomcatWebServer implements WebServer {
 				Context context = findContext();
 				ContextBindings.unbindClassLoader(context, context.getNamingToken(), getClass().getClassLoader());
 			}
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
@@ -324,7 +332,8 @@ public class TomcatWebServer implements WebServer {
 
 	@Override
 	public void stop() throws WebServerException {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			boolean wasStarted = this.started;
 			try {
 				this.started = false;
@@ -341,6 +350,9 @@ public class TomcatWebServer implements WebServer {
 					containerCounter.decrementAndGet();
 				}
 			}
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 

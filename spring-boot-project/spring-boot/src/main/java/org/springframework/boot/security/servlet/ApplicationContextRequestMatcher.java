@@ -16,6 +16,8 @@
 
 package org.springframework.boot.security.servlet;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +47,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 
 	private volatile boolean initialized;
 
-	private final Object initializeLock = new Object();
+	private final Lock initializeLock = new ReentrantLock();
 
 	public ApplicationContextRequestMatcher(Class<? extends C> contextClass) {
 		Assert.notNull(contextClass, "Context class must not be null");
@@ -61,11 +63,15 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 		}
 		Supplier<C> context = () -> getContext(webApplicationContext);
 		if (!this.initialized) {
-			synchronized (this.initializeLock) {
+			this.initializeLock.lock();
+			try {
 				if (!this.initialized) {
 					initialized(context);
 					this.initialized = true;
 				}
+			}
+			finally {
+				this.initializeLock.unlock();
 			}
 		}
 		return matches(request, context);

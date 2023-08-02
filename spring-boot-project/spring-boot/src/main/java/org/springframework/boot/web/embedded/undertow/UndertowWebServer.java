@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -63,7 +65,7 @@ public class UndertowWebServer implements WebServer {
 
 	private final AtomicReference<GracefulShutdownCallback> gracefulShutdownCallback = new AtomicReference<>();
 
-	private final Object monitor = new Object();
+	private final Lock lock = new ReentrantLock();
 
 	private final Undertow.Builder builder;
 
@@ -104,7 +106,8 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public void start() throws WebServerException {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			if (this.started) {
 				return;
 			}
@@ -135,6 +138,9 @@ public class UndertowWebServer implements WebServer {
 					destroySilently();
 				}
 			}
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
@@ -268,7 +274,8 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public void stop() throws WebServerException {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			if (!this.started) {
 				return;
 			}
@@ -285,6 +292,9 @@ public class UndertowWebServer implements WebServer {
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop Undertow", ex);
 			}
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 

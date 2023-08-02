@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
@@ -92,7 +92,7 @@ public class Restarter {
 
 	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 
-	private final Map<String, Object> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
 	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<>();
 
@@ -440,18 +440,11 @@ public class Restarter {
 	}
 
 	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
-		synchronized (this.attributes) {
-			if (!this.attributes.containsKey(name)) {
-				this.attributes.put(name, objectFactory.getObject());
-			}
-			return this.attributes.get(name);
-		}
+		return this.attributes.computeIfAbsent(name, (ignore) -> objectFactory.getObject());
 	}
 
 	public Object removeAttribute(String name) {
-		synchronized (this.attributes) {
-			return this.attributes.remove(name);
-		}
+		return this.attributes.remove(name);
 	}
 
 	/**

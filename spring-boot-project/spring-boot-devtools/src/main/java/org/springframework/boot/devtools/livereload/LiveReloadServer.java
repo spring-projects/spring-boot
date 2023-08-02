@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +59,12 @@ public class LiveReloadServer {
 
 	private final List<Connection> connections = new ArrayList<>();
 
-	private final Object monitor = new Object();
+	/**
+	 * Guards access to {@link #connections}.
+	 */
+	private final Lock connectionsLock = new ReentrantLock();
+
+	private final Lock lock = new ReentrantLock();
 
 	private final int port;
 
@@ -108,7 +115,8 @@ public class LiveReloadServer {
 	 * @throws IOException in case of I/O errors
 	 */
 	public int start() throws IOException {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			Assert.state(!isStarted(), "Server already started");
 			logger.debug(LogMessage.format("Starting live reload server on port %s", this.port));
 			this.serverSocket = new ServerSocket(this.port);
@@ -119,6 +127,9 @@ public class LiveReloadServer {
 			this.listenThread.start();
 			return localPort;
 		}
+		finally {
+			this.lock.unlock();
+		}
 	}
 
 	/**
@@ -126,8 +137,12 @@ public class LiveReloadServer {
 	 * @return {@code true} if the server is running
 	 */
 	public boolean isStarted() {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			return this.listenThread != null;
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
@@ -163,7 +178,8 @@ public class LiveReloadServer {
 	 * @throws IOException in case of I/O errors
 	 */
 	public void stop() throws IOException {
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			if (this.listenThread != null) {
 				closeAllConnections();
 				try {
@@ -184,13 +200,20 @@ public class LiveReloadServer {
 				this.serverSocket = null;
 			}
 		}
+		finally {
+			this.lock.unlock();
+		}
 	}
 
 	private void closeAllConnections() throws IOException {
-		synchronized (this.connections) {
+		this.connectionsLock.lock();
+		try {
 			for (Connection connection : this.connections) {
 				connection.close();
 			}
+		}
+		finally {
+			this.connectionsLock.unlock();
 		}
 	}
 
@@ -198,8 +221,10 @@ public class LiveReloadServer {
 	 * Trigger livereload of all connected clients.
 	 */
 	public void triggerReload() {
-		synchronized (this.monitor) {
-			synchronized (this.connections) {
+		this.lock.lock();
+		try {
+			this.connectionsLock.lock();
+			try {
 				for (Connection connection : this.connections) {
 					try {
 						connection.triggerReload();
@@ -209,18 +234,32 @@ public class LiveReloadServer {
 					}
 				}
 			}
+			finally {
+				this.connectionsLock.unlock();
+			}
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
 	private void addConnection(Connection connection) {
-		synchronized (this.connections) {
+		this.connectionsLock.lock();
+		try {
 			this.connections.add(connection);
+		}
+		finally {
+			this.connectionsLock.unlock();
 		}
 	}
 
 	private void removeConnection(Connection connection) {
-		synchronized (this.connections) {
+		this.connectionsLock.lock();
+		try {
 			this.connections.remove(connection);
+		}
+		finally {
+			this.connectionsLock.unlock();
 		}
 	}
 
