@@ -12,7 +12,7 @@ This means you can just type a single command and quickly get a sensible image i
 
 See the individual plugin documentation on how to use buildpacks with {spring-boot-maven-plugin-docs}#build-image[Maven] and {spring-boot-gradle-plugin-docs}#build-image[Gradle].
 
-NOTE: The https://github.com/paketo-buildpacks/spring-boot[Paketo Spring Boot buildpack] has also been updated to support the `layers.idx` file so any customization that is applied to it will be reflected in the image created by the buildpack.
+NOTE: The https://github.com/paketo-buildpacks/spring-boot[Paketo Spring Boot buildpack] supports the `layers.idx` file, so any customization that is applied to it will be reflected in the image created by the buildpack.
 
 NOTE: In order to achieve reproducible builds and container image caching, Buildpacks can manipulate the application resources metadata (such as the file "last modified" information).
 You should ensure that your application does not rely on that metadata at runtime.
