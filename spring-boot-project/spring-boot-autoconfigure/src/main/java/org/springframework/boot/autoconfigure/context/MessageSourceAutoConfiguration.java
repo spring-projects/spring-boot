@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.context;
 
 import java.time.Duration;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.MessageSourceRuntimeHints;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,6 +36,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
@@ -48,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Marc Becker
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -55,6 +60,7 @@ import org.springframework.util.StringUtils;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
+@ImportRuntimeHints(MessageSourceRuntimeHints.class)
 public class MessageSourceAutoConfiguration {
 
 	private static final Resource[] NO_RESOURCES = {};
@@ -121,6 +127,15 @@ public class MessageSourceAutoConfiguration {
 			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
+		}
+
+	}
+
+	static class MessageSourceRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("messages.properties").registerPattern("messages_*.properties");
 		}
 
 	}
