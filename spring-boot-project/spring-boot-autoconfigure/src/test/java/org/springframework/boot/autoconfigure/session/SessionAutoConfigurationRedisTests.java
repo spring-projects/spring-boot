@@ -32,10 +32,13 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisSessionRepository;
@@ -165,6 +168,32 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 
 	}
 
+	@Test
+	void whenTheUserDefinesTheirOwnSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.withUserConfiguration(CustomizerConfiguration.class)
+			.withPropertyValues("spring.session.redis.flush-mode=immediate",
+					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run((context) -> {
+				RedisSessionRepository repository = validateSessionRepository(context, RedisSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("flushMode", FlushMode.ON_SAVE);
+			});
+	}
+
+	@Test
+	void whenIndexedAndTheUserDefinesTheirOwnSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.withUserConfiguration(IndexedCustomizerConfiguration.class)
+			.withPropertyValues("spring.session.redis.repository-type=indexed",
+					"spring.session.redis.flush-mode=immediate", "spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run((context) -> {
+				RedisIndexedSessionRepository repository = validateSessionRepository(context,
+						RedisIndexedSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("flushMode", FlushMode.ON_SAVE);
+			});
+	}
+
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesDefaultRedis(String keyNamespace,
 			FlushMode flushMode, SaveMode saveMode) {
 		return (context) -> {
@@ -209,6 +238,26 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 		@Override
 		public void configure(RedisConnection connection) {
 			connection.serverCommands().setConfig("set-max-intset-entries", "1024");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomizerConfiguration {
+
+		@Bean
+		SessionRepositoryCustomizer<RedisSessionRepository> sessionRepositoryCustomizer() {
+			return (repository) -> repository.setFlushMode(FlushMode.ON_SAVE);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class IndexedCustomizerConfiguration {
+
+		@Bean
+		SessionRepositoryCustomizer<RedisIndexedSessionRepository> sessionRepositoryCustomizer() {
+			return (repository) -> repository.setFlushMode(FlushMode.ON_SAVE);
 		}
 
 	}

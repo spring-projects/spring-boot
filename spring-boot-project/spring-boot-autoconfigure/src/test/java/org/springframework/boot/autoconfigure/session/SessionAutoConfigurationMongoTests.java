@@ -32,6 +32,9 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
@@ -75,6 +78,13 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 			.run(validateSpringSessionUsesMongo("foo"));
 	}
 
+	@Test
+	void whenTheUserDefinesTheirOwnSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
+		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class)
+			.withPropertyValues("spring.session.mongodb.collection-name=foo")
+			.run(validateSpringSessionUsesMongo("customized"));
+	}
+
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName) {
 		return validateSpringSessionUsesMongo(collectionName,
 				new ServerProperties().getServlet().getSession().getTimeout());
@@ -88,6 +98,16 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 			assertThat(repository).hasFieldOrPropertyWithValue("collectionName", collectionName);
 			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", timeout);
 		};
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomizerConfiguration {
+
+		@Bean
+		SessionRepositoryCustomizer<MongoIndexedSessionRepository> sessionRepositoryCustomizer() {
+			return (repository) -> repository.setCollectionName("customized");
+		}
+
 	}
 
 }
