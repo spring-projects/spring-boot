@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
+import java.net.URI;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokenManager;
 import org.neo4j.driver.AuthTokenManagers;
 import org.neo4j.driver.AuthTokens;
@@ -118,6 +120,60 @@ class Neo4jAutoConfigurationIntegrationTests {
 			AuthTokenManager authTokenManager() {
 				return AuthTokenManagers.expirationBased(() -> AuthTokens.basic("neo4j", neo4jServer.getAdminPassword())
 					.expiringAt(System.currentTimeMillis() + 5_000));
+			}
+
+		}
+
+	}
+
+	@SpringBootTest
+	@Nested
+	class DriverWithCustomConnectionDetailsIgnoresAuthTokenManager {
+
+		@DynamicPropertySource
+		static void neo4jProperties(DynamicPropertyRegistry registry) {
+			registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
+			registry.add("spring.neo4j.authentication.username", () -> "wrong");
+			registry.add("spring.neo4j.authentication.password", () -> "alsowrong");
+		}
+
+		@Autowired
+		private Driver driver;
+
+		@Test
+		void driverCanHandleRequest() {
+			try (Session session = this.driver.session(); Transaction tx = session.beginTransaction()) {
+				Result statementResult = tx.run("MATCH (n:Thing) RETURN n LIMIT 1");
+				assertThat(statementResult.hasNext()).isFalse();
+				tx.commit();
+			}
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ImportAutoConfiguration(Neo4jAutoConfiguration.class)
+		static class TestConfiguration {
+
+			@Bean
+			AuthTokenManager authTokenManager() {
+				return AuthTokenManagers.expirationBased(() -> AuthTokens.basic("wrongagain", "stillwrong")
+					.expiringAt(System.currentTimeMillis() + 5_000));
+			}
+
+			@Bean
+			Neo4jConnectionDetails connectionDetails() {
+				return new Neo4jConnectionDetails() {
+
+					@Override
+					public URI getUri() {
+						return URI.create(neo4jServer.getBoltUrl());
+					}
+
+					@Override
+					public AuthToken getAuthToken() {
+						return AuthTokens.basic("neo4j", neo4jServer.getAdminPassword());
+					}
+
+				};
 			}
 
 		}

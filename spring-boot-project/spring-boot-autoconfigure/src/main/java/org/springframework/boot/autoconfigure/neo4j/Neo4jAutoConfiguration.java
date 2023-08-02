@@ -64,19 +64,20 @@ public class Neo4jAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Neo4jConnectionDetails.class)
-	PropertiesNeo4jConnectionDetails neo4jConnectionDetails(Neo4jProperties properties) {
-		return new PropertiesNeo4jConnectionDetails(properties);
+	PropertiesNeo4jConnectionDetails neo4jConnectionDetails(Neo4jProperties properties,
+			ObjectProvider<AuthTokenManager> authTokenManager) {
+		return new PropertiesNeo4jConnectionDetails(properties, authTokenManager.getIfUnique());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
-			Neo4jConnectionDetails connectionDetails, ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers,
-			ObjectProvider<AuthTokenManager> authTokenManagers) {
+			Neo4jConnectionDetails connectionDetails,
+			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
 
 		Config config = mapDriverConfig(properties, connectionDetails,
 				configBuilderCustomizers.orderedStream().toList());
-		AuthTokenManager authTokenManager = authTokenManagers.getIfUnique();
+		AuthTokenManager authTokenManager = connectionDetails.getAuthTokenManager();
 		if (authTokenManager != null) {
 			return GraphDatabase.driver(connectionDetails.getUri(), authTokenManager, config);
 		}
@@ -187,8 +188,11 @@ public class Neo4jAutoConfiguration {
 
 		private final Neo4jProperties properties;
 
-		PropertiesNeo4jConnectionDetails(Neo4jProperties properties) {
+		private final AuthTokenManager authTokenManager;
+
+		PropertiesNeo4jConnectionDetails(Neo4jProperties properties, AuthTokenManager authTokenManager) {
 			this.properties = properties;
+			this.authTokenManager = authTokenManager;
 		}
 
 		@Override
@@ -215,6 +219,11 @@ public class Neo4jAutoConfiguration {
 				return AuthTokens.kerberos(kerberosTicket);
 			}
 			return AuthTokens.none();
+		}
+
+		@Override
+		public AuthTokenManager getAuthTokenManager() {
+			return this.authTokenManager;
 		}
 
 	}
