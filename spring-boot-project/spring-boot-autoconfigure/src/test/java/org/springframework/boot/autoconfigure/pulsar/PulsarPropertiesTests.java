@@ -420,7 +420,7 @@ class PulsarPropertiesTests {
 	@Nested
 	class ProducerPropertiesTests {
 
-		private ProducerConfigProperties producerProps;
+		private PulsarProperties.ProducerConfigProperties producerProps;
 
 		@BeforeEach
 		void producerTestProps() {
@@ -508,7 +508,7 @@ class PulsarPropertiesTests {
 	@Nested
 	class ConsumerPropertiesTests {
 
-		private ConsumerConfigProperties consumerProps;
+		private PulsarProperties.ConsumerConfigProperties consumerProps;
 
 		@BeforeEach
 		void consumerTestProps() {

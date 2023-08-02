@@ -18,19 +18,38 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
+import org.apache.pulsar.client.api.CompressionType;
+import org.apache.pulsar.client.api.ConsumerBuilder;
+import org.apache.pulsar.client.api.ConsumerCryptoFailureAction;
+import org.apache.pulsar.client.api.DeadLetterPolicy;
+import org.apache.pulsar.client.api.HashingScheme;
+import org.apache.pulsar.client.api.MessageRoutingMode;
+import org.apache.pulsar.client.api.ProducerAccessMode;
+import org.apache.pulsar.client.api.ProducerCryptoFailureAction;
 import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.client.api.RegexSubscriptionMode;
+import org.apache.pulsar.client.api.SubscriptionInitialPosition;
+import org.apache.pulsar.client.api.SubscriptionMode;
+import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
+import org.springframework.pulsar.core.ProducerBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarAdminBuilderCustomizer;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.listener.AckMode;
@@ -54,7 +73,6 @@ import org.springframework.util.unit.DataSize;
 @ConfigurationProperties(prefix = "spring.pulsar")
 public class PulsarProperties {
 
-	@NestedConfigurationProperty
 	private final ConsumerConfigProperties consumer = new ConsumerConfigProperties();
 
 	private final Client client = new Client();
@@ -63,7 +81,6 @@ public class PulsarProperties {
 
 	private final Listener listener = new Listener();
 
-	@NestedConfigurationProperty
 	private final ProducerConfigProperties producer = new ProducerConfigProperties();
 
 	private final Template template = new Template();
@@ -161,6 +178,948 @@ public class PulsarProperties {
 
 		public void setInitialCapacity(int initialCapacity) {
 			this.initialCapacity = initialCapacity;
+		}
+
+	}
+
+	public static class ConsumerConfigProperties {
+
+		private final Acknowledgement ack = new Acknowledgement();
+
+		private final Chunking chunk = new Chunking();
+
+		private final Subscription subscription = new Subscription();
+
+		/**
+		 * Comma-separated list of topics the consumer subscribes to.
+		 */
+		private Set<String> topics;
+
+		/**
+		 * Pattern for topics the consumer subscribes to.
+		 */
+		private Pattern topicsPattern;
+
+		/**
+		 * Number of messages that can be accumulated before the consumer calls "receive".
+		 */
+		private int receiverQueueSize = 1000;
+
+		/**
+		 * Maximum number of messages that a consumer can be pushed at once from a broker
+		 * across all partitions.
+		 */
+		private int maxTotalReceiverQueueSizeAcrossPartitions = 50000;
+
+		/**
+		 * Consumer name to identify a particular consumer from the topic stats.
+		 */
+		private String name;
+
+		/**
+		 * Priority level for shared subscription consumers.
+		 */
+		private int priorityLevel = 0;
+
+		/**
+		 * Action the consumer will take in case of decryption failure.
+		 */
+		private ConsumerCryptoFailureAction cryptoFailureAction = ConsumerCryptoFailureAction.FAIL;
+
+		/**
+		 * Map of properties to add to the consumer.
+		 */
+		private SortedMap<String, String> properties = new TreeMap<>();
+
+		/**
+		 * Whether to read messages from the compacted topic rather than the full message
+		 * backlog.
+		 */
+		private boolean readCompacted = false;
+
+		/**
+		 * Auto-discovery period for topics when topic pattern is used in minutes.
+		 */
+		private int patternAutoDiscoveryPeriod = 1;
+
+		/**
+		 * Dead letter policy to use.
+		 */
+		@NestedConfigurationProperty
+		private DeadLetterPolicyConfig deadLetterPolicy = new DeadLetterPolicyConfig();
+
+		/**
+		 * Whether to auto retry messages.
+		 */
+		private boolean retryEnable = false;
+
+		/**
+		 * Whether the consumer auto-subscribes for partition increase. This is only for
+		 * partitioned consumers.
+		 */
+		private boolean autoUpdatePartitions = true;
+
+		/**
+		 * Interval of partitions discovery updates.
+		 */
+		private Duration autoUpdatePartitionsInterval = Duration.ofMinutes(1);
+
+		/**
+		 * Whether to include the given position of any reset operation (eg. the various
+		 * seek APIs on the Pulsar consumer).
+		 */
+		private boolean resetIncludeHead = false;
+
+		/**
+		 * Whether pooling of messages and the underlying data buffers is enabled.
+		 */
+		private boolean poolMessages = false;
+
+		/**
+		 * Whether to start the consumer in a paused state.
+		 */
+		private boolean startPaused = false;
+
+		public ConsumerConfigProperties.Acknowledgement getAck() {
+			return this.ack;
+		}
+
+		public ConsumerConfigProperties.Chunking getChunk() {
+			return this.chunk;
+		}
+
+		public ConsumerConfigProperties.Subscription getSubscription() {
+			return this.subscription;
+		}
+
+		public Set<String> getTopics() {
+			return this.topics;
+		}
+
+		public void setTopics(Set<String> topics) {
+			this.topics = topics;
+		}
+
+		public Pattern getTopicsPattern() {
+			return this.topicsPattern;
+		}
+
+		public void setTopicsPattern(Pattern topicsPattern) {
+			this.topicsPattern = topicsPattern;
+		}
+
+		public int getReceiverQueueSize() {
+			return this.receiverQueueSize;
+		}
+
+		public void setReceiverQueueSize(int receiverQueueSize) {
+			this.receiverQueueSize = receiverQueueSize;
+		}
+
+		public int getMaxTotalReceiverQueueSizeAcrossPartitions() {
+			return this.maxTotalReceiverQueueSizeAcrossPartitions;
+		}
+
+		public void setMaxTotalReceiverQueueSizeAcrossPartitions(int maxTotalReceiverQueueSizeAcrossPartitions) {
+			this.maxTotalReceiverQueueSizeAcrossPartitions = maxTotalReceiverQueueSizeAcrossPartitions;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getPriorityLevel() {
+			return this.priorityLevel;
+		}
+
+		public void setPriorityLevel(int priorityLevel) {
+			this.priorityLevel = priorityLevel;
+		}
+
+		public ConsumerCryptoFailureAction getCryptoFailureAction() {
+			return this.cryptoFailureAction;
+		}
+
+		public void setCryptoFailureAction(ConsumerCryptoFailureAction cryptoFailureAction) {
+			this.cryptoFailureAction = cryptoFailureAction;
+		}
+
+		public SortedMap<String, String> getProperties() {
+			return this.properties;
+		}
+
+		public void setProperties(SortedMap<String, String> properties) {
+			this.properties = properties;
+		}
+
+		public boolean getReadCompacted() {
+			return this.readCompacted;
+		}
+
+		public void setReadCompacted(boolean readCompacted) {
+			this.readCompacted = readCompacted;
+		}
+
+		public int getPatternAutoDiscoveryPeriod() {
+			return this.patternAutoDiscoveryPeriod;
+		}
+
+		public void setPatternAutoDiscoveryPeriod(int patternAutoDiscoveryPeriod) {
+			this.patternAutoDiscoveryPeriod = patternAutoDiscoveryPeriod;
+		}
+
+		public DeadLetterPolicyConfig getDeadLetterPolicy() {
+			return this.deadLetterPolicy;
+		}
+
+		public void setDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicy) {
+			this.deadLetterPolicy = deadLetterPolicy;
+		}
+
+		public boolean getRetryEnable() {
+			return this.retryEnable;
+		}
+
+		public void setRetryEnable(boolean retryEnable) {
+			this.retryEnable = retryEnable;
+		}
+
+		public boolean getAutoUpdatePartitions() {
+			return this.autoUpdatePartitions;
+		}
+
+		public void setAutoUpdatePartitions(boolean autoUpdatePartitions) {
+			this.autoUpdatePartitions = autoUpdatePartitions;
+		}
+
+		public Duration getAutoUpdatePartitionsInterval() {
+			return this.autoUpdatePartitionsInterval;
+		}
+
+		public void setAutoUpdatePartitionsInterval(Duration autoUpdatePartitionsInterval) {
+			this.autoUpdatePartitionsInterval = autoUpdatePartitionsInterval;
+		}
+
+		public boolean getResetIncludeHead() {
+			return this.resetIncludeHead;
+		}
+
+		public void setResetIncludeHead(boolean resetIncludeHead) {
+			this.resetIncludeHead = resetIncludeHead;
+		}
+
+		public boolean getPoolMessages() {
+			return this.poolMessages;
+		}
+
+		public void setPoolMessages(boolean poolMessages) {
+			this.poolMessages = poolMessages;
+		}
+
+		public boolean getStartPaused() {
+			return this.startPaused;
+		}
+
+		public void setStartPaused(boolean startPaused) {
+			this.startPaused = startPaused;
+		}
+
+		@SuppressWarnings("deprecation")
+		public ConsumerBuilderCustomizer<?> toConsumerBuilderCustomizer() {
+			return (consumerBuilder) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(this::getTopics).as(ArrayList::new).to(consumerBuilder::topics);
+				map.from(this::getTopicsPattern).to(consumerBuilder::topicsPattern);
+				map.from(this::getReceiverQueueSize).to(consumerBuilder::receiverQueueSize);
+				map.from(this::getMaxTotalReceiverQueueSizeAcrossPartitions)
+					.to(consumerBuilder::maxTotalReceiverQueueSizeAcrossPartitions);
+				map.from(this::getName).to(consumerBuilder::consumerName);
+				map.from(this::getPriorityLevel).to(consumerBuilder::priorityLevel);
+				map.from(this::getCryptoFailureAction).to(consumerBuilder::cryptoFailureAction);
+				map.from(this::getProperties).to(consumerBuilder::properties);
+				map.from(this::getReadCompacted).to(consumerBuilder::readCompacted);
+				map.from(this::getPatternAutoDiscoveryPeriod).to(consumerBuilder::patternAutoDiscoveryPeriod);
+				map.from(this::getDeadLetterPolicy)
+					.as(this::toPulsarDeadLetterPolicy)
+					.to(consumerBuilder::deadLetterPolicy);
+				map.from(this::getRetryEnable).to(consumerBuilder::enableRetry);
+				map.from(this::getAutoUpdatePartitions).to(consumerBuilder::autoUpdatePartitions);
+				map.from(this::getAutoUpdatePartitionsInterval)
+					.asInt(Duration::toMillis)
+					.to(consumerBuilder, (cb, val) -> cb.autoUpdatePartitionsInterval(val, TimeUnit.MILLISECONDS));
+				map.from(this::getResetIncludeHead).whenTrue().to((b) -> consumerBuilder.startMessageIdInclusive());
+				map.from(this::getPoolMessages).to(consumerBuilder::poolMessages);
+				map.from(this::getStartPaused).to(consumerBuilder::startPaused);
+				mapAcknowledgementProperties(this.getAck(), map, consumerBuilder);
+				mapChunkingProperties(this.getChunk(), map, consumerBuilder);
+				mapSubscriptionProperties(this.getSubscription(), map, consumerBuilder);
+			};
+		}
+
+		/**
+		 * Maps from a dead letter policy config props to a 'DeadLetterPolicy' expected by
+		 * Pulsar.
+		 * @param deadLetterPolicyConfig the config props defining the DLP to construct
+		 * @return the Pulsar expected dead letter policy
+		 */
+		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicyConfig) {
+			var map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			var dlpBuilder = DeadLetterPolicy.builder();
+			var dlpConfigProps = this.getDeadLetterPolicy();
+			map.from(dlpConfigProps::getMaxRedeliverCount).to(dlpBuilder::maxRedeliverCount);
+			map.from(dlpConfigProps::getRetryLetterTopic).to(dlpBuilder::retryLetterTopic);
+			map.from(dlpConfigProps::getDeadLetterTopic).to(dlpBuilder::deadLetterTopic);
+			map.from(dlpConfigProps::getInitialSubscriptionName).to(dlpBuilder::initialSubscriptionName);
+			return dlpBuilder.build();
+		}
+
+		private void mapAcknowledgementProperties(ConsumerConfigProperties.Acknowledgement ack, PropertyMapper map,
+				ConsumerBuilder<?> consumerBuilder) {
+			map.from(ack::getBatchIndexEnabled).to(consumerBuilder::enableBatchIndexAcknowledgment);
+			map.from(ack::getGroupTime)
+				.as(Duration::toMillis)
+				.to(consumerBuilder, (cb, val) -> cb.acknowledgmentGroupTime(val, TimeUnit.MILLISECONDS));
+			map.from(ack::getReceiptEnabled).to(consumerBuilder::isAckReceiptEnabled);
+			map.from(ack::getRedeliveryDelay)
+				.as(Duration::toMillis)
+				.to(consumerBuilder, (cb, val) -> cb.negativeAckRedeliveryDelay(val, TimeUnit.MILLISECONDS));
+			map.from(ack::getTimeout)
+				.as(Duration::toMillis)
+				.to(consumerBuilder, (cb, val) -> cb.ackTimeout(val, TimeUnit.MILLISECONDS));
+			map.from(ack::getTimeoutTickDuration)
+				.as(Duration::toMillis)
+				.to(consumerBuilder, (cb, val) -> cb.ackTimeoutTickTime(val, TimeUnit.MILLISECONDS));
+		}
+
+		private void mapChunkingProperties(ConsumerConfigProperties.Chunking chunk, PropertyMapper map,
+				ConsumerBuilder<?> consumerBuilder) {
+			map.from(chunk::getAutoAckOldestOnQueueFull).to(consumerBuilder::autoAckOldestChunkedMessageOnQueueFull);
+			map.from(chunk::getExpireTimeIncomplete)
+				.as(Duration::toMillis)
+				.to(consumerBuilder, (cb, val) -> cb.expireTimeOfIncompleteChunkedMessage(val, TimeUnit.MILLISECONDS));
+			map.from(chunk::getMaxPendingMessages).to(consumerBuilder::maxPendingChunkedMessage);
+		}
+
+		private void mapSubscriptionProperties(ConsumerConfigProperties.Subscription subscription, PropertyMapper map,
+				ConsumerBuilder<?> consumerBuilder) {
+			map.from(subscription::getInitialPosition).to(consumerBuilder::subscriptionInitialPosition);
+			map.from(subscription::getMode).to(consumerBuilder::subscriptionMode);
+			map.from(subscription::getName).to(consumerBuilder::subscriptionName);
+			map.from(subscription::getProperties).to(consumerBuilder::subscriptionProperties);
+			map.from(subscription::getTopicsMode).to(consumerBuilder::subscriptionTopicsMode);
+			map.from(subscription::getReplicateState).to(consumerBuilder::replicateSubscriptionState);
+			map.from(subscription::getType).to(consumerBuilder::subscriptionType);
+		}
+
+		public static class Acknowledgement {
+
+			/**
+			 * Whether the batching index acknowledgment is enabled.
+			 */
+			private Boolean batchIndexEnabled = false;
+
+			/**
+			 * Time to group acknowledgements before sending them to the broker.
+			 */
+			private Duration groupTime = Duration.ofMillis(100);
+
+			/**
+			 * Whether an acknowledgement receipt is enabled.
+			 */
+			private Boolean receiptEnabled = false;
+
+			/**
+			 * Delay before re-delivering messages that have failed to be processed.
+			 */
+			private Duration redeliveryDelay = Duration.ofMinutes(1);
+
+			/**
+			 * Timeout for unacked messages to be redelivered.
+			 */
+			private Duration timeout = Duration.ZERO;
+
+			/**
+			 * Precision for the ack timeout messages tracker.
+			 */
+			private Duration timeoutTickDuration = Duration.ofSeconds(1);
+
+			public Boolean getBatchIndexEnabled() {
+				return this.batchIndexEnabled;
+			}
+
+			public void setBatchIndexEnabled(Boolean batchIndexEnabled) {
+				this.batchIndexEnabled = batchIndexEnabled;
+			}
+
+			public Duration getGroupTime() {
+				return this.groupTime;
+			}
+
+			public void setGroupTime(Duration groupTime) {
+				this.groupTime = groupTime;
+			}
+
+			public Boolean getReceiptEnabled() {
+				return this.receiptEnabled;
+			}
+
+			public void setReceiptEnabled(Boolean receiptEnabled) {
+				this.receiptEnabled = receiptEnabled;
+			}
+
+			public Duration getRedeliveryDelay() {
+				return this.redeliveryDelay;
+			}
+
+			public void setRedeliveryDelay(Duration redeliveryDelay) {
+				this.redeliveryDelay = redeliveryDelay;
+			}
+
+			public Duration getTimeout() {
+				return this.timeout;
+			}
+
+			public void setTimeout(Duration timeout) {
+				this.timeout = timeout;
+			}
+
+			public Duration getTimeoutTickDuration() {
+				return this.timeoutTickDuration;
+			}
+
+			public void setTimeoutTickDuration(Duration timeoutTickDuration) {
+				this.timeoutTickDuration = timeoutTickDuration;
+			}
+
+		}
+
+		public static class Chunking {
+
+			/**
+			 * Whether to automatically drop outstanding uncompleted chunked messages once
+			 * the consumer queue reaches the threshold set by the 'maxPendingMessages'
+			 * property.
+			 */
+			private Boolean autoAckOldestOnQueueFull = true;
+
+			/**
+			 * The maximum time period for a consumer to receive all chunks of a message -
+			 * if this threshold is exceeded the consumer will expire the incomplete
+			 * chunks.
+			 */
+			private Duration expireTimeIncomplete = Duration.ofMinutes(1);
+
+			/**
+			 * Maximum number of chunked messages to be kept in memory.
+			 */
+			private Integer maxPendingMessages = 10;
+
+			public Boolean getAutoAckOldestOnQueueFull() {
+				return this.autoAckOldestOnQueueFull;
+			}
+
+			public void setAutoAckOldestOnQueueFull(Boolean autoAckOldestOnQueueFull) {
+				this.autoAckOldestOnQueueFull = autoAckOldestOnQueueFull;
+			}
+
+			public Duration getExpireTimeIncomplete() {
+				return this.expireTimeIncomplete;
+			}
+
+			public void setExpireTimeIncomplete(Duration expireTimeIncomplete) {
+				this.expireTimeIncomplete = expireTimeIncomplete;
+			}
+
+			public Integer getMaxPendingMessages() {
+				return this.maxPendingMessages;
+			}
+
+			public void setMaxPendingMessages(Integer maxPendingMessages) {
+				this.maxPendingMessages = maxPendingMessages;
+			}
+
+		}
+
+		public static class Subscription {
+
+			/**
+			 * Position where to initialize a newly created subscription.
+			 */
+			private SubscriptionInitialPosition initialPosition = SubscriptionInitialPosition.Latest;
+
+			/**
+			 * Subscription mode to be used when subscribing to the topic.
+			 */
+			private SubscriptionMode mode = SubscriptionMode.Durable;
+
+			/**
+			 * Subscription name for the consumer.
+			 */
+			private String name;
+
+			/**
+			 * Map of properties to add to the subscription.
+			 */
+			private Map<String, String> properties = new HashMap<>();
+
+			/**
+			 * Determines which type of topics (persistent, non-persistent, or all) the
+			 * consumer should be subscribed to when using pattern subscriptions.
+			 */
+			private RegexSubscriptionMode topicsMode = RegexSubscriptionMode.PersistentOnly;
+
+			/**
+			 * Whether to replicate subscription state.
+			 */
+			private Boolean replicateState = false;
+
+			/**
+			 * Subscription type to be used when subscribing to a topic.
+			 */
+			private SubscriptionType type = SubscriptionType.Exclusive;
+
+			public SubscriptionInitialPosition getInitialPosition() {
+				return this.initialPosition;
+			}
+
+			public void setInitialPosition(SubscriptionInitialPosition initialPosition) {
+				this.initialPosition = initialPosition;
+			}
+
+			public SubscriptionMode getMode() {
+				return this.mode;
+			}
+
+			public void setMode(SubscriptionMode mode) {
+				this.mode = mode;
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+			public Map<String, String> getProperties() {
+				return this.properties;
+			}
+
+			public void setProperties(Map<String, String> properties) {
+				this.properties = properties;
+			}
+
+			public RegexSubscriptionMode getTopicsMode() {
+				return this.topicsMode;
+			}
+
+			public void setTopicsMode(RegexSubscriptionMode topicsMode) {
+				this.topicsMode = topicsMode;
+			}
+
+			public Boolean getReplicateState() {
+				return this.replicateState;
+			}
+
+			public void setReplicateState(Boolean replicateState) {
+				this.replicateState = replicateState;
+			}
+
+			public SubscriptionType getType() {
+				return this.type;
+			}
+
+			public void setType(SubscriptionType type) {
+				this.type = type;
+			}
+
+		}
+
+	}
+
+	public static class ProducerConfigProperties {
+
+		private final Batching batch = new Batching();
+
+		/**
+		 * Topic the producer will publish to.
+		 */
+		private String topicName;
+
+		/**
+		 * Name for the producer. If not assigned, a unique name is generated.
+		 */
+		private String name;
+
+		/**
+		 * Time before a message has to be acknowledged by the broker.
+		 */
+		private Duration sendTimeout = Duration.ofSeconds(30);
+
+		/**
+		 * Whether the "send" and "sendAsync" methods should block if the outgoing message
+		 * queue is full.
+		 */
+		private boolean blockIfQueueFull;
+
+		/**
+		 * Maximum number of pending messages for the producer.
+		 */
+		private int maxPendingMessages = 1000;
+
+		/**
+		 * Maximum number of pending messages across all the partitions.
+		 */
+		private int maxPendingMessagesAcrossPartitions = 50000;
+
+		/**
+		 * Message routing mode for a partitioned producer.
+		 */
+		private MessageRoutingMode messageRoutingMode = MessageRoutingMode.RoundRobinPartition;
+
+		/**
+		 * Message hashing scheme to choose the partition to which the message is
+		 * published.
+		 */
+		private HashingScheme hashingScheme = HashingScheme.JavaStringHash;
+
+		/**
+		 * Action the producer will take in case of encryption failure.
+		 */
+		private ProducerCryptoFailureAction cryptoFailureAction = ProducerCryptoFailureAction.FAIL;
+
+		/**
+		 * Whether to split large-size messages into multiple chunks.
+		 */
+		private boolean chunkingEnabled;
+
+		/**
+		 * Names of the public encryption keys to use when encrypting data.
+		 */
+		private Set<String> encryptionKeys = new HashSet<>();
+
+		/**
+		 * Message compression type.
+		 */
+		private CompressionType compressionType;
+
+		/**
+		 * Baseline for the sequence ids for messages published by the producer.
+		 */
+		private Long initialSequenceId;
+
+		/**
+		 * Whether partitioned producer automatically discover new partitions at runtime.
+		 */
+		private boolean autoUpdatePartitions = true;
+
+		/**
+		 * Interval of partitions discovery updates.
+		 */
+		private Duration autoUpdatePartitionsInterval = Duration.ofMinutes(1);
+
+		/**
+		 * Whether the multiple schema mode is enabled.
+		 */
+		private boolean multiSchema = true;
+
+		/**
+		 * Type of access to the topic the producer requires.
+		 */
+		private ProducerAccessMode accessMode = ProducerAccessMode.Shared;
+
+		/**
+		 * Whether producers in Shared mode register and connect immediately to the owner
+		 * broker of each partition or start lazily on demand.
+		 */
+		private boolean lazyStartPartitionedProducers = false;
+
+		/**
+		 * Map of properties to add to the producer.
+		 */
+		private Map<String, String> properties = new HashMap<>();
+
+		private final PulsarProperties.Cache cache = new PulsarProperties.Cache();
+
+		public Batching getBatch() {
+			return this.batch;
+		}
+
+		public String getTopicName() {
+			return this.topicName;
+		}
+
+		public void setTopicName(String topicName) {
+			this.topicName = topicName;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Duration getSendTimeout() {
+			return this.sendTimeout;
+		}
+
+		public void setSendTimeout(Duration sendTimeout) {
+			this.sendTimeout = sendTimeout;
+		}
+
+		public boolean getBlockIfQueueFull() {
+			return this.blockIfQueueFull;
+		}
+
+		public void setBlockIfQueueFull(boolean blockIfQueueFull) {
+			this.blockIfQueueFull = blockIfQueueFull;
+		}
+
+		public int getMaxPendingMessages() {
+			return this.maxPendingMessages;
+		}
+
+		public void setMaxPendingMessages(int maxPendingMessages) {
+			this.maxPendingMessages = maxPendingMessages;
+		}
+
+		public int getMaxPendingMessagesAcrossPartitions() {
+			return this.maxPendingMessagesAcrossPartitions;
+		}
+
+		public void setMaxPendingMessagesAcrossPartitions(int maxPendingMessagesAcrossPartitions) {
+			this.maxPendingMessagesAcrossPartitions = maxPendingMessagesAcrossPartitions;
+		}
+
+		public MessageRoutingMode getMessageRoutingMode() {
+			return this.messageRoutingMode;
+		}
+
+		public void setMessageRoutingMode(MessageRoutingMode messageRoutingMode) {
+			this.messageRoutingMode = messageRoutingMode;
+		}
+
+		public HashingScheme getHashingScheme() {
+			return this.hashingScheme;
+		}
+
+		public void setHashingScheme(HashingScheme hashingScheme) {
+			this.hashingScheme = hashingScheme;
+		}
+
+		public ProducerCryptoFailureAction getCryptoFailureAction() {
+			return this.cryptoFailureAction;
+		}
+
+		public void setCryptoFailureAction(ProducerCryptoFailureAction cryptoFailureAction) {
+			this.cryptoFailureAction = cryptoFailureAction;
+		}
+
+		public boolean getChunkingEnabled() {
+			return this.chunkingEnabled;
+		}
+
+		public void setChunkingEnabled(boolean chunkingEnabled) {
+			this.chunkingEnabled = chunkingEnabled;
+		}
+
+		public Set<String> getEncryptionKeys() {
+			return this.encryptionKeys;
+		}
+
+		public void setEncryptionKeys(Set<String> encryptionKeys) {
+			this.encryptionKeys = encryptionKeys;
+		}
+
+		public CompressionType getCompressionType() {
+			return this.compressionType;
+		}
+
+		public void setCompressionType(CompressionType compressionType) {
+			this.compressionType = compressionType;
+		}
+
+		public Long getInitialSequenceId() {
+			return this.initialSequenceId;
+		}
+
+		public void setInitialSequenceId(Long initialSequenceId) {
+			this.initialSequenceId = initialSequenceId;
+		}
+
+		public boolean getAutoUpdatePartitions() {
+			return this.autoUpdatePartitions;
+		}
+
+		public void setAutoUpdatePartitions(boolean autoUpdatePartitions) {
+			this.autoUpdatePartitions = autoUpdatePartitions;
+		}
+
+		public Duration getAutoUpdatePartitionsInterval() {
+			return this.autoUpdatePartitionsInterval;
+		}
+
+		public void setAutoUpdatePartitionsInterval(Duration autoUpdatePartitionsInterval) {
+			this.autoUpdatePartitionsInterval = autoUpdatePartitionsInterval;
+		}
+
+		public boolean getMultiSchema() {
+			return this.multiSchema;
+		}
+
+		public void setMultiSchema(boolean multiSchema) {
+			this.multiSchema = multiSchema;
+		}
+
+		public ProducerAccessMode getAccessMode() {
+			return this.accessMode;
+		}
+
+		public void setAccessMode(ProducerAccessMode accessMode) {
+			this.accessMode = accessMode;
+		}
+
+		public boolean getLazyStartPartitionedProducers() {
+			return this.lazyStartPartitionedProducers;
+		}
+
+		public void setLazyStartPartitionedProducers(boolean lazyStartPartitionedProducers) {
+			this.lazyStartPartitionedProducers = lazyStartPartitionedProducers;
+		}
+
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
+		public void setProperties(Map<String, String> properties) {
+			this.properties = properties;
+		}
+
+		public PulsarProperties.Cache getCache() {
+			return this.cache;
+		}
+
+		@SuppressWarnings("deprecation")
+		public ProducerBuilderCustomizer<?> toProducerBuilderCustomizer() {
+			return (producerBuilder) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(this::getTopicName).to(producerBuilder::topic);
+				map.from(this::getName).to(producerBuilder::producerName);
+				map.from(this::getSendTimeout)
+					.asInt(Duration::toMillis)
+					.to(producerBuilder, (pb, val) -> pb.sendTimeout(val, TimeUnit.MILLISECONDS));
+				map.from(this::getBlockIfQueueFull).to(producerBuilder::blockIfQueueFull);
+				map.from(this::getMaxPendingMessages).to(producerBuilder::maxPendingMessages);
+				map.from(this::getMaxPendingMessagesAcrossPartitions)
+					.to(producerBuilder::maxPendingMessagesAcrossPartitions);
+				map.from(this::getMessageRoutingMode).to(producerBuilder::messageRoutingMode);
+				map.from(this::getHashingScheme).to(producerBuilder::hashingScheme);
+				map.from(this::getCryptoFailureAction).to(producerBuilder::cryptoFailureAction);
+				map.from(this::getBatch)
+					.as(Batching::getMaxPublishDelay)
+					.as(Duration::toMillis)
+					.to(producerBuilder, (pb, val) -> pb.batchingMaxPublishDelay(val, TimeUnit.MILLISECONDS));
+				map.from(this::getBatch)
+					.as(Batching::getPartitionSwitchFrequencyByPublishDelay)
+					.to(producerBuilder::roundRobinRouterBatchingPartitionSwitchFrequency);
+				map.from(this::getBatch).as(Batching::getMaxMessages).to(producerBuilder::batchingMaxMessages);
+				map.from(this::getBatch)
+					.as(Batching::getMaxBytes)
+					.asInt(DataSize::toBytes)
+					.to(producerBuilder::batchingMaxBytes);
+				map.from(this::getBatch).as(Batching::getEnabled).to(producerBuilder::enableBatching);
+				map.from(this::getChunkingEnabled).to(producerBuilder::enableChunking);
+				map.from(this::getEncryptionKeys)
+					.to((encryptionKeys) -> encryptionKeys.forEach(producerBuilder::addEncryptionKey));
+				map.from(this::getCompressionType).to(producerBuilder::compressionType);
+				map.from(this::getInitialSequenceId).to(producerBuilder::initialSequenceId);
+				map.from(this::getAutoUpdatePartitions).to(producerBuilder::autoUpdatePartitions);
+				map.from(this::getAutoUpdatePartitionsInterval)
+					.asInt(Duration::toMillis)
+					.to(producerBuilder, (pb, val) -> pb.autoUpdatePartitionsInterval(val, TimeUnit.MILLISECONDS));
+				map.from(this::getMultiSchema).to(producerBuilder::enableMultiSchema);
+				map.from(this::getAccessMode).to(producerBuilder::accessMode);
+				map.from(this::getLazyStartPartitionedProducers)
+					.to(producerBuilder::enableLazyStartPartitionedProducers);
+				map.from(this::getProperties).to(producerBuilder::properties);
+			};
+		}
+
+		public static class Batching {
+
+			/**
+			 * Time period within which the messages sent will be batched.
+			 */
+			private Duration maxPublishDelay = Duration.ofMillis(1);
+
+			/**
+			 * Partition switch frequency while batching of messages is enabled and using
+			 * round-robin routing mode for non-keyed message.
+			 */
+			private Integer partitionSwitchFrequencyByPublishDelay = 10;
+
+			/**
+			 * Maximum number of messages to be batched.
+			 */
+			private Integer maxMessages = 1000;
+
+			/**
+			 * Maximum number of bytes permitted in a batch.
+			 */
+			private DataSize maxBytes = DataSize.ofKilobytes(128);
+
+			/**
+			 * Whether to automatically batch messages.
+			 */
+			private Boolean enabled = true;
+
+			public Duration getMaxPublishDelay() {
+				return this.maxPublishDelay;
+			}
+
+			public void setMaxPublishDelay(Duration maxPublishDelay) {
+				this.maxPublishDelay = maxPublishDelay;
+			}
+
+			public Integer getPartitionSwitchFrequencyByPublishDelay() {
+				return this.partitionSwitchFrequencyByPublishDelay;
+			}
+
+			public void setPartitionSwitchFrequencyByPublishDelay(Integer partitionSwitchFrequencyByPublishDelay) {
+				this.partitionSwitchFrequencyByPublishDelay = partitionSwitchFrequencyByPublishDelay;
+			}
+
+			public Integer getMaxMessages() {
+				return this.maxMessages;
+			}
+
+			public void setMaxMessages(Integer maxMessages) {
+				this.maxMessages = maxMessages;
+			}
+
+			public DataSize getMaxBytes() {
+				return this.maxBytes;
+			}
+
+			public void setMaxBytes(DataSize maxBytes) {
+				this.maxBytes = maxBytes;
+			}
+
+			public Boolean getEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(Boolean enabled) {
+				this.enabled = enabled;
+			}
+
 		}
 
 	}
