@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.neo4j.driver.AuthToken;
+import org.neo4j.driver.AuthTokenManager;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;
 import org.neo4j.driver.Config.TrustStrategy;
@@ -63,8 +64,9 @@ public class Neo4jAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Neo4jConnectionDetails.class)
-	PropertiesNeo4jConnectionDetails neo4jConnectionDetails(Neo4jProperties properties) {
-		return new PropertiesNeo4jConnectionDetails(properties);
+	PropertiesNeo4jConnectionDetails neo4jConnectionDetails(Neo4jProperties properties,
+			ObjectProvider<AuthTokenManager> authTokenManager) {
+		return new PropertiesNeo4jConnectionDetails(properties, authTokenManager.getIfUnique());
 	}
 
 	@Bean
@@ -72,9 +74,14 @@ public class Neo4jAutoConfiguration {
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
 			Neo4jConnectionDetails connectionDetails,
 			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
-		AuthToken authToken = connectionDetails.getAuthToken();
+
 		Config config = mapDriverConfig(properties, connectionDetails,
 				configBuilderCustomizers.orderedStream().toList());
+		AuthTokenManager authTokenManager = connectionDetails.getAuthTokenManager();
+		if (authTokenManager != null) {
+			return GraphDatabase.driver(connectionDetails.getUri(), authTokenManager, config);
+		}
+		AuthToken authToken = connectionDetails.getAuthToken();
 		return GraphDatabase.driver(connectionDetails.getUri(), authToken, config);
 	}
 
@@ -181,8 +188,11 @@ public class Neo4jAutoConfiguration {
 
 		private final Neo4jProperties properties;
 
-		PropertiesNeo4jConnectionDetails(Neo4jProperties properties) {
+		private final AuthTokenManager authTokenManager;
+
+		PropertiesNeo4jConnectionDetails(Neo4jProperties properties, AuthTokenManager authTokenManager) {
 			this.properties = properties;
+			this.authTokenManager = authTokenManager;
 		}
 
 		@Override
@@ -209,6 +219,11 @@ public class Neo4jAutoConfiguration {
 				return AuthTokens.kerberos(kerberosTicket);
 			}
 			return AuthTokens.none();
+		}
+
+		@Override
+		public AuthTokenManager getAuthTokenManager() {
+			return this.authTokenManager;
 		}
 
 	}
