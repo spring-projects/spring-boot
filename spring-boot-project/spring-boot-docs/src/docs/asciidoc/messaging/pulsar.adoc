@@ -16,18 +16,17 @@ However, using the imperative components in a fully reactive app is not recommen
 When you use the Pulsar starter, Spring Boot will auto-configure and register a `PulsarClient` bean.
 
 By default, the application tries to connect to a local Pulsar instance at `pulsar://localhost:6650`.
-This can be adjusted by setting the `spring.pulsar.client.service-url` property to a different value.
+This can be adjusted by setting the configprop:spring.pulsar.client.service-url[] property to a different value.
 
 TIP: The value must be a valid https://pulsar.apache.org/docs/client-libraries-java/#connection-urls[Pulsar Protocol] URL
 
 [[messaging.pulsar.connecting.auth]]
 ==== Authentication
 To connect to a Pulsar cluster that requires authentication, you need to specify which authentication plugin to use by setting the `authPluginClassName` and any parameters required by the plugin.
-You can set the parameters as a single JSON-encoded string or as map of parameter names to parameter values.
-The following listings show both approaches:
+You can set the parameters as a map of parameter names to parameter values.
+The following example shows how to configure the `AuthenticationOAuth2` plugin.
 
-[source,yaml,indent=0,subs="verbatim",role="primary"]
-.[.small]#Map#
+[source,yaml,indent=0,subs="verbatim"]
 ----
 spring:
   pulsar:
@@ -39,22 +38,10 @@ spring:
         audience: urn:sn:acme:dev:my-instance
 ----
 
-.[.small]#JSON encoded string#
-[source,yaml,indent=0,subs="verbatim",role="secondary"]
-----
-spring:
-  pulsar:
-    client:
-      auth-plugin-class-name: org.apache.pulsar.client.impl.auth.oauth2.AuthenticationOAuth2
-      auth-params: "{\"privateKey\":\"file:///Users/some-key.json\",\"issuerUrl\":\"https://auth.server.cloud/", \"audience\":\"urn:sn:acme:dev:my-instance"}"
-----
-
-TIP: Using a map is the recommended approach as it is less error-prone and easier to read.
-
 For complete details on the client and authentication see the Spring Pulsar {spring-pulsar-docs}#pulsar-client[reference documentation].
 
 [[messaging.pulsar.connecting-reactive]]
-=== Connecting to Pulsar (Reactively)
+=== Connecting to Pulsar Reactively
 When the Reactive auto-configuration is activated, Spring Boot will auto-configure and register a `ReactivePulsarClient` bean.
 
 The `ReactivePulsarClient` adapts an instance of the previously described `PulsarClient`.
@@ -65,7 +52,7 @@ Therefore, use the properties described previously (`spring.pulsar.client.*`) to
 Spring Pulsar's `PulsarAdministration` client is also auto-configured.
 
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
-This can be adjusted by setting the `spring.pulsar.administration.service-url` property to a different value in the form `(http|https)://<host>:<port>`.
+This can be adjusted by setting the configprop:spring.pulsar.administration.service-url[] property to a different value in the form `(http|https)://<host>:<port>`.
 
 [[messaging.pulsar.admin.auth]]
 ==== Authentication
@@ -107,7 +94,7 @@ Spring Boot auto-configuration provides all the components necessary for `Pulsar
 You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
 
 [[messaging.pulsar.receiving-reactive]]
-=== Receiving a Message (Reactively)
+=== Receiving a Message Reactively
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, any bean can be annotated with `@ReactivePulsarListener` to create a reactive listener endpoint.
 The following component creates a reactive listener endpoint on the `someTopic` topic:
 
