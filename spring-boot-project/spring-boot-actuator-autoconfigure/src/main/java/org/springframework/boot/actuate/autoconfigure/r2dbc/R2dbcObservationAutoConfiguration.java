@@ -72,7 +72,7 @@ public class R2dbcObservationAutoConfiguration {
 		ConnectionFactoryOptions options = optionsCapableConnectionFactory.getOptions();
 		Object host = options.getValue(ConnectionFactoryOptions.HOST);
 		Object port = options.getValue(ConnectionFactoryOptions.PORT);
-		if ((!(host instanceof String hostAsString) || !(port instanceof Integer portAsInt))) {
+		if (!(host instanceof String hostAsString) || !(port instanceof Integer portAsInt)) {
 			return HostAndPort.empty();
 		}
 		return new HostAndPort(hostAsString, portAsInt);
