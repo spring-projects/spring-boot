@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
@@ -45,11 +43,6 @@ public class SpringBootMockServletContext extends MockServletContext {
 	private final ResourceLoader resourceLoader;
 
 	private File emptyRootDirectory;
-
-	/**
-	 * Guards access to {@link #emptyRootDirectory}.
-	 */
-	private final Lock emptyRootDirectoryLock = new ReentrantLock();
 
 	public SpringBootMockServletContext(String resourceBasePath) {
 		this(resourceBasePath, new FileSystemResourceLoader());
@@ -98,20 +91,18 @@ public class SpringBootMockServletContext extends MockServletContext {
 		if (resource == null && "/".equals(path)) {
 			// Liquibase assumes that "/" always exists, if we don't have a directory
 			// use a temporary location.
-			this.emptyRootDirectoryLock.lock();
 			try {
 				if (this.emptyRootDirectory == null) {
-					File tempDirectory = Files.createTempDirectory("spr-servlet").toFile();
-					tempDirectory.deleteOnExit();
-					this.emptyRootDirectory = tempDirectory;
+					synchronized (this) {
+						File tempDirectory = Files.createTempDirectory("spr-servlet").toFile();
+						tempDirectory.deleteOnExit();
+						this.emptyRootDirectory = tempDirectory;
+					}
 				}
 				return this.emptyRootDirectory.toURI().toURL();
 			}
 			catch (IOException ex) {
 				// Ignore
-			}
-			finally {
-				this.emptyRootDirectoryLock.unlock();
 			}
 		}
 		return resource;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.openqa.selenium.WebDriver;
 
@@ -54,17 +52,11 @@ public class WebDriverScope implements Scope {
 	private static final String[] BEAN_CLASSES = { WEB_DRIVER_CLASS,
 			"org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder" };
 
-	/**
-	 * Guards access to {@link #instances}.
-	 */
-	private final Lock instancesLock = new ReentrantLock();
-
 	private final Map<String, Object> instances = new HashMap<>();
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
-		this.instancesLock.lock();
-		try {
+		synchronized (this.instances) {
 			Object instance = this.instances.get(name);
 			if (instance == null) {
 				instance = objectFactory.getObject();
@@ -72,19 +64,12 @@ public class WebDriverScope implements Scope {
 			}
 			return instance;
 		}
-		finally {
-			this.instancesLock.unlock();
-		}
 	}
 
 	@Override
 	public Object remove(String name) {
-		this.instancesLock.lock();
-		try {
+		synchronized (this.instances) {
 			return this.instances.remove(name);
-		}
-		finally {
-			this.instancesLock.unlock();
 		}
 	}
 
@@ -108,8 +93,7 @@ public class WebDriverScope implements Scope {
 	 */
 	boolean reset() {
 		boolean reset = false;
-		this.instancesLock.lock();
-		try {
+		synchronized (this.instances) {
 			for (Object instance : this.instances.values()) {
 				reset = true;
 				if (instance instanceof WebDriver webDriver) {
@@ -117,9 +101,6 @@ public class WebDriverScope implements Scope {
 				}
 			}
 			this.instances.clear();
-		}
-		finally {
-			this.instancesLock.unlock();
 		}
 		return reset;
 	}

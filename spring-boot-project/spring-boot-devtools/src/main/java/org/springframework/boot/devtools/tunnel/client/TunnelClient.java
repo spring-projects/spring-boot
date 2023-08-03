@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,7 +49,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	private final TunnelClientListeners listeners = new TunnelClientListeners();
 
-	private final Lock lock = new ReentrantLock();
+	private final Object monitor = new Object();
 
 	private final int listenPort;
 
@@ -68,8 +66,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			if (this.serverThread == null) {
 				try {
 					start();
@@ -79,9 +76,6 @@ public class TunnelClient implements SmartInitializingSingleton {
 				}
 			}
 		}
-		finally {
-			this.lock.unlock();
-		}
 	}
 
 	/**
@@ -90,8 +84,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 	 * @throws IOException in case of I/O errors
 	 */
 	public int start() throws IOException {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			Assert.state(this.serverThread == null, "Server already started");
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
@@ -101,9 +94,6 @@ public class TunnelClient implements SmartInitializingSingleton {
 			this.serverThread.start();
 			return port;
 		}
-		finally {
-			this.lock.unlock();
-		}
 	}
 
 	/**
@@ -111,8 +101,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 	 * @throws IOException in case of I/O errors
 	 */
 	public void stop() throws IOException {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			if (this.serverThread != null) {
 				this.serverThread.close();
 				try {
@@ -124,18 +113,11 @@ public class TunnelClient implements SmartInitializingSingleton {
 				this.serverThread = null;
 			}
 		}
-		finally {
-			this.lock.unlock();
-		}
 	}
 
 	protected final ServerThread getServerThread() {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			return this.serverThread;
-		}
-		finally {
-			this.lock.unlock();
 		}
 	}
 

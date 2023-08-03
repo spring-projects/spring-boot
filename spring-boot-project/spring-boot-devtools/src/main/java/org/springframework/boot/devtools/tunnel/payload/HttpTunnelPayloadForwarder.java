@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.util.Assert;
 
@@ -38,7 +36,7 @@ public class HttpTunnelPayloadForwarder {
 
 	private final Map<Long, HttpTunnelPayload> queue = new HashMap<>();
 
-	private final Lock lock = new ReentrantLock();
+	private final Object monitor = new Object();
 
 	private final WritableByteChannel targetChannel;
 
@@ -54,8 +52,7 @@ public class HttpTunnelPayloadForwarder {
 	}
 
 	public void forward(HttpTunnelPayload payload) throws IOException {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			long seq = payload.getSequence();
 			if (this.lastRequestSeq != seq - 1) {
 				Assert.state(this.queue.size() < MAXIMUM_QUEUE_SIZE, "Too many messages queued");
@@ -69,9 +66,6 @@ public class HttpTunnelPayloadForwarder {
 			if (queuedItem != null) {
 				forward(queuedItem);
 			}
-		}
-		finally {
-			this.lock.unlock();
 		}
 	}
 

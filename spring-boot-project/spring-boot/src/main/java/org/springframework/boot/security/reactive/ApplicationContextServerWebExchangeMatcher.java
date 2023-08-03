@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.security.reactive;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 import reactor.core.publisher.Mono;
@@ -46,7 +44,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 
 	private volatile Supplier<C> context;
 
-	private final Lock contextLock = new ReentrantLock();
+	private final Object contextLock = new Object();
 
 	public ApplicationContextServerWebExchangeMatcher(Class<? extends C> contextClass) {
 		Assert.notNull(contextClass, "Context class must not be null");
@@ -83,16 +81,12 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 
 	protected Supplier<C> getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
-			this.contextLock.lock();
-			try {
+			synchronized (this.contextLock) {
 				if (this.context == null) {
 					Supplier<C> createdContext = createContext(exchange);
 					initialized(createdContext);
 					this.context = createdContext;
 				}
-			}
-			finally {
-				this.contextLock.unlock();
 			}
 		}
 		return this.context;

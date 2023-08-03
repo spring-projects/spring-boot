@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.
@@ -211,7 +209,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	private static final class FileAccess {
 
-		private final Lock lock = new ReentrantLock();
+		private final Object monitor = new Object();
 
 		private final File file;
 
@@ -223,14 +221,10 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		private int read(byte[] bytes, long position, int offset, int length) throws IOException {
-			this.lock.lock();
-			try {
+			synchronized (this.monitor) {
 				openIfNecessary();
 				this.randomAccessFile.seek(position);
 				return this.randomAccessFile.read(bytes, offset, length);
-			}
-			finally {
-				this.lock.unlock();
 			}
 		}
 
@@ -247,27 +241,19 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		private void close() throws IOException {
-			this.lock.lock();
-			try {
+			synchronized (this.monitor) {
 				if (this.randomAccessFile != null) {
 					this.randomAccessFile.close();
 					this.randomAccessFile = null;
 				}
 			}
-			finally {
-				this.lock.unlock();
-			}
 		}
 
 		private int readByte(long position) throws IOException {
-			this.lock.lock();
-			try {
+			synchronized (this.monitor) {
 				openIfNecessary();
 				this.randomAccessFile.seek(position);
 				return this.randomAccessFile.read();
-			}
-			finally {
-				this.lock.unlock();
 			}
 		}
 

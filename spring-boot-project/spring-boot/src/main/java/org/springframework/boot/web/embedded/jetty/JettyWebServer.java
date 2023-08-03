@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -59,7 +57,7 @@ public class JettyWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(JettyWebServer.class);
 
-	private final Lock lock = new ReentrantLock();
+	private final Object monitor = new Object();
 
 	private final Server server;
 
@@ -115,23 +113,21 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private void initialize() {
-		this.lock.lock();
-		try {
-			// Cache the connectors and then remove them to prevent requests being
-			// handled before the application context is ready.
-			this.connectors = this.server.getConnectors();
-			JettyWebServer.this.server.setConnectors(null);
-			// Start the server so that the ServletContext is available
-			this.server.start();
-			this.server.setStopAtShutdown(false);
-		}
-		catch (Throwable ex) {
-			// Ensure process isn't left running
-			stopSilently();
-			throw new WebServerException("Unable to start embedded Jetty web server", ex);
-		}
-		finally {
-			this.lock.unlock();
+		synchronized (this.monitor) {
+			try {
+				// Cache the connectors and then remove them to prevent requests being
+				// handled before the application context is ready.
+				this.connectors = this.server.getConnectors();
+				JettyWebServer.this.server.setConnectors(null);
+				// Start the server so that the ServletContext is available
+				this.server.start();
+				this.server.setStopAtShutdown(false);
+			}
+			catch (Throwable ex) {
+				// Ensure process isn't left running
+				stopSilently();
+				throw new WebServerException("Unable to start embedded Jetty web server", ex);
+			}
 		}
 	}
 
@@ -146,8 +142,7 @@ public class JettyWebServer implements WebServer {
 
 	@Override
 	public void start() throws WebServerException {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			if (this.started) {
 				return;
 			}
@@ -183,9 +178,6 @@ public class JettyWebServer implements WebServer {
 				stopSilently();
 				throw new WebServerException("Unable to start embedded Jetty server", ex);
 			}
-		}
-		finally {
-			this.lock.unlock();
 		}
 	}
 
@@ -249,8 +241,7 @@ public class JettyWebServer implements WebServer {
 
 	@Override
 	public void stop() {
-		this.lock.lock();
-		try {
+		synchronized (this.monitor) {
 			this.started = false;
 			if (this.gracefulShutdown != null) {
 				this.gracefulShutdown.abort();
@@ -267,22 +258,17 @@ public class JettyWebServer implements WebServer {
 				throw new WebServerException("Unable to stop embedded Jetty server", ex);
 			}
 		}
-		finally {
-			this.lock.unlock();
-		}
 	}
 
 	@Override
 	public void destroy() {
-		this.lock.lock();
-		try {
-			this.server.stop();
-		}
-		catch (Exception ex) {
-			throw new WebServerException("Unable to destroy embedded Jetty server", ex);
-		}
-		finally {
-			this.lock.unlock();
+		synchronized (this.monitor) {
+			try {
+				this.server.stop();
+			}
+			catch (Exception ex) {
+				throw new WebServerException("Unable to destroy embedded Jetty server", ex);
+			}
 		}
 	}
 

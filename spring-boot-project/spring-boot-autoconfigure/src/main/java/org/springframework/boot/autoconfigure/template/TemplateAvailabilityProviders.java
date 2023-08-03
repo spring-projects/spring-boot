@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
@@ -54,13 +52,7 @@ public class TemplateAvailabilityProviders {
 	private final Map<String, TemplateAvailabilityProvider> resolved = new ConcurrentHashMap<>(CACHE_LIMIT);
 
 	/**
-	 * Guards access to {@link #cache}.
-	 */
-	private final Lock cacheLock = new ReentrantLock();
-
-	/**
-	 * Map from view name resolve template view, protected by {@link #cacheLock} when
-	 * accessed.
+	 * Map from view name resolve template view, synchronized when accessed.
 	 */
 	private final Map<String, TemplateAvailabilityProvider> cache = new LinkedHashMap<>(CACHE_LIMIT, 0.75f, true) {
 
@@ -141,15 +133,11 @@ public class TemplateAvailabilityProviders {
 		}
 		TemplateAvailabilityProvider provider = this.resolved.get(view);
 		if (provider == null) {
-			this.cacheLock.lock();
-			try {
+			synchronized (this.cache) {
 				provider = findProvider(view, environment, classLoader, resourceLoader);
 				provider = (provider != null) ? provider : NONE;
 				this.resolved.put(view, provider);
 				this.cache.put(view, provider);
-			}
-			finally {
-				this.cacheLock.unlock();
 			}
 		}
 		return (provider != NONE) ? provider : null;

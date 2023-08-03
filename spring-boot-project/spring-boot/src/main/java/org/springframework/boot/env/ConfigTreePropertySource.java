@@ -29,8 +29,6 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -260,11 +258,6 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final Path path;
 
-		/**
-		 * Guards access to {@link #resource}.
-		 */
-		private final Lock resourceLock = new ReentrantLock();
-
 		private final Resource resource;
 
 		private final Origin origin;
@@ -348,14 +341,10 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 				}
 				if (this.content == null) {
 					assertStillExists();
-					this.resourceLock.lock();
-					try {
+					synchronized (this.resource) {
 						if (this.content == null) {
 							this.content = FileCopyUtils.copyToByteArray(this.resource.getInputStream());
 						}
-					}
-					finally {
-						this.resourceLock.unlock();
 					}
 				}
 				return this.content;
