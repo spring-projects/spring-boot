@@ -70,6 +70,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 * @param keyAlias the key alias to use or {@code null} to use a default alias
 	 * @param keyPassword the password to use for the key
+	 * @since 3.2.0
 	 */
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String keyAlias,
 			String keyPassword) {
