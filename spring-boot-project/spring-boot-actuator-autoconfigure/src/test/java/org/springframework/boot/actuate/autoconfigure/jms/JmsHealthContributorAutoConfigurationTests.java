@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.jms;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.jms.JmsHealthIndicator;
@@ -24,6 +26,9 @@ import org.springframework.boot.actuate.ldap.LdapHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JmsHealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class JmsHealthContributorAutoConfigurationTests {
 
@@ -41,6 +47,18 @@ class JmsHealthContributorAutoConfigurationTests {
 	@Test
 	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JmsHealthIndicator.class));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldUseVirtualThreadsIfEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			JmsHealthIndicator jmsHealthIndicator = context.getBean(JmsHealthIndicator.class);
+			assertThat(jmsHealthIndicator).isNotNull();
+			Object taskExecutor = ReflectionTestUtils.getField(jmsHealthIndicator, "taskExecutor");
+			assertThat(taskExecutor).isInstanceOf(SimpleAsyncTaskExecutor.class);
+			SimpleAsyncTaskExecutorAssert.assertThat((SimpleAsyncTaskExecutor) taskExecutor).usesVirtualThreads();
+		});
 	}
 
 	@Test
