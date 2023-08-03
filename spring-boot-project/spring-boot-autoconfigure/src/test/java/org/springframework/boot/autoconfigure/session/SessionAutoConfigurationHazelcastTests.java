@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
@@ -112,6 +113,17 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 		});
 	}
 
+	@Test
+	void whenTheUserDefinesTheirOwnSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
+		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class)
+			.withPropertyValues("spring.session.hazelcast.save-mode=on-get-attribute")
+			.run((context) -> {
+				HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
+						HazelcastIndexedSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("saveMode", SaveMode.ALWAYS);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfiguration {
 
@@ -123,6 +135,16 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 			given(mock.getMap("spring:session:sessions")).willReturn(map);
 			given(mock.getMap("foo:bar:biz")).willReturn(map);
 			return mock;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomizerConfiguration {
+
+		@Bean
+		SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> sessionRepositoryCustomizer() {
+			return (repository) -> repository.setSaveMode(SaveMode.ALWAYS);
 		}
 
 	}
