@@ -185,8 +185,7 @@ resources:
   type: registry-image
   icon: docker
   source:
-    repository: paketobuildpacks/builder
-    tag: base
+    repository: paketobuildpacks/builder-jammy-base
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
