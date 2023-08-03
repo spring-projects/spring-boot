@@ -39,6 +39,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Base class to run a Spring Boot application.
@@ -165,12 +166,23 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private String mainClass;
 
 	/**
-	 * Additional directories besides the classes directory that should be added to the
+	 * Additional directories containing classes or resources that should be added to the
 	 * classpath.
 	 * @since 1.0.0
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * 'additionalClasspathElements'
 	 */
 	@Parameter(property = "spring-boot.run.directories")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	private String[] directories;
+
+	/**
+	 * Additional classpath elements that should be added to the classpath. An element can
+	 * be a directory with classes and resources or a jar file.
+	 * @since 3.2.0
+	 */
+	@Parameter(property = "spring-boot.run.additional-classpath-elements")
+	private String[] additionalClasspathElements;
 
 	/**
 	 * Directory containing the classes and resource files that should be used to run the
@@ -348,7 +360,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
-			addUserDefinedDirectories(urls);
+			addAdditionalClasspathLocations(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
@@ -359,10 +371,17 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addUserDefinedDirectories(List<URL> urls) throws MalformedURLException {
-		if (this.directories != null) {
-			for (String directory : this.directories) {
-				urls.add(new File(directory).toURI().toURL());
+	@SuppressWarnings("removal")
+	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
+		if (!ObjectUtils.isEmpty(this.directories) && !ObjectUtils.isEmpty(this.additionalClasspathElements)) {
+			throw new IllegalStateException(
+					"Either additionalClasspathElements or directories (deprecated) should be set, not both");
+		}
+		String[] elements = !ObjectUtils.isEmpty(this.additionalClasspathElements) ? this.additionalClasspathElements
+				: this.directories;
+		if (elements != null) {
+			for (String element : elements) {
+				urls.add(new File(element).toURI().toURL());
 			}
 		}
 	}
