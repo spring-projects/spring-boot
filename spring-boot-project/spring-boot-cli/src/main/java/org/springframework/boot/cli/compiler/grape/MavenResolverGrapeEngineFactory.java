@@ -25,13 +25,11 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
@@ -46,8 +44,9 @@ public abstract class MavenResolverGrapeEngineFactory {
 	public static MavenResolverGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
 			DependencyResolutionContext dependencyResolutionContext, boolean quiet) {
-		RepositorySystem repositorySystem = createServiceLocator().getService(RepositorySystem.class);
+		RepositorySystem repositorySystem = createRepositorySystem();
 		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils.newSession();
+		repositorySystemSession.setSystemProperties(System.getProperties());
 		ServiceLoader<RepositorySystemSessionAutoConfiguration> autoConfigurations = ServiceLoader
 			.load(RepositorySystemSessionAutoConfiguration.class);
 		for (RepositorySystemSessionAutoConfiguration autoConfiguration : autoConfigurations) {
@@ -58,13 +57,14 @@ public abstract class MavenResolverGrapeEngineFactory {
 				createRepositories(repositoryConfigurations), dependencyResolutionContext, quiet);
 	}
 
-	private static ServiceLocator createServiceLocator() {
-		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+	@SuppressWarnings("deprecation")
+	private static RepositorySystem createRepositorySystem() {
+		org.eclipse.aether.impl.DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositorySystem.class, DefaultRepositorySystem.class);
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-		return locator;
+		return locator.getService(RepositorySystem.class);
 	}
 
 	private static List<RemoteRepository> createRepositories(List<RepositoryConfiguration> repositoryConfigurations) {
