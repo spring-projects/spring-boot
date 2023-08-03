@@ -189,9 +189,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
 		String toMatch = "Upgrade to " + upgrade.getLibrary().getName();
 		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
-			if (existingUpgradeIssue.getTitle()
-				.substring(0, existingUpgradeIssue.getTitle().lastIndexOf(' '))
-				.equals(toMatch)) {
+			String title = existingUpgradeIssue.getTitle();
+			int lastSpaceIndex = title.lastIndexOf(' ');
+			if (lastSpaceIndex > -1) {
+				title = title.substring(0, lastSpaceIndex);
+			}
+			if (title.equals(toMatch)) {
 				return existingUpgradeIssue;
 			}
 		}
