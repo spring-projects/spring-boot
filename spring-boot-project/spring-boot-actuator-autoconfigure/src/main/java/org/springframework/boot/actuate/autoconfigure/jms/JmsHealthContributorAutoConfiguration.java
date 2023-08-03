@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.jms;
 
-import java.time.Duration;
 import java.util.Map;
 
 import jakarta.jms.ConnectionFactory;
@@ -32,16 +31,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
-import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsHealthIndicator}.
  *
  * @author Stephane Nicoll
- * @author Moritz Halbritter
  * @since 2.0.0
  */
 @AutoConfiguration(after = { ActiveMQAutoConfiguration.class, ArtemisAutoConfiguration.class })
@@ -51,24 +46,14 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 public class JmsHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
-	private static final Duration TIMEOUT = Duration.ofSeconds(5);
-
-	public JmsHealthContributorAutoConfiguration(Environment environment) {
-		super((connectionFactory) -> new JmsHealthIndicator(connectionFactory, getTaskExecutor(environment), TIMEOUT));
+	public JmsHealthContributorAutoConfiguration() {
+		super(JmsHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "jmsHealthIndicator", "jmsHealthContributor" })
 	public HealthContributor jmsHealthContributor(Map<String, ConnectionFactory> connectionFactories) {
 		return createContributor(connectionFactories);
-	}
-
-	private static SimpleAsyncTaskExecutor getTaskExecutor(Environment environment) {
-		SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("jms-health-indicator");
-		if (Threading.VIRTUAL.isActive(environment)) {
-			taskExecutor.setVirtualThreads(true);
-		}
-		return taskExecutor;
 	}
 
 }

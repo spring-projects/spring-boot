@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.jms;
 
-import java.time.Duration;
-
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ConnectionMetaData;
@@ -28,8 +26,6 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -45,10 +41,6 @@ import static org.mockito.Mockito.mock;
  */
 class JmsHealthIndicatorTests {
 
-	private static final Duration TIMEOUT = Duration.ofMillis(100);
-
-	private final AsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
-
 	@Test
 	void jmsBrokerIsUp() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
@@ -57,7 +49,7 @@ class JmsHealthIndicatorTests {
 		given(connection.getMetaData()).willReturn(connectionMetaData);
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willReturn(connection);
-		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, this.taskExecutor, TIMEOUT);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("provider", "JMS test provider");
@@ -68,7 +60,7 @@ class JmsHealthIndicatorTests {
 	void jmsBrokerIsDown() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willThrow(new JMSException("test", "123"));
-		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, this.taskExecutor, TIMEOUT);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).doesNotContainKey("provider");
@@ -82,7 +74,7 @@ class JmsHealthIndicatorTests {
 		given(connection.getMetaData()).willReturn(connectionMetaData);
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willReturn(connection);
-		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, this.taskExecutor, TIMEOUT);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).doesNotContainKey("provider");
@@ -98,7 +90,7 @@ class JmsHealthIndicatorTests {
 		given(connection.getMetaData()).willReturn(connectionMetaData);
 		willThrow(new JMSException("Could not start", "123")).given(connection).start();
 		given(connectionFactory.createConnection()).willReturn(connection);
-		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, this.taskExecutor, TIMEOUT);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).doesNotContainKey("provider");
@@ -117,7 +109,7 @@ class JmsHealthIndicatorTests {
 		}).given(connection).close();
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willReturn(connection);
-		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, this.taskExecutor, TIMEOUT);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection closed");
