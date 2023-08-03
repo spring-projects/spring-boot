@@ -64,7 +64,7 @@ public class JmsHealthContributorAutoConfiguration
 	}
 
 	private static SimpleAsyncTaskExecutor getTaskExecutor(Environment environment) {
-		SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("jms-health-indicator-");
+		SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("jms-health-indicator");
 		if (Threading.VIRTUAL.isActive(environment)) {
 			taskExecutor.setVirtualThreads(true);
 		}

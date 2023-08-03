@@ -59,7 +59,7 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 	 */
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	public JmsHealthIndicator(ConnectionFactory connectionFactory) {
-		this(connectionFactory, new SimpleAsyncTaskExecutor("jms-health-indicator-"), Duration.ofSeconds(5));
+		this(connectionFactory, new SimpleAsyncTaskExecutor("jms-health-indicator"), Duration.ofSeconds(5));
 	}
 
 	/**
