@@ -44,6 +44,12 @@ import org.springframework.context.annotation.Import;
  */
 class ElasticsearchClientConfigurations {
 
+	@Import({ JacksonJsonpMapperConfiguration.class, JsonbJsonpMapperConfiguration.class,
+			SimpleJsonpMapperConfiguration.class })
+	static class JsonpMapperConfiguration {
+
+	}
+
 	@ConditionalOnMissingBean(JsonpMapper.class)
 	@ConditionalOnClass(ObjectMapper.class)
 	@Configuration(proxyBeanMethods = false)
@@ -79,9 +85,6 @@ class ElasticsearchClientConfigurations {
 
 	}
 
-	@Import({ JacksonJsonpMapperConfiguration.class, JsonbJsonpMapperConfiguration.class,
-			SimpleJsonpMapperConfiguration.class })
-	@ConditionalOnBean(RestClient.class)
 	@ConditionalOnMissingBean(ElasticsearchTransport.class)
 	static class ElasticsearchTransportConfiguration {
 

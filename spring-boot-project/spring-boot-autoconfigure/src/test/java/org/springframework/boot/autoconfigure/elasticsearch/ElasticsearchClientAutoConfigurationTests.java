@@ -154,7 +154,7 @@ class ElasticsearchClientAutoConfigurationTests {
 	static class TransportConfiguration {
 
 		@Bean
-		ElasticsearchTransport customElasticsearchTransport() {
+		ElasticsearchTransport customElasticsearchTransport(JsonpMapper mapper) {
 			return mock(ElasticsearchTransport.class);
 		}
 
