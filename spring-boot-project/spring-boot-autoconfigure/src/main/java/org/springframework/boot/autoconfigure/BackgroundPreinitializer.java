@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jakarta.validation.Configuration;
 import jakarta.validation.Validation;
 
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -31,6 +32,9 @@ import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
@@ -47,6 +51,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
  * @author Sebastien Deleuze
+ * @author Moritz Halbritter
  * @since 1.3.0
  */
 public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent>, Ordered {
@@ -79,7 +84,8 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		}
 		if (event instanceof ApplicationEnvironmentPreparedEvent
 				&& preinitializationStarted.compareAndSet(false, true)) {
-			performPreinitialization();
+			ConfigurableEnvironment environment = ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
+			performPreinitialization(environment);
 		}
 		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
 				&& preinitializationStarted.get()) {
@@ -92,9 +98,9 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		}
 	}
 
-	private void performPreinitialization() {
+	private void performPreinitialization(Environment environment) {
 		try {
-			Thread thread = new Thread(new Runnable() {
+			Runnable runnable = new Runnable() {
 
 				@Override
 				public void run() {
@@ -102,8 +108,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 					runSafely(new ValidationInitializer());
 					if (!runSafely(new MessageConverterInitializer())) {
 						// If the MessageConverterInitializer fails to run, we still might
-						// be able to
-						// initialize Jackson
+						// be able to initialize Jackson
 						runSafely(new JacksonInitializer());
 					}
 					runSafely(new CharsetInitializer());
@@ -120,8 +125,12 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 					}
 				}
 
-			}, "background-preinit");
-			thread.start();
+			};
+			SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("background-preinit-");
+			if (Threading.VIRTUAL.isActive(environment)) {
+				taskExecutor.setVirtualThreads(true);
+			}
+			taskExecutor.execute(runnable);
 		}
 		catch (Exception ex) {
 			// This will fail on GAE where creating threads is prohibited. We can safely
