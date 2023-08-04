@@ -87,12 +87,13 @@ bom {
 			]
 		}
 	}
-	library("Maven", "3.6.3") {
+	library("Maven", "3.9.4") {
 		group("org.apache.maven") {
 			modules = [
+				"maven-core",
+				"maven-model-builder",
 				"maven-plugin-api",
-				"maven-resolver-provider",
-				"maven-settings-builder"
+				"maven-resolver-provider"
 			]
 		}
 	}
