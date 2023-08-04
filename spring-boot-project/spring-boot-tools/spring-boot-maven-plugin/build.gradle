@@ -16,10 +16,16 @@ dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
 	compileOnly("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
+	compileOnly("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 	compileOnly("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
@@ -40,6 +46,7 @@ dependencies {
 	intTestImplementation("org.testcontainers:junit-jupiter")
 
 	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
