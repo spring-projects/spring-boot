@@ -30,7 +30,6 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ResolutionErrorHandler;
@@ -101,14 +100,16 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	/**
 	 * Local artifact repository used to resolve JUnit platform launcher jars.
 	 */
+	@SuppressWarnings("deprecation")
 	@Parameter(defaultValue = "${localRepository}", required = true, readonly = true)
-	private ArtifactRepository localRepository;
+	private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
 	/**
 	 * Remote artifact repositories used to resolve JUnit platform launcher jars.
 	 */
+	@SuppressWarnings("deprecation")
 	@Parameter(defaultValue = "${project.remoteArtifactRepositories}", required = true, readonly = true)
-	private List<ArtifactRepository> remoteRepositories;
+	private List<org.apache.maven.artifact.repository.ArtifactRepository> remoteRepositories;
 
 	@Component
 	private RepositorySystem repositorySystem;
