@@ -83,6 +83,13 @@ class KafkaPropertiesTests {
 	}
 
 	@Test
+	void fooWorks() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.setFoo("bar");
+		assertThat(properties.getFoo()).isEqualTo("bar");
+	}
+
+	@Test
 	void sslPropertiesWhenKeyStoreLocationAndKeySetShouldThrowException() {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setKeyStoreKey("-----BEGIN");

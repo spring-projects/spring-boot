@@ -71,6 +71,8 @@ public class KafkaProperties {
 	 */
 	private String clientId;
 
+	private String foo;
+
 	/**
 	 * Additional properties, common to producers and consumers, used to configure the
 	 * client.
@@ -111,6 +113,14 @@ public class KafkaProperties {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	public String getFoo() {
+		return this.foo;
+	}
+
+	public void setFoo(String foo) {
+		this.foo = foo;
 	}
 
 	public Map<String, String> getProperties() {
