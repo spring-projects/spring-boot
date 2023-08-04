@@ -37,21 +37,25 @@ public enum JavaVersion {
 
 	/**
 	 * Java 17.
+	 * @since 2.5.3
 	 */
 	SEVENTEEN("17", Console.class, "charset"),
 
 	/**
 	 * Java 18.
+	 * @since 2.5.11
 	 */
 	EIGHTEEN("18", Duration.class, "isPositive"),
 
 	/**
 	 * Java 19.
+	 * @since 2.6.12
 	 */
 	NINETEEN("19", Future.class, "state"),
 
 	/**
 	 * Java 20.
+	 * @since 2.7.13
 	 */
 	TWENTY("20", Class.class, "accessFlags");
 
