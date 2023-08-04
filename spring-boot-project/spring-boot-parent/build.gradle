@@ -104,7 +104,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Invoker", "3.1.0") {
+	library("Maven Invoker", "3.2.0") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-invoker"
