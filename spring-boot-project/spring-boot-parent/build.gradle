@@ -20,7 +20,7 @@ bom {
 			]
 		}
 	}
-	library("API Guardian", "1.1.0") {
+	library("API Guardian", "1.1.2") {
 		group("org.apiguardian") {
 			modules = [
 				"apiguardian-api"
