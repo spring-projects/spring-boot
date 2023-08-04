@@ -111,7 +111,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Plugin Tools", "3.6.0") {
+	library("Maven Plugin Tools", "3.9.0") {
 		group("org.apache.maven.plugin-tools") {
 			modules = [
 				"maven-plugin-annotations"
