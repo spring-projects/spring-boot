@@ -320,7 +320,9 @@ public enum DatabaseDriver {
 	 * @param dataSource data source to inspect
 	 * @return the database driver of {@link #UNKNOWN} if not found
 	 * @since 2.6.0
+	 * @deprecated since 2.7.15 for removal in 3.3.0 with no replacement
 	 */
+	@Deprecated(since = "2.7.15", forRemoval = true)
 	public static DatabaseDriver fromDataSource(DataSource dataSource) {
 		try {
 			String productName = JdbcUtils.commonDatabaseName(
