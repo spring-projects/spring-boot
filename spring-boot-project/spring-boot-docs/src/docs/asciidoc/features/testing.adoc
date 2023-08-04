@@ -615,6 +615,22 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 
 
 
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-r2dbc]]
+==== Auto-configured Data R2DBC Tests
+`@DataR2dbcTest` is similar to `@DataJdbcTest` but is for tests that use Spring Data R2DBC repositories.
+By default, it configures an in-memory embedded database, a `R2dbcEntityTemplate`, and Spring Data R2DBC repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataR2dbcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+
+TIP: A list of the auto-configurations that are enabled by `@DataR2dbcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+By default, Data R2DBC tests are not transactional.
+
+If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
+(See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
+
+
+
 [[features.testing.spring-boot-applications.autoconfigured-jooq]]
 ==== Auto-configured jOOQ Tests
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
