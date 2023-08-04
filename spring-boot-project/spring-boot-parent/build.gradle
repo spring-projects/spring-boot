@@ -41,7 +41,7 @@ bom {
 			]
 		}
 	}
-	library("Commons FileUpload", "1.4") {
+	library("Commons FileUpload", "1.5") {
 		group("commons-fileupload") {
 			modules = [
 				"commons-fileupload"
