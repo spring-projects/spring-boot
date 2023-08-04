@@ -610,7 +610,7 @@ public class PulsarReactiveProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicyConfig deadLetterPolicy = new DeadLetterPolicyConfig();
+		private DeadLetterPolicyConfig deadLetterPolicy;
 
 		/**
 		 * Whether the retry letter topic is enabled.

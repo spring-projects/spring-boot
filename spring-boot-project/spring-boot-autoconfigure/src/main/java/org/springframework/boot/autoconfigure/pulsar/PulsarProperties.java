@@ -246,7 +246,7 @@ public class PulsarProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicyConfig deadLetterPolicy = new DeadLetterPolicyConfig();
+		private DeadLetterPolicyConfig deadLetterPolicy;
 
 		/**
 		 * Whether to auto retry messages.

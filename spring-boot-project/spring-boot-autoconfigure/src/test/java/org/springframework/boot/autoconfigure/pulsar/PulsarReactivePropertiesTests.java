@@ -213,6 +213,15 @@ class PulsarReactivePropertiesTests {
 			assertThat(consumerSpec.getSubscriptionMode()).isEqualTo(SubscriptionMode.NonDurable);
 		}
 
+		@SuppressWarnings("unchecked")
+		@Test
+		void deadLetterPolicyConfigIsNotRequired() {
+			var props = new HashMap<String, String>();
+			var configProps = newConfigPropsFromUserProps(props);
+			var consumerSpec = configProps.buildReactiveMessageConsumerSpec();
+			assertThat(consumerSpec.getDeadLetterPolicy()).isNull();
+		}
+
 		@ParameterizedTest
 		@EnumSource(value = SchedulerType.class, names = "immediate", mode = Mode.EXCLUDE)
 		void acknowledgeScheduler(SchedulerType acknowledgeSchedulerType) {

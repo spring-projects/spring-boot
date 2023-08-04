@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -657,6 +658,18 @@ class PulsarPropertiesTests {
 			var customizer = this.consumerProps.toConsumerBuilderCustomizer();
 			customizer.customize(consumerBuilder);
 			then(consumerBuilder).should(never()).startMessageIdInclusive();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Test
+		void deadLetterPolicyConfigIsNotRequired() {
+			var props = new HashMap<String, String>();
+			this.consumerProps = newConfigPropsFromUserProps(props).getConsumer();
+			assertThat(this.consumerProps.getDeadLetterPolicy()).isNull();
+			var consumerBuilder = mock(ConsumerBuilder.class);
+			var customizer = this.consumerProps.toConsumerBuilderCustomizer();
+			customizer.customize(consumerBuilder);
+			then(consumerBuilder).should(never()).deadLetterPolicy(any(DeadLetterPolicy.class));
 		}
 
 	}
