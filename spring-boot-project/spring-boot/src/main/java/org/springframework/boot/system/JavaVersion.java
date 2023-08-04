@@ -40,66 +40,79 @@ public enum JavaVersion {
 
 	/**
 	 * Java 1.8.
+	 * @since 2.0.0
 	 */
 	EIGHT("1.8", Optional.class, "empty"),
 
 	/**
 	 * Java 9.
+	 * @since 2.0.0
 	 */
 	NINE("9", Optional.class, "stream"),
 
 	/**
 	 * Java 10.
+	 * @since 2.1.7
 	 */
 	TEN("10", Optional.class, "orElseThrow"),
 
 	/**
 	 * Java 11.
+	 * @since 2.1.7
 	 */
 	ELEVEN("11", String.class, "strip"),
 
 	/**
 	 * Java 12.
+	 * @since 2.1.7
 	 */
 	TWELVE("12", String.class, "describeConstable"),
 
 	/**
 	 * Java 13.
+	 * @since 2.1.7
 	 */
 	THIRTEEN("13", String.class, "stripIndent"),
 
 	/**
 	 * Java 14.
+	 * @since 2.3.0
 	 */
 	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess"),
 
 	/**
 	 * Java 15.
+	 * @since 2.3.0
 	 */
 	FIFTEEN("15", CharSequence.class, "isEmpty"),
 
 	/**
 	 * Java 16.
+	 * @since 2.4.2
 	 */
 	SIXTEEN("16", Stream.class, "toList"),
 
 	/**
 	 * Java 17.
+	 * @since 2.5.3
 	 */
 	SEVENTEEN("17", Console.class, "charset"),
 
 	/**
 	 * Java 18.
+	 * @since 2.5.11
 	 */
 	EIGHTEEN("18", Duration.class, "isPositive"),
 
 	/**
 	 * Java 19.
+	 * @since 2.6.12
 	 */
 	NINETEEN("19", Future.class, "state"),
 
 	/**
 	 * Java 20.
+	 * @since 2.7.13
 	 */
 	TWENTY("20", Class.class, "accessFlags");
 
