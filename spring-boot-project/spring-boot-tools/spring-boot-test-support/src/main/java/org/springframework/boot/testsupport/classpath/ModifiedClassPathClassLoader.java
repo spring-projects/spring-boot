@@ -42,7 +42,6 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -230,11 +229,9 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 	private static List<URL> resolveCoordinates(String[] coordinates) {
 		Exception latestFailure = null;
-		DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
-		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-		RepositorySystem repositorySystem = serviceLocator.getService(RepositorySystem.class);
+		RepositorySystem repositorySystem = createRepositorySystem();
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+		session.setSystemProperties(System.getProperties());
 		LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
 		RemoteRepository remoteRepository = new RemoteRepository.Builder("central", "default",
 				"https://repo.maven.apache.org/maven2")
@@ -258,6 +255,15 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		}
 		throw new IllegalStateException("Resolution failed after " + MAX_RESOLUTION_ATTEMPTS + " attempts",
 				latestFailure);
+	}
+
+	@SuppressWarnings("deprecation")
+	private static RepositorySystem createRepositorySystem() {
+		org.eclipse.aether.impl.DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
+		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+		RepositorySystem repositorySystem = serviceLocator.getService(RepositorySystem.class);
+		return repositorySystem;
 	}
 
 	private static List<Dependency> createDependencies(String[] allCoordinates) {
