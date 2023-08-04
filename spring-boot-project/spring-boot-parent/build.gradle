@@ -180,7 +180,7 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "2.2-M1-groovy-4.0") {
+	library("Spock Framework", "2.3-groovy-4.0") {
 		group("org.spockframework") {
 			imports = [
 				"spock-bom"
