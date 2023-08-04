@@ -71,6 +71,9 @@ public class KafkaProperties {
 	 */
 	private String clientId;
 
+	/**
+	 * A foo for the bar.
+	 */
 	private String foo;
 
 	/**
