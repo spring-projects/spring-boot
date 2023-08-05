@@ -64,6 +64,8 @@ public class NettyWebServerFactoryCustomizer
 		map.from(nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		map.from(nettyProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
+		map.from(this.serverProperties.getMaxHttpRequestHeaderSize())
+			.to((maxHttpRequestHeaderSize) -> customizeHttp2MaxHeaderSize(factory, maxHttpRequestHeaderSize.toBytes()));
 		customizeRequestDecoder(factory, map);
 	}
 
@@ -83,25 +85,19 @@ public class NettyWebServerFactoryCustomizer
 	private void customizeRequestDecoder(NettyReactiveWebServerFactory factory, PropertyMapper propertyMapper) {
 		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder((httpRequestDecoderSpec) -> {
 			propertyMapper.from(this.serverProperties.getMaxHttpRequestHeaderSize())
-				.whenNonNull()
 				.to((maxHttpRequestHeader) -> httpRequestDecoderSpec
 					.maxHeaderSize((int) maxHttpRequestHeader.toBytes()));
 			ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
 			maxChunkSize(propertyMapper, httpRequestDecoderSpec, nettyProperties);
 			propertyMapper.from(nettyProperties.getMaxInitialLineLength())
-				.whenNonNull()
 				.to((maxInitialLineLength) -> httpRequestDecoderSpec
 					.maxInitialLineLength((int) maxInitialLineLength.toBytes()));
 			propertyMapper.from(nettyProperties.getH2cMaxContentLength())
-				.whenNonNull()
 				.to((h2cMaxContentLength) -> httpRequestDecoderSpec
 					.h2cMaxContentLength((int) h2cMaxContentLength.toBytes()));
 			propertyMapper.from(nettyProperties.getInitialBufferSize())
-				.whenNonNull()
 				.to((initialBufferSize) -> httpRequestDecoderSpec.initialBufferSize((int) initialBufferSize.toBytes()));
-			propertyMapper.from(nettyProperties.isValidateHeaders())
-				.whenNonNull()
-				.to(httpRequestDecoderSpec::validateHeaders);
+			propertyMapper.from(nettyProperties.isValidateHeaders()).to(httpRequestDecoderSpec::validateHeaders);
 			return httpRequestDecoderSpec;
 		}));
 	}
@@ -110,7 +106,6 @@ public class NettyWebServerFactoryCustomizer
 	private void maxChunkSize(PropertyMapper propertyMapper, HttpRequestDecoderSpec httpRequestDecoderSpec,
 			ServerProperties.Netty nettyProperties) {
 		propertyMapper.from(nettyProperties.getMaxChunkSize())
-			.whenNonNull()
 			.to((maxChunkSize) -> httpRequestDecoderSpec.maxChunkSize((int) maxChunkSize.toBytes()));
 	}
 
@@ -120,6 +115,11 @@ public class NettyWebServerFactoryCustomizer
 
 	private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
 		factory.addServerCustomizers((httpServer) -> httpServer.maxKeepAliveRequests(maxKeepAliveRequests));
+	}
+
+	private void customizeHttp2MaxHeaderSize(NettyReactiveWebServerFactory factory, long maxHttpRequestHeaderSize) {
+		factory.addServerCustomizers(((httpServer) -> httpServer.http2Settings(
+				(http2SettingsSpecBuilder) -> http2SettingsSpecBuilder.maxHeaderListSize(maxHttpRequestHeaderSize))));
 	}
 
 }
