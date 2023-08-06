@@ -46,6 +46,7 @@ import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -354,6 +355,20 @@ class ArtemisAutoConfigurationTests {
 			context.getSourceApplicationContext().close();
 			assertThat(factory.createConnection()).isNull();
 		});
+	}
+
+	@Test
+	void cachingConnectionFactoryNotOnTheClasspathThenSimpleConnectionFactoryAutoConfigured() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+			.withPropertyValues("spring.artemis.pool.enabled=false", "spring.jms.cache.enabled=false")
+			.run((context) -> assertThat(context).hasSingleBean(ActiveMQConnectionFactory.class));
+	}
+
+	@Test
+	void cachingConnectionFactoryNotOnTheClasspathAndCacheEnabledThenSimpleConnectionFactoryNotConfigured() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+			.withPropertyValues("spring.artemis.pool.enabled=false", "spring.jms.cache.enabled=true")
+			.run((context) -> assertThat(context).doesNotHaveBean(ActiveMQConnectionFactory.class));
 	}
 
 	private ConnectionFactory getConnectionFactory(AssertableApplicationContext context) {
