@@ -171,8 +171,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
-		assertThat(this.buildImage.createRequest().getBuilder().getName())
-			.isEqualTo("paketobuildpacks/builder-jammy-base");
+		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("paketobuildpacks/builder");
 	}
 
 	@Test

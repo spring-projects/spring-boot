@@ -93,8 +93,7 @@ class NativeImagePluginActionIntegrationTests {
 		writeDummySpringApplicationAotProcessorMainClass();
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
 			.build("bootBuildImageConfiguration");
-		assertThat(result.getOutput()).contains("paketobuildpacks/builder-jammy-tiny")
-			.contains("BP_NATIVE_IMAGE = true");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder:tiny").contains("BP_NATIVE_IMAGE = true");
 	}
 
 	@TestTemplate

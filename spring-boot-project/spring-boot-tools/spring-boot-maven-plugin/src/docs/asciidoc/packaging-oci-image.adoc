@@ -131,7 +131,7 @@ The following table summarizes the available parameters and their default values
 | `builder` +
 (`spring-boot.build-image.builder`)
 | Name of the Builder image to use.
-| `paketobuildpacks/builder-jammy-base`
+| `paketobuildpacks/builder:base`
 
 | `runImage` +
 (`spring-boot.build-image.runImage`)

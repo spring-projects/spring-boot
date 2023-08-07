@@ -81,6 +81,6 @@ When the {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied to a projec
 . Configures the GraalVM extension to disable Toolchain detection.
 . Configures each GraalVM native binary to require GraalVM 22.3 or later.
 . Configures the `bootJar` task to include the reachability metadata produced by the `collectReachabilityMetadata` task in its jar.
-. Configures the `bootBuildImage` task to use `paketobuildpacks/builder-jammy-tiny` as its builder and to set `BP_NATIVE_IMAGE` to `true` in its environment.
+. Configures the `bootBuildImage` task to use `paketobuildpacks/builder:tiny` as its builder and to set `BP_NATIVE_IMAGE` to `true` in its environment.
 
 
