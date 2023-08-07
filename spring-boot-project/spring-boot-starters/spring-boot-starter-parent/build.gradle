@@ -249,7 +249,7 @@ publishing.publications.withType(MavenPublication) {
 									delegate.artifactId('spring-boot-maven-plugin')
 									configuration {
 										image {
-											delegate.builder("paketobuildpacks/builder:tiny");
+											delegate.builder("paketobuildpacks/builder-jammy-tiny:latest");
 											env {
 												delegate.BP_NATIVE_IMAGE("true")
 											}

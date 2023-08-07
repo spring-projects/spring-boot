@@ -67,7 +67,7 @@ class ImageTests {
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName()).hasToString("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder");
+		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-jammy-base");
 		assertThat(request.getRunImage()).isNull();
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
