@@ -51,7 +51,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -366,9 +365,7 @@ class TaskExecutionAutoConfigurationTests {
 			threadReference.set(currentThread);
 			latch.countDown();
 		});
-		if (!latch.await(30, TimeUnit.SECONDS)) {
-			fail("Timeout while waiting for latch");
-		}
+		assertThat(latch.await(30, TimeUnit.SECONDS)).isTrue();
 		Thread thread = threadReference.get();
 		assertThat(thread).extracting("virtual").as("%s is virtual", thread).isEqualTo(true);
 		return thread.getName();
