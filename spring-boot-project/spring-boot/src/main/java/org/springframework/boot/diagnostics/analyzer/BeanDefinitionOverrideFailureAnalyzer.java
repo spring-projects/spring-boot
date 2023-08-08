@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,11 +46,11 @@ class BeanDefinitionOverrideFailureAnalyzer extends AbstractFailureAnalyzer<Bean
 		if (ex.getBeanDefinition().getResourceDescription() != null) {
 			printer.printf(", defined in %s,", ex.getBeanDefinition().getResourceDescription());
 		}
-		printer.printf(" could not be registered. A bean with that name has already been defined ");
+		printer.print(" could not be registered. A bean with that name has already been defined ");
 		if (ex.getExistingDefinition().getResourceDescription() != null) {
 			printer.printf("in %s ", ex.getExistingDefinition().getResourceDescription());
 		}
-		printer.printf("and overriding is disabled.");
+		printer.print("and overriding is disabled.");
 		return description.toString();
 	}
 

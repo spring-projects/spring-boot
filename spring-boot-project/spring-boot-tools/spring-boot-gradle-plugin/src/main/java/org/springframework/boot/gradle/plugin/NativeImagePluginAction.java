@@ -47,8 +47,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar;
 class NativeImagePluginAction implements PluginApplicationAction {
 
 	@Override
-	public Class<? extends Plugin<? extends Project>> getPluginClass()
-			throws ClassNotFoundException, NoClassDefFoundError {
+	public Class<? extends Plugin<? extends Project>> getPluginClass() {
 		return NativeImagePlugin.class;
 	}
 

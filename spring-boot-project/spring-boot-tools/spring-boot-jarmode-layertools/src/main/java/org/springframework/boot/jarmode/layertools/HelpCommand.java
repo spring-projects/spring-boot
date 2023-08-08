@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,10 @@ class HelpCommand extends Command {
 
 	@Override
 	protected void run(Map<Option, String> options, List<String> parameters) {
-		run(System.out, options, parameters);
+		run(System.out, parameters);
 	}
 
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, List<String> parameters) {
 		Command command = (!parameters.isEmpty()) ? Command.find(this.commands, parameters.get(0)) : null;
 		if (command != null) {
 			printCommandHelp(out, command);
@@ -66,8 +66,7 @@ class HelpCommand extends Command {
 	}
 
 	private void printOptionSummary(PrintStream out, Option option, int padding) {
-		out.println(String.format("  --%-" + padding + "s  %s", option.getNameAndValueDescription(),
-				option.getDescription()));
+		out.printf("  --%-" + padding + "s  %s%n", option.getNameAndValueDescription(), option.getDescription());
 	}
 
 	private String getUsage(Command command) {
@@ -76,7 +75,7 @@ class HelpCommand extends Command {
 		if (!command.getOptions().isEmpty()) {
 			usage.append(" [options]");
 		}
-		command.getParameters().getDescriptions().forEach((param) -> usage.append(" " + param));
+		command.getParameters().getDescriptions().forEach((param) -> usage.append(" ").append(param));
 		return usage.toString();
 	}
 
@@ -95,7 +94,7 @@ class HelpCommand extends Command {
 	}
 
 	private void printCommandSummary(PrintStream out, Command command, int padding) {
-		out.println(String.format("  %-" + padding + "s  %s", command.getName(), command.getDescription()));
+		out.printf("  %-" + padding + "s  %s%n", command.getName(), command.getDescription());
 	}
 
 	private String getJavaCommand() {

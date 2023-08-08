@@ -217,8 +217,8 @@ class ChildManagementContextInitializer
 		}
 
 		static void addIfPossible(ApplicationContext parentContext, ConfigurableApplicationContext childContext) {
-			if (parentContext instanceof ConfigurableApplicationContext) {
-				add((ConfigurableApplicationContext) parentContext, childContext);
+			if (parentContext instanceof ConfigurableApplicationContext configurableApplicationContext) {
+				add(configurableApplicationContext, childContext);
 			}
 		}
 

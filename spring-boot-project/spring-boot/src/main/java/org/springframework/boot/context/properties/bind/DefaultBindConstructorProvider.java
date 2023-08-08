@@ -135,7 +135,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				return new Constructor<?>[0];
 			}
 			return Arrays.stream(type.getDeclaredConstructors())
-				.filter((constructor) -> isNonSynthetic(constructor, type))
+				.filter(Constructors::isNonSynthetic)
 				.toArray(Constructor[]::new);
 		}
 
@@ -148,7 +148,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			}
 		}
 
-		private static boolean isNonSynthetic(Constructor<?> constructor, Class<?> type) {
+		private static boolean isNonSynthetic(Constructor<?> constructor) {
 			return !constructor.isSynthetic();
 		}
 
