@@ -2,20 +2,21 @@
 == Working with NoSQL Technologies
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
 
-* {spring-data-mongodb}[MongoDB]
-* {spring-data-neo4j}[Neo4J]
-* {spring-data-elasticsearch}[Elasticsearch]
-* {spring-data-redis}[Redis]
-* {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
 * {spring-data-cassandra}[Cassandra]
 * {spring-data-couchbase}[Couchbase]
+* {spring-data-elasticsearch}[Elasticsearch]
+* {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
 * {spring-data-ldap}[LDAP]
+* {spring-data-mongodb}[MongoDB]
+* {spring-data-neo4j}[Neo4J]
+* {spring-data-redis}[Redis]
 
-Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Cassandra, Couchbase, LDAP.
-Auto-configuration for InfluxDB is also provided but it is deprecated in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
+Of these, Spring Boot provides auto-configuration for Cassandra, Couchbase, Elasticsearch, LDAP, MongoDB, and Neo4J.
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
 You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {spring-data}.
+
+Spring Boot also provides auto-configuration for the InfluxDB client but it is deprecated in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
 
 
 
