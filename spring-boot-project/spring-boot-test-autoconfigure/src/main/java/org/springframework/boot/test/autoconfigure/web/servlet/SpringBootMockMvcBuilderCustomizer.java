@@ -253,7 +253,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		}
 
 		void clear() {
-			this.lines.get().clear();
+			this.lines.remove();
 		}
 
 	}
