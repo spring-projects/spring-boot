@@ -81,7 +81,8 @@ class HealthEndpointWebExtensionConfiguration {
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.get();
+			.orElseThrow(
+					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)

@@ -103,7 +103,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 		ExposableWebEndpoint health = webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID))
 			.findFirst()
-			.get();
+			.orElseThrow(
+					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HEALTH_ENDPOINT_ID)));
 		return new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(health, healthEndpointGroups);
 	}
 

@@ -120,7 +120,8 @@ public class WebFluxEndpointManagementContextConfiguration {
 		ExposableWebEndpoint health = webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.get();
+			.orElseThrow(
+					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
@@ -162,16 +163,16 @@ public class WebFluxEndpointManagementContextConfiguration {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof ServerCodecConfigurer) {
-				process((ServerCodecConfigurer) bean);
+			if (bean instanceof ServerCodecConfigurer serverCodecConfigurer) {
+				process(serverCodecConfigurer);
 			}
 			return bean;
 		}
 
 		private void process(ServerCodecConfigurer configurer) {
 			for (HttpMessageWriter<?> writer : configurer.getWriters()) {
-				if (writer instanceof EncoderHttpMessageWriter) {
-					process(((EncoderHttpMessageWriter<?>) writer).getEncoder());
+				if (writer instanceof EncoderHttpMessageWriter<?> encoderHttpMessageWriter) {
+					process((encoderHttpMessageWriter).getEncoder());
 				}
 			}
 		}

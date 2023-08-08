@@ -70,7 +70,8 @@ class HealthEndpointReactiveWebExtensionConfiguration {
 			ExposableWebEndpoint health = webEndpoints.stream()
 				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 				.findFirst()
-				.get();
+				.orElseThrow(
+						() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 			return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
 					groups.getAllWithAdditionalPath(WebServerNamespace.SERVER));
 		}
