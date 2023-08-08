@@ -108,7 +108,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
 		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.singleton("dev"),
 				listener);
-		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
+		assertThat(this.environment.getPropertySources()).hasSizeGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources()).isNotEmpty();
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");

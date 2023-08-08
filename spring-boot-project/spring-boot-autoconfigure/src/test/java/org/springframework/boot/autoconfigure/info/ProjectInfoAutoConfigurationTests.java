@@ -119,7 +119,7 @@ class ProjectInfoAutoConfigurationTests {
 	@Test
 	void buildPropertiesCustomInvalidLocation() {
 		this.contextRunner.withPropertyValues("spring.info.build.location=classpath:/org/acme/no-build-info.properties")
-			.run((context) -> assertThat(context.getBeansOfType(BuildProperties.class)).hasSize(0));
+			.run((context) -> assertThat(context.getBeansOfType(BuildProperties.class)).isEmpty());
 	}
 
 	@Test

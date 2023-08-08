@@ -42,7 +42,7 @@ class CassandraDockerComposeConnectionDetailsFactoryIntegrationTests extends Abs
 	void runCreatesConnectionDetails() {
 		CassandraConnectionDetails connectionDetails = run(CassandraConnectionDetails.class);
 		List<Node> contactPoints = connectionDetails.getContactPoints();
-		assertThat(contactPoints.size()).isEqualTo(1);
+		assertThat(contactPoints).hasSize(1);
 		Node node = contactPoints.get(0);
 		assertThat(node.host()).isNotNull();
 		assertThat(node.port()).isGreaterThan(0);

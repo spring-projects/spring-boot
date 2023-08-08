@@ -106,7 +106,7 @@ class DockerComposeFileTests {
 		FileCopyUtils.copy(new byte[0], file);
 		DockerComposeFile composeFile = DockerComposeFile.of(file);
 		assertThat(composeFile).isNotNull();
-		assertThat(composeFile.toString()).isEqualTo(file.getCanonicalPath());
+		assertThat(composeFile).hasToString(file.getCanonicalPath());
 	}
 
 	@Test

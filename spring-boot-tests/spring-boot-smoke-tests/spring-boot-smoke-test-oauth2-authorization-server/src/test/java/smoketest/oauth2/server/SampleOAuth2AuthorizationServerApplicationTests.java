@@ -62,14 +62,14 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		OidcProviderConfiguration config = OidcProviderConfiguration.withClaims(entity.getBody()).build();
-		assertThat(config.getIssuer().toString()).isEqualTo("https://provider.com");
-		assertThat(config.getAuthorizationEndpoint().toString()).isEqualTo("https://provider.com/authorize");
-		assertThat(config.getTokenEndpoint().toString()).isEqualTo("https://provider.com/token");
-		assertThat(config.getJwkSetUrl().toString()).isEqualTo("https://provider.com/jwks");
-		assertThat(config.getTokenRevocationEndpoint().toString()).isEqualTo("https://provider.com/revoke");
-		assertThat(config.getEndSessionEndpoint().toString()).isEqualTo("https://provider.com/logout");
-		assertThat(config.getTokenIntrospectionEndpoint().toString()).isEqualTo("https://provider.com/introspect");
-		assertThat(config.getUserInfoEndpoint().toString()).isEqualTo("https://provider.com/user");
+		assertThat(config.getIssuer()).hasToString("https://provider.com");
+		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
+		assertThat(config.getTokenEndpoint()).hasToString("https://provider.com/token");
+		assertThat(config.getJwkSetUrl()).hasToString("https://provider.com/jwks");
+		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
+		assertThat(config.getEndSessionEndpoint()).hasToString("https://provider.com/logout");
+		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
+		assertThat(config.getUserInfoEndpoint()).hasToString("https://provider.com/user");
 		// OIDC Client Registration is disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
 	}
@@ -82,12 +82,12 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 		OAuth2AuthorizationServerMetadata config = OAuth2AuthorizationServerMetadata.withClaims(entity.getBody())
 			.build();
-		assertThat(config.getIssuer().toString()).isEqualTo("https://provider.com");
-		assertThat(config.getAuthorizationEndpoint().toString()).isEqualTo("https://provider.com/authorize");
-		assertThat(config.getTokenEndpoint().toString()).isEqualTo("https://provider.com/token");
-		assertThat(config.getJwkSetUrl().toString()).isEqualTo("https://provider.com/jwks");
-		assertThat(config.getTokenRevocationEndpoint().toString()).isEqualTo("https://provider.com/revoke");
-		assertThat(config.getTokenIntrospectionEndpoint().toString()).isEqualTo("https://provider.com/introspect");
+		assertThat(config.getIssuer()).hasToString("https://provider.com");
+		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
+		assertThat(config.getTokenEndpoint()).hasToString("https://provider.com/token");
+		assertThat(config.getJwkSetUrl()).hasToString("https://provider.com/jwks");
+		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
+		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
 		// OIDC Client Registration is disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
 	}

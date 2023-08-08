@@ -54,7 +54,7 @@ class ConfigurationPropertySourcesTests {
 		sources.addLast(new MapPropertySource("config", Collections.singletonMap("server.port", "4568")));
 		int size = sources.size();
 		ConfigurationPropertySources.attach(environment);
-		assertThat(sources.size()).isEqualTo(size + 1);
+		assertThat(sources).hasSize(size + 1);
 		PropertyResolver resolver = new PropertySourcesPropertyResolver(sources);
 		assertThat(resolver.getProperty("server.port")).isEqualTo("1234");
 	}

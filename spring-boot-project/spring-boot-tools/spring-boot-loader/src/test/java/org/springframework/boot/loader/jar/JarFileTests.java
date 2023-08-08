@@ -220,7 +220,7 @@ class JarFileTests {
 	@Test
 	void size() throws Exception {
 		try (ZipFile zip = new ZipFile(this.rootJarFile)) {
-			assertThat(this.jarFile.size()).isEqualTo(zip.size());
+			assertThat(this.jarFile).hasSize(zip.size());
 		}
 	}
 
