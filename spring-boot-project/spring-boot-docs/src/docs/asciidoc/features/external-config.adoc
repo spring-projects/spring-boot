@@ -385,7 +385,7 @@ To import these properties, you can add the following to your `application.prope
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
-TIP: The folders under the config tree form the property name.
+TIP: The names of the folders and files under the config tree form the property name.
 In the above example, to access the properties as `username` and `password`, you can set `spring.config.import` to `optional:configtree:/etc/config/myapp`.
 
 NOTE: Filenames with dot notation are also correctly mapped.
@@ -395,6 +395,7 @@ TIP: Configuration tree values can be bound to both string `String` and `byte[]`
 
 If you have multiple config trees to import from the same parent folder you can use a wildcard shortcut.
 Any `configtree:` location that ends with `/*/` will import all immediate children as config trees.
+As with a non-wildcard import, the names of the folders and files under each config tree form the property name.
 
 For example, given the following volume:
 
