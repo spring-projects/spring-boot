@@ -46,6 +46,28 @@ If you want to take complete control of Spring WebFlux, you can add your own `@C
 
 
 
+[[web.reactive.webflux.conversion-service]]
+==== Spring WebFlux Conversion Service
+If you want to customize the `ConversionService` used by Spring WebFlux, you can provide a `WebFluxConfigurer` bean with an `addFormatters` method.
+
+Conversion can also be customized using the `spring.webflux.format.*` configuration properties.
+When not configured, the following defaults are used:
+
+|===
+|Property |`DateTimeFormatter`
+
+|configprop:spring.webflux.format.date[]
+|`ofLocalizedDate(FormatStyle.SHORT)`
+
+|configprop:spring.webflux.format.time[]
+|`ofLocalizedTime(FormatStyle.SHORT)`
+
+|configprop:spring.webflux.format.date-time[]
+|`ofLocalizedDateTime(FormatStyle.SHORT)`
+|===
+
+
+
 [[web.reactive.webflux.httpcodecs]]
 ==== HTTP Codecs with HttpMessageReaders and HttpMessageWriters
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interfaces to convert HTTP requests and responses.
