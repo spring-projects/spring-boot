@@ -122,7 +122,7 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 				location = location.substring(OPTIONAL_LOCATION_PREFIX.length());
 			}
 			for (Resource resource : doGetResources(location, locationResolver)) {
-				if (resource.exists()) {
+				if (resource.isReadable()) {
 					resources.add(resource);
 				}
 				else if (!optional) {
