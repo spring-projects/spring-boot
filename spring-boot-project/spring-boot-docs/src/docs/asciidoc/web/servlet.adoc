@@ -229,25 +229,21 @@ Most standard media types are supported out-of-the-box, but you can also define 
 	        markdown: "text/markdown"
 ----
 
+As of Spring Framework 5.3, Spring MVC supports two strategies for matching request paths to controllers.
+By default, Spring Boot uses the `PathPatternParser` strategy.
+`PathPatternParser` is an https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[optimized implementation] but comes with some restrictions compared to the `AntPathMatcher` strategy.
+`PathPatternParser` restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
+It is also incompatible with configuring the `DispatcherServlet` with a path prefix (configprop:spring.mvc.servlet.path[]).
 
-
-As of Spring Framework 5.3, Spring MVC supports several implementation strategies for matching request paths to Controller handlers.
-It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
-Spring Boot now provides a configuration property to choose and opt in the new strategy:
+The strategy can be configured using the configprop:spring.mvc.pathmatch.matching-strategy[] configuration property, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
 	    pathmatch:
-	      matching-strategy: "path-pattern-parser"
+	      matching-strategy: "ant-path-matcher"
 ----
-
-For more details on why you should consider this new implementation, see the
-https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[dedicated blog post].
-
-NOTE: `PathPatternParser` is an optimized implementation but restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
-It is incompatible with suffix pattern matching or mapping the `DispatcherServlet` with a servlet prefix (configprop:spring.mvc.servlet.path[]).
 
 By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
 To have a `NoHandlerFoundException` thrown instead, set configprop:spring.mvc.throw-exception-if-no-handler-found to `true`.
