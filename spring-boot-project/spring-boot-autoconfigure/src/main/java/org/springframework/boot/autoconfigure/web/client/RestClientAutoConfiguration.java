@@ -50,7 +50,7 @@ public class RestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
 			ObjectProvider<HttpMessageConverters> messageConverters) {
 		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());

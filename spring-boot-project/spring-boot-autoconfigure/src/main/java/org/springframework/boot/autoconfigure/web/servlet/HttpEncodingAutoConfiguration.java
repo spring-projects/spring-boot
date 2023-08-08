@@ -30,6 +30,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
@@ -64,6 +65,7 @@ public class HttpEncodingAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public LocaleCharsetMappingsCustomizer localeCharsetMappingsCustomizer() {
 		return new LocaleCharsetMappingsCustomizer(this.properties);
 	}

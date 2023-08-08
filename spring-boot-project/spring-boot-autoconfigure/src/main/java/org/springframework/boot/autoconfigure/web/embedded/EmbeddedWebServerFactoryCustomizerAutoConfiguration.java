@@ -36,6 +36,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
 /**
@@ -65,6 +67,7 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		TomcatVirtualThreadsWebServerFactoryCustomizer tomcatVirtualThreadsProtocolHandlerCustomizer() {
 			return new TomcatVirtualThreadsWebServerFactoryCustomizer();
@@ -86,6 +89,7 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer(
 				ServerProperties serverProperties) {

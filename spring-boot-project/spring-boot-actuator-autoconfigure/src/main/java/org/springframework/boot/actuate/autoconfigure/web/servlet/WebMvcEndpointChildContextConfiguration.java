@@ -34,6 +34,7 @@ import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -66,6 +67,7 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnBean(ErrorAttributes.class)
 	ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
 		return new ManagementErrorPageCustomizer(serverProperties);

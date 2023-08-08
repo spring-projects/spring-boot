@@ -56,6 +56,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.util.StringUtils;
@@ -76,24 +77,28 @@ import org.springframework.util.StringUtils;
 class ServletManagementChildContextConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
 		return new ServletManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnClass(name = "io.undertow.Undertow")
 	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer() {
 		return new UndertowAccessLogCustomizer();
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
 	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
 		return new TomcatAccessLogCustomizer();
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
 	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer() {
 		return new JettyAccessLogCustomizer();

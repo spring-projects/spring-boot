@@ -133,6 +133,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		ResourceProviderCustomizer resourceProviderCustomizer() {
 			return new ResourceProviderCustomizer();
 		}
@@ -144,18 +145,21 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
 		SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer() {
 			return new SqlServerFlywayConfigurationCustomizer(this.properties);
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
 		OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer() {
 			return new OracleFlywayConfigurationCustomizer(this.properties);
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnClass(name = "org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension")
 		PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer() {
 			return new PostgresqlFlywayConfigurationCustomizer(this.properties);

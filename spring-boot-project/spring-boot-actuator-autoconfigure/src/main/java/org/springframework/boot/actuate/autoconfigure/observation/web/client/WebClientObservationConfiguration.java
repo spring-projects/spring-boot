@@ -25,6 +25,8 @@ import org.springframework.boot.actuate.metrics.web.reactive.client.ObservationW
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -39,6 +41,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 class WebClientObservationConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties, MetricsProperties metricsProperties) {

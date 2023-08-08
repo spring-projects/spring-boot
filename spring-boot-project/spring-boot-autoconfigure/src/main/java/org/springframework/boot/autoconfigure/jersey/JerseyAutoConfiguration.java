@@ -186,6 +186,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	static class JacksonResourceConfigCustomizer {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		ResourceConfigCustomizer jacksonResourceConfigCustomizer(ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);

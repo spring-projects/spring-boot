@@ -26,6 +26,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 
 /**
@@ -38,6 +40,7 @@ import org.springframework.core.io.Resource;
 class HazelcastJCacheCustomizationConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(ObjectProvider<HazelcastInstance> hazelcastInstance) {
 		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
 	}

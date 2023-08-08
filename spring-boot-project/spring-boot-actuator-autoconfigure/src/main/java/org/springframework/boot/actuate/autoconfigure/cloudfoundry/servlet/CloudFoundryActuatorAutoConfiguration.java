@@ -166,6 +166,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
 		@Bean
+		@Order(SecurityProperties.IGNORED_ORDER)
 		IgnoredCloudFoundryPathsWebSecurityCustomizer ignoreCloudFoundryPathsWebSecurityCustomizer(
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
 			return new IgnoredCloudFoundryPathsWebSecurityCustomizer(handlerMapping);
@@ -173,7 +174,6 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	}
 
-	@Order(SecurityProperties.IGNORED_ORDER)
 	static class IgnoredCloudFoundryPathsWebSecurityCustomizer implements WebSecurityCustomizer {
 
 		private final PathMappedEndpoints pathMappedEndpoints;

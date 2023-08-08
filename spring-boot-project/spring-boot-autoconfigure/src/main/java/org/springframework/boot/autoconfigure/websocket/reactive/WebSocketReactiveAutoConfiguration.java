@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * Auto-configuration for WebSocket reactive server in Tomcat, Jetty or Undertow. Requires
@@ -51,6 +53,7 @@ public class WebSocketReactiveAutoConfiguration {
 	static class TomcatWebSocketConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnMissingBean(name = "websocketReactiveWebServerCustomizer")
 		TomcatWebSocketReactiveWebServerCustomizer websocketReactiveWebServerCustomizer() {
 			return new TomcatWebSocketReactiveWebServerCustomizer();
@@ -63,6 +66,7 @@ public class WebSocketReactiveAutoConfiguration {
 	static class JettyWebSocketConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnMissingBean(name = "websocketReactiveWebServerCustomizer")
 		JettyWebSocketReactiveWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketReactiveWebServerCustomizer();

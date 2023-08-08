@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
@@ -72,6 +73,7 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
 			JerseyTagsProvider tagsProvider) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();

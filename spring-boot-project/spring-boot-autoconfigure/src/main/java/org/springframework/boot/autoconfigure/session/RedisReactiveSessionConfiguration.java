@@ -25,6 +25,8 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
@@ -47,6 +49,7 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 class RedisReactiveSessionConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 			ServerProperties serverProperties) {

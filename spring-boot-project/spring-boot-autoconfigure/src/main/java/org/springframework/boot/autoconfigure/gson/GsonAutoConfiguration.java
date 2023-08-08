@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Gson.
@@ -57,6 +58,7 @@ public class GsonAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public StandardGsonBuilderCustomizer standardGsonBuilderCustomizer(GsonProperties gsonProperties) {
 		return new StandardGsonBuilderCustomizer(gsonProperties);
 	}

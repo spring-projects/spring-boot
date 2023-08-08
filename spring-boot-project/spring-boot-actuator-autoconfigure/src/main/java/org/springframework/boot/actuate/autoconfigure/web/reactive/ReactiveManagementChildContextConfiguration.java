@@ -37,6 +37,8 @@ import org.springframework.boot.autoconfigure.web.reactive.TomcatReactiveWebServ
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
@@ -58,6 +60,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 public class ReactiveManagementChildContextConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public ReactiveManagementWebServerFactoryCustomizer reactiveManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
 		return new ReactiveManagementWebServerFactoryCustomizer(beanFactory);

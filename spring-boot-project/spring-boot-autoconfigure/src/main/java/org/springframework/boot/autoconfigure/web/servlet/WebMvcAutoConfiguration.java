@@ -594,6 +594,7 @@ public class WebMvcAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
 				WebProperties webProperties) {
 			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());

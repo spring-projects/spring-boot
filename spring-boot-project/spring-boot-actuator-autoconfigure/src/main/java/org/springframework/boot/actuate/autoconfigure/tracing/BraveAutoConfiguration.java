@@ -169,12 +169,14 @@ public class BraveAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnMissingBean(SpanCustomizer.class)
 	CurrentSpanCustomizer currentSpanCustomizer(Tracing tracing) {
 		return CurrentSpanCustomizer.create(tracing);
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnMissingBean(io.micrometer.tracing.SpanCustomizer.class)
 	BraveSpanCustomizer braveSpanCustomizer(SpanCustomizer spanCustomizer) {
 		return new BraveSpanCustomizer(spanCustomizer);

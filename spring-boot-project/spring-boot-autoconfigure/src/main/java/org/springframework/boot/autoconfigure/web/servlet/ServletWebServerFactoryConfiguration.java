@@ -42,6 +42,8 @@ import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFa
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * Configuration classes for servlet web servers
@@ -116,6 +118,7 @@ class ServletWebServerFactoryConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		UndertowServletWebServerFactoryCustomizer undertowServletWebServerFactoryCustomizer(
 				ServerProperties serverProperties) {
 			return new UndertowServletWebServerFactoryCustomizer(serverProperties);

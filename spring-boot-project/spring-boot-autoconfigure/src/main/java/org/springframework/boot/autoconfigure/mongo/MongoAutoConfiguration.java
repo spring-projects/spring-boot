@@ -28,6 +28,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
@@ -69,6 +71,7 @@ public class MongoAutoConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),

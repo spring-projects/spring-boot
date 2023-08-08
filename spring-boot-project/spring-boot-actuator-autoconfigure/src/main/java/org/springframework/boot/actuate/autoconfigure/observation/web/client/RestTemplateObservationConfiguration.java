@@ -27,6 +27,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
@@ -42,6 +44,7 @@ import org.springframework.web.client.RestTemplate;
 class RestTemplateObservationConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties, MetricsProperties metricsProperties) {

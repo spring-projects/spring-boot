@@ -35,6 +35,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
@@ -80,6 +82,7 @@ import org.springframework.util.ClassUtils;
 public class JpaRepositoriesAutoConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@Conditional(BootstrapExecutorCondition.class)
 	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {

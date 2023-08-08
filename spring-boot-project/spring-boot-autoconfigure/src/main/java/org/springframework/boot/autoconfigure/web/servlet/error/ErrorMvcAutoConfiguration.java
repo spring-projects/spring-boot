@@ -64,6 +64,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -110,6 +111,7 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
 		return new ErrorPageCustomizer(this.serverProperties, dispatcherServletPath);
 	}

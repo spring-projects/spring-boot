@@ -47,6 +47,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
@@ -107,6 +109,7 @@ public class SessionAutoConfiguration {
 		static class RememberMeServicesConfiguration {
 
 			@Bean
+			@Order(Ordered.LOWEST_PRECEDENCE - 10)
 			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
 					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);

@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.ForwardedHeaderFilter;
@@ -94,6 +95,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 	static class ForwardedHeaderFilterConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 		ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
 			return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());

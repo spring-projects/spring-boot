@@ -33,6 +33,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jersey
@@ -49,6 +51,7 @@ import org.springframework.context.annotation.Import;
 public class JerseySameManagementContextConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	ResourceConfigCustomizer managementResourceConfigCustomizerAdapter(
 			ObjectProvider<ManagementContextResourceConfigCustomizer> customizers) {
 		return (config) -> customizers.orderedStream().forEach((customizer) -> customizer.customize(config));

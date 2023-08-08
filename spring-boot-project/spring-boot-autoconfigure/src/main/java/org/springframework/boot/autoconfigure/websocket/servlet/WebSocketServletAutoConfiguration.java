@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * Auto configuration for WebSocket servlet server in embedded Tomcat, Jetty or Undertow.
@@ -62,6 +64,7 @@ public class WebSocketServletAutoConfiguration {
 	static class TomcatWebSocketConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		TomcatWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new TomcatWebSocketServletWebServerCustomizer();
@@ -74,6 +77,7 @@ public class WebSocketServletAutoConfiguration {
 	static class JettyWebSocketConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketServletWebServerCustomizer();
@@ -86,6 +90,7 @@ public class WebSocketServletAutoConfiguration {
 	static class UndertowWebSocketConfiguration {
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		UndertowWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new UndertowWebSocketServletWebServerCustomizer();

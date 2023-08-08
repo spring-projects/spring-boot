@@ -26,6 +26,8 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -59,6 +61,7 @@ public class SpringDataWebAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnMissingBean
 	public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
 		return (resolver) -> {
@@ -74,6 +77,7 @@ public class SpringDataWebAutoConfiguration {
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnMissingBean
 	public SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
 		return (resolver) -> resolver.setSortParameter(this.properties.getSort().getSortParameter());

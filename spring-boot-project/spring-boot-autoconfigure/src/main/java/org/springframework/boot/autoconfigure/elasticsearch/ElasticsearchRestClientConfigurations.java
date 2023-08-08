@@ -50,6 +50,8 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 /**
@@ -80,12 +82,14 @@ class ElasticsearchRestClientConfigurations {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
 				ElasticsearchConnectionDetails connectionDetails) {
 			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails);
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
 			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()

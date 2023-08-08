@@ -76,6 +76,7 @@ public class MongoReactiveAutoConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 10)
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),

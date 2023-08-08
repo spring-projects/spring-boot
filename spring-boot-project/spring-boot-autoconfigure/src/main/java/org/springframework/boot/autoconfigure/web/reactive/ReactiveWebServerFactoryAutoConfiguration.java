@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.util.ObjectUtils;
@@ -63,12 +64,14 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 public class ReactiveWebServerFactoryAutoConfiguration {
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 	public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
