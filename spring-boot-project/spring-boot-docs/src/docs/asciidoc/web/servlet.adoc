@@ -31,8 +31,8 @@ Beans can be ordered if you need to apply a precedence.
 [[web.servlet.spring-mvc.auto-configuration]]
 ==== Spring MVC Auto-configuration
 Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
-
-The auto-configuration adds the following features on top of Spring's defaults:
+It replaces the need for `@EnableWebMvc` and the two cannot be used together.
+In addition to Spring MVC's defaults, the auto-configuration provides the following features:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
 * Support for serving static resources, including support for WebJars (covered <<features#web.servlet.spring-mvc.static-content,later in this document>>).
@@ -46,7 +46,8 @@ If you want to keep those Spring Boot MVC customizations and make more {spring-f
 
 If you want to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
 
-If you want to take complete control of Spring MVC, you can add your own `@Configuration` annotated with `@EnableWebMvc`, or alternatively add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the Javadoc of `@EnableWebMvc`.
+If you do not want to use the auto-configuration and want to take complete control of Spring MVC, add your own `@Configuration` annotated with `@EnableWebMvc`.
+Alternatively, add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the Javadoc of `@EnableWebMvc`.
 
 
 
