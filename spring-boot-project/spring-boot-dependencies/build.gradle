@@ -1011,10 +1011,10 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "11.2.3.jre17") {
+	library("MSSQL JDBC", "12.4.0.jre11") {
 		prohibit {
-			endsWith([".jre8", ".jre11", ".jre18"])
-			because "we use the .jre17 version"
+			endsWith([".jre8", "-preview"])
+			because "we use the non-preview .jre11 version"
 		}
 		group("com.microsoft.sqlserver") {
 			modules = [
