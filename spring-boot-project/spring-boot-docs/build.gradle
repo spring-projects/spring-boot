@@ -273,7 +273,7 @@ task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs
 
 task runSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
-	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
+	mainClass = "org.springframework.boot.docs.features.logexample.MyApplication"
 	args = ["--server.port=0"]
 	output = file("$buildDir/example-output/spring-application.txt")
 	expectedLogging = "Started MyApplication in "
@@ -282,7 +282,7 @@ task runSpringApplicationExample(type: org.springframework.boot.build.docs.Appli
 
 task runLoggingFormatExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
-	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
+	mainClass = "org.springframework.boot.docs.features.logexample.MyApplication"
 	args = ["--spring.main.banner-mode=off", "--server.port=0"]
 	output = file("$buildDir/example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
