@@ -143,7 +143,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage).start().waitFor() != 0) {
 					throw new IllegalStateException("git commit failed");
 				}
-				System.out.println("  Commit: " + commitMessage.substring(commitMessage.indexOf('\n')));
+				System.out.println("  Commit: " + commitMessage.substring(0, commitMessage.indexOf('\n')));
 			}
 			catch (IOException ex) {
 				throw new TaskExecutionException(this, ex);
