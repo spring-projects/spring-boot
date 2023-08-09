@@ -145,7 +145,9 @@ You could take the JPA example from earlier and, assuming that `City` is now a M
 
 include::code:CityRepository[]
 
-TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
+Repositories and documents are found through scanning.
+By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+You can customize the locations to look for repositories and documents by using `@EnableMongoRepositories` and `@EntityScan` respectively.
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {spring-data-mongodb}[reference documentation].
 
@@ -220,7 +222,9 @@ The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support 
 Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
 When Project Reactor is available on the classpath, the reactive style is also auto-configured.
 
-You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
+Repositories and entities are found through scanning.
+By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively.
 
 [NOTE]
 ====
@@ -350,6 +354,10 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in the same way.
 
+Repositories and documents are found through scanning.
+By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+You can customize the locations to look for repositories and documents by using `@EnableElasticsearchRepositories` and `@EntityScan` respectively.
+
 TIP: For complete details of Spring Data Elasticsearch, see the {spring-data-elasticsearch-docs}[reference documentation].
 
 Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
@@ -436,6 +444,10 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 Spring Data includes basic repository support for Cassandra.
 Currently, this is more limited than the JPA repositories discussed earlier and needs to annotate finder methods with `@Query`.
 
+Repositories and entities are found through scanning.
+By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+You can customize the locations to look for repositories and entities by using `@EnableCassandraRepositories` and `@EntityScan` respectively.
+
 TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
@@ -486,6 +498,11 @@ To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans ca
 [[data.nosql.couchbase.repositories]]
 ==== Spring Data Couchbase Repositories
 Spring Data includes repository support for Couchbase.
+
+Repositories and documents are found through scanning.
+By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+You can customize the locations to look for repositories and documents by using `@EnableCouchbaseRepositories` and `@EntityScan` respectively.
+
 For complete details of Spring Data Couchbase, see the {spring-data-couchbase-docs}[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
@@ -551,6 +568,11 @@ Make sure to flag your customized `ContextSource` as `@Primary` so that the auto
 [[data.nosql.ldap.repositories]]
 ==== Spring Data LDAP Repositories
 Spring Data includes repository support for LDAP.
+
+Repositories and documents are found through scanning.
+By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+You can customize the locations to look for repositories and documents by using `@EnableLdapRepositories` and `@EntityScan` respectively.
+
 For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
 
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
