@@ -119,7 +119,7 @@ class FlywayPropertiesTests {
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
-				"currentResolvedEnvironment", "reportFilename", "reportEnabled");
+				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
