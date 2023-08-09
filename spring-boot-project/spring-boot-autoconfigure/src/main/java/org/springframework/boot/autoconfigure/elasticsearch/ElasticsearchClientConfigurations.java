@@ -22,7 +22,7 @@ import co.elastic.clients.json.SimpleJsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
-import co.elastic.clients.transport.TransportOptions;
+import co.elastic.clients.transport.rest_client.RestClientOptions;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.bind.Jsonb;
@@ -90,8 +90,8 @@ class ElasticsearchClientConfigurations {
 
 		@Bean
 		RestClientTransport restClientTransport(RestClient restClient, JsonpMapper jsonMapper,
-				ObjectProvider<TransportOptions> transportOptions) {
-			return new RestClientTransport(restClient, jsonMapper, transportOptions.getIfAvailable());
+				ObjectProvider<RestClientOptions> restClientOptions) {
+			return new RestClientTransport(restClient, jsonMapper, restClientOptions.getIfAvailable());
 		}
 
 	}

@@ -330,7 +330,7 @@ If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boo
 
 The `ElasticsearchClient` uses a transport that depends upon the previously described `RestClient`.
 Therefore, the properties described previously can be used to configure the `ElasticsearchClient`.
-Furthermore, you can define a `TransportOptions` bean to take further control of the behavior of the transport.
+Furthermore, you can define a `RestClientOptions` bean to take further control of the behavior of the transport.
 
 
 
@@ -341,7 +341,7 @@ If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot 
 
 The `ReactiveElasticsearchclient` uses a transport that depends upon the previously described `RestClient`.
 Therefore, the properties described previously can be used to configure the `ReactiveElasticsearchClient`.
-Furthermore, you can define a `TransportOptions` bean to take further control of the behavior of the transport.
+Furthermore, you can define a `RestClientOptions` bean to take further control of the behavior of the transport.
 
 
 
