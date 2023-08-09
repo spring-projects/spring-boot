@@ -218,6 +218,8 @@ For more complex queries, you can annotate your method with Spring Data's {sprin
 Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
 If you use auto-configuration, repositories are searched from the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) down.
 
+TIP: You can customize the locations to look for repositories using `@EnableJpaRepositories`.
+
 The following example shows a typical Spring Data repository interface definition:
 
 include::code:CityRepository[]
