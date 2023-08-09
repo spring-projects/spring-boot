@@ -56,5 +56,16 @@ task buildApps(type: GradleBuild) {
 }
 
 intTest {
+	inputs.files(
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.jar",
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.war",
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-resources.jar",
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.jar",
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.war",
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.jar",
+			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.war")
+		.withPropertyName("applicationArchives")
+		.withPathSensitivity(PathSensitivity.RELATIVE)
+		.withNormalizer(ClasspathNormalizer)
 	dependsOn buildApps
 }
