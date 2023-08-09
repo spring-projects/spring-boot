@@ -75,12 +75,12 @@ public class SecurityProperties {
 	public static class Filter {
 
 		/**
-		 * Security filter chain order.
+		 * Security filter chain order for Servlet-based web applications.
 		 */
 		private int order = DEFAULT_FILTER_ORDER;
 
 		/**
-		 * Security filter chain dispatcher types.
+		 * Security filter chain dispatcher types for Servlet-based web applications.
 		 */
 		private Set<DispatcherType> dispatcherTypes = EnumSet.allOf(DispatcherType.class);
 
