@@ -1324,7 +1324,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.10.0") {
+	library("Selenium", "4.11.0") {
 		group("org.seleniumhq.selenium") {
 			imports = [
 				"selenium-bom"
