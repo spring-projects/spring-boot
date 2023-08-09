@@ -13,6 +13,8 @@ configurations {
 }
 
 dependencies {
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
+
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
 	compileOnly("org.apache.maven.shared:maven-common-artifact-filters") {
@@ -141,4 +143,16 @@ prepareMavenBinaries {
 
 artifacts {
 	"documentation" zip
+}
+
+tasks.named("documentPluginGoals") {
+	goalSections = [
+		"build-image": "build-image",
+		"build-info": "build-info",
+		"help": "help",
+		"repackage": "packaging",
+		"run": "run",
+		"start": "integration-tests",
+		"stop": "integration-tests"
+	]
 }

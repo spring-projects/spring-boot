@@ -21,10 +21,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -46,6 +48,8 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	private File outputDir;
 
+	private Map<String, String> goalSections;
+
 	@OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
@@ -53,6 +57,15 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
+	}
+
+	@Input
+	public Map<String, String> getGoalSections() {
+		return this.goalSections;
+	}
+
+	public void setGoalSections(Map<String, String> goalSections) {
+		this.goalSections = goalSections;
 	}
 
 	@InputFile
@@ -80,7 +93,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println("| Goal | Description");
 			writer.println();
 			for (Mojo mojo : plugin.getMojos()) {
-				writer.printf("| <<goals-%s,%s:%s>>%n", mojo.getGoal(), plugin.getGoalPrefix(), mojo.getGoal());
+				writer.printf("| <<%s,%s:%s>>%n", goalSectionId(mojo), plugin.getGoalPrefix(), mojo.getGoal());
 				writer.printf("| %s%n", mojo.getDescription());
 				writer.println();
 			}
@@ -90,7 +103,7 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	private void documentMojo(Plugin plugin, Mojo mojo) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(new File(this.outputDir, mojo.getGoal() + ".adoc")))) {
-			String sectionId = "goals-" + mojo.getGoal();
+			String sectionId = goalSectionId(mojo);
 			writer.println();
 			writer.println();
 			writer.printf("[[%s]]%n", sectionId);
@@ -105,12 +118,11 @@ public class DocumentPluginGoals extends DefaultTask {
 			List<Parameter> requiredParameters = parameters.stream()
 				.filter(Parameter::isRequired)
 				.collect(Collectors.toList());
-			String parametersSectionId = sectionId + "-parameters";
-			String detailsSectionId = parametersSectionId + "-details";
+			String detailsSectionId = sectionId + ".parameter-details";
 			if (!requiredParameters.isEmpty()) {
 				writer.println();
 				writer.println();
-				writer.printf("[[%s-required]]%n", parametersSectionId);
+				writer.printf("[[%s.required-parameters]]%n", sectionId);
 				writer.println("== Required parameters");
 				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
@@ -120,7 +132,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			if (!optionalParameters.isEmpty()) {
 				writer.println();
 				writer.println();
-				writer.printf("[[%s-optional]]%n", parametersSectionId);
+				writer.printf("[[%s.optional-parameters]]%n", sectionId);
 				writer.println("== Optional parameters");
 				writeParametersTable(writer, detailsSectionId, optionalParameters);
 			}
@@ -132,6 +144,15 @@ public class DocumentPluginGoals extends DefaultTask {
 		}
 	}
 
+	private String goalSectionId(Mojo mojo) {
+		String goalSection = this.goalSections.get(mojo.getGoal());
+		if (goalSection == null) {
+			throw new IllegalStateException("Goal '" + mojo.getGoal() + "' has not be assigned to a section");
+		}
+		String sectionId = goalSection + "." + mojo.getGoal() + "-goal";
+		return sectionId;
+	}
+
 	private void writeParametersTable(PrintWriter writer, String detailsSectionId, List<Parameter> parameters) {
 		writer.println("[cols=\"3,2,3\"]");
 		writer.println("|===");
@@ -139,7 +160,7 @@ public class DocumentPluginGoals extends DefaultTask {
 		writer.println();
 		for (Parameter parameter : parameters) {
 			String name = parameter.getName();
-			writer.printf("| <<%s-%s,%s>>%n", detailsSectionId, name, name);
+			writer.printf("| <<%s.%s,%s>>%n", detailsSectionId, parameterId(name), name);
 			writer.printf("| `%s`%n", typeNameToJavadocLink(shortTypeName(parameter.getType()), parameter.getType()));
 			String defaultValue = parameter.getDefaultValue();
 			if (defaultValue != null) {
@@ -158,7 +179,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			String name = parameter.getName();
 			writer.println();
 			writer.println();
-			writer.printf("[[%s-%s]]%n", sectionId, name);
+			writer.printf("[[%s.%s]]%n", sectionId, parameterId(name));
 			writer.printf("=== `%s`%n", name);
 			writer.println(parameter.getDescription());
 			writer.println();
@@ -172,6 +193,20 @@ public class DocumentPluginGoals extends DefaultTask {
 			writeOptionalDetail(writer, "Since", parameter.getSince());
 			writer.println("|===");
 		}
+	}
+
+	private String parameterId(String name) {
+		StringBuilder id = new StringBuilder(name.length() + 4);
+		for (char c : name.toCharArray()) {
+			if (Character.isLowerCase(c)) {
+				id.append(c);
+			}
+			else {
+				id.append("-");
+				id.append(Character.toLowerCase(c));
+			}
+		}
+		return id.toString();
 	}
 
 	private void writeDetail(PrintWriter writer, String name, String value) {
