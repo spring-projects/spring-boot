@@ -307,7 +307,9 @@ If you use standard configuration locations, Spring cannot completely control lo
 WARNING: There are known classloading issues with Java Util Logging that cause problems when running from an 'executable jar'.
 We recommend that you avoid it when running from an 'executable jar' if at all possible.
 
-To help with the customization, some other properties are transferred from the Spring `Environment` to System properties, as described in the following table:
+To help with the customization, some other properties are transferred from the Spring `Environment` to System properties.
+This allows the properties to be consumed by logging system configuration. For example, setting `logging.file.name` in `application.properties` or `LOGGING_FILE_NAME` as an environment variable will result in the `LOG_FILE` System property being set.
+The properties that are transferred are described in the following table:
 
 |===
 | Spring Environment | System Property | Comments
