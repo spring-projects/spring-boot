@@ -101,21 +101,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
 		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
 		List<Issue> existingUpgradeIssues = repository.findIssues(issueLabels, milestone);
+		System.out.println("Applying upgrades...");
+		System.out.println("");
 		for (Upgrade upgrade : upgrades) {
+			System.out.println(upgrade.getLibrary().getName() + " " + upgrade.getVersion());
 			String title = issueTitle(upgrade);
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
-			if (existingUpgradeIssue != null) {
-				if (existingUpgradeIssue.getState() == Issue.State.CLOSED) {
-					System.out.println(title + " (supersedes #" + existingUpgradeIssue.getNumber() + " "
-							+ existingUpgradeIssue.getTitle() + ")");
-				}
-				else {
-					System.out.println(title + " (completes existing upgrade)");
-				}
-			}
-			else {
-				System.out.println(title);
-			}
 			try {
 				Path modified = upgradeApplicator.apply(upgrade);
 				int issueNumber;
@@ -130,16 +121,29 @@ public abstract class UpgradeDependencies extends DefaultTask {
 						existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
 					}
 				}
+				if (existingUpgradeIssue != null) {
+					if (existingUpgradeIssue.getState() == Issue.State.CLOSED) {
+						System.out.println("   Issue: " + issueNumber + " - " + title + " (supersedes #"
+								+ existingUpgradeIssue.getNumber() + " " + existingUpgradeIssue.getTitle() + ")");
+					}
+					else {
+						System.out
+							.println("   Issue: " + issueNumber + " - " + title + " (completes existing upgrade)");
+					}
+				}
+				else {
+					System.out.println("   Issue: " + issueNumber + " - " + title);
+				}
 				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath())
 					.start()
 					.waitFor() != 0) {
 					throw new IllegalStateException("git add failed");
 				}
-				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage(upgrade, issueNumber))
-					.start()
-					.waitFor() != 0) {
+				String commitMessage = commitMessage(upgrade, issueNumber);
+				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage).start().waitFor() != 0) {
 					throw new IllegalStateException("git commit failed");
 				}
+				System.out.println("  Commit: " + commitMessage.substring(commitMessage.indexOf('\n')));
 			}
 			catch (IOException ex) {
 				throw new TaskExecutionException(this, ex);
