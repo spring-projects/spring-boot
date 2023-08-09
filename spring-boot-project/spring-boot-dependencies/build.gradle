@@ -1461,7 +1461,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session", "3.1.1") {
+	library("Spring Session", "3.1.2-SNAPSHOT") {
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
 			because "Spring Session switched to numeric version numbers"
