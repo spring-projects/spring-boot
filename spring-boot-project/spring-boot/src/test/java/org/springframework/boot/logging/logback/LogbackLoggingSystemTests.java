@@ -38,6 +38,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.util.DynamicClassLoadingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -519,7 +520,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, null, null);
 		LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Map<String, String> properties = loggerContext.getCopyOfPropertyMap();
-		Set<String> expectedProperties = new HashSet<String>();
+		Set<String> expectedProperties = new HashSet<>();
 		ReflectionUtils.doWithFields(LogbackLoggingSystemProperties.class,
 				(field) -> expectedProperties.add((String) field.get(null)), this::isPublicStaticFinal);
 		expectedProperties.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH"));
@@ -622,6 +623,16 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		LayoutWrappingEncoder<?> encoder = (LayoutWrappingEncoder<?>) getConsoleAppender().getEncoder();
 		assertThat(encoder.getCharset()).isEqualTo(StandardCharsets.UTF_16);
+	}
+
+	@Test
+	void whenConfigurationErrorIsDetectedUnderlyingCausesAreIncludedAsSuppressedExceptions() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+			.isThrownBy(() -> initialize(this.initializationContext, "classpath:logback-broken.xml",
+					getLogFile(tmpDir() + "/tmp.log", null)))
+			.satisfies((ex) -> assertThat(ex.getSuppressed())
+				.hasAtLeastOneElementOfType(DynamicClassLoadingException.class));
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {

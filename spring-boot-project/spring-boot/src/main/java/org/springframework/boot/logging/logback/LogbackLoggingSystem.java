@@ -167,17 +167,30 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);
 		}
-		List<Status> statuses = loggerContext.getStatusManager().getCopyOfStatusList();
+		reportConfigurationErrorsIfNecessary(loggerContext);
+	}
+
+	private void reportConfigurationErrorsIfNecessary(LoggerContext loggerContext) {
 		StringBuilder errors = new StringBuilder();
-		for (Status status : statuses) {
+		List<Throwable> suppressedExceptions = new ArrayList<>();
+		for (Status status : loggerContext.getStatusManager().getCopyOfStatusList()) {
 			if (status.getLevel() == Status.ERROR) {
 				errors.append((errors.length() > 0) ? String.format("%n") : "");
 				errors.append(status.toString());
+				if (status.getThrowable() != null) {
+					suppressedExceptions.add(status.getThrowable());
+				}
 			}
 		}
-		if (errors.length() > 0) {
-			throw new IllegalStateException(String.format("Logback configuration error detected: %n%s", errors));
+		if (errors.length() == 0) {
+			return;
 		}
+		IllegalStateException ex = new IllegalStateException(
+				String.format("Logback configuration error detected: %n%s", errors));
+		for (Throwable suppressedException : suppressedExceptions) {
+			ex.addSuppressed(suppressedException);
+		}
+		throw ex;
 	}
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
