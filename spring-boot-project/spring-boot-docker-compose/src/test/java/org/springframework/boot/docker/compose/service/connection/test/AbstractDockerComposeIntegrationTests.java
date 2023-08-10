@@ -83,9 +83,14 @@ public abstract class AbstractDockerComposeIntegrationTests {
 	private File transformedComposeFile(File composeFile, DockerImageName imageName) {
 		File tempComposeFile = Path.of(tempDir.toString(), composeFile.getName()).toFile();
 		try {
-			String composeFileContent = FileCopyUtils.copyToString(new FileReader(composeFile));
+			String composeFileContent;
+			try (FileReader reader = new FileReader(composeFile)) {
+				composeFileContent = FileCopyUtils.copyToString(reader);
+			}
 			composeFileContent = composeFileContent.replace("{imageName}", imageName.asCanonicalNameString());
-			FileCopyUtils.copy(composeFileContent, new FileWriter(tempComposeFile));
+			try (FileWriter writer = new FileWriter(tempComposeFile)) {
+				FileCopyUtils.copy(composeFileContent, writer);
+			}
 		}
 		catch (IOException ex) {
 			fail("Error transforming Docker compose file '" + composeFile + "' to '" + tempComposeFile + "': "
