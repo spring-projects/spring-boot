@@ -49,6 +49,9 @@ public class SpringBootDependencyInjectionTestExecutionListener extends Dependen
 	}
 
 	private void outputConditionEvaluationReport(TestContext testContext) {
+		if (!testContext.hasApplicationContext()) {
+			return;
+		}
 		try {
 			ApplicationContext context = testContext.getApplicationContext();
 			if (context instanceof ConfigurableApplicationContext) {

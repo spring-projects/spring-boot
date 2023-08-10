@@ -34,7 +34,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link SpringBootDependencyInjectionTestExecutionListener}.
@@ -59,6 +61,7 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext applicationContext = application.run();
+		given(testContext.hasApplicationContext()).willReturn(true);
 		given(testContext.getApplicationContext()).willReturn(applicationContext);
 		try {
 			this.reportListener.prepareTestInstance(testContext);
@@ -81,6 +84,17 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 		given(testContext.getApplicationContext()).willThrow(new RuntimeException());
 		assertThatIllegalStateException().isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
 			.isEqualTo(originalFailure);
+	}
+
+	@Test
+	void whenTestContextDoesNotHaveApplicationContextOnlyOneAttemptIsMadeToRetrieveIt() {
+		TestContext testContext = mock(TestContext.class);
+		given(testContext.getTestInstance()).willThrow(new IllegalStateException());
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		given(testContext.hasApplicationContext()).willReturn(false);
+		assertThatIllegalStateException().isThrownBy(() -> this.reportListener.prepareTestInstance(testContext));
+		then(testContext).should(times(1)).getTestInstance();
 	}
 
 	@Configuration(proxyBeanMethods = false)
