@@ -184,7 +184,7 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeStart extends DockerCliCommand<Void> {
 
 		ComposeStart(LogLevel logLevel) {
-			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "start", "--no-color", "--detach", "--wait");
+			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "start", "--detach", "--wait");
 		}
 
 	}
