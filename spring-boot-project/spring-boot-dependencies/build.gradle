@@ -210,6 +210,10 @@ bom {
 		}
 	}
 	library("Couchbase Client", "3.4.7") {
+		prohibit {
+			versionRange "3.4.9"
+			because "it contains unshaded io.opentelemetry classes that break our Otel integration"
+		}
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
