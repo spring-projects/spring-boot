@@ -169,9 +169,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	}
 
 	/**
-	 * Sets the dispatcher types that should be used with the registration. If not
-	 * specified the types will be deduced based on the value of
-	 * {@link #isAsyncSupported()}.
+	 * Sets the dispatcher types that should be used with the registration.
 	 * @param dispatcherTypes the dispatcher types
 	 */
 	public void setDispatcherTypes(EnumSet<DispatcherType> dispatcherTypes) {
