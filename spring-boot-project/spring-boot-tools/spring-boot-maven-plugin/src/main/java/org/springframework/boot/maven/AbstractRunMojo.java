@@ -39,6 +39,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -373,10 +374,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	@SuppressWarnings("removal")
 	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
-		if (!ObjectUtils.isEmpty(this.directories) && !ObjectUtils.isEmpty(this.additionalClasspathElements)) {
-			throw new IllegalStateException(
-					"Either additionalClasspathElements or directories (deprecated) should be set, not both");
-		}
+		Assert.state(ObjectUtils.isEmpty(this.directories) || ObjectUtils.isEmpty(this.additionalClasspathElements),
+				"Either additionalClasspathElements or directories (deprecated) should be set, not both");
 		String[] elements = !ObjectUtils.isEmpty(this.additionalClasspathElements) ? this.additionalClasspathElements
 				: this.directories;
 		if (elements != null) {

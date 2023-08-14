@@ -289,6 +289,7 @@ class ActiveMQAutoConfigurationTests {
 		@Bean
 		ActiveMQConnectionDetails activemqConnectionDetails() {
 			return new ActiveMQConnectionDetails() {
+
 				@Override
 				public String getBrokerUrl() {
 					return "tcp://localhost:12345";
@@ -303,6 +304,7 @@ class ActiveMQAutoConfigurationTests {
 				public String getPassword() {
 					return "spring";
 				}
+
 			};
 		}
 

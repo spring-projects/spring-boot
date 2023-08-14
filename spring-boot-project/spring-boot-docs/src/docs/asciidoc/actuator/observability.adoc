@@ -67,6 +67,8 @@ include::code:MyObservationPredicate[]
 
 The preceding example will prevent all observations whose name contains "denied".
 
+
+
 [[actuator.observability.opentelemetry]]
 === OpenTelemetry Support
 Spring Boot's actuator module includes basic support for https://opentelemetry.io/[OpenTelemetry].
