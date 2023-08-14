@@ -146,6 +146,11 @@ public class RabbitProperties {
 
 	private List<Address> parsedAddresses;
 
+	/**
+	 *  Simple container configuration
+	 */
+	private SimpleContainer simpleContainer;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -370,6 +375,10 @@ public class RabbitProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public SimpleContainer getSimpleContainer() {
+		return this.simpleContainer;
 	}
 
 	public Stream getStream() {
