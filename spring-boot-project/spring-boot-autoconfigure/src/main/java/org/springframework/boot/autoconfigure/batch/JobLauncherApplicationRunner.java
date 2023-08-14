@@ -117,9 +117,8 @@ public class JobLauncherApplicationRunner
 	public void afterPropertiesSet() {
 		if (StringUtils.hasText(this.jobNames)) {
 			for (String jobName : jobsToRun()) {
-				if (!isLocalJob(jobName) && !isRegisteredJob(jobName)) {
-					throw new IllegalArgumentException("No job found with name '" + jobName + "'");
-				}
+				Assert.isTrue(isLocalJob(jobName) || isRegisteredJob(jobName),
+						() -> "No job found with name '" + jobName + "'");
 			}
 		}
 	}

@@ -187,9 +187,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		}
 		IllegalStateException ex = new IllegalStateException(
 				String.format("Logback configuration error detected: %n%s", errors));
-		for (Throwable suppressedException : suppressedExceptions) {
-			ex.addSuppressed(suppressedException);
-		}
+		suppressedExceptions.forEach(ex::addSuppressed);
 		throw ex;
 	}
 
