@@ -172,7 +172,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		String version = (platformCommonsArtifact != null) ? platformCommonsArtifact.getBaseVersion() : null;
 		if (version == null) {
 			throw new MojoExecutionException(
-					"Unable to find '%s' dependnecy. Please ensure JUnit is correctly configured.".formatted(id));
+					"Unable to find '%s' dependency. Please ensure JUnit is correctly configured.".formatted(id));
 		}
 		return version;
 	}
