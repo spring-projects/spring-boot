@@ -153,7 +153,16 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 				options.add(releaseVersion);
 			}
 			else {
-				setSourceAndTargetVersions(compilerConfiguration, options);
+				String source = compilerConfiguration.getSourceMajorVersion();
+				if (source != null) {
+					options.add("--source");
+					options.add(source);
+				}
+				String target = compilerConfiguration.getTargetMajorVersion();
+				if (target != null) {
+					options.add("--target");
+					options.add(target);
+				}
 			}
 			options.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
@@ -163,19 +172,6 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			if (!result || errors.hasReportedErrors()) {
 				throw new IllegalStateException("Unable to compile generated source" + errors);
 			}
-		}
-	}
-	private static void setSourceAndTargetVersions(JavaCompilerPluginConfiguration compilerConfiguration,
-			List<String> options) {
-		String sourceMajorVersion = compilerConfiguration.getSourceMajorVersion();
-		if (sourceMajorVersion != null && !sourceMajorVersion.isEmpty()) {
-			options.add("--source");
-			options.add(sourceMajorVersion);
-		}
-		String targetMajorVersion = compilerConfiguration.getTargetMajorVersion();
-		if (targetMajorVersion != null && !targetMajorVersion.isEmpty()) {
-			options.add("--target");
-			options.add(targetMajorVersion);
 		}
 	}
 
