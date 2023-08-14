@@ -108,31 +108,13 @@ public abstract class UpgradeDependencies extends DefaultTask {
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
 			try {
 				Path modified = upgradeApplicator.apply(upgrade);
-				int issueNumber;
-				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.OPEN) {
-					issueNumber = existingUpgradeIssue.getNumber();
+				int issueNumber = getOrOpenUpgradeIssue(repository, issueLabels, milestone, title,
+						existingUpgradeIssue);
+				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
+					existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
 				}
-				else {
-					issueNumber = repository.openIssue(title,
-							(existingUpgradeIssue != null) ? "Supersedes #" + existingUpgradeIssue.getNumber() : "",
-							issueLabels, milestone);
-					if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
-						existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
-					}
-				}
-				if (existingUpgradeIssue != null) {
-					if (existingUpgradeIssue.getState() == Issue.State.CLOSED) {
-						System.out.println("   Issue: " + issueNumber + " - " + title + " (supersedes #"
-								+ existingUpgradeIssue.getNumber() + " " + existingUpgradeIssue.getTitle() + ")");
-					}
-					else {
-						System.out
-							.println("   Issue: " + issueNumber + " - " + title + " (completes existing upgrade)");
-					}
-				}
-				else {
-					System.out.println("   Issue: " + issueNumber + " - " + title);
-				}
+				System.out.println("   Issue: " + issueNumber + " - " + title
+						+ getExistingUpgradeIssueMessageDetails(existingUpgradeIssue));
 				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath())
 					.start()
 					.waitFor() != 0) {
@@ -151,6 +133,25 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	private int getOrOpenUpgradeIssue(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
+			String title, Issue existingUpgradeIssue) {
+		if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.OPEN) {
+			return existingUpgradeIssue.getNumber();
+		}
+		String body = (existingUpgradeIssue != null) ? "Supersedes #" + existingUpgradeIssue.getNumber() : "";
+		return repository.openIssue(title, body, issueLabels, milestone);
+	}
+
+	private String getExistingUpgradeIssueMessageDetails(Issue existingUpgradeIssue) {
+		if (existingUpgradeIssue == null) {
+			return "";
+		}
+		if (existingUpgradeIssue.getState() != Issue.State.CLOSED) {
+			return " (completes existing upgrade)";
+		}
+		return " (supersedes #" + existingUpgradeIssue.getNumber() + " " + existingUpgradeIssue.getTitle() + ")";
 	}
 
 	private List<String> verifyLabels(GitHubRepository repository) {
