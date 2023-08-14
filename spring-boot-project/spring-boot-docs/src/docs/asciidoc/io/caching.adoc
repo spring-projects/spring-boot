@@ -48,8 +48,8 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
 
-TIP: It is also possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
-Use this property if you need to <<io#io.caching.provider.none,disable caching altogether>> in certain environments (such as tests).
+TIP: If the `CacheManager` is auto-configured by Spring Boot, it is possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
+Use this property if you need to <<io#io.caching.provider.none,use no-op caches>> in certain environments (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
@@ -254,7 +254,10 @@ This is similar to the way the "real" cache providers behave if you use an undec
 [[io.caching.provider.none]]
 ==== None
 When `@EnableCaching` is present in your configuration, a suitable cache configuration is expected as well.
-If you need to disable caching altogether in certain environments, force the cache type to `none` to use a no-op implementation, as shown in the following example:
+If you have a custom `CacheManager`, consider defining it in a separate `@Configuration` class so that you can override it if necessary.
+None uses a no-op implementation that is useful in tests, and slice tests use that by default via `@AutoConfigureCache`.
+
+If you need to use a no-op cache rather than the auto-configured cache manager in a certain environment, set the cache type to `none`, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
