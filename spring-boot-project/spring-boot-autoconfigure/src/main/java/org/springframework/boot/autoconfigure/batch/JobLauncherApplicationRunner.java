@@ -113,13 +113,11 @@ public class JobLauncherApplicationRunner
 
 	@Override
 	public void afterPropertiesSet() {
-		if (this.jobs.size() > 1 && !StringUtils.hasText(this.jobName)) {
-			throw new IllegalArgumentException("Job name must be specified in case of multiple jobs");
-		}
+		Assert.isTrue(this.jobs.size() <= 1 || StringUtils.hasText(this.jobName),
+				"Job name must be specified in case of multiple jobs");
 		if (StringUtils.hasText(this.jobName)) {
-			if (!isLocalJob(this.jobName) && !isRegisteredJob(this.jobName)) {
-				throw new IllegalArgumentException("No job found with name '" + this.jobName + "'");
-			}
+			Assert.isTrue(isLocalJob(this.jobName) || isRegisteredJob(this.jobName),
+					() -> "No job found with name '" + this.jobName + "'");
 		}
 	}
 
