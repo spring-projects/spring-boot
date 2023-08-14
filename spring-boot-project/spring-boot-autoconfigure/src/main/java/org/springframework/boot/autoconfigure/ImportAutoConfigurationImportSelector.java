@@ -96,25 +96,24 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		if (classes.length > 0) {
 			return Arrays.asList(classes);
 		}
-		Collection<String> factoryNames = loadFactoryNames(source);
-		return factoryNames.stream().map((name) -> {
-			if (name.startsWith(OPTIONAL_PREFIX)) {
-				name = name.substring(OPTIONAL_PREFIX.length());
-				if (!present(name)) {
-					return null;
-				}
-			}
-			return name;
-		}).filter(Objects::nonNull).toList();
+		return loadFactoryNames(source).stream().map(this::mapFactoryName).filter(Objects::nonNull).toList();
 	}
 
-	protected Collection<String> loadFactoryNames(Class<?> source) {
-		return ImportCandidates.load(source, getBeanClassLoader()).getCandidates();
+	private String mapFactoryName(String name) {
+		if (!name.startsWith(OPTIONAL_PREFIX)) {
+			return name;
+		}
+		name = name.substring(OPTIONAL_PREFIX.length());
+		return (!present(name)) ? null : name;
 	}
 
 	private boolean present(String className) {
 		String resourcePath = ClassUtils.convertClassNameToResourcePath(className) + ".class";
 		return new ClassPathResource(resourcePath).exists();
+	}
+
+	protected Collection<String> loadFactoryNames(Class<?> source) {
+		return ImportCandidates.load(source, getBeanClassLoader()).getCandidates();
 	}
 
 	@Override

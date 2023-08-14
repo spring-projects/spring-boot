@@ -89,8 +89,7 @@ class DockerCliIntegrationTests {
 			cli.run(new ComposeStop(Duration.ofSeconds(10)));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
-			// Run start, verify that service is there, then run down and verify they are
-			// gone
+			// Run start, verify service is there, then run down and verify they are gone
 			cli.run(new ComposeStart(LogLevel.INFO));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
@@ -116,15 +115,10 @@ class DockerCliIntegrationTests {
 	private static File createComposeFile() throws IOException {
 		File composeFile = new ClassPathResource("redis-compose.yaml", DockerCliIntegrationTests.class).getFile();
 		File tempComposeFile = Path.of(tempDir.toString(), composeFile.getName()).toFile();
-		String composeFileContent;
-		try (FileReader reader = new FileReader(composeFile)) {
-			composeFileContent = FileCopyUtils.copyToString(reader);
-		}
+		String composeFileContent = FileCopyUtils.copyToString(new FileReader(composeFile));
 		composeFileContent = composeFileContent.replace("{imageName}",
 				DockerImageNames.redis().asCanonicalNameString());
-		try (FileWriter writer = new FileWriter(tempComposeFile)) {
-			FileCopyUtils.copy(composeFileContent, writer);
-		}
+		FileCopyUtils.copy(composeFileContent, new FileWriter(tempComposeFile));
 		return tempComposeFile;
 	}
 
