@@ -53,6 +53,7 @@ import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Omar YAYA
  * @since 3.0.0
  */
 public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
@@ -152,10 +153,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 				options.add(releaseVersion);
 			}
 			else {
-				options.add("--source");
-				options.add(compilerConfiguration.getSourceMajorVersion());
-				options.add("--target");
-				options.add(compilerConfiguration.getTargetMajorVersion());
+				setSourceAndTargetVersions(compilerConfiguration, options);
 			}
 			options.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
@@ -165,6 +163,19 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			if (!result || errors.hasReportedErrors()) {
 				throw new IllegalStateException("Unable to compile generated source" + errors);
 			}
+		}
+	}
+	private static void setSourceAndTargetVersions(JavaCompilerPluginConfiguration compilerConfiguration,
+			List<String> options) {
+		String sourceMajorVersion = compilerConfiguration.getSourceMajorVersion();
+		if (sourceMajorVersion != null && !sourceMajorVersion.isEmpty()) {
+			options.add("--source");
+			options.add(sourceMajorVersion);
+		}
+		String targetMajorVersion = compilerConfiguration.getTargetMajorVersion();
+		if (targetMajorVersion != null && !targetMajorVersion.isEmpty()) {
+			options.add("--target");
+			options.add(targetMajorVersion);
 		}
 	}
 
