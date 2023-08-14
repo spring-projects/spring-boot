@@ -95,6 +95,10 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	@Parameter(property = "spring-boot.aot.compilerArguments")
 	private String compilerArguments;
 
+	protected final MavenSession getSession() {
+		return this.session;
+	}
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
