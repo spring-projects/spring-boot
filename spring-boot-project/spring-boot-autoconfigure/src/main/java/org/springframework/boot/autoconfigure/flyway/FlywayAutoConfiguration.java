@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -53,6 +52,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
 import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Oracle;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Postgresql;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Sqlserver;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -471,18 +472,15 @@ public class FlywayAutoConfiguration {
 
 		@Override
 		public void customize(FluentConfiguration configuration) {
-			ConfigurationExtensionMapper<OracleConfigurationExtension> map = new ConfigurationExtensionMapper<>(
-					PropertyMapper.get().alwaysApplyingWhenNonNull(), () -> {
-						OracleConfigurationExtension extension = configuration.getPluginRegister()
-							.getPlugin(OracleConfigurationExtension.class);
-						Assert.notNull(extension, "Flyway Oracle extension missing");
-						return extension;
-					});
-			Oracle oracle = this.properties.getOracle();
-			map.apply(oracle.getSqlplus(), OracleConfigurationExtension::setSqlplus);
-			map.apply(oracle.getSqlplusWarn(), OracleConfigurationExtension::setSqlplusWarn);
-			map.apply(oracle.getWalletLocation(), OracleConfigurationExtension::setWalletLocation);
-			map.apply(oracle.getKerberosCacheFile(), OracleConfigurationExtension::setKerberosCacheFile);
+			Extension<OracleConfigurationExtension> extension = new Extension<>(configuration,
+					OracleConfigurationExtension.class, "Oracle");
+			Oracle properties = this.properties.getOracle();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getSqlplus).to(extension.via(OracleConfigurationExtension::setSqlplus));
+			map.from(properties::getSqlplusWarn).to(extension.via(OracleConfigurationExtension::setSqlplusWarn));
+			map.from(properties::getWalletLocation).to(extension.via(OracleConfigurationExtension::setWalletLocation));
+			map.from(properties::getKerberosCacheFile)
+				.to(extension.via(OracleConfigurationExtension::setKerberosCacheFile));
 		}
 
 	}
@@ -498,15 +496,12 @@ public class FlywayAutoConfiguration {
 
 		@Override
 		public void customize(FluentConfiguration configuration) {
-			ConfigurationExtensionMapper<PostgreSQLConfigurationExtension> map = new ConfigurationExtensionMapper<>(
-					PropertyMapper.get().alwaysApplyingWhenNonNull(), () -> {
-						PostgreSQLConfigurationExtension extension = configuration.getPluginRegister()
-							.getPlugin(PostgreSQLConfigurationExtension.class);
-						Assert.notNull(extension, "PostgreSQL extension missing");
-						return extension;
-					});
-			map.apply(this.properties.getPostgresql().getTransactionalLock(),
-					PostgreSQLConfigurationExtension::setTransactionalLock);
+			Extension<PostgreSQLConfigurationExtension> extension = new Extension<>(configuration,
+					PostgreSQLConfigurationExtension.class, "PostgreSQL");
+			Postgresql properties = this.properties.getPostgresql();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getTransactionalLock)
+				.to(extension.via(PostgreSQLConfigurationExtension::setTransactionalLock));
 		}
 
 	}
@@ -522,40 +517,38 @@ public class FlywayAutoConfiguration {
 
 		@Override
 		public void customize(FluentConfiguration configuration) {
-			ConfigurationExtensionMapper<SQLServerConfigurationExtension> map = new ConfigurationExtensionMapper<>(
-					PropertyMapper.get().alwaysApplyingWhenNonNull(), () -> {
-						SQLServerConfigurationExtension extension = configuration.getPluginRegister()
-							.getPlugin(SQLServerConfigurationExtension.class);
-						Assert.notNull(extension, "Flyway SQL Server extension missing");
-						return extension;
-					});
+			Extension<SQLServerConfigurationExtension> extension = new Extension<>(configuration,
+					SQLServerConfigurationExtension.class, "SQL Server");
+			Sqlserver properties = this.properties.getSqlserver();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getKerberosLoginFile).to(extension.via(this::setKerberosLoginFile));
+		}
 
-			map.apply(this.properties.getSqlserver().getKerberosLoginFile(),
-					(extension, file) -> extension.getKerberos().getLogin().setFile(file));
+		private void setKerberosLoginFile(SQLServerConfigurationExtension configuration, String file) {
+			configuration.getKerberos().getLogin().setFile(file);
 		}
 
 	}
 
-	static class ConfigurationExtensionMapper<T extends ConfigurationExtension> {
+	/**
+	 * Helper class used to map properties to a {@link ConfigurationExtension}.
+	 *
+	 * @param <E> the extension type
+	 */
+	static class Extension<E extends ConfigurationExtension> {
 
-		private final PropertyMapper map;
+		private SingletonSupplier<E> extension;
 
-		private final Supplier<T> extensionProvider;
-
-		ConfigurationExtensionMapper(PropertyMapper map, Supplier<T> extensionProvider) {
-			this.map = map;
-			this.extensionProvider = SingletonSupplier.of(extensionProvider);
+		Extension(FluentConfiguration configuration, Class<E> type, String name) {
+			this.extension = SingletonSupplier.of(() -> {
+				E extension = configuration.getPluginRegister().getPlugin(type);
+				Assert.notNull(extension, () -> "Flyway %s extension missing".formatted(name));
+				return extension;
+			});
 		}
 
-		<V> void apply(V value, BiConsumer<T, V> mapper) {
-			this.map.from(value).to(withExtension(mapper));
-		}
-
-		private <V> Consumer<V> withExtension(BiConsumer<T, V> mapper) {
-			return (value) -> {
-				T extension = this.extensionProvider.get();
-				mapper.accept(extension, value);
-			};
+		<T> Consumer<T> via(BiConsumer<E, T> action) {
+			return (value) -> action.accept(this.extension.get(), value);
 		}
 
 	}
