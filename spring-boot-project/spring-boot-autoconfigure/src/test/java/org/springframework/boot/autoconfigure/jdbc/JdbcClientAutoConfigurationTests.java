@@ -89,10 +89,10 @@ class JdbcClientAutoConfigurationTests {
 
 	static class JdbcClientDataSourceMigrationValidator {
 
-		private final Integer count;
+		private final Long count;
 
 		JdbcClientDataSourceMigrationValidator(JdbcClient jdbcClient) {
-			this.count = jdbcClient.sql("SELECT COUNT(*) from CITY").query().singleValue(Integer.class);
+			this.count = jdbcClient.sql("SELECT COUNT(*) from CITY").query().singleValue();
 		}
 
 	}
