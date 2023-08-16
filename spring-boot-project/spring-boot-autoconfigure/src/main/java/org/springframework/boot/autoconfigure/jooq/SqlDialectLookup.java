@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
-import java.sql.DatabaseMetaData;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -25,14 +26,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jooq.SQLDialect;
 import org.jooq.tools.jdbc.JDBCUtils;
 
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
-
 /**
  * Utility to lookup well known {@link SQLDialect SQLDialects} from a {@link DataSource}.
  *
  * @author Michael Simons
  * @author Lukas Eder
+ * @author Ramil Saetov
  */
 final class SqlDialectLookup {
 
@@ -47,18 +46,12 @@ final class SqlDialectLookup {
 	 * @return the most suitable {@link SQLDialect}
 	 */
 	static SQLDialect getDialect(DataSource dataSource) {
-		if (dataSource == null) {
-			return SQLDialect.DEFAULT;
-		}
 		try {
-			String url = JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getURL);
-			SQLDialect sqlDialect = JDBCUtils.dialect(url);
-			if (sqlDialect != null) {
-				return sqlDialect;
-			}
+			Connection connection = (dataSource != null) ? dataSource.getConnection() : null;
+			return JDBCUtils.dialect(connection);
 		}
-		catch (MetaDataAccessException ex) {
-			logger.warn("Unable to determine jdbc url from datasource", ex);
+		catch (SQLException ex) {
+			logger.warn("Unable to determine dialect from datasource", ex);
 		}
 		return SQLDialect.DEFAULT;
 	}
