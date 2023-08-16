@@ -37,6 +37,7 @@ import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Ramil Saetov
  * @since 1.5.10
  */
 public class JooqExceptionTranslator implements ExecuteListener {
@@ -58,12 +59,9 @@ public class JooqExceptionTranslator implements ExecuteListener {
 	}
 
 	private SQLExceptionTranslator getTranslator(ExecuteContext context) {
-		SQLDialect dialect = context.configuration().dialect();
-		if (dialect != null && dialect.thirdParty() != null) {
-			String dbName = dialect.thirdParty().springDbName();
-			if (dbName != null) {
-				return new SQLErrorCodeSQLExceptionTranslator(dbName);
-			}
+		String dbName = context.configuration().dialect().thirdParty().springDbName();
+		if (dbName != null) {
+			return new SQLErrorCodeSQLExceptionTranslator(dbName);
 		}
 		return new SQLStateSQLExceptionTranslator();
 	}
