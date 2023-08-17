@@ -55,7 +55,9 @@ public class EndpointLinksResolver {
 	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints, String basePath) {
 		this.endpoints = endpoints;
 		if (logger.isInfoEnabled()) {
-			logger.info("Exposing " + endpoints.size() + " endpoint(s) beneath base path '" + basePath + "'");
+			String suffix = (endpoints.size() == 1) ? "" : "s";
+			logger
+				.info("Exposing " + endpoints.size() + " endpoint" + suffix + " beneath base path '" + basePath + "'");
 		}
 	}
 

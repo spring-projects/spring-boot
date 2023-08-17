@@ -160,8 +160,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		if (!availableLabels.containsAll(issueLabels)) {
 			List<String> unknownLabels = new ArrayList<>(issueLabels);
 			unknownLabels.removeAll(availableLabels);
+			String suffix = (unknownLabels.size() == 1) ? "" : "s";
 			throw new InvalidUserDataException(
-					"Unknown label(s): " + StringUtils.collectionToCommaDelimitedString(unknownLabels));
+					"Unknown label" + suffix + ": " + StringUtils.collectionToCommaDelimitedString(unknownLabels));
 		}
 		return issueLabels;
 	}
