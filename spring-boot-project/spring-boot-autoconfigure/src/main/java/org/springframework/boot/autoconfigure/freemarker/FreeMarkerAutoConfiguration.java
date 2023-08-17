@@ -62,8 +62,9 @@ public class FreeMarkerAutoConfiguration {
 		if (logger.isWarnEnabled() && this.properties.isCheckTemplateLocation()) {
 			List<TemplateLocation> locations = getLocations();
 			if (locations.stream().noneMatch(this::locationExists)) {
-				logger.warn("Cannot find template location(s): " + locations + " (please add some templates, "
-						+ "check your FreeMarker configuration, or set "
+				String suffix = (locations.size() == 1) ? "" : "s";
+				logger.warn("Cannot find template location" + suffix + ": " + locations
+						+ " (please add some templates, " + "check your FreeMarker configuration, or set "
 						+ "spring.freemarker.check-template-location=false)");
 			}
 		}
