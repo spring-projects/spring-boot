@@ -64,6 +64,11 @@ public class NettyWebServerFactoryCustomizer
 		map.from(nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		map.from(nettyProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
+		if (this.serverProperties.getHttp2() != null && this.serverProperties.getHttp2().isEnabled()) {
+			map.from(this.serverProperties.getMaxHttpRequestHeaderSize())
+				.whenNonNull()
+				.to((size) -> customizeHttp2MaxHeaderSize(factory, size.toBytes()));
+		}
 		customizeRequestDecoder(factory, map);
 	}
 
@@ -120,6 +125,11 @@ public class NettyWebServerFactoryCustomizer
 
 	private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
 		factory.addServerCustomizers((httpServer) -> httpServer.maxKeepAliveRequests(maxKeepAliveRequests));
+	}
+
+	private void customizeHttp2MaxHeaderSize(NettyReactiveWebServerFactory factory, long size) {
+		factory.addServerCustomizers(
+				((httpServer) -> httpServer.http2Settings((settings) -> settings.maxHeaderListSize(size))));
 	}
 
 }
