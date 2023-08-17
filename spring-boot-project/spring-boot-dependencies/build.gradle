@@ -211,7 +211,7 @@ bom {
 	}
 	library("Couchbase Client", "3.4.8") {
 		prohibit {
-			versionRange "3.4.9"
+			versionRange "[3.4.9]"
 			because "it contains unshaded io.opentelemetry classes that break our Otel integration"
 		}
 		group("com.couchbase.client") {
@@ -1222,7 +1222,7 @@ bom {
 	}
 	library("RSocket", "1.1.3") {
 		prohibit {
-			versionRange "1.1.4"
+			versionRange "[1.1.4]"
 			because "it contains a regression (https://github.com/rsocket/rsocket-java/issues/1092)"
 		}
 		group("io.rsocket") {
