@@ -130,6 +130,7 @@ class NettyWebServerFactoryCustomizerTests {
 	@Test
 	void setHttp2MaxRequestHeaderSize() {
 		DataSize headerSize = DataSize.ofKilobytes(24);
+		this.serverProperties.getHttp2().setEnabled(true);
 		this.serverProperties.setMaxHttpHeaderSize(headerSize);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -147,8 +148,8 @@ class NettyWebServerFactoryCustomizerTests {
 		nettyProperties.setMaxInitialLineLength(DataSize.ofKilobytes(32));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
-		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(1);
+		then(factory).should().addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		HttpRequestDecoderSpec decoder = httpServer.configuration().decoder();
 		assertThat(decoder.validateHeaders()).isFalse();
@@ -164,7 +165,7 @@ class NettyWebServerFactoryCustomizerTests {
 			then(factory).should(never()).addServerCustomizers(any(NettyServerCustomizer.class));
 			return;
 		}
-		then(factory).should(times(3)).addServerCustomizers(this.customizerCaptor.capture());
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Map<ChannelOption<?>, ?> options = httpServer.configuration().options();
@@ -176,7 +177,7 @@ class NettyWebServerFactoryCustomizerTests {
 			then(factory).should(never()).addServerCustomizers(any(NettyServerCustomizer.class));
 			return;
 		}
-		then(factory).should(times(3)).addServerCustomizers(this.customizerCaptor.capture());
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Duration idleTimeout = httpServer.configuration().idleTimeout();
@@ -184,7 +185,7 @@ class NettyWebServerFactoryCustomizerTests {
 	}
 
 	private void verifyMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int expected) {
-		then(factory).should(times(3)).addServerCustomizers(this.customizerCaptor.capture());
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		int maxKeepAliveRequests = httpServer.configuration().maxKeepAliveRequests();
