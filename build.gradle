@@ -1,9 +1,10 @@
+//TODO 初始化环境：添加初始化环境文件拉去地址
 buildscript {
 	repositories {
 		//加上阿里云镜像
 		maven { url 'https://maven.aliyun.com/nexus/content/groups/public/'}
 		maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
-		maven { url "https ://repo.spring.io/plugins-release"}
+//		maven { url "https ://repo.spring.io/plugins-release"}
 	}
 }
 
@@ -37,6 +38,7 @@ allprojects {
 	group "org.springframework.boot"
 
 	repositories {
+		//TODO 初始化环境：添加阿里云镜像
 		//加上阿里云镜像
 		maven { url 'https://maven.aliyun.com/nexus/content/groups/public/'}
 		maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
