@@ -175,7 +175,7 @@ bom {
 	}
 	library("Couchbase Client", "3.4.8") {
 		prohibit {
-			versionRange "3.4.9"
+			versionRange "[3.4.9]"
 			because "it contains unshaded io.opentelemetry classes that break our Otel integration"
 		}
 		group("com.couchbase.client") {
@@ -1175,7 +1175,7 @@ bom {
 	}
 	library("RSocket", "1.1.3") {
 		prohibit {
-			versionRange "1.1.4"
+			versionRange "[1.1.4]"
 			because "it contains a regression (https://github.com/rsocket/rsocket-java/issues/1092)"
 		}
 		group("io.rsocket") {
@@ -1352,7 +1352,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2022.0.9-SNAPSHOT") {
+	library("Spring Data Bom", "2022.0.9") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1396,7 +1396,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "3.0.5-SNAPSHOT") {
+	library("Spring LDAP", "3.0.5") {
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",
@@ -1505,7 +1505,7 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.3.7.Final") {
+	library("Undertow", "2.3.8.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",

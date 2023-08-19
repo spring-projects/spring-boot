@@ -85,8 +85,13 @@ class KotlinPluginActionIntegrationTests {
 		if (GradleVersion.version(this.gradleBuild.getGradleVersion()).compareTo(GradleVersion.version("7.3.3")) < 0) {
 			assertThat(configured).containsExactly("help");
 		}
-		else {
+		else if (GradleVersion.version(this.gradleBuild.getGradleVersion())
+			.compareTo(GradleVersion.version("8.3")) < 0) {
 			assertThat(configured).containsExactlyInAnyOrder("help", "clean", "compileKotlin", "compileTestKotlin");
+		}
+		else {
+			assertThat(configured).containsExactlyInAnyOrder("help", "clean", "compileJava", "compileKotlin",
+					"compileTestKotlin");
 		}
 	}
 
