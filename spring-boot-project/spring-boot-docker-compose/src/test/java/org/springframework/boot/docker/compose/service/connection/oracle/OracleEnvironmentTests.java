@@ -34,7 +34,7 @@ class OracleEnvironmentTests {
 
 	@Test
 	void getUsernameWhenHasAppUser() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"));
 		assertThat(environment.getUsername()).isEqualTo("alice");
 	}
 
@@ -46,7 +46,7 @@ class OracleEnvironmentTests {
 
 	@Test
 	void getPasswordWhenHasAppPassword() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
@@ -59,14 +59,14 @@ class OracleEnvironmentTests {
 	@Test
 	void createWhenRandomPasswordAndAppPasswordDoesNotThrow() {
 		assertThatNoException().isThrownBy(() -> new OracleEnvironment(
-				Map.of("APP_USER", "alice", "APP_PASSWORD", "secret", "ORACLE_RANDOM_PASSWORD", "true")));
+				Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret", "ORACLE_RANDOM_PASSWORD", "true")));
 	}
 
 	@Test
 	void createWhenRandomPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new OracleEnvironment(Map.of("ORACLE_RANDOM_PASSWORD", "true")))
-			.withMessage("ORACLE_RANDOM_PASSWORD is not supported without APP_USER and APP_PASSWORD");
+			.withMessage("ORACLE_RANDOM_PASSWORD is not supported without APP_USER and APP_USER_PASSWORD");
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class OracleEnvironmentTests {
 	@Test
 	void createWhenAppUserAndEmptyAppPasswordThrowsException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new OracleEnvironment(Map.of("APP_USER", "alice", "APP_PASSWORD", "")))
+			.isThrownBy(() -> new OracleEnvironment(Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "")))
 			.withMessage("No Oracle app password found");
 	}
 
