@@ -192,10 +192,6 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 The values provided to the `tags` option should be full image references in the form of `[image name]:[tag]` or `[repository]/[image name]:[tag]`.
 |
 
-| `caches`
-| Cache volume names that should be used by the builder instead of generating random names.
-|
-
 | `buildCache`
 | A cache containing layers created by buildpacks and used by the image building process.
 | A named volume in the Docker daemon, with a name derived from the image name.
