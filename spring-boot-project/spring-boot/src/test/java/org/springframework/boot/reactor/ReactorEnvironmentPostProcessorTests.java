@@ -16,8 +16,10 @@
 
 package org.springframework.boot.reactor;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
 
@@ -27,17 +29,18 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DebugAgentEnvironmentPostProcessor}.
+ * Tests for {@link ReactorEnvironmentPostProcessor}.
  *
  * @author Brian Clozel
  */
-@Disabled("We need the not-yet-released reactor-tools 3.4.11 for JDK 17 compatibility")
-@ClassPathOverrides("io.projectreactor:reactor-tools:3.4.11")
-class DebugAgentEnvironmentPostProcessorTests {
+
+@ClassPathOverrides("io.projectreactor:reactor-tools:3.5.9")
+class ReactorEnvironmentPostProcessorTests {
 
 	static {
 		MockEnvironment environment = new MockEnvironment();
-		DebugAgentEnvironmentPostProcessor postProcessor = new DebugAgentEnvironmentPostProcessor();
+		environment.setProperty("spring.threads.virtual.enabled", "true");
+		ReactorEnvironmentPostProcessor postProcessor = new ReactorEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(environment, null);
 	}
 
@@ -47,6 +50,23 @@ class DebugAgentEnvironmentPostProcessorTests {
 		Flux<Integer> flux = fluxProvider.newFluxJust();
 		assertThat(Scannable.from(flux).stepName())
 			.startsWith("Flux.just ⇢ at org.springframework.boot.reactor.InstrumentedFluxProvider.newFluxJust");
+	}
+
+	@Test
+	@EnabledForJreRange(max = JRE.JAVA_20)
+	void shouldNotEnableVirtualThreads() {
+		assertThat(System.getProperty("reactor.schedulers.defaultBoundedElasticOnVirtualThreads")).isNotEqualTo("true");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldEnableVirtualThreads() {
+		assertThat(System.getProperty("reactor.schedulers.defaultBoundedElasticOnVirtualThreads")).isEqualTo("true");
+	}
+
+	@AfterEach
+	void cleanup() {
+		System.setProperty("reactor.schedulers.defaultBoundedElasticOnVirtualThreads", "false");
 	}
 
 }

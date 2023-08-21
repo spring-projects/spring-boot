@@ -22,7 +22,7 @@ import reactor.core.publisher.Flux;
  * Utility class that should be instrumented by the reactor debug agent.
  *
  * @author Brian Clozel
- * @see DebugAgentEnvironmentPostProcessorTests
+ * @see ReactorEnvironmentPostProcessorTests
  */
 class InstrumentedFluxProvider {
 

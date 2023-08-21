@@ -491,7 +491,7 @@
     {
       "name": "spring.reactor.debug-agent.enabled",
       "type": "java.lang.Boolean",
-      "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+      "sourceType": "org.springframework.boot.reactor.ReactorEnvironmentPostProcessor",
       "description": "Whether the Reactor Debug Agent should be enabled when reactor-tools is present.",
       "defaultValue": true
     },
