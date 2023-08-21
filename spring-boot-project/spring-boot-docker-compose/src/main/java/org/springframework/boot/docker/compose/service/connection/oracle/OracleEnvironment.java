@@ -42,12 +42,12 @@ class OracleEnvironment {
 
 	private String extractPassword(Map<String, String> env) {
 		if (env.containsKey("APP_USER")) {
-			String password = env.get("APP_PASSWORD");
+			String password = env.get("APP_USER_PASSWORD");
 			Assert.state(StringUtils.hasLength(password), "No Oracle app password found");
 			return password;
 		}
 		Assert.state(!env.containsKey("ORACLE_RANDOM_PASSWORD"),
-				"ORACLE_RANDOM_PASSWORD is not supported without APP_USER and APP_PASSWORD");
+				"ORACLE_RANDOM_PASSWORD is not supported without APP_USER and APP_USER_PASSWORD");
 		String password = env.get("ORACLE_PASSWORD");
 		Assert.state(StringUtils.hasLength(password), "No Oracle password found");
 		return password;
