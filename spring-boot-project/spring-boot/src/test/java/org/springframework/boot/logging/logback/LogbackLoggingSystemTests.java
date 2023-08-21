@@ -90,6 +90,7 @@ import static org.mockito.Mockito.times;
  * @author Eddú Meléndez
  * @author Scott Frederick
  * @author Jonatan Ivanov
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
@@ -780,6 +781,25 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 					getLogFile(tmpDir() + "/tmp.log", null)))
 			.satisfies((ex) -> assertThat(ex.getSuppressed())
 				.hasAtLeastOneElementOfType(DynamicClassLoadingException.class));
+	}
+
+	@Test
+	void whenConfigLocationIsNotXmlThenIllegalArgumentExceptionShouldBeThrown() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+			.isThrownBy(() -> initialize(this.initializationContext, "file:///logback-nonexistent.txt",
+					getLogFile(tmpDir() + "/tmp.log", null)))
+			.satisfies((ex) -> assertThat(ex.getCause()).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageStartingWith("Unsupported file extension"));
+	}
+
+	@Test
+	void whenConfigLocationIsXmlAndHasQueryParametersThenIllegalArgumentExceptionShouldNotBeThrown() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+			.isThrownBy(() -> initialize(this.initializationContext, "file:///logback-nonexistent.xml?raw=true",
+					getLogFile(tmpDir() + "/tmp.log", null)))
+			.satisfies((ex) -> assertThat(ex.getCause()).isNotInstanceOf(IllegalArgumentException.class));
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
