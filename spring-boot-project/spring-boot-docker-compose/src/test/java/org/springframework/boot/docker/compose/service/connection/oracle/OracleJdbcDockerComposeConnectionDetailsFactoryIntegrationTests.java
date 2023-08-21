@@ -20,6 +20,7 @@ import java.sql.Driver;
 import java.time.Duration;
 
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
@@ -41,30 +42,59 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The Oracle image has no ARM support")
-class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("oracle-compose.yaml", DockerImageNames.oracleXe());
+	@Nested
+	class OracleJdbcDockerComposeConnectionDetailsFactoryDefaultSettingsIntegrationTests extends AbstractDockerComposeIntegrationTests {
+		OracleJdbcDockerComposeConnectionDetailsFactoryDefaultSettingsIntegrationTests() {
+			super("oracle-compose.yaml", DockerImageNames.oracleXe());
+		}
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws Exception {
+			JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+			assertThat(connectionDetails.getUsername()).isEqualTo("system");
+			assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+			assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/xepdb1");
+			SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+			dataSource.setUrl(connectionDetails.getJdbcUrl());
+			dataSource.setUsername(connectionDetails.getUsername());
+			dataSource.setPassword(connectionDetails.getPassword());
+			dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
+					getClass().getClassLoader()));
+			Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
+				JdbcTemplate template = new JdbcTemplate(dataSource);
+				assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
+						.isEqualTo("Hello");
+			});
+		}
 	}
 
-	@Test
-	@SuppressWarnings("unchecked")
-	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws Exception {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
-		assertThat(connectionDetails.getUsername()).isEqualTo("system");
-		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/xepdb1");
-		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-		dataSource.setUrl(connectionDetails.getJdbcUrl());
-		dataSource.setUsername(connectionDetails.getUsername());
-		dataSource.setPassword(connectionDetails.getPassword());
-		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
-				getClass().getClassLoader()));
-		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
-			JdbcTemplate template = new JdbcTemplate(dataSource);
-			assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
-				.isEqualTo("Hello");
-		});
-	}
+	@Nested
+	class OracleJdbcDockerComposeConnectionDetailsFactoryNonDefaultSettingsIntegrationTests extends AbstractDockerComposeIntegrationTests {
+		protected OracleJdbcDockerComposeConnectionDetailsFactoryNonDefaultSettingsIntegrationTests() {
+			super("oracle-non-default-compose.yaml", DockerImageNames.oracleXe());
+		}
 
+		@Test
+		@SuppressWarnings("unchecked")
+		void runCreatesConnectionDetailsWithNonDefaultUsernameAndPasswordThatCanBeUsedToAccessDatabase() throws Exception {
+			JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+			assertThat(connectionDetails.getUsername()).isEqualTo("app_user");
+			assertThat(connectionDetails.getPassword()).isEqualTo("app_user_secret");
+			assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/xepdb1");
+			SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+			dataSource.setUrl(connectionDetails.getJdbcUrl());
+			dataSource.setUsername(connectionDetails.getUsername());
+			dataSource.setPassword(connectionDetails.getPassword());
+			dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
+					getClass().getClassLoader()));
+			Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
+				JdbcTemplate template = new JdbcTemplate(dataSource);
+				assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
+						.isEqualTo("Hello");
+			});
+		}
+	}
 }
