@@ -240,6 +240,14 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void withBuildBindCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withBuildCache(Cache.bind("/tmp/build-cache"));
+		assertThat(request.getBuildCache()).isNull();
+		assertThat(withCache.getBuildCache()).isEqualTo(Cache.bind("/tmp/build-cache"));
+	}
+
+	@Test
 	void withBuildVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildCache(null))
@@ -252,6 +260,14 @@ class BuildRequestTests {
 		BuildRequest withCache = request.withLaunchCache(Cache.volume("launch-volume"));
 		assertThat(request.getLaunchCache()).isNull();
 		assertThat(withCache.getLaunchCache()).isEqualTo(Cache.volume("launch-volume"));
+	}
+
+	@Test
+	void withLaunchBindCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withLaunchCache(Cache.bind("/tmp/launch-cache"));
+		assertThat(request.getLaunchCache()).isNull();
+		assertThat(withCache.getLaunchCache()).isEqualTo(Cache.bind("/tmp/launch-cache"));
 	}
 
 	@Test

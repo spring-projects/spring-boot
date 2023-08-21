@@ -10,12 +10,15 @@ java {
 
 bootBuildImage {
 	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2"
+	pullPolicy = "IF_NOT_PRESENT"
 	buildCache {
-		volume {
-			name = "build-cache-volume"
-		}
 		bind {
-			name = "/tmp/build-cache-bind"
+			source = System.getProperty('java.io.tmpdir') + "/junit-image-cache-${rootProject.name}-build"
+		}
+	}
+	launchCache {
+		bind {
+			source = System.getProperty('java.io.tmpdir') + "/junit-image-cache-${rootProject.name}-launch"
 		}
 	}
 }

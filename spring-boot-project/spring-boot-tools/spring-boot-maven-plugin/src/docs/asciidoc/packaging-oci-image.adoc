@@ -420,6 +420,13 @@ The cache volumes can be configured to use alternative names to give more contro
 include::../maven/packaging-oci-image/caches-pom.xml[tags=caches]
 ----
 
+The caches can be configured to use bind mounts instead of named volumes, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/packaging-oci-image/bind-caches-pom.xml[tags=caches]
+----
+
 [[build-image.examples.docker]]
 === Docker Configuration
 

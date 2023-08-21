@@ -339,6 +339,14 @@ class PackagingDocumentationTests {
 			.containsPattern("launchCache=cache-gradle-[\\d]+.launch");
 	}
 
+	@TestTemplate
+	void bootBuildImageWithBindCaches() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-bind-caches")
+			.build("bootBuildImageCaches");
+		assertThat(result.getOutput()).containsPattern("buildCache=/tmp/cache-gradle-[\\d]+.build")
+			.containsPattern("launchCache=/tmp/cache-gradle-[\\d]+.launch");
+	}
+
 	protected void jarFile(File file) throws IOException {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));

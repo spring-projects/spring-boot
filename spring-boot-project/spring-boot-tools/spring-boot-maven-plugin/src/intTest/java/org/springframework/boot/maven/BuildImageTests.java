@@ -37,6 +37,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -385,16 +386,38 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithVolumeCaches(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-caches")
+		mavenBuild.project("build-image-volume-caches")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
-					.contains("docker.io/library/build-image-caches:0.0.1.BUILD-SNAPSHOT")
+					.contains("docker.io/library/build-image-volume-caches:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
-				removeImage("build-image-caches", "0.0.1.BUILD-SNAPSHOT");
+				removeImage("build-image-volume-caches", "0.0.1.BUILD-SNAPSHOT");
 				deleteVolumes("cache-" + testBuildId + ".build", "cache-" + testBuildId + ".launch");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithBindCaches(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
+		mavenBuild.project("build-image-bind-caches")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-bind-caches:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-bind-caches", "0.0.1.BUILD-SNAPSHOT");
+				String tempDir = System.getProperty("java.io.tmpdir");
+				Path buildCachePath = Paths.get(tempDir, "junit-image-cache-" + testBuildId + "-build");
+				Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + testBuildId + "-launch");
+				assertThat(buildCachePath).exists().isDirectory();
+				assertThat(launchCachePath).exists().isDirectory();
+				FileSystemUtils.deleteRecursively(buildCachePath);
+				FileSystemUtils.deleteRecursively(launchCachePath);
 			});
 	}
 

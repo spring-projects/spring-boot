@@ -219,6 +219,18 @@ class LifecycleTests {
 	}
 
 	@Test
+	void executeWithCacheBindMountsExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest().withBuildCache(Cache.bind("/tmp/build-cache"))
+			.withLaunchCache(Cache.bind("/tmp/launch-cache"));
+		createLifecycle(request).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-bind-mounts.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
 	void executeWithCreatedDateExecutesPhases() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());

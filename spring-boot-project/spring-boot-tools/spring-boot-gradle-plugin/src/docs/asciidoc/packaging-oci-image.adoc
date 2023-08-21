@@ -440,6 +440,20 @@ include::../gradle/packaging/boot-build-image-caches.gradle[tags=caches]
 include::../gradle/packaging/boot-build-image-caches.gradle.kts[tags=caches]
 ----
 
+The caches can be configured to use bind mounts instead of named volumes, as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-bind-caches.gradle[tags=caches]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-bind-caches.gradle.kts[tags=caches]
+----
+
 [[build-image.examples.docker]]
 === Docker Configuration
 
