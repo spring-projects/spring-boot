@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 /**
  * {@link Validator} implementation that delegates calls to another {@link Validator}.
  * This {@link Validator} implements Spring's {@link SmartValidator} interface but does
- * not implement the JSR-303 {@code javax.validator.Validator} interface.
+ * not implement the JSR-303 {@code jakarta.validator.Validator} interface.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
