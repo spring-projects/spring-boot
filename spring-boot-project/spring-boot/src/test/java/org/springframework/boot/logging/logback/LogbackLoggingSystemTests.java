@@ -687,6 +687,25 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.hasAtLeastOneElementOfType(DynamicClassLoadingException.class));
 	}
 
+	@Test
+	void whenConfigLocationIsNotXmlThenIllegalArgumentExceptionShouldBeThrown() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+			.isThrownBy(() -> initialize(this.initializationContext, "classpath:logback-invalid-format.txt",
+					getLogFile(tmpDir() + "/tmp.log", null)))
+			.satisfies((ex) -> assertThat(ex.getCause()).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageStartingWith("Unsupported file extension"));
+	}
+
+	@Test
+	void whenConfigLocationIsXmlAndHasQueryParametersThenIllegalArgumentExceptionShouldNotBeThrown() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+			.isThrownBy(() -> initialize(this.initializationContext, "file:///logback-nonexistent.xml?raw=true",
+					getLogFile(tmpDir() + "/tmp.log", null)))
+			.satisfies((ex) -> assertThat(ex.getCause()).isNotInstanceOf(IllegalArgumentException.class));
+	}
+
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
 		this.loggingSystem.getSystemProperties((ConfigurableEnvironment) context.getEnvironment()).apply(logFile);
 		this.loggingSystem.initialize(context, configLocation, logFile);
