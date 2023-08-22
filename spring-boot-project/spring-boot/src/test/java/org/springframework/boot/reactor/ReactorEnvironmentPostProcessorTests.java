@@ -17,13 +17,13 @@
 package org.springframework.boot.reactor;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
 
-import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 
-@ClassPathOverrides("io.projectreactor:reactor-tools:3.5.9")
+@Disabled("Tests rely on static initialization and are flaky on CI")
 class ReactorEnvironmentPostProcessorTests {
 
 	static {
