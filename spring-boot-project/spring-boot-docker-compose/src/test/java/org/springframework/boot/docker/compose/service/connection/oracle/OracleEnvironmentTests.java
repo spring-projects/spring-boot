@@ -34,7 +34,8 @@ class OracleEnvironmentTests {
 
 	@Test
 	void getUsernameWhenHasAppUser() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(
+				Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"));
 		assertThat(environment.getUsername()).isEqualTo("alice");
 	}
 
@@ -46,7 +47,8 @@ class OracleEnvironmentTests {
 
 	@Test
 	void getPasswordWhenHasAppPassword() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(
+				Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
