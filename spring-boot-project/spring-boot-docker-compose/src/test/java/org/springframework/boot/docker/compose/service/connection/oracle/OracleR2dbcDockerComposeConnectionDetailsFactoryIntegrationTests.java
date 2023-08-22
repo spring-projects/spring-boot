@@ -51,7 +51,7 @@ class OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends A
 		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=xepdb1", "driver=oracle",
-				"password=REDACTED", "user=system");
+				"password=REDACTED", "user=app_user");
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
 		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
 			Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
