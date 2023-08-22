@@ -51,8 +51,8 @@ class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends Ab
 	@SuppressWarnings("unchecked")
 	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws Exception {
 		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
-		assertThat(connectionDetails.getUsername()).isEqualTo("system");
-		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getUsername()).isEqualTo("app_user");
+		assertThat(connectionDetails.getPassword()).isEqualTo("app_user_secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/xepdb1");
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
