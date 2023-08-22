@@ -691,7 +691,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	void whenConfigLocationIsNotXmlThenIllegalArgumentExceptionShouldBeThrown() {
 		this.loggingSystem.beforeInitialize();
 		assertThatIllegalStateException()
-			.isThrownBy(() -> initialize(this.initializationContext, "file:///logback-nonexistent.txt",
+			.isThrownBy(() -> initialize(this.initializationContext, "classpath:logback-invalid-format.txt",
 					getLogFile(tmpDir() + "/tmp.log", null)))
 			.satisfies((ex) -> assertThat(ex.getCause()).isInstanceOf(IllegalArgumentException.class)
 				.hasMessageStartingWith("Unsupported file extension"));
