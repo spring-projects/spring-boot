@@ -114,6 +114,8 @@ class FlywayPropertiesTests {
 				"oracleWalletLocation", "sqlServerKerberosLoginFile");
 		// Properties that are managed by specific extensions
 		ignoreProperties(properties, "oracle", "postgresql", "sqlserver");
+		// https://github.com/flyway/flyway/issues/3732
+		ignoreProperties(configuration, "environment");
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
