@@ -1376,7 +1376,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Authorization Server", "1.1.2-SNAPSHOT") {
+	library("Spring Authorization Server", "1.1.2") {
 		group("org.springframework.security") {
 			modules = [
 					"spring-security-oauth2-authorization-server"
