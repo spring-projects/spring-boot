@@ -803,6 +803,13 @@ bom {
 			]
 		}
 	}
+	library("Kotlin Serialization", "1.6.0") {
+		group("org.jetbrains.kotlinx") {
+			imports = [
+					"kotlinx-serialization-bom"
+			]
+		}
+	}
 	library("Lettuce", "6.2.6.RELEASE") {
 		group("io.lettuce") {
 			modules = [
