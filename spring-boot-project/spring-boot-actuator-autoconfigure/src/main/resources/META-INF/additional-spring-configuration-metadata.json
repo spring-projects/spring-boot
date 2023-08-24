@@ -2055,6 +2055,10 @@
       }
     },
     {
+      "name": "management.otlp.metrics.export.base-time-unit",
+      "defaultValue": "milliseconds"
+    },
+    {
       "name": "management.otlp.tracing.compression",
       "defaultValue": "none"
     },
