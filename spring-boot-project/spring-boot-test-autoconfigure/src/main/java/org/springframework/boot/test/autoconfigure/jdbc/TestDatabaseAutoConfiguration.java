@@ -159,11 +159,6 @@ public class TestDatabaseAutoConfiguration {
 			return EmbeddedDatabase.class;
 		}
 
-		@Override
-		public boolean isSingleton() {
-			return true;
-		}
-
 	}
 
 	static class EmbeddedDataSourceFactory {
