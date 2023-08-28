@@ -18,7 +18,10 @@ package org.springframework.boot.autoconfigure.validation;
 
 import java.util.HashMap;
 
+import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
+import org.hibernate.validator.HibernateValidator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -89,6 +92,15 @@ class ValidatorAdapterTests {
 			.withClassLoader(new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),
 					FilteredClassLoader.PackageFilter.of("org.hibernate.validator")))
 			.run((context) -> ValidatorAdapter.get(context, null));
+	}
+
+	@Test
+	void unwrapValidatorInstanceOfJakartaTypeAndExceptionThrownWhenTypeNotSupported() {
+		this.contextRunner.withUserConfiguration(LocalValidatorFactoryBeanConfig.class).run((context) -> {
+			ValidatorAdapter wrapper = context.getBean(ValidatorAdapter.class);
+			assertThat(wrapper.unwrap(Validator.class)).isInstanceOf(Validator.class);
+			Assertions.assertThrows(IllegalArgumentException.class, () -> wrapper.unwrap(HibernateValidator.class));
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
