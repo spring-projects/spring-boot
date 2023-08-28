@@ -134,7 +134,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
 		Set<Class<?>> combined = new LinkedHashSet<>(Arrays.asList(classes));
-		combined.addAll(Arrays.asList(configAttributes.getClasses()));
+		if (configAttributes.getClasses() != null) {
+			combined.addAll(Arrays.asList(configAttributes.getClasses()));
+		}
 		configAttributes.setClasses(ClassUtils.toClassArray(combined));
 	}
 
