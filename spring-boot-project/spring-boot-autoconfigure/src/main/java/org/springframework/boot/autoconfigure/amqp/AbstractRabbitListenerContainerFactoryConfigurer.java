@@ -87,6 +87,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	/**
 	 * Set the task executor to use.
 	 * @param taskExecutor the task executor
+	 * @since 3.2.0
 	 */
 	public void setTaskExecutor(Executor taskExecutor) {
 		this.taskExecutor = taskExecutor;
