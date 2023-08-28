@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.json;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -234,11 +235,16 @@ public class JsonTestersAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			Method initializeMethod = ReflectionUtils.findMethod(this.tester, "initialize", Class.class,
+					ResolvableType.class);
+
+			if (initializeMethod == null) {
+				throw new IllegalStateException("unable to find initialize method for " + this.tester);
+			}
+
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(this.tester, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-			reflection.registerMethod(
-					ReflectionUtils.findMethod(this.tester, "initialize", Class.class, ResolvableType.class),
-					ExecutableMode.INVOKE);
+			reflection.registerMethod(initializeMethod, ExecutableMode.INVOKE);
 		}
 
 	}
@@ -247,10 +253,15 @@ public class JsonTestersAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			Method initializeMethod = ReflectionUtils.findMethod(BasicJsonTester.class, "initialize", Class.class);
+
+			if (initializeMethod == null) {
+				throw new IllegalStateException("unable to find initialize method!");
+			}
+
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(BasicJsonTester.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-			reflection.registerMethod(ReflectionUtils.findMethod(BasicJsonTester.class, "initialize", Class.class),
-					ExecutableMode.INVOKE);
+			reflection.registerMethod(initializeMethod, ExecutableMode.INVOKE);
 		}
 
 	}
