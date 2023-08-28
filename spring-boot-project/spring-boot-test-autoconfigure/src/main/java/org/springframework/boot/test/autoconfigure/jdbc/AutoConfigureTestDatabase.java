@@ -58,7 +58,7 @@ public @interface AutoConfigureTestDatabase {
 
 	/**
 	 * The type of connection to be established when {@link #replace() replacing} the
-	 * DataSource. By default will attempt to detect the connection based on the
+	 * DataSource. By default, will attempt to detect the connection based on the
 	 * classpath.
 	 * @return the type of connection to use
 	 */
