@@ -44,7 +44,7 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 		}
 		OverrideAutoConfiguration overrideAutoConfiguration = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				OverrideAutoConfiguration.class);
-		boolean enabled = overrideAutoConfiguration == null || overrideAutoConfiguration.enabled();
+		boolean enabled = (overrideAutoConfiguration != null) ? overrideAutoConfiguration.enabled() : true;
 		return !enabled ? new DisableAutoConfigurationContextCustomizer() : null;
 	}
 
