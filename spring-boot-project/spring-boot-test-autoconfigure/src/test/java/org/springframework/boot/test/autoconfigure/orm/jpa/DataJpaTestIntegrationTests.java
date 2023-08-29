@@ -28,6 +28,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -39,12 +40,16 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @DataJpaTest
 class DataJpaTestIntegrationTests {
 
 	@Autowired
 	private TestEntityManager entities;
+
+	@Autowired
+	private JdbcClient jdbcClient;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -72,8 +77,10 @@ class DataJpaTestIntegrationTests {
 		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"), Long.class);
 		this.entities.flush();
 		assertThat(id).isNotNull();
-		String reference = this.jdbcTemplate.queryForObject("SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?",
-				String.class, id);
+		String sql = "SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?";
+		String reference = this.jdbcTemplate.queryForObject(sql, String.class, id);
+		assertThat(reference).isEqualTo("123");
+		reference = this.jdbcClient.sql(sql).param(id).query(String.class).single();
 		assertThat(reference).isEqualTo("123");
 	}
 
