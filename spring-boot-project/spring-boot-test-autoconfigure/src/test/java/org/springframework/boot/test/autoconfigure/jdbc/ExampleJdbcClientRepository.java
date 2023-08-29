@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,36 +20,43 @@ import java.util.Collection;
 
 import jakarta.transaction.Transactional;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 /**
- * Example repository used with {@link JdbcTest @JdbcTest} tests.
+ * Example repository used with {@link JdbcClient JdbcClient} and
+ * {@link JdbcTest @JdbcTest} tests.
  *
- * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 @Repository
-public class ExampleRepository {
+public class ExampleJdbcClientRepository {
 
 	private static final ExampleEntityRowMapper ROW_MAPPER = new ExampleEntityRowMapper();
 
-	private final JdbcTemplate jdbcTemplate;
+	private final JdbcClient jdbcClient;
 
-	public ExampleRepository(JdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
+	public ExampleJdbcClientRepository(JdbcClient jdbcClient) {
+		this.jdbcClient = jdbcClient;
 	}
 
 	@Transactional
 	public void save(ExampleEntity entity) {
-		this.jdbcTemplate.update("insert into example (id, name) values (?, ?)", entity.getId(), entity.getName());
+		this.jdbcClient.sql("insert into example (id, name) values (:id, :name)")
+			.param("id", entity.getId())
+			.param("name", entity.getName())
+			.update();
 	}
 
 	public ExampleEntity findById(int id) {
-		return this.jdbcTemplate.queryForObject("select id, name from example where id =?", ROW_MAPPER, id);
+		return this.jdbcClient.sql("select id, name from example where id =:id")
+			.param("id", id)
+			.query(ROW_MAPPER)
+			.single();
 	}
 
 	public Collection<ExampleEntity> findAll() {
-		return this.jdbcTemplate.query("select id, name from example", ROW_MAPPER);
+		return this.jdbcClient.sql("select id, name from example").query(ROW_MAPPER).list();
 	}
 
 }

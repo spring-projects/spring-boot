@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,11 +40,15 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * Integration tests for {@link JdbcTest @JdbcTest}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 @JdbcTest
 @TestPropertySource(
 		properties = "spring.sql.init.schemaLocations=classpath:org/springframework/boot/test/autoconfigure/jdbc/schema.sql")
 class JdbcTestIntegrationTests {
+
+	@Autowired
+	private JdbcClient jdbcClient;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -55,12 +60,29 @@ class JdbcTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
+	void testJdbcClient() {
+		ExampleJdbcClientRepository repository = new ExampleJdbcClientRepository(this.jdbcClient);
+		repository.save(new ExampleEntity(1, "John"));
+		ExampleEntity entity = repository.findById(1);
+		assertThat(entity.getId()).isOne();
+		assertThat(entity.getName()).isEqualTo("John");
+		Collection<ExampleEntity> entities = repository.findAll();
+		assertThat(entities).hasSize(1);
+		entity = entities.iterator().next();
+		assertThat(entity.getId()).isOne();
+		assertThat(entity.getName()).isEqualTo("John");
+	}
+
+	@Test
 	void testJdbcTemplate() {
 		ExampleRepository repository = new ExampleRepository(this.jdbcTemplate);
 		repository.save(new ExampleEntity(1, "John"));
+		ExampleEntity entity = repository.findById(1);
+		assertThat(entity.getId()).isOne();
+		assertThat(entity.getName()).isEqualTo("John");
 		Collection<ExampleEntity> entities = repository.findAll();
 		assertThat(entities).hasSize(1);
-		ExampleEntity entity = entities.iterator().next();
+		entity = entities.iterator().next();
 		assertThat(entity.getId()).isOne();
 		assertThat(entity.getName()).isEqualTo("John");
 	}
