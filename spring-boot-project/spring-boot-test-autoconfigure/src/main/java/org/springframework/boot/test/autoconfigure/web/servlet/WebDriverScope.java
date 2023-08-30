@@ -107,7 +107,7 @@ public class WebDriverScope implements Scope {
 
 	/**
 	 * Register this scope with the specified context and reassign appropriate bean
-	 * definitions to used it.
+	 * definitions to use it.
 	 * @param context the application context
 	 */
 	static void registerWith(ConfigurableApplicationContext context) {
