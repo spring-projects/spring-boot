@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class WebDriverScope implements Scope {
 
 	/**
 	 * Register this scope with the specified context and reassign appropriate bean
-	 * definitions to used it.
+	 * definitions to use it.
 	 * @param context the application context
 	 */
 	static void registerWith(ConfigurableApplicationContext context) {
