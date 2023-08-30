@@ -1126,6 +1126,96 @@ bom {
 			]
 		}
 	}
+	library("Pulsar", "3.1.0") {
+		group("org.apache.pulsar") {
+			modules = [
+				"bouncy-castle-bc",
+				"bouncy-castle-bcfips",
+				"pulsar-client-1x-base",
+				"pulsar-client-1x",
+				"pulsar-client-2x-shaded",
+				"pulsar-client-admin-api",
+				"pulsar-client-admin-original",
+				"pulsar-client-admin",
+				"pulsar-client-all",
+				"pulsar-client-api",
+				"pulsar-client-auth-athenz",
+				"pulsar-client-auth-sasl",
+				"pulsar-client-messagecrypto-bc",
+				"pulsar-client-original",
+				"pulsar-client-tools-api",
+				"pulsar-client-tools",
+				"pulsar-client",
+				"pulsar-common",
+				"pulsar-config-validation",
+				"pulsar-functions-api",
+				"pulsar-functions-proto",
+				"pulsar-functions-utils",
+				"pulsar-io-aerospike",
+				"pulsar-io-alluxio",
+				"pulsar-io-aws",
+				"pulsar-io-batch-data-generator",
+				"pulsar-io-batch-discovery-triggerers",
+				"pulsar-io-canal",
+				"pulsar-io-cassandra",
+				"pulsar-io-common",
+				"pulsar-io-core",
+				"pulsar-io-data-generator",
+				"pulsar-io-debezium-core",
+				"pulsar-io-debezium-mongodb",
+				"pulsar-io-debezium-mssql",
+				"pulsar-io-debezium-mysql",
+				"pulsar-io-debezium-oracle",
+				"pulsar-io-debezium-postgres",
+				"pulsar-io-debezium",
+				"pulsar-io-dynamodb",
+				"pulsar-io-elastic-search",
+				"pulsar-io-file",
+				"pulsar-io-flume",
+				"pulsar-io-hbase",
+				"pulsar-io-hdfs2",
+				"pulsar-io-hdfs3",
+				"pulsar-io-http",
+				"pulsar-io-influxdb",
+				"pulsar-io-jdbc-clickhouse",
+				"pulsar-io-jdbc-core",
+				"pulsar-io-jdbc-mariadb",
+				"pulsar-io-jdbc-openmldb",
+				"pulsar-io-jdbc-postgres",
+				"pulsar-io-jdbc-sqlite",
+				"pulsar-io-jdbc",
+				"pulsar-io-kafka-connect-adaptor-nar",
+				"pulsar-io-kafka-connect-adaptor",
+				"pulsar-io-kafka",
+				"pulsar-io-kinesis",
+				"pulsar-io-mongo",
+				"pulsar-io-netty",
+				"pulsar-io-nsq",
+				"pulsar-io-rabbitmq",
+				"pulsar-io-redis",
+				"pulsar-io-solr",
+				"pulsar-io-twitter",
+				"pulsar-io",
+				"pulsar-metadata",
+				"pulsar-presto-connector-original",
+				"pulsar-presto-connector",
+				"pulsar-sql",
+				"pulsar-transaction-common",
+				"pulsar-websocket"
+			]
+		}
+	}
+	library("Pulsar Reactive", "0.3.0") {
+		group("org.apache.pulsar") {
+			modules = [
+				"pulsar-client-reactive-adapter",
+				"pulsar-client-reactive-api",
+				"pulsar-client-reactive-jackson",
+				"pulsar-client-reactive-producer-cache-caffeine-shaded",
+				"pulsar-client-reactive-producer-cache-caffeine"
+			]
+		}
+	}
 	library("Quartz", "2.3.2") {
 		group("org.quartz-scheduler") {
 			modules = [
@@ -1456,6 +1546,14 @@ bom {
 				"spring-ldap-ldif-core",
 				"spring-ldap-odm",
 				"spring-ldap-test"
+			]
+		}
+	}
+	library("Spring Pulsar", "1.0.0-SNAPSHOT") {
+		group("org.springframework.pulsar") {
+			modules = [
+				"spring-pulsar",
+				"spring-pulsar-reactive"
 			]
 		}
 	}

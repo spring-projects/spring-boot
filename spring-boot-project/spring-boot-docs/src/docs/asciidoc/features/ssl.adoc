@@ -84,7 +84,7 @@ See {spring-boot-autoconfigure-module-code}/ssl/PemSslBundleProperties.java[PemS
 [[features.ssl.applying]]
 === Applying SSL Bundles
 Once configured using properties, SSL bundles can be referred to by name in configuration properties for various types of connections that are auto-configured by Spring Boot.
-See the sections on <<howto#howto.webserver.configure-ssl,embedded web servers>>, <<data#data,data technologies>>, and <<io#io.rest-client,REST clients>> for further information.
+See the sections on <<howto#howto.webserver.configure-ssl,embedded web servers>>, <<data#data,data technologies>> and <<io#io.rest-client,REST clients>> for further information.
 
 
 

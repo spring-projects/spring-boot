@@ -171,6 +171,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.integration");
 		prefix.accept("spring.jms");
 		prefix.accept("spring.kafka");
+		prefix.accept("spring.pulsar");
 		prefix.accept("spring.rabbitmq");
 		prefix.accept("spring.hazelcast");
 		prefix.accept("spring.webservices");
