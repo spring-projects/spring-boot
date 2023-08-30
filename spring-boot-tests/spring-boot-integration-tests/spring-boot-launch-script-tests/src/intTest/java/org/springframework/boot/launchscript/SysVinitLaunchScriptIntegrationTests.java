@@ -19,13 +19,10 @@ package org.springframework.boot.launchscript;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.ansi.AnsiColor;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,10 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Ali Shahbour
  * @author Alexey Vinogradov
+ * @author Moritz Halbritter
  */
 @DisabledIfDockerUnavailable
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The docker images have no ARM support")
 class SysVinitLaunchScriptIntegrationTests extends AbstractLaunchScriptIntegrationTests {
 
 	SysVinitLaunchScriptIntegrationTests() {
@@ -47,7 +43,7 @@ class SysVinitLaunchScriptIntegrationTests extends AbstractLaunchScriptIntegrati
 	}
 
 	static List<Object[]> parameters() {
-		return filterParameters((file) -> !file.getName().contains("CentOS"));
+		return filterParameters((file) -> !file.getName().contains("RedHat"));
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
@@ -194,8 +190,6 @@ class SysVinitLaunchScriptIntegrationTests extends AbstractLaunchScriptIntegrati
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
 	void launchWithUseOfStartStopDaemonDisabled(String os, String version) throws Exception {
-		// CentOS doesn't have start-stop-daemon
-		Assumptions.assumeFalse(os.equals("CentOS"));
 		doLaunch(os, version, "launch-with-use-of-start-stop-daemon-disabled.sh");
 	}
 
