@@ -104,4 +104,3 @@ In addition, the `SslBundle` provides details about the key being used, the prot
 The following example shows retrieving an `SslBundle` and using it to create an `SSLContext`:
 
 include::code:MyComponent[]
-
