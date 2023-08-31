@@ -32,6 +32,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link RestClientAutoConfiguration}
  *
  * @author Arjen Poutsma
+ * @author Moritz Halbritter
  */
 class RestClientAutoConfigurationTests {
 
@@ -49,11 +51,31 @@ class RestClientAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
 
 	@Test
+	void shouldSupplyBeans() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+			assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
+			assertThat(context).hasSingleBean(RestClient.Builder.class);
+		});
+	}
+
+	@Test
 	void shouldCreateBuilder() {
 		this.contextRunner.run((context) -> {
 			RestClient.Builder builder = context.getBean(RestClient.Builder.class);
 			RestClient restClient = builder.build();
 			assertThat(restClient).isNotNull();
+		});
+	}
+
+	@Test
+	void configurerShouldCallCustomizers() {
+		this.contextRunner.withUserConfiguration(RestClientCustomizerConfig.class).run((context) -> {
+			RestClientBuilderConfigurer configurer = context.getBean(RestClientBuilderConfigurer.class);
+			RestClientCustomizer customizer = context.getBean("restClientCustomizer", RestClientCustomizer.class);
+			Builder builder = RestClient.builder();
+			configurer.configure(builder);
+			then(customizer).should().customize(builder);
 		});
 	}
 

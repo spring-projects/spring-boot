@@ -36,11 +36,12 @@ import org.springframework.web.client.RestClient;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RestClient}.
  * <p>
- * This will produce a {@link org.springframework.web.client.RestClient.Builder
- * RestClient.Builder} bean with the {@code prototype} scope, meaning each injection point
- * will receive a newly cloned instance of the builder.
+ * This will produce a {@link RestClient.Builder RestClient.Builder} bean with the
+ * {@code prototype} scope, meaning each injection point will receive a newly cloned
+ * instance of the builder.
  *
  * @author Arjen Poutsma
+ * @author Moritz Halbritter
  * @since 3.2.0
  */
 @AutoConfiguration(after = HttpMessageConvertersAutoConfiguration.class)
@@ -51,19 +52,26 @@ public class RestClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	public HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
+	HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
 			ObjectProvider<HttpMessageConverters> messageConverters) {
 		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	RestClientBuilderConfigurer restClientBuilderConfigurer(ObjectProvider<RestClientCustomizer> customizerProvider) {
+		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer();
+		configurer.setRestClientCustomizers(customizerProvider.orderedStream().toList());
+		return configurer;
+	}
+
+	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public RestClient.Builder restClientBuilder(ObjectProvider<RestClientCustomizer> customizerProvider) {
+	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
 		RestClient.Builder builder = RestClient.builder()
 			.requestFactory(ClientHttpRequestFactories.get(ClientHttpRequestFactorySettings.DEFAULTS));
-		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		return builder;
+		return restClientBuilderConfigurer.configure(builder);
 	}
 
 }
