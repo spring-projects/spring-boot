@@ -18,10 +18,7 @@ package org.springframework.boot.test.autoconfigure.jdbc;
 
 import java.util.Collection;
 
-import jakarta.transaction.Transactional;
-
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.stereotype.Repository;
 
 /**
  * Example repository used with {@link JdbcClient JdbcClient} and
@@ -29,33 +26,31 @@ import org.springframework.stereotype.Repository;
  *
  * @author Yanming Zhou
  */
-@Repository
-public class ExampleJdbcClientRepository {
+class ExampleJdbcClientRepository {
 
 	private static final ExampleEntityRowMapper ROW_MAPPER = new ExampleEntityRowMapper();
 
 	private final JdbcClient jdbcClient;
 
-	public ExampleJdbcClientRepository(JdbcClient jdbcClient) {
+	ExampleJdbcClientRepository(JdbcClient jdbcClient) {
 		this.jdbcClient = jdbcClient;
 	}
 
-	@Transactional
-	public void save(ExampleEntity entity) {
+	void save(ExampleEntity entity) {
 		this.jdbcClient.sql("insert into example (id, name) values (:id, :name)")
 			.param("id", entity.getId())
 			.param("name", entity.getName())
 			.update();
 	}
 
-	public ExampleEntity findById(int id) {
-		return this.jdbcClient.sql("select id, name from example where id =:id")
+	ExampleEntity findById(int id) {
+		return this.jdbcClient.sql("select id, name from example where id = :id")
 			.param("id", id)
 			.query(ROW_MAPPER)
 			.single();
 	}
 
-	public Collection<ExampleEntity> findAll() {
+	Collection<ExampleEntity> findAll() {
 		return this.jdbcClient.sql("select id, name from example").query(ROW_MAPPER).list();
 	}
 
