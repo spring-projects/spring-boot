@@ -16,14 +16,11 @@
 
 package org.springframework.boot.test.autoconfigure.jdbc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -53,17 +50,6 @@ public class ExampleRepository {
 
 	public Collection<ExampleEntity> findAll() {
 		return this.jdbcTemplate.query("select id, name from example", ROW_MAPPER);
-	}
-
-	static class ExampleEntityRowMapper implements RowMapper<ExampleEntity> {
-
-		@Override
-		public ExampleEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-			int id = rs.getInt("id");
-			String name = rs.getString("name");
-			return new ExampleEntity(id, name);
-		}
-
 	}
 
 }
