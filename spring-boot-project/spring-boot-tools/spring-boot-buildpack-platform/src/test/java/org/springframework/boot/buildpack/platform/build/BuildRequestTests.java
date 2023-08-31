@@ -53,6 +53,8 @@ import static org.assertj.core.api.Assertions.entry;
  */
 class BuildRequestTests {
 
+	private static final ZoneId UTC = ZoneId.of("UTC");
+
 	@TempDir
 	File tempDir;
 
@@ -287,15 +289,15 @@ class BuildRequestTests {
 
 	@Test
 	void withCreatedDateNowSetsCreatedDate() throws Exception {
-		OffsetDateTime now = OffsetDateTime.now();
+		OffsetDateTime now = OffsetDateTime.now(UTC);
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		BuildRequest withCreatedDate = request.withCreatedDate("now");
-		OffsetDateTime createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), ZoneId.of("UTC"));
+		OffsetDateTime createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), UTC);
 		assertThat(createdDate.getYear()).isEqualTo(now.getYear());
 		assertThat(createdDate.getMonth()).isEqualTo(now.getMonth());
 		assertThat(createdDate.getDayOfMonth()).isEqualTo(now.getDayOfMonth());
 		withCreatedDate = request.withCreatedDate("NOW");
-		createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), ZoneId.of("UTC"));
+		createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), UTC);
 		assertThat(createdDate.getYear()).isEqualTo(now.getYear());
 		assertThat(createdDate.getMonth()).isEqualTo(now.getMonth());
 		assertThat(createdDate.getDayOfMonth()).isEqualTo(now.getDayOfMonth());
