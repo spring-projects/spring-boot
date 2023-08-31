@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
+import java.util.List;
+
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Servlet;
 import jakarta.websocket.server.ServerContainer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.websocket.server.WsSci;
 import org.eclipse.jetty.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
+import org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,8 +32,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 /**
  * Auto configuration for WebSocket servlet server in embedded Tomcat, Jetty or Undertow.
@@ -77,6 +83,20 @@ public class WebSocketServletAutoConfiguration {
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketServletWebServerCustomizer();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(value = WebSocketUpgradeFilter.class,
+				parameterizedContainer = FilterRegistrationBean.class)
+		FilterRegistrationBean<WebSocketUpgradeFilter> webSocketUpgradeFilter() {
+			WebSocketUpgradeFilter websocketFilter = new WebSocketUpgradeFilter();
+			FilterRegistrationBean<WebSocketUpgradeFilter> registration = new FilterRegistrationBean<>(websocketFilter);
+			registration.setAsyncSupported(true);
+			registration.setDispatcherTypes(DispatcherType.REQUEST);
+			registration.setName(WebSocketUpgradeFilter.class.getName());
+			registration.setOrder(Ordered.LOWEST_PRECEDENCE);
+			registration.setUrlPatterns(List.of("/*"));
+			return registration;
 		}
 
 	}
