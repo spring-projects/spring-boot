@@ -37,7 +37,9 @@ import brave.handler.SpanHandler;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.CurrentTraceContextCustomizer;
+import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
+import brave.propagation.Propagation.KeyFactory;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
@@ -187,7 +189,7 @@ public class BraveAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		Factory propagationFactory(TracingProperties properties) {
-			return CompositePropagationFactory.create(properties.getPropagation(), null);
+			return CompositePropagationFactory.create(properties.getPropagation());
 		}
 
 	}
@@ -206,11 +208,29 @@ public class BraveAutoConfiguration {
 		@ConditionalOnMissingBean
 		BaggagePropagation.FactoryBuilder propagationFactoryBuilder(
 				ObjectProvider<BaggagePropagationCustomizer> baggagePropagationCustomizers) {
-			CompositePropagationFactory factory = CompositePropagationFactory
-				.create(this.tracingProperties.getPropagation(), BRAVE_BAGGAGE_MANAGER);
-			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(factory);
-			baggagePropagationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			// There's a chicken-and-egg problem here: to create a builder, we need a
+			// factory. But the CompositePropagationFactory needs data from the builder.
+			// We create a throw-away builder with a throw-away factory, and then copy the
+			// config to the real builder
+			FactoryBuilder throwAwayBuilder = BaggagePropagation.newFactoryBuilder(createThrowAwayFactory());
+			baggagePropagationCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(throwAwayBuilder));
+			CompositePropagationFactory propagationFactory = CompositePropagationFactory.create(
+					this.tracingProperties.getPropagation(), BRAVE_BAGGAGE_MANAGER,
+					LocalBaggageFields.extractFrom(throwAwayBuilder));
+			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(propagationFactory);
+			throwAwayBuilder.configs().forEach(builder::add);
 			return builder;
+		}
+
+		@SuppressWarnings("deprecation")
+		private Factory createThrowAwayFactory() {
+			return new Factory() {
+				@Override
+				public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
+					return null;
+				}
+			};
 		}
 
 		@Bean
