@@ -3,6 +3,8 @@
 Spring Boot does not require any specific code layout to work.
 However, there are some best practices that help.
 
+TIP: If you wish to enforce a structure based on domains, take a look at https://spring.io/projects/spring-modulith#overview[Spring Modulith].
+
 
 
 [[using.structuring-your-code.using-the-default-package]]
