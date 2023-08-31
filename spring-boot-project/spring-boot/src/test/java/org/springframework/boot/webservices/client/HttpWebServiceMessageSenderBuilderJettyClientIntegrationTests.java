@@ -32,12 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpWebServiceMessageSenderBuilder} when Http Components is not
- * available.
+ * available and, therefore, Jetty's client is used instead.
  *
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("httpclient5-*.jar")
-class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
+class HttpWebServiceMessageSenderBuilderJettyClientIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
