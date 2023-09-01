@@ -40,6 +40,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.
  * configure different formats for injecting and for extracting.
  *
  * @author Moritz Halbritter
+ * @author Scott Frederick
  */
 class CompositeTextMapPropagator implements TextMapPropagator {
 
@@ -81,6 +82,10 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 		return this.injectors;
 	}
 
+	Collection<TextMapPropagator> getExtractors() {
+		return this.extractors;
+	}
+
 	@Override
 	public Collection<String> fields() {
 		return this.fields;
@@ -113,8 +118,7 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 	}
 
 	/**
-	 * Creates a new {@link CompositeTextMapPropagator}, which uses the given
-	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
+	 * Creates a new {@link CompositeTextMapPropagator}.
 	 * @param properties the tracing properties
 	 * @param baggagePropagator the baggage propagator to use, or {@code null}
 	 * @return the {@link CompositeTextMapPropagator}
@@ -128,7 +132,7 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 		if (baggagePropagator != null) {
 			injectors.add(baggagePropagator);
 		}
-		List<TextMapPropagator> extractors = properties.getEffectiveProducedTypes().stream().map(mapper::map).toList();
+		List<TextMapPropagator> extractors = properties.getEffectiveConsumedTypes().stream().map(mapper::map).toList();
 		return new CompositeTextMapPropagator(injectors, extractors, baggagePropagator);
 	}
 

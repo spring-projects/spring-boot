@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Stream;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
@@ -212,8 +211,8 @@ class OpenTelemetryAutoConfigurationTests {
 	void shouldSupplyB3PropagationIfPropagationPropertySet() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
 			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
-			Stream<Class<?>> injectors = getInjectors(propagator).stream().map(Object::getClass);
-			assertThat(injectors).containsExactly(B3Propagator.class, BaggageTextMapPropagator.class);
+			List<TextMapPropagator> injectors = getInjectors(propagator);
+			assertThat(injectors).hasExactlyElementsOfTypes(B3Propagator.class, BaggageTextMapPropagator.class);
 		});
 	}
 
@@ -223,8 +222,8 @@ class OpenTelemetryAutoConfigurationTests {
 			.withPropertyValues("management.tracing.propagation.type=B3", "management.tracing.baggage.enabled=false")
 			.run((context) -> {
 				TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
-				Stream<Class<?>> injectors = getInjectors(propagator).stream().map(Object::getClass);
-				assertThat(injectors).containsExactly(B3Propagator.class);
+				List<TextMapPropagator> injectors = getInjectors(propagator);
+				assertThat(injectors).hasExactlyElementsOfTypes(B3Propagator.class);
 			});
 	}
 
@@ -245,8 +244,8 @@ class OpenTelemetryAutoConfigurationTests {
 	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
 			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
-			Stream<Class<?>> injectors = getInjectors(propagator).stream().map(Object::getClass);
-			assertThat(injectors).containsExactly(W3CTraceContextPropagator.class);
+			List<TextMapPropagator> injectors = getInjectors(propagator);
+			assertThat(injectors).hasExactlyElementsOfTypes(W3CTraceContextPropagator.class);
 		});
 	}
 
