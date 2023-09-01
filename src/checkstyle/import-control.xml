@@ -101,6 +101,7 @@
 		</subpackage>
 		<subpackage name="server">
 			<disallow pkg="org.springframework.context" />
+			<allow pkg="org.springframework.boot.web.server"/>
 			<subpackage name="context">
 				<allow pkg="org.springframework.context" />
 			</subpackage>
