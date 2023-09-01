@@ -16,7 +16,6 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -89,7 +88,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 			}
 		});
 		createStartScripts.getConventionMapping()
-			.map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
+			.map("outputDir", () -> project.getLayout().getBuildDirectory().dir("bootScripts").get().getAsFile());
 		createStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
 		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 	}
