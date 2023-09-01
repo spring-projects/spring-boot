@@ -41,7 +41,7 @@ class JmsPropertiesTests {
 	void formatConcurrencyOnlyLowerBound() {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setConcurrency(2);
-		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2");
+		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2-2");
 	}
 
 	@Test
