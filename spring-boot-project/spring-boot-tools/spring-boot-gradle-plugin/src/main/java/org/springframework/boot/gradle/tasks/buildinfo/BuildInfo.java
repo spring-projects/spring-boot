@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.Action;
-import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
@@ -75,7 +75,8 @@ public class BuildInfo extends ConventionTask {
 
 	/**
 	 * Returns the directory to which the {@code build-info.properties} file will be
-	 * written. Defaults to the {@link Project#getBuildDir() Project's build directory}.
+	 * written. Defaults to the {@link ProjectLayout#getBuildDirectory() Project's build
+	 * directory}.
 	 * @return the destination directory
 	 */
 	@OutputDirectory
