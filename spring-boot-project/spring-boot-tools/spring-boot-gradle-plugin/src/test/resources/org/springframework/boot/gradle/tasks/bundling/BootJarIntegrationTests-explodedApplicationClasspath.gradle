@@ -15,7 +15,7 @@ dependencies {
 
 task explode(type: Sync) {
 	dependsOn(bootJar)
-	destinationDir = file("$buildDir/exploded")
+	destinationDir = layout.buildDirectory.dir("exploded").get().asFile
 	from zipTree(files(bootJar).singleFile)
 }
 

@@ -58,7 +58,7 @@ gradlePlugin {
 }
 
 task preparePluginValidationClasses(type: Copy) {
-	destinationDir = file("$buildDir/classes/java/pluginValidation")
+	destinationDir = layout.buildDirectory.dir("classes/java/pluginValidation").get().asFile
 	from(sourceSets.main.output.classesDirs) {
 		exclude "**/CreateBootStartScripts.class"
 	}
