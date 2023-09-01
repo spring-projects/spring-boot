@@ -82,7 +82,13 @@ public class PemFileWriter {
 			+ "wSKcVTdEdO2DhBlYddN0zG0rjq4vDMtdmldEl4BdldQ=\n" + "-----END RSA PRIVATE KEY-----\n";
 
 	public static final String PRIVATE_EC_KEY = EXAMPLE_SECRET_QUALIFIER + "-----BEGIN EC PRIVATE KEY-----\n"
-			+ "MHcCAQEEIIwZkO8Zjbggzi8wwrk5rzSPzUX31gqTRhBYw4AL6w44oAoGCCqGSM49\n"
+			+ "MIGkAgEBBDB21WGGOb1DokKW0MUHO7RQ6jZSUYXfO2iyfCbjmSJhyK8fSuq1V0N2\n"
+			+ "Bj7X+XYhS6ygBwYFK4EEACKhZANiAATsRaYri/tDMvrrB2NJlxWFOZ4YBLYdSM+a\n"
+			+ "FlGh1FuLjOHW9cx8w0iRHd1Hxn4sxqsa62KzGoCj63lGoaJgi67YNCF0lBa/zCLy\n"
+			+ "ktaMsQePDOR8UR0Cfi2J9bh+IjxXd+o=\n" + "-----END EC PRIVATE KEY-----";
+
+	public static final String PRIVATE_EC_KEY_PRIME_256_V1 = EXAMPLE_SECRET_QUALIFIER
+			+ "-----BEGIN EC PRIVATE KEY-----\n" + "MHcCAQEEIIwZkO8Zjbggzi8wwrk5rzSPzUX31gqTRhBYw4AL6w44oAoGCCqGSM49\n"
 			+ "AwEHoUQDQgAE8y28khug747bA68M90IAMCPHAYyen+RsN6i84LORpNDUhv00QZWd\n"
 			+ "hOhjWFCQjnewR98Y8pEb1fnORll4LhHPlQ==\n" + "-----END EC PRIVATE KEY-----";
 

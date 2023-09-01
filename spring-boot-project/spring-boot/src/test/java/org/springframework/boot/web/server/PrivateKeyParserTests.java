@@ -17,6 +17,7 @@
 package org.springframework.boot.web.server;
 
 import java.security.PrivateKey;
+import java.security.interfaces.ECPrivateKey;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class PrivateKeyParserTests {
 
@@ -60,11 +62,21 @@ class PrivateKeyParserTests {
 	}
 
 	@Test
-	void parsePkcs8KeyFileWithEcdsa() {
-		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-ec-key.pem");
+	void parsePemKeyFileWithEcdsa() {
+		ECPrivateKey privateKey = (ECPrivateKey) PrivateKeyParser.parse("classpath:test-ec-key.pem");
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
+		assertThat(privateKey.getParams().toString()).contains("1.3.132.0.34").doesNotContain("prime256v1");
+	}
+
+	@Test
+	void parsePemKeyFileWithEcdsaPrime256v1() {
+		ECPrivateKey privateKey = (ECPrivateKey) PrivateKeyParser.parse("classpath:test-ec-key-prime256v1.pem");
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
+		assertThat(privateKey.getParams().toString()).contains("prime256v1").doesNotContain("1.3.132.0.34");
 	}
 
 	@Test
