@@ -30,7 +30,8 @@ import org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCust
 import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerProperties;
 
 /**
- * Helper class used to map reactive {@link PulsarProperties}.
+ * Helper class used to map reactive {@link PulsarProperties} to various builder
+ * customizers.
  *
  * @author Chris Bono
  * @author Phillip Webb

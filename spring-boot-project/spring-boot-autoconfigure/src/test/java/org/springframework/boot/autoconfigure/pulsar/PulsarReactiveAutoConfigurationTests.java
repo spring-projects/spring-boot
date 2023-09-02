@@ -37,14 +37,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
@@ -69,7 +70,7 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -85,7 +86,7 @@ class PulsarReactiveAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(PulsarReactiveAutoConfiguration.class))
-		.withUserConfiguration(PulsarClientBuilderCustomizerConfiguration.class);
+		.withBean(PulsarClient.class, () -> mock(PulsarClient.class));
 
 	@Test
 	void whenPulsarNotOnClasspathAutoConfigurationIsSkipped() {
@@ -119,9 +120,9 @@ class PulsarReactiveAutoConfigurationTests {
 			.hasSingleBean(DefaultSchemaResolver.class)
 			.hasSingleBean(DefaultTopicResolver.class)
 			.hasSingleBean(ReactivePulsarClient.class)
-			.hasSingleBean(ProducerCacheProvider.class)
+			.hasSingleBean(CaffeineShadedProducerCacheProvider.class)
 			.hasSingleBean(ReactiveMessageSenderCache.class)
-			.hasSingleBean(ReactivePulsarSenderFactory.class)
+			.hasSingleBean(DefaultReactivePulsarSenderFactory.class)
 			.hasSingleBean(ReactivePulsarTemplate.class)
 			.hasSingleBean(DefaultReactivePulsarConsumerFactory.class)
 			.hasSingleBean(DefaultReactivePulsarListenerContainerFactory.class)
@@ -169,11 +170,6 @@ class PulsarReactiveAutoConfigurationTests {
 				.run((context) -> {
 					DefaultReactivePulsarSenderFactory<?> senderFactory = context
 						.getBean(DefaultReactivePulsarSenderFactory.class);
-					List<ReactiveMessageSenderBuilderCustomizer<Object>> customizers = (List<ReactiveMessageSenderBuilderCustomizer<Object>>) ReflectionTestUtils
-						.getField(senderFactory, "defaultConfigCustomizers");
-					ReactiveMessageSenderBuilder<Object> builder = mock(ReactiveMessageSenderBuilder.class);
-					customizers.forEach((customizer) -> customizer.customize(builder));
-					then(builder).should().topic("test-topic");
 					assertThat(senderFactory)
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
@@ -194,6 +190,46 @@ class PulsarReactiveAutoConfigurationTests {
 				.run((context) -> assertThat(context).getBean(ReactiveMessageSenderCache.class)
 					.extracting("cacheProvider", InstanceOfAssertFactories.type(ProducerCacheProvider.class))
 					.isSameAs(provider));
+		}
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withPropertyValues("spring.pulsar.producer.name=fromPropsCustomizer")
+				.withUserConfiguration(ReactiveMessageSenderBuilderCustomizerConfig.class)
+				.run((context) -> {
+					DefaultReactivePulsarSenderFactory<?> producerFactory = context
+						.getBean(DefaultReactivePulsarSenderFactory.class);
+					List<ReactiveMessageSenderBuilderCustomizer<Object>> customizersOnFactory = (List<ReactiveMessageSenderBuilderCustomizer<Object>>) ReflectionTestUtils
+						.getField(producerFactory, "defaultConfigCustomizers");
+					ReactiveMessageSenderBuilder<Object> builder = mock(ReactiveMessageSenderBuilder.class);
+					customizersOnFactory.forEach((customizer) -> customizer.customize(builder));
+					// Order of customizers should be default props customizer
+					// followed by user defined customizers (in respective order).
+					//
+					// Each customizer sets name - we use that to verify order.
+					InOrder ordered = inOrder(builder);
+					ordered.verify(builder).producerName("fromPropsCustomizer");
+					ordered.verify(builder).producerName("fromCustomizer1");
+					ordered.verify(builder).producerName("fromCustomizer2");
+				});
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReactiveMessageSenderBuilderCustomizerConfig {
+
+			@Bean
+			@Order(200)
+			ReactiveMessageSenderBuilderCustomizer<?> customizerFoo() {
+				return (builder) -> builder.producerName("fromCustomizer2");
+			}
+
+			@Bean
+			@Order(100)
+			ReactiveMessageSenderBuilderCustomizer<?> customizerBar() {
+				return (builder) -> builder.producerName("fromCustomizer1");
+			}
+
 		}
 
 	}
@@ -228,20 +264,54 @@ class PulsarReactiveAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		void injectsExpectedBeans() {
 			ReactivePulsarClient client = mock(ReactivePulsarClient.class);
-			this.contextRunner.withPropertyValues("spring.pulsar.consumer.name=test-consumer")
-				.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
+			this.contextRunner.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
 				.run((context) -> {
 					ReactivePulsarConsumerFactory<?> consumerFactory = context
 						.getBean(DefaultReactivePulsarConsumerFactory.class);
-					ReactiveMessageConsumerBuilder<Object> builder = mock(ReactiveMessageConsumerBuilder.class);
-					List<ReactiveMessageConsumerBuilderCustomizer<Object>> customizers = (List<ReactiveMessageConsumerBuilderCustomizer<Object>>) ReflectionTestUtils
-						.getField(consumerFactory, "defaultConfigCustomizers");
-					customizers.forEach((customizer) -> customizer.customize(builder));
-					then(builder).should().consumerName("test-consumer");
 					assertThat(consumerFactory)
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
 				});
+		}
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withPropertyValues("spring.pulsar.consumer.name=fromPropsCustomizer")
+				.withUserConfiguration(ReactiveMessageConsumerBuilderCustomizerConfig.class)
+				.run((context) -> {
+					DefaultReactivePulsarConsumerFactory<?> consumerFactory = context
+						.getBean(DefaultReactivePulsarConsumerFactory.class);
+					List<ReactiveMessageConsumerBuilderCustomizer<Object>> customizersOnFactory = (List<ReactiveMessageConsumerBuilderCustomizer<Object>>) ReflectionTestUtils
+						.getField(consumerFactory, "defaultConfigCustomizers");
+					ReactiveMessageConsumerBuilder<Object> builder = mock(ReactiveMessageConsumerBuilder.class);
+					customizersOnFactory.forEach((customizer) -> customizer.customize(builder));
+					// Order of customizers should be default props customizer
+					// followed by user defined customizers (in respective order).
+					//
+					// Each customizer sets name - we use that to verify order.
+					InOrder ordered = inOrder(builder);
+					ordered.verify(builder).consumerName("fromPropsCustomizer");
+					ordered.verify(builder).consumerName("fromCustomizer1");
+					ordered.verify(builder).consumerName("fromCustomizer2");
+				});
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReactiveMessageConsumerBuilderCustomizerConfig {
+
+			@Bean
+			@Order(200)
+			ReactiveMessageConsumerBuilderCustomizer<?> customizerFoo() {
+				return (builder) -> builder.consumerName("fromCustomizer2");
+			}
+
+			@Bean
+			@Order(100)
+			ReactiveMessageConsumerBuilderCustomizer<?> customizerBar() {
+				return (builder) -> builder.consumerName("fromCustomizer1");
+			}
+
 		}
 
 	}
@@ -318,20 +388,53 @@ class PulsarReactiveAutoConfigurationTests {
 				.run((context) -> {
 					DefaultReactivePulsarReaderFactory<?> readerFactory = context
 						.getBean(DefaultReactivePulsarReaderFactory.class);
-					ReactiveMessageReaderBuilder<Object> builder = mock(ReactiveMessageReaderBuilder.class);
-					List<ReactiveMessageReaderBuilderCustomizer<Object>> customizers = (List<ReactiveMessageReaderBuilderCustomizer<Object>>) ReflectionTestUtils
-						.getField(readerFactory, "defaultConfigCustomizers");
-					customizers.forEach((customizer) -> customizer.customize(builder));
-					then(builder).should().readerName("test-reader");
 					assertThat(readerFactory)
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
 				});
 		}
 
-	}
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withPropertyValues("spring.pulsar.reader.name=fromPropsCustomizer")
+				.withUserConfiguration(ReactiveMessageReaderBuilderCustomizerConfig.class)
+				.run((context) -> {
+					DefaultReactivePulsarReaderFactory<?> readerFactory = context
+						.getBean(DefaultReactivePulsarReaderFactory.class);
+					List<ReactiveMessageReaderBuilderCustomizer<Object>> customizersOnFactory = (List<ReactiveMessageReaderBuilderCustomizer<Object>>) ReflectionTestUtils
+						.getField(readerFactory, "defaultConfigCustomizers");
+					ReactiveMessageReaderBuilder<Object> builder = mock(ReactiveMessageReaderBuilder.class);
+					customizersOnFactory.forEach((customizer) -> customizer.customize(builder));
+					// Order of customizers should be default props customizer
+					// followed by user defined customizers (in respective order).
+					//
+					// Each customizer sets name - we use that to verify order.
+					InOrder ordered = inOrder(builder);
+					ordered.verify(builder).readerName("fromPropsCustomizer");
+					ordered.verify(builder).readerName("fromCustomizer1");
+					ordered.verify(builder).readerName("fromCustomizer2");
+				});
+		}
 
-	// FIXME HERE Down
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReactiveMessageReaderBuilderCustomizerConfig {
+
+			@Bean
+			@Order(200)
+			ReactiveMessageReaderBuilderCustomizer<?> customizerFoo() {
+				return (builder) -> builder.readerName("fromCustomizer2");
+			}
+
+			@Bean
+			@Order(100)
+			ReactiveMessageReaderBuilderCustomizer<?> customizerBar() {
+				return (builder) -> builder.readerName("fromCustomizer1");
+			}
+
+		}
+
+	}
 
 	@Nested
 	class SenderCacheAutoConfigurationTests {
@@ -339,38 +442,26 @@ class PulsarReactiveAutoConfigurationTests {
 		private final ApplicationContextRunner contextRunner = PulsarReactiveAutoConfigurationTests.this.contextRunner;
 
 		@Test
-		void enablesCachine() {
+		void whenNoPropertiesEnablesCaching() {
 			this.contextRunner.run(this::assertCaffeineProducerCacheProvider);
 		}
 
 		@Test
-		void whenCachingEnabledEnablesCachine() {
+		void whenCachingEnabledEnablesCaching() {
 			this.contextRunner.withPropertyValues("spring.pulsar.producer.cache.enabled=true")
 				.run(this::assertCaffeineProducerCacheProvider);
 		}
 
 		@Test
-		void whenCachingDisabledDisablesCaching() {
+		void whenCachingDisabledDoesNotEnableCaching() {
 			this.contextRunner.withPropertyValues("spring.pulsar.producer.cache.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ProducerCacheProvider.class)
 					.doesNotHaveBean(ReactiveMessageSenderCache.class));
 		}
 
 		@Test
-		void whenCustomCachingPropertiesCreatesConfiguredBean() {
-			List<String> properties = new ArrayList<>();
-			properties.add("spring.pulsar.producer.cache.expire-after-access=100s");
-			properties.add("spring.pulsar.producer.cache.maximum-size=5150");
-			properties.add("spring.pulsar.producer.cache.initial-capacity=200");
-			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
-				.run((context) -> assertCaffeineProducerCacheProvider(context).extracting("cache")
-					.extracting("cache")
-					.hasFieldOrPropertyWithValue("expiresAfterAccessNanos", Duration.ofSeconds(100).toNanos())
-					.hasFieldOrPropertyWithValue("maximum", 5150L));
-		}
-
-		@Test
-		void whenCachingEnabledAndCaffeineNotOnClasspath() {
+		void whenCachingEnabledAndCaffeineNotOnClasspathStillUsesCaffeine() {
+			// The reactive client shades Caffeine - it should still be used
 			this.contextRunner.withClassLoader(new FilteredClassLoader(Caffeine.class))
 				.withPropertyValues("spring.pulsar.producer.cache.enabled=true")
 				.run(this::assertCaffeineProducerCacheProvider);
@@ -378,34 +469,32 @@ class PulsarReactiveAutoConfigurationTests {
 
 		@Test
 		void whenCachingEnabledAndNoCacheProviderAvailable() {
-			// The client uses a shaded caffeine cache provider as its internal cache
+			// The reactive client uses a shaded caffeine cache provider as its internal
+			// cache
 			this.contextRunner.withClassLoader(new FilteredClassLoader(CaffeineShadedProducerCacheProvider.class))
 				.withPropertyValues("spring.pulsar.producer.cache.enabled=true")
 				.run((context) -> assertThat(context).doesNotHaveBean(ProducerCacheProvider.class)
-					.hasSingleBean(ReactiveMessageSenderCache.class)
 					.getBean(ReactiveMessageSenderCache.class)
 					.extracting("cacheProvider")
 					.isExactlyInstanceOf(CaffeineShadedProducerCacheProvider.class));
 		}
 
-		private AbstractObjectAssert<?, ProducerCacheProvider> assertCaffeineProducerCacheProvider(
-				AssertableApplicationContext context) {
-			return assertThat(context).hasSingleBean(ProducerCacheProvider.class)
-				.hasSingleBean(ReactiveMessageSenderCache.class)
-				.getBean(ProducerCacheProvider.class)
-				.isExactlyInstanceOf(CaffeineShadedProducerCacheProvider.class);
+		@Test
+		void whenCustomCachingPropertiesCreatesConfiguredBean() {
+			this.contextRunner
+				.withPropertyValues("spring.pulsar.producer.cache.expire-after-access=100s",
+						"spring.pulsar.producer.cache.maximum-size=5150",
+						"spring.pulsar.producer.cache.initial-capacity=200")
+				.run((context) -> assertCaffeineProducerCacheProvider(context).extracting("cache.cache")
+					.hasFieldOrPropertyWithValue("expiresAfterAccessNanos", Duration.ofSeconds(100).toNanos())
+					.hasFieldOrPropertyWithValue("maximum", 5150L));
 		}
 
-	}
-
-	@TestConfiguration(proxyBeanMethods = false)
-	@ConditionalOnClass(PulsarClient.class)
-	static class PulsarClientBuilderCustomizerConfiguration {
-
-		@Bean
-		PulsarClient pulsarClient() {
-			// Use a mock because the real PulsarClient is very slow to close
-			return mock(PulsarClient.class);
+		private AbstractObjectAssert<?, ProducerCacheProvider> assertCaffeineProducerCacheProvider(
+				AssertableApplicationContext context) {
+			return assertThat(context).hasSingleBean(ReactiveMessageSenderCache.class)
+				.getBean(ProducerCacheProvider.class)
+				.isExactlyInstanceOf(CaffeineShadedProducerCacheProvider.class);
 		}
 
 	}

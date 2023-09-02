@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.apache.pulsar.client.admin.PulsarAdminBuilder;
+import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.Schema;
 import org.apache.pulsar.common.schema.KeyValueEncodingType;
@@ -35,20 +37,22 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.pulsar.core.DefaultPulsarClientFactory;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
+import org.springframework.pulsar.core.PulsarAdminBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
+import org.springframework.pulsar.core.PulsarClientFactory;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.function.PulsarFunctionAdministration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -64,13 +68,21 @@ class PulsarConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
-		.withUserConfiguration(PulsarClientBuilderCustomizerConfiguration.class);
+		.withBean(PulsarClient.class, () -> mock(PulsarClient.class));
 
 	@Nested
 	class ClientTests {
 
 		@Test
-		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+		void whenHasUserDefinedClientFactoryBeanDoesNotAutoConfigureBean() {
+			PulsarClientFactory customFactory = mock(PulsarClientFactory.class);
+			new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
+				.withBean("customPulsarClientFactory", PulsarClientFactory.class, () -> customFactory)
+				.run((context) -> assertThat(context).getBean(PulsarClientFactory.class).isSameAs(customFactory));
+		}
+
+		@Test
+		void whenHasUserDefinedClientBeanDoesNotAutoConfigureBean() {
 			PulsarClient customClient = mock(PulsarClient.class);
 			new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
 				.withBean("customPulsarClient", PulsarClient.class, () -> customClient)
@@ -78,33 +90,41 @@ class PulsarConfigurationTests {
 		}
 
 		@Test
-		void whenHasUseDefinedCustomizersAppliesInCorrectOrder() {
-			new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
-				.withUserConfiguration(ClientCustomizersTestConfiguration.class)
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			PulsarConfigurationTests.this.contextRunner
+				.withUserConfiguration(PulsarClientBuilderCustomizersConfig.class)
+				.withPropertyValues("spring.pulsar.client.service-url=fromPropsCustomizer")
 				.run((context) -> {
-					PulsarClientBuilderCustomizer customizer1 = context.getBean("clientCustomizerBar",
-							PulsarClientBuilderCustomizer.class);
-					PulsarClientBuilderCustomizer customizer2 = context.getBean("clientCustomizerFoo",
-							PulsarClientBuilderCustomizer.class);
-					InOrder ordered = inOrder(customizer1, customizer2);
-					ordered.verify(customizer1).customize(any());
-					ordered.verify(customizer2).customize(any());
+					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
+					PulsarClientBuilderCustomizer customizerOnFactory = (PulsarClientBuilderCustomizer) ReflectionTestUtils
+						.getField(clientFactory, "customizer");
+					ClientBuilder builder = mock(ClientBuilder.class);
+					customizerOnFactory.customize(builder);
+					// Order of customizers should be default props customizer
+					// followed by user defined customizers (in respective order).
+					//
+					// Each customizer sets service url - we use that to verify order.
+					InOrder ordered = inOrder(builder);
+					ordered.verify(builder).serviceUrl("fromPropsCustomizer");
+					ordered.verify(builder).serviceUrl("fromCustomizer1");
+					ordered.verify(builder).serviceUrl("fromCustomizer2");
 				});
 		}
 
-		@Configuration(proxyBeanMethods = false)
-		static class ClientCustomizersTestConfiguration {
+		@TestConfiguration(proxyBeanMethods = false)
+		static class PulsarClientBuilderCustomizersConfig {
 
 			@Bean
 			@Order(200)
-			PulsarClientBuilderCustomizer clientCustomizerFoo() {
-				return mock(PulsarClientBuilderCustomizer.class);
+			PulsarClientBuilderCustomizer customizerFoo() {
+				return (builder) -> builder.serviceUrl("fromCustomizer2");
 			}
 
 			@Bean
 			@Order(100)
-			PulsarClientBuilderCustomizer clientCustomizerBar() {
-				return mock(PulsarClientBuilderCustomizer.class);
+			PulsarClientBuilderCustomizer customizerBar() {
+				return (builder) -> builder.serviceUrl("fromCustomizer1");
 			}
 
 		}
@@ -123,6 +143,45 @@ class PulsarConfigurationTests {
 				.withBean("customPulsarAdministration", PulsarAdministration.class, () -> pulsarAdministration)
 				.run((context) -> assertThat(context).getBean(PulsarAdministration.class)
 					.isSameAs(pulsarAdministration));
+		}
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(PulsarAdminBuilderCustomizersConfig.class)
+				.withPropertyValues("spring.pulsar.admin.service-url=fromPropsCustomizer")
+				.run((context) -> {
+					PulsarAdministration pulsarAdmin = context.getBean(PulsarAdministration.class);
+					List<PulsarAdminBuilderCustomizer> customizersOnAdmin = (List<PulsarAdminBuilderCustomizer>) ReflectionTestUtils
+						.getField(pulsarAdmin, "adminCustomizers");
+					PulsarAdminBuilder builder = mock(PulsarAdminBuilder.class);
+					customizersOnAdmin.forEach((customizer) -> customizer.customize(builder));
+					// Order of customizers should be default props customizer
+					// followed by user defined customizers (in respective order).
+					//
+					// Each customizer sets service url - we use that to verify order.
+					InOrder ordered = inOrder(builder);
+					ordered.verify(builder).serviceHttpUrl("fromPropsCustomizer");
+					ordered.verify(builder).serviceHttpUrl("fromCustomizer1");
+					ordered.verify(builder).serviceHttpUrl("fromCustomizer2");
+				});
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class PulsarAdminBuilderCustomizersConfig {
+
+			@Bean
+			@Order(200)
+			PulsarAdminBuilderCustomizer customizerFoo() {
+				return (builder) -> builder.serviceHttpUrl("fromCustomizer2");
+			}
+
+			@Bean
+			@Order(100)
+			PulsarAdminBuilderCustomizer customizerBar() {
+				return (builder) -> builder.serviceHttpUrl("fromCustomizer1");
+			}
+
 		}
 
 	}
@@ -273,17 +332,6 @@ class PulsarConfigurationTests {
 	record TestRecord() {
 
 		private static final String CLASS_NAME = TestRecord.class.getName();
-
-	}
-
-	@TestConfiguration(proxyBeanMethods = false)
-	static class PulsarClientBuilderCustomizerConfiguration {
-
-		@Bean
-		PulsarClient pulsarClient() {
-			// Use a mock because the real PulsarClient is very slow to close
-			return mock(PulsarClient.class);
-		}
 
 	}
 

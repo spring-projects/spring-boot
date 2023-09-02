@@ -42,7 +42,7 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 import org.springframework.util.StringUtils;
 
 /**
- * Helper class used to map {@link PulsarProperties}.
+ * Helper class used to map {@link PulsarProperties} to various builder customizers.
  *
  * @author Chris Bono
  * @author Phillip Webb

@@ -510,8 +510,6 @@ public class PulsarProperties {
 		 */
 		private String name;
 
-		private final Subscription subscription = new Subscription();
-
 		/**
 		 * Topics the consumer subscribes to.
 		 */
@@ -538,6 +536,11 @@ public class PulsarProperties {
 		 */
 		@NestedConfigurationProperty
 		private final DeadLetterPolicy deadLetterPolicy = new DeadLetterPolicy();
+
+		/**
+		 * Consumer subscription properties.
+		 */
+		private final Subscription subscription = new Subscription();
 
 		/**
 		 * Whether to auto retry messages.
@@ -737,7 +740,7 @@ public class PulsarProperties {
 		/**
 		 * SchemaType of the consumed messages.
 		 */
-		SchemaType schemaType;
+		private SchemaType schemaType;
 
 		/**
 		 * Whether to record observations for when the Observations API is available and

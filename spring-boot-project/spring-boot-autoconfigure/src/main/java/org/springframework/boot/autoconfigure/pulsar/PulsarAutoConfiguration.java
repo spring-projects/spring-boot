@@ -30,12 +30,11 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer.Cache;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 import org.springframework.pulsar.annotation.EnablePulsar;
 import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
@@ -66,7 +65,7 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
  * @since 3.2.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ PulsarClient.class, EnablePulsar.class })
+@ConditionalOnClass({ PulsarClient.class, PulsarTemplate.class })
 @Import(PulsarConfiguration.class)
 public class PulsarAutoConfiguration {
 
@@ -78,21 +77,31 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
-	DefaultPulsarProducerFactory<Object> pulsarProducerFactory(Environment environment, PulsarClient pulsarClient,
-			TopicResolver topicResolver, ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider) {
-		String topicName = this.properties.getProducer().getTopicName();
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
+	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
+			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider) {
+		return new DefaultPulsarProducerFactory<>(pulsarClient, this.properties.getProducer().getTopicName(),
+				lambdaSafeProducerBuilderCustomizers(customizersProvider), topicResolver);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(PulsarProducerFactory.class)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	CachingPulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
+			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider) {
+		return new CachingPulsarProducerFactory<>(pulsarClient, this.properties.getProducer().getTopicName(),
+				lambdaSafeProducerBuilderCustomizers(customizersProvider), topicResolver,
+				this.properties.getProducer().getCache().getExpireAfterAccess(),
+				this.properties.getProducer().getCache().getMaximumSize(),
+				this.properties.getProducer().getCache().getInitialCapacity());
+	}
+
+	private List<ProducerBuilderCustomizer<Object>> lambdaSafeProducerBuilderCustomizers(
+			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider) {
 		List<ProducerBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(PulsarPropertyMapper.producerBuilderCustomizer(this.properties));
 		customizers.addAll(customizersProvider.orderedStream().toList());
-		List<ProducerBuilderCustomizer<Object>> lambdaSafeCustomizers = List
-			.of((builder) -> applyProducerBuilderCustomizers(customizers, builder));
-		if (!environment.getProperty("spring.pulsar.producer.cache.enabled", Boolean.class, true)) {
-			return new DefaultPulsarProducerFactory<>(pulsarClient, topicName, lambdaSafeCustomizers, topicResolver);
-		}
-		Cache cacheProperties = this.properties.getProducer().getCache();
-		return new CachingPulsarProducerFactory<>(pulsarClient, topicName, lambdaSafeCustomizers, topicResolver,
-				cacheProperties.getExpireAfterAccess(), cacheProperties.getMaximumSize(),
-				cacheProperties.getInitialCapacity());
+		return List.of((builder) -> applyProducerBuilderCustomizers(customizers, builder));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -41,6 +41,7 @@ import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdminBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
+import org.springframework.pulsar.core.PulsarClientFactory;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
@@ -68,20 +69,25 @@ class PulsarConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider)
-			throws PulsarClientException {
+	@ConditionalOnMissingBean(PulsarClientFactory.class)
+	DefaultPulsarClientFactory pulsarClientFactory(ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider) {
 		List<PulsarClientBuilderCustomizer> allCustomizers = new ArrayList<>();
 		allCustomizers.add(PulsarPropertyMapper.clientBuilderCustomizer(this.properties));
 		allCustomizers.addAll(customizersProvider.orderedStream().toList());
 		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(
 				(clientBuilder) -> applyClientBuilderCustomizers(allCustomizers, clientBuilder));
-		return clientFactory.createClient();
+		return clientFactory;
 	}
 
 	private void applyClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers,
 			ClientBuilder clientBuilder) {
 		customizers.forEach((customizer) -> customizer.customize(clientBuilder));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	PulsarClient pulsarClient(PulsarClientFactory clientFactory) throws PulsarClientException {
+		return clientFactory.createClient();
 	}
 
 	@Bean
