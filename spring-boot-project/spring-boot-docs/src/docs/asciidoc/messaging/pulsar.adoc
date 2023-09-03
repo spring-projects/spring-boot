@@ -7,7 +7,9 @@ It will do the same for the reactive components when `org.springframework.pulsar
 
 There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive` "`Starters`" for conveniently collecting the dependencies for imperative and reactive use, respectively.
 
-
+TIP: The Reactive support is built on top of the imperative support and therefore the reactive starter includes the imperative starter.
+As such, the imperative components are auto-configured and available in both reactive and imperative scenarios.
+However, you can exclude the imperative components in a reactve app by simply excluding the `PulsarReactiveAutoConfiguration` auto-configuration class.
 
 [[messaging.pulsar.connecting]]
 === Connecting to Pulsar
@@ -45,10 +47,10 @@ spring:
 
 [NOTE]
 ====
-You need to ensure that names defined under `+spring.pulsar.client.authentication.*+` exactly match those expected by your auth plugin (which is typically camel cased).
+You need to ensure that names defined under `+spring.pulsar.client.authentication.param.*+` exactly match those expected by your auth plugin (which is typically camel cased).
 Spring Boot will not attempt any kind of relaxed binding for these entries.
 
-For example, if you want to configure the issuer url for the `AuthenticationOAuth2` auth plugin you must use `+spring.pulsar.client.authentication.issuerUrl+`.
+For example, if you want to configure the issuer url for the `AuthenticationOAuth2` auth plugin you must use `+spring.pulsar.client.authentication.param.issuerUrl+`.
 If you use other forms, such as `issuerurl` or `issuer-url`, the setting will not be applied to the plugin.
 ====
 
@@ -61,7 +63,7 @@ For complete details on the client and authentication see the Spring Pulsar {spr
 When the Reactive auto-configuration is activated, Spring Boot will auto-configure and register a `ReactivePulsarClient` bean.
 
 The `ReactivePulsarClient` adapts an instance of the previously described `PulsarClient`.
-Therefore, use the properties described previously (`spring.pulsar.client.*`) to configure the `ReactivePulsarClient`.
+Therefore, follow the previous section to configure the `PulsarClient` used by the `ReactivePulsarClient`.
 
 
 
@@ -72,6 +74,7 @@ Spring Pulsar's `PulsarAdministration` client is also auto-configured.
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
 This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[] property to a different value in the form `(http|https)://<host>:<port>`.
 
+If you need more control over the configuration, consider registering one or more `PulsarAdminBuilderCustomizer` beans.
 
 
 [[messaging.pulsar.admin.auth]]
@@ -94,7 +97,11 @@ The `PulsarTemplate` relies on a `PulsarProducerFactory` to create the underlyin
 Spring Boot auto-configuration also provides this producer factory, which by default, caches the producers that it creates.
 You can configure the producer factory and cache settings by specifying any of the `spring.pulsar.producer.\*` and `spring.pulsar.producer.cache.*` prefixed application properties.
 
-If you need more control over the producer factory configuration, consider passing in a `ProducerBuilderCustomizer` when sending a message.
+If you need more control over the producer factory configuration, consider registering one or more `ProducerBuilderCustomizer` beans.
+These customizers are applied to all created producers.
+You can also pass in a `ProducerBuilderCustomizer` when sending a message to only affect the current producer.
+
+If you need more control over the message being sent, you can pass in a `TypedMessageBuilderCustomizer` when sending a message.
 
 
 
@@ -106,9 +113,13 @@ include::code:MyBean[]
 
 The `ReactivePulsarTemplate` relies on a `ReactivePulsarSenderFactory` to actually create the underlying sender.
 Spring Boot auto-configuration also provides this sender factory, which by default, caches the producers that it creates.
-You can configure the sender factory and cache settings by specifying any of the `spring.pulsar.producer.*` and `spring.pulsar.producer.cache.*` prefixed application properties.
+You can configure the sender factory and cache settings by specifying any of the `spring.pulsar.producer.\*` and `spring.pulsar.producer.cache.*` prefixed application properties.
 
-If you need more control over the sender factory configuration, consider passing in a `MessageSpecBuilderCustomizer` when sending a message.
+If you need more control over the sender factory configuration, consider registering one or more `ReactiveMessageSenderBuilderCustomizer` beans.
+These customizers are applied to all created senders.
+You can also pass in a `ReactiveMessageSenderBuilderCustomizer` when sending a message to only affect the current sender.
+
+If you need more control over the message being sent, you can pass in a `MessageSpecBuilderCustomizer` when sending a message.
 
 
 
@@ -122,7 +133,9 @@ include::code:MyBean[]
 Spring Boot auto-configuration provides all the components necessary for `PulsarListener`, such as the `PulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying Pulsar consumers.
 You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
 
-If you need more control over the consumer factory configuration, consider registering a `ConsumerBuilderCustomizer` bean and specifying it on the `consumerCustomizer` attribute of the `@PulsarListener` annotation.
+If you need more control over the consumer factory configuration, consider registering one or more `ConsumerBuilderCustomizer` beans.
+These customizers are applied to all consumers created by the factory, and therefore all `@PulsarListener` instances.
+You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@PulsarListener` annotation.
 
 
 
@@ -134,9 +147,11 @@ The following component creates a reactive listener endpoint on the `someTopic` 
 include::code:MyBean[]
 
 Spring Boot auto-configuration provides all the components necessary for `ReactivePulsarListener`, such as the `ReactivePulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying reactive Pulsar consumers.
-You can configure these components by specifying any of the `spring.pulsar.listener.*` and `spring.pulsar.consumer.*` prefixed application properties.
+You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
 
-If you need more control over the consumer factory configuration, consider registering a `ReactiveMessageConsumerBuilderCustomizer` bean and specifying it on the `consumerCustomizer` attribute of the `@ReactivePulsarListener` annotation.
+If you need more control over the consumer factory configuration, consider registering one or more `ReactiveMessageConsumerBuilderCustomizer` beans.
+These customizers are applied to all consumers created by the factory, and therefore all `@ReactivePulsarListener` instances.
+You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@ReactivePulsarListener` annotation.
 
 
 
@@ -153,7 +168,9 @@ include::code:MyBean[]
 The `@PulsarReader` relies on a `PulsarReaderFactory` to create the underlying Pulsar reader.
 Spring Boot auto-configuration provides this reader factory which can be customized by setting any of the `spring.pulsar.reader.*` prefixed application properties.
 
-If you need more control over the reader factory configuration, consider registering a `ReaderBuilderCustomizer` bean and specifying it on the `readerCustomizer` attribute of the `@PulsarReader` annotation.
+If you need more control over the reader factory configuration, consider registering one or more `ReaderBuilderCustomizer` beans.
+These customizers are applied to all readers created by the factory, and therefore all `@PulsarReader` instances.
+You can also customize a single listener by setting the `readerCustomizer` attribute of the `@PulsarReader` annotation.
 
 
 
@@ -168,13 +185,17 @@ Spring Boot auto-configuration provides this reader factory which can be customi
 
 If you need more control over the reader factory configuration, consider passing in one or more `ReactiveMessageReaderBuilderCustomizer` instances when using the factory to create a reader.
 
+If you need more control over the reader factory configuration, consider registering one or more `ReactiveMessageReaderBuilderCustomizer` beans.
+These customizers are applied to all created readers.
+You can also pass one or more `ReactiveMessageReaderBuilderCustomizer` when creating a reader to only apply the customizations to the created reader.
+
 TIP: For more details on any of the above components and to discover other available features, see the Spring for Apache Pulsar {spring-pulsar-docs}[reference documentation].
 
 
 
 [[messaging.pulsar.additional-properties]]
 === Additional Pulsar Properties
-The properties supported by auto configuration are shown in the <<application-properties#appendix.application-properties.integration, "`Integration Properties`">> section of the Appendix.
+The properties supported by auto-configuration are shown in the <<application-properties#appendix.application-properties.integration, "`Integration Properties`">> section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.
 
