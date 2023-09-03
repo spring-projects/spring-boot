@@ -535,7 +535,7 @@ public class PulsarProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private final DeadLetterPolicy deadLetterPolicy = new DeadLetterPolicy();
+		private DeadLetterPolicy deadLetterPolicy;
 
 		/**
 		 * Consumer subscription properties.
@@ -593,6 +593,10 @@ public class PulsarProperties {
 
 		public DeadLetterPolicy getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
+		}
+
+		public void setDeadLetterPolicy(DeadLetterPolicy deadLetterPolicy) {
+			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
 		public boolean isRetryEnable() {

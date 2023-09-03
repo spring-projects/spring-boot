@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.pulsar.annotation.PulsarListener;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -60,20 +63,26 @@ class PulsarAutoConfigurationIntegrationTests {
 		.withStartupAttempts(2)
 		.withStartupTimeout(Duration.ofMinutes(3));
 
+	private static final CountDownLatch LISTEN_LATCH = new CountDownLatch(1);
+
+	private static final String TOPIC = "pacit-hello-topic";
+
 	@DynamicPropertySource
 	static void pulsarProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.pulsar.client.service-url", PULSAR_CONTAINER::getPulsarBrokerUrl);
-		registry.add("spring.pulsar.administration.service-url", PULSAR_CONTAINER::getHttpServiceUrl);
+		registry.add("spring.pulsar.admin.service-url", PULSAR_CONTAINER::getHttpServiceUrl);
 	}
 
 	@Test
-	void appStartsWithAutoConfiguredSpringPulsarComponents(@Autowired PulsarTemplate<String> pulsarTemplate) {
+	void appStartsWithAutoConfiguredSpringPulsarComponents(
+			@Autowired(required = false) PulsarTemplate<String> pulsarTemplate) {
 		assertThat(pulsarTemplate).isNotNull();
 	}
 
 	@Test
-	void templateCanBeAccessedDuringWebRequest(@Autowired TestRestTemplate restTemplate) {
+	void templateCanBeAccessedDuringWebRequest(@Autowired TestRestTemplate restTemplate) throws InterruptedException {
 		assertThat(restTemplate.getForObject("/hello", String.class)).startsWith("Hello World -> ");
+		assertThat(LISTEN_LATCH.await(5, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -82,6 +91,11 @@ class PulsarAutoConfigurationIntegrationTests {
 			PulsarAutoConfiguration.class, PulsarReactiveAutoConfiguration.class })
 	@Import(TestWebController.class)
 	static class TestConfiguration {
+
+		@PulsarListener(subscriptionName = TOPIC + "-sub", topics = TOPIC)
+		void listen(String ignored) {
+			LISTEN_LATCH.countDown();
+		}
 
 	}
 
@@ -96,7 +110,7 @@ class PulsarAutoConfigurationIntegrationTests {
 
 		@GetMapping("/hello")
 		String sayHello() throws PulsarClientException {
-			return "Hello World -> " + this.pulsarTemplate.send("spbast-hello-topic", "hello");
+			return "Hello World -> " + this.pulsarTemplate.send(TOPIC, "hello");
 		}
 
 	}

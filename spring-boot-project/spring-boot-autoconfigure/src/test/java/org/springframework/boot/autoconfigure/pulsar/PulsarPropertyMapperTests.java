@@ -27,6 +27,7 @@ import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.DeadLetterPolicy;
+import org.apache.pulsar.client.api.DeadLetterPolicy.DeadLetterPolicyBuilder;
 import org.apache.pulsar.client.api.HashingScheme;
 import org.apache.pulsar.client.api.MessageRoutingMode;
 import org.apache.pulsar.client.api.ProducerAccessMode;
@@ -37,6 +38,7 @@ import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -140,7 +142,9 @@ class PulsarPropertyMapperTests {
 		properties.getConsumer().setTopicsPattern(topisPattern);
 		properties.getConsumer().setPriorityLevel(123);
 		properties.getConsumer().setReadCompacted(true);
-		properties.getConsumer().getDeadLetterPolicy().setDeadLetterTopic("my-dlt");
+		Consumer.DeadLetterPolicy deadLetterPolicy = new Consumer.DeadLetterPolicy();
+		deadLetterPolicy.setDeadLetterTopic("my-dlt");
+		properties.getConsumer().setDeadLetterPolicy(deadLetterPolicy);
 		ConsumerBuilder<Object> builder = mock(ConsumerBuilder.class);
 		PulsarPropertyMapper.consumerBuilderCustomizer(properties).customize(builder);
 		then(builder).should().consumerName("name");

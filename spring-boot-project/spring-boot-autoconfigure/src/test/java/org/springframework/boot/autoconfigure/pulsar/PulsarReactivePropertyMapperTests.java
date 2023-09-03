@@ -35,6 +35,7 @@ import org.apache.pulsar.reactive.client.api.ReactiveMessageReaderBuilder;
 import org.apache.pulsar.reactive.client.api.ReactiveMessageSenderBuilder;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer.Subscription;
 import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerProperties;
 
@@ -87,7 +88,9 @@ class PulsarReactivePropertyMapperTests {
 		properties.getConsumer().setTopicsPattern(topisPattern);
 		properties.getConsumer().setPriorityLevel(123);
 		properties.getConsumer().setReadCompacted(true);
-		properties.getConsumer().getDeadLetterPolicy().setDeadLetterTopic("my-dlt");
+		Consumer.DeadLetterPolicy deadLetterPolicy = new Consumer.DeadLetterPolicy();
+		deadLetterPolicy.setDeadLetterTopic("my-dlt");
+		properties.getConsumer().setDeadLetterPolicy(deadLetterPolicy);
 		properties.getConsumer().setRetryEnable(false);
 		Subscription subscriptionProperties = properties.getConsumer().getSubscription();
 		subscriptionProperties.setName("subname");
