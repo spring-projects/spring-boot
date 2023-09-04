@@ -181,6 +181,14 @@ class ImageReferenceTests {
 	}
 
 	@Test
+	void ofWhenContainsUpperCaseThrowsException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ImageReference
+				.of("europe-west1-docker.pkg.dev/aaaaaa-bbbbb-123456/docker-registry/bootBuildImage:0.0.1"))
+			.withMessageContaining("Unable to parse image reference");
+	}
+
+	@Test
 	void forJarFile() {
 		assertForJarFile("spring-boot.2.0.0.BUILD-SNAPSHOT.jar", "library/spring-boot", "2.0.0.BUILD-SNAPSHOT");
 		assertForJarFile("spring-boot.2.0.0.M1.jar", "library/spring-boot", "2.0.0.M1");
