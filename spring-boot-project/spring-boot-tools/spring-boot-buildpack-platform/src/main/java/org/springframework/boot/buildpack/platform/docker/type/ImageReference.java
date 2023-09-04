@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -260,12 +261,21 @@ public final class ImageReference {
 				path = path.substring(0, tagSplit) + remainder;
 			}
 		}
-		Assert.isTrue(Regex.PATH.matcher(path).matches(),
+
+		Assert.isTrue(isLowerCase(path) && matchesPathRegex(path),
 				() -> "Unable to parse image reference \"" + value + "\". "
 						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "
 						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
 		ImageName name = new ImageName(domain, path);
 		return new ImageReference(name, tag, digest);
+	}
+
+	private static boolean isLowerCase(String path) {
+		return path.toLowerCase(Locale.ENGLISH).equals(path);
+	}
+
+	private static boolean matchesPathRegex(String path) {
+		return Regex.PATH.matcher(path).matches();
 	}
 
 	/**
