@@ -208,8 +208,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	@SuppressWarnings("deprecation")
 	private List<Upgrade> resolveUpgrades() {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
-				new MultithreadedLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
-						this.bom.getUpgrade().getPolicy(), getThreads().get()))
+				new MultithreadedLibraryUpdateResolver(getThreads().get(),
+						new StandardLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
+								this.bom.getUpgrade().getPolicy())))
 			.resolveUpgrades(matchingLibraries(getLibraries().getOrNull()), this.bom.getLibraries());
 		return upgrades;
 	}
