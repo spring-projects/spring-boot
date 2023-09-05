@@ -21,6 +21,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
+import org.testcontainers.couchbase.CouchbaseService;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -39,7 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-@DataCouchbaseTest(includeFilters = @Filter(Service.class))
+@DataCouchbaseTest(
+		properties = { "spring.couchbase.env.timeouts.connect=2m", "spring.couchbase.env.timeouts.key-value=1m" },
+		includeFilters = @Filter(Service.class))
 @Testcontainers(disabledWithoutDocker = true)
 class DataCouchbaseTestWithIncludeFilterIntegrationTests {
 
@@ -47,6 +50,7 @@ class DataCouchbaseTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
+		.withEnabledServices(CouchbaseService.KV, CouchbaseService.INDEX, CouchbaseService.QUERY)
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10))
 		.withBucket(new BucketDefinition(BUCKET_NAME));
