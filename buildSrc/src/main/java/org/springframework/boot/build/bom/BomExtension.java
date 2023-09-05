@@ -114,7 +114,8 @@ public class BomExtension {
 		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
-		addLibrary(new Library(name, libraryVersion, libraryHandler.groups, libraryHandler.prohibitedVersions));
+		addLibrary(new Library(name, libraryVersion, libraryHandler.groups, libraryHandler.prohibitedVersions,
+				libraryHandler.considerSnapshots));
 	}
 
 	public void effectiveBomArtifact() {
@@ -214,6 +215,8 @@ public class BomExtension {
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
+		private boolean considerSnapshots = false;
+
 		private String version;
 
 		@Inject
@@ -223,6 +226,10 @@ public class BomExtension {
 
 		public void version(String version) {
 			this.version = version;
+		}
+
+		public void considerSnapshots() {
+			this.considerSnapshots = true;
 		}
 
 		public void group(String id, Action<GroupHandler> action) {

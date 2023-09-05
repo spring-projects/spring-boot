@@ -212,23 +212,28 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				new MultithreadedLibraryUpdateResolver(getThreads().get(),
 						new StandardLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
 								this.bom.getUpgrade().getPolicy())))
-			.resolveUpgrades(matchingLibraries(getLibraries().getOrNull()), this.bom.getLibraries());
+			.resolveUpgrades(matchingLibraries(), this.bom.getLibraries());
 		return upgrades;
 	}
 
-	private List<Library> matchingLibraries(String pattern) {
-		if (pattern == null) {
-			return this.bom.getLibraries();
-		}
-		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
+	private List<Library> matchingLibraries() {
 		List<Library> matchingLibraries = this.bom.getLibraries()
 			.stream()
-			.filter((library) -> libraryPredicate.test(library.getName()))
+			.filter(this::eligible)
 			.collect(Collectors.toList());
 		if (matchingLibraries.isEmpty()) {
-			throw new InvalidUserDataException("No libraries matched '" + pattern + "'");
+			throw new InvalidUserDataException("No libraries to upgrade");
 		}
 		return matchingLibraries;
+	}
+
+	protected boolean eligible(Library library) {
+		String pattern = getLibraries().getOrNull();
+		if (pattern == null) {
+			return true;
+		}
+		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
+		return libraryPredicate.test(library.getName());
 	}
 
 	protected abstract String issueTitle(Upgrade upgrade);

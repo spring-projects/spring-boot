@@ -42,6 +42,8 @@ public class Library {
 
 	private final List<ProhibitedVersion> prohibitedVersions;
 
+	private final boolean considerSnapshots;
+
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
 	 * {@code groups}.
@@ -49,15 +51,17 @@ public class Library {
 	 * @param version version of the library
 	 * @param groups groups in the library
 	 * @param prohibitedVersions version of the library that are prohibited
+	 * @param considerSnapshots whether to consider snapshots
 	 */
-	public Library(String name, LibraryVersion version, List<Group> groups,
-			List<ProhibitedVersion> prohibitedVersions) {
+	public Library(String name, LibraryVersion version, List<Group> groups, List<ProhibitedVersion> prohibitedVersions,
+			boolean considerSnapshots) {
 		this.name = name;
 		this.version = version;
 		this.groups = groups;
 		this.versionProperty = "Spring Boot".equals(name) ? null
 				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
 		this.prohibitedVersions = prohibitedVersions;
+		this.considerSnapshots = considerSnapshots;
 	}
 
 	public String getName() {
@@ -78,6 +82,10 @@ public class Library {
 
 	public List<ProhibitedVersion> getProhibitedVersions() {
 		return this.prohibitedVersions;
+	}
+
+	public boolean isConsiderSnapshots() {
+		return this.considerSnapshots;
 	}
 
 	/**
