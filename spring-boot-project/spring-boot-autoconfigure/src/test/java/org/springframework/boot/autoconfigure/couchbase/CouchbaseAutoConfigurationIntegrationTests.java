@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
+import org.testcontainers.couchbase.CouchbaseService;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -51,6 +52,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 
 	@Container
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
+		.withEnabledServices(CouchbaseService.KV)
 		.withCredentials("spring", "password")
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10))
@@ -60,7 +62,8 @@ class CouchbaseAutoConfigurationIntegrationTests {
 		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
 		.withPropertyValues("spring.couchbase.connection-string: " + couchbase.getConnectionString(),
 				"spring.couchbase.username:spring", "spring.couchbase.password:password",
-				"spring.couchbase.bucket.name:" + BUCKET_NAME);
+				"spring.couchbase.bucket.name:" + BUCKET_NAME, "spring.couchbase.env.timeouts.connect=2m",
+				"spring.couchbase.env.timeouts.key-value=1m");
 
 	@Test
 	void defaultConfiguration() {
