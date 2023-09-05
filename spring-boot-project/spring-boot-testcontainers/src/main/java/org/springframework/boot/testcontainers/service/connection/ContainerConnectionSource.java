@@ -56,7 +56,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Set<Class<?>> connectionDetailsTypes;
 
-	private Supplier<C> containerSupplier;
+	private final Supplier<C> containerSupplier;
 
 	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
 			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier) {
