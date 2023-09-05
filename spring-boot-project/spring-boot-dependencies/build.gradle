@@ -989,6 +989,7 @@ bom {
 		}
 	}
 	library("Micrometer", "1.12.0-M2") {
+		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1001,6 +1002,7 @@ bom {
 		}
 	}
 	library("Micrometer Tracing", "1.2.0-M2") {
+		considerSnapshots()
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
@@ -1145,6 +1147,7 @@ bom {
 		}
 	}
 	library("R2DBC H2", "1.0.0.RELEASE") {
+		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-h2"
@@ -1173,6 +1176,7 @@ bom {
 		}
 	}
 	library("R2DBC Pool", "1.0.1.RELEASE") {
+		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-pool"
@@ -1180,6 +1184,7 @@ bom {
 		}
 	}
 	library("R2DBC Postgresql", "1.0.2.RELEASE") {
+		considerSnapshots()
 		group("org.postgresql") {
 			modules = [
 				"r2dbc-postgresql"
@@ -1187,6 +1192,7 @@ bom {
 		}
 	}
 	library("R2DBC Proxy", "1.1.2.RELEASE") {
+		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-proxy"
@@ -1194,6 +1200,7 @@ bom {
 		}
 	}
 	library("R2DBC SPI", "1.0.0.RELEASE") {
+		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-spi"
@@ -1222,6 +1229,7 @@ bom {
 		}
 	}
 	library("Reactor Bom", "2023.0.0-M2") {
+		considerSnapshots()
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1385,6 +1393,7 @@ bom {
 		}
 	}
 	library("Spring AMQP", "3.0.8") {
+		considerSnapshots()
 		group("org.springframework.amqp") {
 			imports = [
 				"spring-amqp-bom"
@@ -1392,6 +1401,7 @@ bom {
 		}
 	}
 	library("Spring Authorization Server", "1.1.2") {
+		considerSnapshots()
 		group("org.springframework.security") {
 			modules = [
 					"spring-security-oauth2-authorization-server"
@@ -1399,6 +1409,7 @@ bom {
 		}
 	}
 	library("Spring Batch", "5.1.0-M2") {
+		considerSnapshots()
 		group("org.springframework.batch") {
 			imports = [
 				"spring-batch-bom"
@@ -1406,6 +1417,7 @@ bom {
 		}
 	}
 	library("Spring Data Bom", "2023.1.0-M2") {
+		considerSnapshots()
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1413,6 +1425,7 @@ bom {
 		}
 	}
 	library("Spring Framework", "${springFrameworkVersion}") {
+		considerSnapshots()
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
@@ -1420,6 +1433,7 @@ bom {
 		}
 	}
 	library("Spring GraphQL", "1.2.2") {
+		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
 					"spring-graphql",
@@ -1428,6 +1442,7 @@ bom {
 		}
 	}
 	library("Spring HATEOAS", "2.2.0-M2") {
+		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
@@ -1435,6 +1450,7 @@ bom {
 		}
 	}
 	library("Spring Integration", "6.2.0-M2") {
+		considerSnapshots()
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
@@ -1442,6 +1458,7 @@ bom {
 		}
 	}
 	library("Spring Kafka", "3.0.10") {
+		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1450,6 +1467,7 @@ bom {
 		}
 	}
 	library("Spring LDAP", "3.2.0-M2") {
+		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",
@@ -1460,6 +1478,7 @@ bom {
 		}
 	}
 	library("Spring RESTDocs", "3.0.0") {
+		considerSnapshots()
 		group("org.springframework.restdocs") {
 			imports = [
 				"spring-restdocs-bom"
@@ -1467,6 +1486,7 @@ bom {
 		}
 	}
 	library("Spring Retry", "2.0.2") {
+		considerSnapshots()
 		group("org.springframework.retry") {
 			modules = [
 				"spring-retry"
@@ -1474,6 +1494,7 @@ bom {
 		}
 	}
 	library("Spring Security", "6.2.0-M2") {
+		considerSnapshots()
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
@@ -1481,6 +1502,7 @@ bom {
 		}
 	}
 	library("Spring Session", "3.2.0-M1") {
+		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
 			because "Spring Session switched to numeric version numbers"
@@ -1492,6 +1514,7 @@ bom {
 		}
 	}
 	library("Spring WS", "4.0.5") {
+		considerSnapshots()
 		group("org.springframework.ws") {
 			imports = [
 				"spring-ws-bom"
