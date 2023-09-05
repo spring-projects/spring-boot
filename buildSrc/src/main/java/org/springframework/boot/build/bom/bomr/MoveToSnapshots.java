@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.gradle.api.Task;
 
 import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.bom.Library;
 
 /**
  * A {@link Task} to move to snapshot dependencies.
@@ -55,6 +56,11 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 	private String releaseVersion(Upgrade upgrade) {
 		String snapshotVersion = upgrade.getVersion().toString();
 		return snapshotVersion.substring(0, snapshotVersion.length() - "-SNAPSHOT".length());
+	}
+
+	@Override
+	protected boolean eligible(Library library) {
+		return library.isConsiderSnapshots() && super.eligible(library);
 	}
 
 }
