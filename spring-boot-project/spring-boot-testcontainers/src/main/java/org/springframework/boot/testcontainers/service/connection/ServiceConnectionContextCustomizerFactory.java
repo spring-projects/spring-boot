@@ -74,13 +74,21 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 				field.getDeclaringClass().getName(), Container.class.getName()));
 		Class<C> containerType = (Class<C>) fieldValue.getClass();
 		C container = (C) fieldValue;
-		return new ContainerConnectionSource<>("test", origin, containerType, container.getDockerImageName(),
-				annotation, () -> container);
+		// container.getDockerImageName() fails if there is no running docker environment
+		// When running tests that doesn't matter, but running AOT processing should be
+		// possible without a Docker environment
+		String dockerImageName = isAotProcessingInProgress() ? null : container.getDockerImageName();
+		return new ContainerConnectionSource<>("test", origin, containerType, dockerImageName, annotation,
+				() -> container);
 	}
 
 	private Object getFieldValue(Field field) {
 		ReflectionUtils.makeAccessible(field);
 		return ReflectionUtils.getField(field, null);
+	}
+
+	private boolean isAotProcessingInProgress() {
+		return Boolean.getBoolean("spring.aot.processing");
 	}
 
 }
