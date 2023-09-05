@@ -39,6 +39,14 @@ abstract class AbstractDependencyVersion implements DependencyVersion {
 	}
 
 	@Override
+	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
+		ComparableVersion comparableCandidate = (candidate instanceof AbstractDependencyVersion)
+				? ((AbstractDependencyVersion) candidate).comparableVersion
+				: new ComparableVersion(candidate.toString());
+		return comparableCandidate.compareTo(this.comparableVersion) > 0;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;

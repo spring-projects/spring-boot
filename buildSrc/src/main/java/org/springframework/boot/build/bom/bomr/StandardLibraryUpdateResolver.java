@@ -50,9 +50,13 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 
 	private final UpgradePolicy upgradePolicy;
 
-	StandardLibraryUpdateResolver(VersionResolver versionResolver, UpgradePolicy upgradePolicy) {
+	private final boolean movingToSnapshots;
+
+	StandardLibraryUpdateResolver(VersionResolver versionResolver, UpgradePolicy upgradePolicy,
+			boolean movingToSnapshots) {
 		this.versionResolver = versionResolver;
 		this.upgradePolicy = upgradePolicy;
+		this.movingToSnapshots = movingToSnapshots;
 	}
 
 	@Override
@@ -154,6 +158,7 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			DependencyVersion currentVersion) {
 		SortedSet<DependencyVersion> versions = this.versionResolver.resolveVersions(groupId, artifactId);
 		versions.removeIf((candidate) -> !this.upgradePolicy.test(candidate, currentVersion));
+		versions.removeIf((candidate) -> !currentVersion.isUpgrade(candidate, this.movingToSnapshots));
 		return versions;
 	}
 

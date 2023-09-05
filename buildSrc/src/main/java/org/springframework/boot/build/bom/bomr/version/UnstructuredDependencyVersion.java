@@ -34,18 +34,13 @@ final class UnstructuredDependencyVersion extends AbstractDependencyVersion impl
 	}
 
 	@Override
-	public boolean isNewerThan(DependencyVersion other) {
-		return compareTo(other) > 0;
+	public boolean isSameMajor(DependencyVersion other) {
+		return true;
 	}
 
 	@Override
-	public boolean isSameMajorAndNewerThan(DependencyVersion other) {
-		return compareTo(other) > 0;
-	}
-
-	@Override
-	public boolean isSameMinorAndNewerThan(DependencyVersion other) {
-		return compareTo(other) > 0;
+	public boolean isSameMinor(DependencyVersion other) {
+		return true;
 	}
 
 	@Override

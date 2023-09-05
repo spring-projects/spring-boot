@@ -41,14 +41,6 @@ class CalendarVersionDependencyVersion extends ArtifactVersionDependencyVersion 
 		super(artifactVersion, comparableVersion);
 	}
 
-	@Override
-	public boolean isNewerThan(DependencyVersion other) {
-		if (other instanceof ReleaseTrainDependencyVersion) {
-			return true;
-		}
-		return super.isNewerThan(other);
-	}
-
 	static CalendarVersionDependencyVersion parse(String version) {
 		if (!CALENDAR_VERSION_PATTERN.matcher(version).matches()) {
 			return null;
