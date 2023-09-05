@@ -102,6 +102,10 @@ class RabbitStreamConfiguration {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(stream.getHost()).to(builder::host);
 		map.from(stream.getPort()).to(builder::port);
+		map.from(stream.getVirtualHost())
+			.as(withFallback(properties::getVirtualHost))
+			.whenNonNull()
+			.to(builder::virtualHost);
 		map.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
 		map.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
 		return builder;

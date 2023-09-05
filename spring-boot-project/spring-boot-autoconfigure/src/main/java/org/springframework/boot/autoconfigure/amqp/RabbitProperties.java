@@ -1207,6 +1207,12 @@ public class RabbitProperties {
 		private int port = DEFAULT_STREAM_PORT;
 
 		/**
+		 * Virtual host of a RabbitMQ instance with the Stream plugin enabled. When not
+		 * set, spring.rabbitmq.virtual-host is used.
+		 */
+		private String virtualHost;
+
+		/**
 		 * Login user to authenticate to the broker. When not set,
 		 * spring.rabbitmq.username is used.
 		 */
@@ -1237,6 +1243,14 @@ public class RabbitProperties {
 
 		public void setPort(int port) {
 			this.port = port;
+		}
+
+		public String getVirtualHost() {
+			return this.virtualHost;
+		}
+
+		public void setVirtualHost(String virtualHost) {
+			this.virtualHost = virtualHost;
 		}
 
 		public String getUsername() {

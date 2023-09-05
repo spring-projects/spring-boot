@@ -144,6 +144,24 @@ class RabbitStreamConfigurationTests {
 	}
 
 	@Test
+	void whenStreamVirtualHostIsSetThenEnvironmentUsesCustomVirtualHost() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		RabbitProperties properties = new RabbitProperties();
+		properties.getStream().setVirtualHost("stream-virtual-host");
+		RabbitStreamConfiguration.configure(builder, properties);
+		then(builder).should().virtualHost("stream-virtual-host");
+	}
+
+	@Test
+	void whenStreamVirtualHostIsNotSetButDefaultVirtualHostIsSetThenEnvironmentUsesDefaultVirtualHost() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		RabbitProperties properties = new RabbitProperties();
+		properties.setVirtualHost("default-virtual-host");
+		RabbitStreamConfiguration.configure(builder, properties);
+		then(builder).should().virtualHost("default-virtual-host");
+	}
+
+	@Test
 	void whenStreamCredentialsAreNotSetThenEnvironmentUsesRabbitCredentials() {
 		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
 		RabbitProperties properties = new RabbitProperties();
