@@ -34,7 +34,7 @@ import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 @Profile("smoketest.pulsar.reactive")
 class ReactiveAppConfig {
 
-	private static final Log LOG = LogFactory.getLog(ReactiveAppConfig.class);
+	private static final Log logger = LogFactory.getLog(ReactiveAppConfig.class);
 
 	private static final String TOPIC = "pulsar-reactive-smoke-test-topic";
 
@@ -49,14 +49,14 @@ class ReactiveAppConfig {
 			.map((i) -> new SampleMessage(i, "message:" + i))
 			.map(MessageSpec::of)
 			.as((msgs) -> template.send(TOPIC, msgs))
-			.doOnNext((sendResult) -> LOG
+			.doOnNext((sendResult) -> logger
 				.info("++++++PRODUCE REACTIVE:(" + sendResult.getMessageSpec().getValue().id() + ")------"))
 			.subscribe();
 	}
 
 	@ReactivePulsarListener(topics = TOPIC)
 	Mono<Void> consumeMessagesFromPulsarTopic(SampleMessage msg) {
-		LOG.info("++++++CONSUME REACTIVE:(" + msg.id() + ")------");
+		logger.info("++++++CONSUME REACTIVE:(" + msg.id() + ")------");
 		return Mono.empty();
 	}
 

@@ -44,27 +44,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SamplePulsarApplicationTests {
 
 	@Container
-	static final PulsarContainer PULSAR_CONTAINER = new PulsarContainer(DockerImageNames.pulsar())
-		.withStartupAttempts(2)
+	static final PulsarContainer container = new PulsarContainer(DockerImageNames.pulsar()).withStartupAttempts(2)
 		.withStartupTimeout(Duration.ofMinutes(3));
 
 	@DynamicPropertySource
 	static void pulsarProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.pulsar.client.service-url", PULSAR_CONTAINER::getPulsarBrokerUrl);
-		registry.add("spring.pulsar.admin.service-url", PULSAR_CONTAINER::getHttpServiceUrl);
+		registry.add("spring.pulsar.client.service-url", container::getPulsarBrokerUrl);
+		registry.add("spring.pulsar.admin.service-url", container::getHttpServiceUrl);
 	}
 
-	@Nested
-	@SpringBootTest
-	@ActiveProfiles("smoketest.pulsar.imperative")
-	class ImperativeApp {
+	abstract class PulsarApplication {
+
+		private final String type;
+
+		PulsarApplication(String type) {
+			this.type = type;
+		}
 
 		@Test
 		void appProducesAndConsumesMessages(CapturedOutput output) {
 			List<String> expectedOutput = new ArrayList<>();
 			IntStream.range(0, 10).forEachOrdered((i) -> {
-				expectedOutput.add("++++++PRODUCE IMPERATIVE:(" + i + ")------");
-				expectedOutput.add("++++++CONSUME IMPERATIVE:(" + i + ")------");
+				expectedOutput.add("++++++PRODUCE %s:(%s)------".formatted(this.type, i));
+				expectedOutput.add("++++++CONSUME %s:(%s)------".formatted(this.type, i));
 			});
 			Awaitility.waitAtMost(Duration.ofSeconds(30))
 				.untilAsserted(() -> assertThat(output).contains(expectedOutput));
@@ -74,18 +76,22 @@ class SamplePulsarApplicationTests {
 
 	@Nested
 	@SpringBootTest
-	@ActiveProfiles("smoketest.pulsar.reactive")
-	class ReactiveApp {
+	@ActiveProfiles("smoketest.pulsar.imperative")
+	class ImperativePulsarApplication extends PulsarApplication {
 
-		@Test
-		void appProducesAndConsumesMessagesReactively(CapturedOutput output) {
-			List<String> expectedOutput = new ArrayList<>();
-			IntStream.range(0, 10).forEachOrdered((i) -> {
-				expectedOutput.add("++++++PRODUCE REACTIVE:(" + i + ")------");
-				expectedOutput.add("++++++CONSUME REACTIVE:(" + i + ")------");
-			});
-			Awaitility.waitAtMost(Duration.ofSeconds(30))
-				.untilAsserted(() -> assertThat(output).contains(expectedOutput));
+		ImperativePulsarApplication() {
+			super("IMPERATIVE");
+		}
+
+	}
+
+	@Nested
+	@SpringBootTest
+	@ActiveProfiles("smoketest.pulsar.reactive")
+	class ReactivePulsarApplication extends PulsarApplication {
+
+		ReactivePulsarApplication() {
+			super("REACTIVE");
 		}
 
 	}

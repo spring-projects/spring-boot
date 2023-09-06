@@ -31,7 +31,7 @@ import org.springframework.pulsar.core.PulsarTopic;
 @Profile("smoketest.pulsar.imperative")
 class ImperativeAppConfig {
 
-	private static final Log LOG = LogFactory.getLog(ImperativeAppConfig.class);
+	private static final Log logger = LogFactory.getLog(ImperativeAppConfig.class);
 
 	private static final String TOPIC = "pulsar-smoke-test-topic";
 
@@ -45,14 +45,14 @@ class ImperativeAppConfig {
 		return (args) -> {
 			for (int i = 0; i < 10; i++) {
 				template.send(TOPIC, new SampleMessage(i, "message:" + i));
-				LOG.info("++++++PRODUCE IMPERATIVE:(" + i + ")------");
+				logger.info("++++++PRODUCE IMPERATIVE:(" + i + ")------");
 			}
 		};
 	}
 
 	@PulsarListener(topics = TOPIC)
 	void consumeMessagesFromPulsarTopic(SampleMessage msg) {
-		LOG.info("++++++CONSUME IMPERATIVE:(" + msg.id() + ")------");
+		logger.info("++++++CONSUME IMPERATIVE:(" + msg.id() + ")------");
 	}
 
 }
