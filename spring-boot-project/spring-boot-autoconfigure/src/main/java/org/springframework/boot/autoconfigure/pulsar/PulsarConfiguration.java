@@ -72,10 +72,17 @@ class PulsarConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(PulsarConnectionDetails.class)
+	PropertiesPulsarConnectionDetails pulsarConnectionDetails() {
+		return new PropertiesPulsarConnectionDetails(this.properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(PulsarClientFactory.class)
-	DefaultPulsarClientFactory pulsarClientFactory(ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider) {
+	DefaultPulsarClientFactory pulsarClientFactory(PulsarConnectionDetails connectionDetails,
+			ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider) {
 		List<PulsarClientBuilderCustomizer> allCustomizers = new ArrayList<>();
-		allCustomizers.add(this.propertiesMapper::customizeClientBuilder);
+		allCustomizers.add((builder) -> this.propertiesMapper.customizeClientBuilder(builder, connectionDetails));
 		allCustomizers.addAll(customizersProvider.orderedStream().toList());
 		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(
 				(clientBuilder) -> applyClientBuilderCustomizers(allCustomizers, clientBuilder));
@@ -95,10 +102,10 @@ class PulsarConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	PulsarAdministration pulsarAdministration(
+	PulsarAdministration pulsarAdministration(PulsarConnectionDetails connectionDetails,
 			ObjectProvider<PulsarAdminBuilderCustomizer> pulsarAdminBuilderCustomizers) {
 		List<PulsarAdminBuilderCustomizer> allCustomizers = new ArrayList<>();
-		allCustomizers.add(this.propertiesMapper::customizeAdminBuilder);
+		allCustomizers.add((builder) -> this.propertiesMapper.customizeAdminBuilder(builder, connectionDetails));
 		allCustomizers.addAll(pulsarAdminBuilderCustomizers.orderedStream().toList());
 		return new PulsarAdministration((adminBuilder) -> applyAdminBuilderCustomizers(allCustomizers, adminBuilder));
 	}

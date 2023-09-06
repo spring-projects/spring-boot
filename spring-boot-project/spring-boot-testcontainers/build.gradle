@@ -29,6 +29,7 @@ dependencies {
 	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:oracle-xe")
 	optional("org.testcontainers:postgresql")
+	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
@@ -50,8 +51,8 @@ dependencies {
 	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.kafka:spring-kafka")
+	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
 
 	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 }
-

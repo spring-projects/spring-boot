@@ -114,6 +114,7 @@ class PulsarAutoConfigurationTests {
 	@Test
 	void autoConfiguresBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PulsarConfiguration.class)
+			.hasSingleBean(PulsarConnectionDetails.class)
 			.hasSingleBean(DefaultPulsarClientFactory.class)
 			.hasSingleBean(PulsarClient.class)
 			.hasSingleBean(PulsarAdministration.class)

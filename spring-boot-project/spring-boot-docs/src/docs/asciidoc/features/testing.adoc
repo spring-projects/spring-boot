@@ -992,6 +992,9 @@ The following service connection factories are provided in the `spring-boot-test
 | `Neo4jConnectionDetails`
 | Containers of type `Neo4jContainer`
 
+| `PulsarConnectionDetails`
+| Containers of type `PulsarContainer`
+
 | `R2dbcConnectionDetails`
 | Containers of type `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
 

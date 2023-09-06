@@ -51,6 +51,7 @@ import org.springframework.pulsar.function.PulsarFunctionAdministration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -66,6 +67,15 @@ class PulsarConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
 		.withBean(PulsarClient.class, () -> mock(PulsarClient.class));
+
+	@Test
+	void whenHasUserDefinedConnectionDetailsBeanDoesNotAutoConfigureBean() {
+		PulsarConnectionDetails customConnectionDetails = mock(PulsarConnectionDetails.class);
+		this.contextRunner
+			.withBean("customPulsarConnectionDetails", PulsarConnectionDetails.class, () -> customConnectionDetails)
+			.run((context) -> assertThat(context).getBean(PulsarConnectionDetails.class)
+				.isSameAs(customConnectionDetails));
+	}
 
 	@Nested
 	class ClientTests {
@@ -88,15 +98,18 @@ class PulsarConfigurationTests {
 
 		@Test
 		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
+			given(connectionDetails.getBrokerUrl()).willReturn("connectiondetails");
 			PulsarConfigurationTests.this.contextRunner
 				.withUserConfiguration(PulsarClientBuilderCustomizersConfig.class)
-				.withPropertyValues("spring.pulsar.client.service-url=fromPropsCustomizer")
+				.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
+				.withPropertyValues("spring.pulsar.client.service-url=properties")
 				.run((context) -> {
 					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
 					Customizers<PulsarClientBuilderCustomizer, ClientBuilder> customizers = Customizers
 						.of(ClientBuilder.class, PulsarClientBuilderCustomizer::customize);
 					assertThat(customizers.fromField(clientFactory, "customizer")).callsInOrder(
-							ClientBuilder::serviceUrl, "fromPropsCustomizer", "fromCustomizer1", "fromCustomizer2");
+							ClientBuilder::serviceUrl, "connectiondetails", "fromCustomizer1", "fromCustomizer2");
 				});
 		}
 
@@ -135,14 +148,17 @@ class PulsarConfigurationTests {
 
 		@Test
 		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
+			given(connectionDetails.getAdminUrl()).willReturn("connectiondetails");
 			this.contextRunner.withUserConfiguration(PulsarAdminBuilderCustomizersConfig.class)
-				.withPropertyValues("spring.pulsar.admin.service-url=fromPropsCustomizer")
+				.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
+				.withPropertyValues("spring.pulsar.admin.service-url=property")
 				.run((context) -> {
 					PulsarAdministration pulsarAdmin = context.getBean(PulsarAdministration.class);
 					Customizers<PulsarAdminBuilderCustomizer, PulsarAdminBuilder> customizers = Customizers
 						.of(PulsarAdminBuilder.class, PulsarAdminBuilderCustomizer::customize);
 					assertThat(customizers.fromField(pulsarAdmin, "adminCustomizers")).callsInOrder(
-							PulsarAdminBuilder::serviceHttpUrl, "fromPropsCustomizer", "fromCustomizer1",
+							PulsarAdminBuilder::serviceHttpUrl, "connectiondetails", "fromCustomizer1",
 							"fromCustomizer2");
 				});
 		}
