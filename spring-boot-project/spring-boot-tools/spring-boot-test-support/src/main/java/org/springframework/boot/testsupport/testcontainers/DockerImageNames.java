@@ -24,6 +24,7 @@ import org.testcontainers.utility.DockerImageName;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Moritz Halbritter
+ * @author Chris Bono
  * @since 2.3.6
  */
 public final class DockerImageNames {
@@ -49,6 +50,8 @@ public final class DockerImageNames {
 	private static final String NEO4J_VERSION = "4.4.11";
 
 	private static final String ORACLE_XE_VERSION = "18.4.0-slim";
+
+	private static final String PULSAR_VERSION = "3.1.0";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
 
@@ -151,6 +154,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName oracleXe() {
 		return DockerImageName.parse("gvenzl/oracle-xe").withTag(ORACLE_XE_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Apache Pulsar.
+	 * @return a docker image name for running pulsar
+	 */
+	public static DockerImageName pulsar() {
+		return DockerImageName.parse("apachepulsar/pulsar").withTag(PULSAR_VERSION);
 	}
 
 	/**
