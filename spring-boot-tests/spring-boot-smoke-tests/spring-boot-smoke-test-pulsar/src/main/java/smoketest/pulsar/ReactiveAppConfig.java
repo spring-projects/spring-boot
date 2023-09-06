@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package smoketest.pulsar.reactive;
+package smoketest.pulsar;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pulsar.reactive.client.api.MessageSpec;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.pulsar.core.PulsarTopic;
+import org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener;
 import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
-@SpringBootApplication
-public class SampleReactivePulsarApplication {
+@Configuration(proxyBeanMethods = false)
+@Profile("smoketest.pulsar.reactive")
+class ReactiveAppConfig {
 
-	static final String TOPIC = "pulsar-reactive-smoke-test-topic";
+	private static final Log logger = LogFactory.getLog(ReactiveAppConfig.class);
+
+	private static final String TOPIC = "pulsar-reactive-smoke-test-topic";
 
 	@Bean
 	PulsarTopic pulsarTestTopic() {
@@ -42,12 +49,15 @@ public class SampleReactivePulsarApplication {
 			.map((i) -> new SampleMessage(i, "message:" + i))
 			.map(MessageSpec::of)
 			.as((msgs) -> template.send(TOPIC, msgs))
-			.doOnNext((sendResult) -> System.out.println("*** PRODUCE: " + sendResult.getMessageId()))
+			.doOnNext((sendResult) -> logger
+				.info("++++++PRODUCE REACTIVE:(" + sendResult.getMessageSpec().getValue().id() + ")------"))
 			.subscribe();
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleReactivePulsarApplication.class, args);
+	@ReactivePulsarListener(topics = TOPIC)
+	Mono<Void> consumeMessagesFromPulsarTopic(SampleMessage msg) {
+		logger.info("++++++CONSUME REACTIVE:(" + msg.id() + ")------");
+		return Mono.empty();
 	}
 
 }
