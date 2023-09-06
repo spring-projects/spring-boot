@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Executor;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
@@ -135,14 +136,22 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
+		registerConnectorExecutor(tomcat, connector);
 		tomcat.getHost().setAutoDeploy(false);
 		configureEngine(tomcat.getEngine());
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
+			registerConnectorExecutor(tomcat, additionalConnector);
 		}
 		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(httpHandler);
 		prepareContext(tomcat.getHost(), servlet);
 		return getTomcatWebServer(tomcat);
+	}
+
+	private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
+		if (connector.getProtocolHandler().getExecutor() instanceof Executor executor) {
+			tomcat.getService().addExecutor(executor);
+		}
 	}
 
 	private void configureEngine(Engine engine) {
