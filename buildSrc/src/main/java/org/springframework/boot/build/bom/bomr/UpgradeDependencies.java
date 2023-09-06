@@ -27,12 +27,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
@@ -46,10 +48,12 @@ import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.bomr.github.GitHub;
 import org.springframework.boot.build.bom.bomr.github.GitHubRepository;
 import org.springframework.boot.build.bom.bomr.github.Issue;
 import org.springframework.boot.build.bom.bomr.github.Milestone;
+import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.StringUtils;
 
 /**
@@ -71,8 +75,8 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	protected UpgradeDependencies(BomExtension bom, boolean movingToSnapshots) {
 		this.bom = bom;
-		this.movingToSnapshots = movingToSnapshots;
 		getThreads().convention(2);
+		this.movingToSnapshots = movingToSnapshots;
 	}
 
 	@Input
@@ -98,7 +102,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				this.bom.getUpgrade().getGitHub().getRepository());
 		List<String> issueLabels = verifyLabels(repository);
 		Milestone milestone = determineMilestone(repository);
-		List<Upgrade> upgrades = resolveUpgrades();
+		List<Upgrade> upgrades = resolveUpgrades(milestone);
 		applyUpgrades(repository, issueLabels, milestone, upgrades);
 	}
 
@@ -214,13 +218,50 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	@SuppressWarnings("deprecation")
-	private List<Upgrade> resolveUpgrades() {
+	private List<Upgrade> resolveUpgrades(Milestone milestone) {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
 				new MultithreadedLibraryUpdateResolver(getThreads().get(),
 						new StandardLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
-								this.bom.getUpgrade().getPolicy(), this.movingToSnapshots)))
+								determineUpdatePredicates(milestone))))
 			.resolveUpgrades(matchingLibraries(), this.bom.getLibraries());
 		return upgrades;
+	}
+
+	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
+		BiPredicate<Library, DependencyVersion> compilesWithUpgradePolicy = (library,
+				candidate) -> this.bom.getUpgrade().getPolicy().test(candidate, library.getVersion().getVersion());
+		BiPredicate<Library, DependencyVersion> isAnUpgrade = (library,
+				candidate) -> library.getVersion().getVersion().isUpgrade(candidate, this.movingToSnapshots);
+		BiPredicate<Library, DependencyVersion> isPermitted = (library, candidate) -> {
+			for (ProhibitedVersion prohibitedVersion : library.getProhibitedVersions()) {
+				String candidateString = candidate.toString();
+				if (prohibitedVersion.getRange() != null
+						&& prohibitedVersion.getRange().containsVersion(new DefaultArtifactVersion(candidateString))) {
+					return false;
+				}
+				for (String startsWith : prohibitedVersion.getStartsWith()) {
+					if (candidateString.startsWith(startsWith)) {
+						return false;
+					}
+				}
+				for (String endsWith : prohibitedVersion.getEndsWith()) {
+					if (candidateString.endsWith(endsWith)) {
+						return false;
+					}
+				}
+				for (String contains : prohibitedVersion.getContains()) {
+					if (candidateString.contains(contains)) {
+						return false;
+					}
+				}
+			}
+			return true;
+		};
+		List<BiPredicate<Library, DependencyVersion>> updatePredicates = new ArrayList<>();
+		updatePredicates.add(compilesWithUpgradePolicy);
+		updatePredicates.add(isAnUpgrade);
+		updatePredicates.add(isPermitted);
+		return updatePredicates;
 	}
 
 	private List<Library> matchingLibraries() {

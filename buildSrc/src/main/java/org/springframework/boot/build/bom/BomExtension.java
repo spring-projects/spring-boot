@@ -114,8 +114,8 @@ public class BomExtension {
 		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
-		addLibrary(new Library(name, libraryVersion, libraryHandler.groups, libraryHandler.prohibitedVersions,
-				libraryHandler.considerSnapshots));
+		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
+				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots));
 	}
 
 	public void effectiveBomArtifact() {
@@ -219,6 +219,8 @@ public class BomExtension {
 
 		private String version;
 
+		private String calendarName;
+
 		@Inject
 		public LibraryHandler(String version) {
 			this.version = version;
@@ -230,6 +232,10 @@ public class BomExtension {
 
 		public void considerSnapshots() {
 			this.considerSnapshots = true;
+		}
+
+		public void setCalendarName(String calendarName) {
+			this.calendarName = calendarName;
 		}
 
 		public void group(String id, Action<GroupHandler> action) {

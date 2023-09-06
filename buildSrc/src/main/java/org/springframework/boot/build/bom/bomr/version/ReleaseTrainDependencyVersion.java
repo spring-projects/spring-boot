@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		if (comparison != 0) {
 			return comparison < 0;
 		}
-		if (movingToSnapshots && !"BUILD-SNAPSHOT".equals(this.type)
-				&& "BUILD-SNAPSHOT".equals(candidateReleaseTrain.type)) {
+		if (movingToSnapshots && !isSnapshot() && candidateReleaseTrain.isSnapshot()) {
 			return true;
 		}
 		comparison = this.type.compareTo(candidateReleaseTrain.type);
@@ -82,6 +81,19 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 			return comparison < 0;
 		}
 		return Integer.compare(this.version, candidateReleaseTrain.version) < 0;
+	}
+
+	private boolean isSnapshot() {
+		return "BUILD-SNAPSHOT".equals(this.type);
+	}
+
+	@Override
+	public boolean isSnapshotFor(DependencyVersion candidate) {
+		if (!isSnapshot() || !(candidate instanceof ReleaseTrainDependencyVersion)) {
+			return false;
+		}
+		ReleaseTrainDependencyVersion candidateReleaseTrain = (ReleaseTrainDependencyVersion) candidate;
+		return this.releaseTrain.equals(candidateReleaseTrain.releaseTrain);
 	}
 
 	@Override
