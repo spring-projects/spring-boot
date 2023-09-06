@@ -465,6 +465,10 @@
       }
     },
     {
+      "name": "management.metrics.export.signalfx.published-histogram-type",
+      "defaultValue": "default"
+    },
+    {
       "name": "management.metrics.export.simple.mode",
       "defaultValue": "cumulative"
     },
