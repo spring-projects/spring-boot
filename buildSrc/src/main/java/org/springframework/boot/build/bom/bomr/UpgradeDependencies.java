@@ -61,9 +61,16 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	private final BomExtension bom;
 
+	private final boolean movingToSnapshots;
+
 	@Inject
 	public UpgradeDependencies(BomExtension bom) {
+		this(bom, false);
+	}
+
+	protected UpgradeDependencies(BomExtension bom, boolean movingToSnapshots) {
 		this.bom = bom;
+		this.movingToSnapshots = movingToSnapshots;
 		getThreads().convention(2);
 	}
 
@@ -210,7 +217,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
 				new MultithreadedLibraryUpdateResolver(getThreads().get(),
 						new StandardLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
-								this.bom.getUpgrade().getPolicy())))
+								this.bom.getUpgrade().getPolicy(), this.movingToSnapshots)))
 			.resolveUpgrades(matchingLibraries(), this.bom.getLibraries());
 		return upgrades;
 	}

@@ -38,81 +38,33 @@ class ReleaseTrainDependencyVersionTests {
 	}
 
 	@Test
-	void isNewerThanWhenReleaseTrainIsNewerShouldReturnTrue() {
-		assertThat(version("Lovelace-RELEASE").isNewerThan(version("Kay-SR5"))).isTrue();
+	void isSameMajorWhenReleaseTrainIsDifferentShouldReturnFalse() {
+		assertThat(version("Lovelace-RELEASE").isSameMajor(version("Kay-SR5"))).isFalse();
 	}
 
 	@Test
-	void isNewerThanWhenVersionIsNewerShouldReturnTrue() {
-		assertThat(version("Kay-SR10").isNewerThan(version("Kay-SR5"))).isTrue();
+	void isSameMajorWhenReleaseTrainIsTheSameShouldReturnTrue() {
+		assertThat(version("Lovelace-RELEASE").isSameMajor(version("Lovelace-SR5"))).isTrue();
 	}
 
 	@Test
-	void isNewerThanWhenVersionIsOlderShouldReturnFalse() {
-		assertThat(version("Kay-RELEASE").isNewerThan(version("Kay-SR5"))).isFalse();
+	void isSameMinorWhenReleaseTrainIsDifferentShouldReturnFalse() {
+		assertThat(version("Lovelace-RELEASE").isSameMajor(version("Kay-SR5"))).isFalse();
 	}
 
 	@Test
-	void isNewerThanWhenReleaseTrainIsOlderShouldReturnFalse() {
-		assertThat(version("Ingalls-RELEASE").isNewerThan(version("Kay-SR5"))).isFalse();
-	}
-
-	@Test
-	void isSameMajorAndNewerWhenWhenReleaseTrainIsNewerShouldReturnTrue() {
-		assertThat(version("Lovelace-RELEASE").isSameMajorAndNewerThan(version("Kay-SR5"))).isTrue();
-	}
-
-	@Test
-	void isSameMajorAndNewerThanWhenReleaseTrainIsOlderShouldReturnFalse() {
-		assertThat(version("Ingalls-RELEASE").isSameMajorAndNewerThan(version("Kay-SR5"))).isFalse();
-	}
-
-	@Test
-	void isSameMajorAndNewerThanWhenVersionIsNewerShouldReturnTrue() {
-		assertThat(version("Kay-SR6").isSameMajorAndNewerThan(version("Kay-SR5"))).isTrue();
-	}
-
-	@Test
-	void isSameMinorAndNewerThanWhenReleaseTrainIsNewerShouldReturnFalse() {
-		assertThat(version("Lovelace-RELEASE").isSameMinorAndNewerThan(version("Kay-SR5"))).isFalse();
-	}
-
-	@Test
-	void isSameMinorAndNewerThanWhenReleaseTrainIsTheSameAndVersionIsNewerShouldReturnTrue() {
-		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(version("Kay-SR5"))).isTrue();
-	}
-
-	@Test
-	void isSameMinorAndNewerThanWhenReleaseTrainAndVersionAreTheSameShouldReturnFalse() {
-		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(version("Kay-SR6"))).isFalse();
-	}
-
-	@Test
-	void isSameMinorAndNewerThanWhenReleaseTrainIsTheSameAndVersionIsOlderShouldReturnFalse() {
-		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(version("Kay-SR7"))).isFalse();
-	}
-
-	@Test
-	void releaseTrainVersionIsNotNewerThanCalendarVersion() {
-		assertThat(version("Kay-SR6").isNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	void isSameMinorWhenReleaseTrainIsTheSameShouldReturnTrue() {
+		assertThat(version("Lovelace-RELEASE").isSameMajor(version("Lovelace-SR5"))).isTrue();
 	}
 
 	@Test
 	void releaseTrainVersionIsNotSameMajorAsCalendarTrainVersion() {
-		assertThat(version("Kay-SR6").isSameMajorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+		assertThat(version("Kay-SR6").isSameMajor(calendarVersion("2020.0.0"))).isFalse();
 	}
 
 	@Test
 	void releaseTrainVersionIsNotSameMinorAsCalendarVersion() {
-		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
-	}
-
-	@Test
-	void whenComparedWithADifferentDependencyVersionTypeThenTheResultsAreNonZero() {
-		DependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
-		DependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
-		assertThat(dysprosium).isLessThan(twentyTwenty);
-		assertThat(twentyTwenty).isGreaterThan(dysprosium);
+		assertThat(version("Kay-SR6").isSameMinor(calendarVersion("2020.0.0"))).isFalse();
 	}
 
 	private static ReleaseTrainDependencyVersion version(String input) {
