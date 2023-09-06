@@ -16,8 +16,8 @@
 
 package smoketest.pulsar;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.pulsar.annotation.PulsarListener;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 class SampleMessageConsumer {
 
-	private List<SampleMessage> consumed = new ArrayList<>();
+	private List<SampleMessage> consumed = new CopyOnWriteArrayList<>();
 
 	List<SampleMessage> getConsumed() {
 		return this.consumed;
