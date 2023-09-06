@@ -28,7 +28,8 @@ import org.springframework.util.StringUtils;
  */
 final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
-	private static final Pattern VERSION_PATTERN = Pattern.compile("([A-Z][a-z]+)-([A-Z]+)([0-9]*)");
+	private static final Pattern VERSION_PATTERN = Pattern
+		.compile("([A-Z][a-z]+)-((BUILD-SNAPSHOT)|([A-Z-]+)([0-9]*))");
 
 	private final String releaseTrain;
 
@@ -62,30 +63,44 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 	}
 
 	@Override
-	public boolean isNewerThan(DependencyVersion other) {
-		if (other instanceof CalendarVersionDependencyVersion) {
-			return false;
-		}
-		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
+	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
+		if (!(candidate instanceof ReleaseTrainDependencyVersion)) {
 			return true;
 		}
-		return otherReleaseTrain.compareTo(this) < 0;
+		ReleaseTrainDependencyVersion candidateReleaseTrain = (ReleaseTrainDependencyVersion) candidate;
+		int comparison = this.releaseTrain.compareTo(candidateReleaseTrain.releaseTrain);
+		if (comparison != 0) {
+			return comparison < 0;
+		}
+		if (movingToSnapshots && !"BUILD-SNAPSHOT".equals(this.type)
+				&& "BUILD-SNAPSHOT".equals(candidateReleaseTrain.type)) {
+			return true;
+		}
+		comparison = this.type.compareTo(candidateReleaseTrain.type);
+		if (comparison != 0) {
+			return comparison < 0;
+		}
+		return Integer.compare(this.version, candidateReleaseTrain.version) < 0;
 	}
 
 	@Override
-	public boolean isSameMajorAndNewerThan(DependencyVersion other) {
-		return isNewerThan(other);
+	public boolean isSameMajor(DependencyVersion other) {
+		return isSameReleaseTrain(other);
 	}
 
 	@Override
-	public boolean isSameMinorAndNewerThan(DependencyVersion other) {
+	public boolean isSameMinor(DependencyVersion other) {
+		return isSameReleaseTrain(other);
+	}
+
+	private boolean isSameReleaseTrain(DependencyVersion other) {
 		if (other instanceof CalendarVersionDependencyVersion) {
 			return false;
 		}
-		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
-			return true;
+		if (other instanceof ReleaseTrainDependencyVersion otherReleaseTrain) {
+			return otherReleaseTrain.releaseTrain.equals(this.releaseTrain);
 		}
-		return otherReleaseTrain.releaseTrain.equals(this.releaseTrain) && isNewerThan(other);
+		return true;
 	}
 
 	@Override
@@ -121,8 +136,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		if (!matcher.matches()) {
 			return null;
 		}
-		return new ReleaseTrainDependencyVersion(matcher.group(1), matcher.group(2),
-				(StringUtils.hasLength(matcher.group(3))) ? Integer.parseInt(matcher.group(3)) : 0, input);
+		return new ReleaseTrainDependencyVersion(matcher.group(1),
+				StringUtils.hasLength(matcher.group(3)) ? matcher.group(3) : matcher.group(4),
+				(StringUtils.hasLength(matcher.group(5))) ? Integer.parseInt(matcher.group(5)) : 0, input);
 	}
 
 }

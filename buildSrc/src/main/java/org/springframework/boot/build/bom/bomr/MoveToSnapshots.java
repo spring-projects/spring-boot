@@ -36,7 +36,7 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	@Inject
 	public MoveToSnapshots(BomExtension bom) {
-		super(bom);
+		super(bom, true);
 		getRepositoryUris().add(this.REPOSITORY_URI);
 	}
 
