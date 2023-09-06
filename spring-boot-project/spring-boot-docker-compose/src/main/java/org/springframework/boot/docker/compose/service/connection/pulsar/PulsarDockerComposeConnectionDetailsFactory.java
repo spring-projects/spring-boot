@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection.pulsar;
 
 import org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails;
+import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -30,9 +31,9 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class PulsarDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<PulsarConnectionDetails> {
 
-	private static final int PULSAR_BROKER_PORT = 6650;
+	private static final int BROKER_PORT = 6650;
 
-	private static final int PULSAR_ADMIN_PORT = 8080;
+	private static final int ADMIN_PORT = 8080;
 
 	PulsarDockerComposeConnectionDetailsFactory() {
 		super("apachepulsar/pulsar");
@@ -55,17 +56,18 @@ class PulsarDockerComposeConnectionDetailsFactory
 
 		PulsarDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.brokerUrl = "pulsar://%s:%s".formatted(service.host(), service.ports().get(PULSAR_BROKER_PORT));
-			this.adminUrl = "http://%s:%s".formatted(service.host(), service.ports().get(PULSAR_ADMIN_PORT));
+			ConnectionPorts ports = service.ports();
+			this.brokerUrl = "pulsar://%s:%s".formatted(service.host(), ports.get(BROKER_PORT));
+			this.adminUrl = "http://%s:%s".formatted(service.host(), ports.get(ADMIN_PORT));
 		}
 
 		@Override
-		public String getPulsarBrokerUrl() {
+		public String getBrokerUrl() {
 			return this.brokerUrl;
 		}
 
 		@Override
-		public String getPulsarAdminUrl() {
+		public String getAdminUrl() {
 			return this.adminUrl;
 		}
 

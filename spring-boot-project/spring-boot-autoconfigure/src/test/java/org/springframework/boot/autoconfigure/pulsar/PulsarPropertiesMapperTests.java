@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -60,7 +61,8 @@ class PulsarPropertiesMapperTests {
 		properties.getClient().setOperationTimeout(Duration.ofSeconds(2));
 		properties.getClient().setLookupTimeout(Duration.ofSeconds(3));
 		ClientBuilder builder = mock(ClientBuilder.class);
-		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder);
+		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
+				new PropertiesPulsarConnectionDetails(properties));
 		then(builder).should().serviceUrl("https://example.com");
 		then(builder).should().connectionTimeout(1000, TimeUnit.MILLISECONDS);
 		then(builder).should().operationTimeout(2000, TimeUnit.MILLISECONDS);
@@ -74,8 +76,20 @@ class PulsarPropertiesMapperTests {
 		properties.getClient().getAuthentication().setPluginClassName("myclass");
 		properties.getClient().getAuthentication().setParam(params);
 		ClientBuilder builder = mock(ClientBuilder.class);
-		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder);
+		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
+				new PropertiesPulsarConnectionDetails(properties));
 		then(builder).should().authentication("myclass", params);
+	}
+
+	@Test
+	void customizeClientBuilderWhenHasConnectionDetails() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getClient().setServiceUrl("https://ignored.example.com");
+		ClientBuilder builder = mock(ClientBuilder.class);
+		PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
+		given(connectionDetails.getBrokerUrl()).willReturn("https://used.example.com");
+		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder, connectionDetails);
+		then(builder).should().serviceUrl("https://used.example.com");
 	}
 
 	@Test
@@ -86,7 +100,8 @@ class PulsarPropertiesMapperTests {
 		properties.getAdmin().setReadTimeout(Duration.ofSeconds(2));
 		properties.getAdmin().setRequestTimeout(Duration.ofSeconds(3));
 		PulsarAdminBuilder builder = mock(PulsarAdminBuilder.class);
-		new PulsarPropertiesMapper(properties).customizeAdminBuilder(builder);
+		new PulsarPropertiesMapper(properties).customizeAdminBuilder(builder,
+				new PropertiesPulsarConnectionDetails(properties));
 		then(builder).should().serviceHttpUrl("https://example.com");
 		then(builder).should().connectionTimeout(1000, TimeUnit.MILLISECONDS);
 		then(builder).should().readTimeout(2000, TimeUnit.MILLISECONDS);
@@ -100,8 +115,20 @@ class PulsarPropertiesMapperTests {
 		properties.getAdmin().getAuthentication().setPluginClassName("myclass");
 		properties.getAdmin().getAuthentication().setParam(params);
 		PulsarAdminBuilder builder = mock(PulsarAdminBuilder.class);
-		new PulsarPropertiesMapper(properties).customizeAdminBuilder(builder);
+		new PulsarPropertiesMapper(properties).customizeAdminBuilder(builder,
+				new PropertiesPulsarConnectionDetails(properties));
 		then(builder).should().authentication("myclass", params);
+	}
+
+	@Test
+	void customizeAdminBuilderWhenHasConnectionDetails() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getAdmin().setServiceUrl("https://ignored.example.com");
+		PulsarAdminBuilder builder = mock(PulsarAdminBuilder.class);
+		PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
+		given(connectionDetails.getAdminUrl()).willReturn("https://used.example.com");
+		new PulsarPropertiesMapper(properties).customizeAdminBuilder(builder, connectionDetails);
+		then(builder).should().serviceHttpUrl("https://used.example.com");
 	}
 
 	@Test

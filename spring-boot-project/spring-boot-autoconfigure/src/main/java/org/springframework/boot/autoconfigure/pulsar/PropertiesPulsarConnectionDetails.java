@@ -30,12 +30,12 @@ class PropertiesPulsarConnectionDetails implements PulsarConnectionDetails {
 	}
 
 	@Override
-	public String getPulsarBrokerUrl() {
+	public String getBrokerUrl() {
 		return this.pulsarProperties.getClient().getServiceUrl();
 	}
 
 	@Override
-	public String getPulsarAdminUrl() {
+	public String getAdminUrl() {
 		return this.pulsarProperties.getAdmin().getServiceUrl();
 	}
 

@@ -48,12 +48,12 @@ class PulsarContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getPulsarBrokerUrl() {
+		public String getBrokerUrl() {
 			return getContainer().getPulsarBrokerUrl();
 		}
 
 		@Override
-		public String getPulsarAdminUrl() {
+		public String getAdminUrl() {
 			return getContainer().getHttpServiceUrl();
 		}
 

@@ -56,8 +56,3 @@ dependencies {
 
 	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 }
-
-test {
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
-	jvmArgs += "--add-opens=java.base/sun.net=ALL-UNNAMED"
-}

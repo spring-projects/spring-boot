@@ -49,21 +49,20 @@ final class PulsarPropertiesMapper {
 		this.properties = properties;
 	}
 
-	void customizeClientBuilder(ClientBuilder clientBuilder) {
+	void customizeClientBuilder(ClientBuilder clientBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Client properties = this.properties.getClient();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getServiceUrl).to(clientBuilder::serviceUrl);
-
+		map.from(connectionDetails::getBrokerUrl).to(clientBuilder::serviceUrl);
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
 		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
 	}
 
-	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder) {
+	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Admin properties = this.properties.getAdmin();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getServiceUrl).to(adminBuilder::serviceHttpUrl);
+		map.from(connectionDetails::getAdminUrl).to(adminBuilder::serviceHttpUrl);
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(adminBuilder::connectionTimeout));
 		map.from(properties::getReadTimeout).to(timeoutProperty(adminBuilder::readTimeout));
 		map.from(properties::getRequestTimeout).to(timeoutProperty(adminBuilder::requestTimeout));

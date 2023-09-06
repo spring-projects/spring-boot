@@ -97,35 +97,19 @@ class PulsarConfigurationTests {
 		}
 
 		@Test
-		void whenConnectionDetailsAreNullTheyAreNotApplied() {
-			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
-			given(connectionDetails.getPulsarBrokerUrl()).willReturn(null);
-			PulsarConfigurationTests.this.contextRunner.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
-				.withPropertyValues("spring.pulsar.client.service-url=fromPropsCustomizer")
-				.run((context) -> {
-					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
-					Customizers<PulsarClientBuilderCustomizer, ClientBuilder> customizers = Customizers
-						.of(ClientBuilder.class, PulsarClientBuilderCustomizer::customize);
-					assertThat(customizers.fromField(clientFactory, "customizer"))
-						.callsInOrder(ClientBuilder::serviceUrl, "fromPropsCustomizer");
-				});
-		}
-
-		@Test
 		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
 			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
-			given(connectionDetails.getPulsarBrokerUrl()).willReturn("fromConnectionDetailsCustomizer");
+			given(connectionDetails.getBrokerUrl()).willReturn("connectiondetails");
 			PulsarConfigurationTests.this.contextRunner
 				.withUserConfiguration(PulsarClientBuilderCustomizersConfig.class)
 				.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
-				.withPropertyValues("spring.pulsar.client.service-url=fromPropsCustomizer")
+				.withPropertyValues("spring.pulsar.client.service-url=properties")
 				.run((context) -> {
 					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
 					Customizers<PulsarClientBuilderCustomizer, ClientBuilder> customizers = Customizers
 						.of(ClientBuilder.class, PulsarClientBuilderCustomizer::customize);
 					assertThat(customizers.fromField(clientFactory, "customizer")).callsInOrder(
-							ClientBuilder::serviceUrl, "fromPropsCustomizer", "fromConnectionDetailsCustomizer",
-							"fromCustomizer1", "fromCustomizer2");
+							ClientBuilder::serviceUrl, "connectiondetails", "fromCustomizer1", "fromCustomizer2");
 				});
 		}
 
@@ -163,34 +147,19 @@ class PulsarConfigurationTests {
 		}
 
 		@Test
-		void whenConnectionDetailsAreNullTheyAreNotApplied() {
-			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
-			given(connectionDetails.getPulsarAdminUrl()).willReturn(null);
-			PulsarConfigurationTests.this.contextRunner.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
-				.withPropertyValues("spring.pulsar.admin.service-url=fromPropsCustomizer")
-				.run((context) -> {
-					PulsarAdministration pulsarAdmin = context.getBean(PulsarAdministration.class);
-					Customizers<PulsarAdminBuilderCustomizer, PulsarAdminBuilder> customizers = Customizers
-						.of(PulsarAdminBuilder.class, PulsarAdminBuilderCustomizer::customize);
-					assertThat(customizers.fromField(pulsarAdmin, "adminCustomizers"))
-						.callsInOrder(PulsarAdminBuilder::serviceHttpUrl, "fromPropsCustomizer");
-				});
-		}
-
-		@Test
 		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
 			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
-			given(connectionDetails.getPulsarAdminUrl()).willReturn("fromConnectionDetailsCustomizer");
+			given(connectionDetails.getAdminUrl()).willReturn("connectiondetails");
 			this.contextRunner.withUserConfiguration(PulsarAdminBuilderCustomizersConfig.class)
 				.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
-				.withPropertyValues("spring.pulsar.admin.service-url=fromPropsCustomizer")
+				.withPropertyValues("spring.pulsar.admin.service-url=property")
 				.run((context) -> {
 					PulsarAdministration pulsarAdmin = context.getBean(PulsarAdministration.class);
 					Customizers<PulsarAdminBuilderCustomizer, PulsarAdminBuilder> customizers = Customizers
 						.of(PulsarAdminBuilder.class, PulsarAdminBuilderCustomizer::customize);
 					assertThat(customizers.fromField(pulsarAdmin, "adminCustomizers")).callsInOrder(
-							PulsarAdminBuilder::serviceHttpUrl, "fromPropsCustomizer",
-							"fromConnectionDetailsCustomizer", "fromCustomizer1", "fromCustomizer2");
+							PulsarAdminBuilder::serviceHttpUrl, "connectiondetails", "fromCustomizer1",
+							"fromCustomizer2");
 				});
 		}
 

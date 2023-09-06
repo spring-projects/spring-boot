@@ -44,7 +44,6 @@ class SamplePulsarApplicationTests {
 
 	@Container
 	@ServiceConnection
-	@SuppressWarnings("unused")
 	static final PulsarContainer container = new PulsarContainer(DockerImageNames.pulsar()).withStartupAttempts(2)
 		.withStartupTimeout(Duration.ofMinutes(3));
 

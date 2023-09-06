@@ -27,15 +27,15 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 public interface PulsarConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Returns the Pulsar service URL for the broker.
-	 * @return the Pulsar service URL for the broker
+	 * URL used to connect to the broker.
+	 * @return the service URL
 	 */
-	String getPulsarBrokerUrl();
+	String getBrokerUrl();
 
 	/**
-	 * Returns the Pulsar web URL for the admin endpoint.
-	 * @return the Pulsar web URL for the admin endpoint
+	 * URL user to connect to the admin endpoint.
+	 * @return the admin URL
 	 */
-	String getPulsarAdminUrl();
+	String getAdminUrl();
 
 }

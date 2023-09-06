@@ -28,19 +28,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PropertiesPulsarConnectionDetailsTests {
 
 	@Test
-	void pulsarBrokerUrlIsObtainedFromPulsarProperties() {
-		var pulsarProps = new PulsarProperties();
-		pulsarProps.getClient().setServiceUrl("foo");
-		var connectionDetails = new PropertiesPulsarConnectionDetails(pulsarProps);
-		assertThat(connectionDetails.getPulsarBrokerUrl()).isEqualTo("foo");
+	void getClientServiceUrlReturnsValueFromProperties() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getClient().setServiceUrl("foo");
+		PulsarConnectionDetails connectionDetails = new PropertiesPulsarConnectionDetails(properties);
+		assertThat(connectionDetails.getBrokerUrl()).isEqualTo("foo");
 	}
 
 	@Test
-	void pulsarAdminUrlIsObtainedFromPulsarProperties() {
-		var pulsarProps = new PulsarProperties();
-		pulsarProps.getAdmin().setServiceUrl("foo");
-		var connectionDetails = new PropertiesPulsarConnectionDetails(pulsarProps);
-		assertThat(connectionDetails.getPulsarAdminUrl()).isEqualTo("foo");
+	void getAdminServiceHttpUrlReturnsValueFromProperties() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getAdmin().setServiceUrl("foo");
+		PulsarConnectionDetails connectionDetails = new PropertiesPulsarConnectionDetails(properties);
+		assertThat(connectionDetails.getAdminUrl()).isEqualTo("foo");
 	}
 
 }
