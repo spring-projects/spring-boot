@@ -24,17 +24,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
-import org.springframework.boot.build.bom.Library.ProhibitedVersion;
-import org.springframework.boot.build.bom.UpgradePolicy;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
@@ -48,15 +46,21 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 
 	private final VersionResolver versionResolver;
 
-	private final UpgradePolicy upgradePolicy;
+	private final BiPredicate<Library, DependencyVersion> predicate;
 
-	private final boolean movingToSnapshots;
-
-	StandardLibraryUpdateResolver(VersionResolver versionResolver, UpgradePolicy upgradePolicy,
-			boolean movingToSnapshots) {
+	StandardLibraryUpdateResolver(VersionResolver versionResolver,
+			List<BiPredicate<Library, DependencyVersion>> predicates) {
 		this.versionResolver = versionResolver;
-		this.upgradePolicy = upgradePolicy;
-		this.movingToSnapshots = movingToSnapshots;
+		BiPredicate<Library, DependencyVersion> predicate = null;
+		for (BiPredicate<Library, DependencyVersion> p : predicates) {
+			if (predicate == null) {
+				predicate = p;
+			}
+			else {
+				predicate = predicate.and(p);
+			}
+		}
+		this.predicate = predicate;
 	}
 
 	@Override
@@ -87,26 +91,24 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 
 	private List<VersionOption> determineResolvedVersionOptions(Library library) {
 		Map<String, SortedSet<DependencyVersion>> moduleVersions = new LinkedHashMap<>();
-		DependencyVersion libraryVersion = library.getVersion().getVersion();
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
 				moduleVersions.put(group.getId() + ":" + module.getName(),
-						getLaterVersionsForModule(group.getId(), module.getName(), libraryVersion));
+						getLaterVersionsForModule(group.getId(), module.getName(), library));
 			}
 			for (String bom : group.getBoms()) {
-				moduleVersions.put(group.getId() + ":" + bom,
-						getLaterVersionsForModule(group.getId(), bom, libraryVersion));
+				moduleVersions.put(group.getId() + ":" + bom, getLaterVersionsForModule(group.getId(), bom, library));
 			}
 			for (String plugin : group.getPlugins()) {
 				moduleVersions.put(group.getId() + ":" + plugin,
-						getLaterVersionsForModule(group.getId(), plugin, libraryVersion));
+						getLaterVersionsForModule(group.getId(), plugin, library));
 			}
 		}
 		List<DependencyVersion> allVersions = moduleVersions.values()
 			.stream()
 			.flatMap(SortedSet::stream)
 			.distinct()
-			.filter((dependencyVersion) -> isPermitted(dependencyVersion, library.getProhibitedVersions()))
+			.filter((dependencyVersion) -> this.predicate.test(library, dependencyVersion))
 			.toList();
 		if (allVersions.isEmpty()) {
 			return Collections.emptyList();
@@ -115,32 +117,6 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			.map((version) -> new VersionOption.ResolvedVersionOption(version,
 					getMissingModules(moduleVersions, version)))
 			.collect(Collectors.toList());
-	}
-
-	private boolean isPermitted(DependencyVersion dependencyVersion, List<ProhibitedVersion> prohibitedVersions) {
-		for (ProhibitedVersion prohibitedVersion : prohibitedVersions) {
-			String dependencyVersionToString = dependencyVersion.toString();
-			if (prohibitedVersion.getRange() != null && prohibitedVersion.getRange()
-				.containsVersion(new DefaultArtifactVersion(dependencyVersionToString))) {
-				return false;
-			}
-			for (String startsWith : prohibitedVersion.getStartsWith()) {
-				if (dependencyVersionToString.startsWith(startsWith)) {
-					return false;
-				}
-			}
-			for (String endsWith : prohibitedVersion.getEndsWith()) {
-				if (dependencyVersionToString.endsWith(endsWith)) {
-					return false;
-				}
-			}
-			for (String contains : prohibitedVersion.getContains()) {
-				if (dependencyVersionToString.contains(contains)) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	private List<String> getMissingModules(Map<String, SortedSet<DependencyVersion>> moduleVersions,
@@ -154,12 +130,8 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 		return missingModules;
 	}
 
-	private SortedSet<DependencyVersion> getLaterVersionsForModule(String groupId, String artifactId,
-			DependencyVersion currentVersion) {
-		SortedSet<DependencyVersion> versions = this.versionResolver.resolveVersions(groupId, artifactId);
-		versions.removeIf((candidate) -> !this.upgradePolicy.test(candidate, currentVersion));
-		versions.removeIf((candidate) -> !currentVersion.isUpgrade(candidate, this.movingToSnapshots));
-		return versions;
+	private SortedSet<DependencyVersion> getLaterVersionsForModule(String groupId, String artifactId, Library library) {
+		return this.versionResolver.resolveVersions(groupId, artifactId);
 	}
 
 }

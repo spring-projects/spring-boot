@@ -62,6 +62,71 @@ class ArtifactVersionDependencyVersionTests {
 		assertThat(version("1.10.2").isSameMinor(version("1.9.1"))).isFalse();
 	}
 
+	@Test
+	void isSnapshotForWhenSnapshotForReleaseShouldReturnTrue() {
+		assertThat(version("1.10.2-SNAPSHOT").isSnapshotFor(version("1.10.2"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForReleaseShouldReturnTrue() {
+		assertThat(version("1.10.2.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RELEASE"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.2-SNAPSHOT").isSnapshotFor(version("1.10.2-RC2"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.2.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RC2"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.2-SNAPSHOT").isSnapshotFor(version("1.10.2-M1"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.2.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.M1"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentReleaseShouldReturnFalse() {
+		assertThat(version("1.10.1-SNAPSHOT").isSnapshotFor(version("1.10.2"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForDifferentReleaseShouldReturnTrue() {
+		assertThat(version("1.10.1.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RELEASE"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.1-SNAPSHOT").isSnapshotFor(version("1.10.2-RC2"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForDifferentReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.1.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RC2"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.1-SNAPSHOT").isSnapshotFor(version("1.10.2-M1"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForDifferentMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.1.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.M1"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenNotSnapshotShouldReturnFalse() {
+		assertThat(version("1.10.1-M1").isSnapshotFor(version("1.10.1"))).isFalse();
+	}
+
 	private ArtifactVersionDependencyVersion version(String version) {
 		return ArtifactVersionDependencyVersion.parse(version);
 	}

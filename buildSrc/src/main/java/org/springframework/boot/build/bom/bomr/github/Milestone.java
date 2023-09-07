@@ -16,6 +16,8 @@
 
 package org.springframework.boot.build.bom.bomr.github;
 
+import java.time.OffsetDateTime;
+
 /**
  * A milestone in a {@link GitHubRepository GitHub repository}.
  *
@@ -27,9 +29,12 @@ public class Milestone {
 
 	private final int number;
 
-	Milestone(String name, int number) {
+	private final OffsetDateTime dueOn;
+
+	Milestone(String name, int number, OffsetDateTime dueOn) {
 		this.name = name;
 		this.number = number;
+		this.dueOn = dueOn;
 	}
 
 	/**
@@ -46,6 +51,10 @@ public class Milestone {
 	 */
 	public int getNumber() {
 		return this.number;
+	}
+
+	public OffsetDateTime getDueOn() {
+		return this.dueOn;
 	}
 
 	@Override

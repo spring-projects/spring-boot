@@ -48,6 +48,11 @@ final class UnstructuredDependencyVersion extends AbstractDependencyVersion impl
 		return this.version;
 	}
 
+	@Override
+	public boolean isSnapshotFor(DependencyVersion candidate) {
+		return false;
+	}
+
 	static UnstructuredDependencyVersion parse(String version) {
 		return new UnstructuredDependencyVersion(version);
 	}

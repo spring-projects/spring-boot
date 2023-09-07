@@ -67,6 +67,46 @@ class ReleaseTrainDependencyVersionTests {
 		assertThat(version("Kay-SR6").isSameMinor(calendarVersion("2020.0.0"))).isFalse();
 	}
 
+	@Test
+	void isSnapshotForWhenSnapshotForServiceReleaseShouldReturnTrue() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Kay-SR2"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForReleaseShouldReturnTrue() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Kay-RELEASE"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForReleaseCandidateShouldReturnTrue() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Kay-RC1"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForMilestoneShouldReturnTrue() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Kay-M2"))).isTrue();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentReleaseShouldReturnFalse() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Lovelace-RELEASE"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentReleaseCandidateShouldReturnTrue() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Lovelace-RC2"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentMilestoneShouldReturnTrue() {
+		assertThat(version("Kay-BUILD-SNAPSHOT").isSnapshotFor(version("Lovelace-M1"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenNotSnapshotShouldReturnFalse() {
+		assertThat(version("Kay-M1").isSnapshotFor(version("Kay-RELEASE"))).isFalse();
+	}
+
 	private static ReleaseTrainDependencyVersion version(String input) {
 		return ReleaseTrainDependencyVersion.parse(input);
 	}
