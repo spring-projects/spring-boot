@@ -39,9 +39,11 @@ dependencies {
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
 
-	testImplementation("org.assertj:assertj-core:3.11.1")
 	testImplementation("org.apache.logging.log4j:log4j-core:2.17.1")
+	testImplementation("org.assertj:assertj-core:3.11.1")
+	testImplementation("org.hamcrest:hamcrest:2.2")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
+	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
