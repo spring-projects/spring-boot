@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,22 +87,38 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 		if (this.artifactVersion.equals(other)) {
 			return false;
 		}
-		if (this.artifactVersion.getMajorVersion() == other.getMajorVersion()
-				&& this.artifactVersion.getMinorVersion() == other.getMinorVersion()
-				&& this.artifactVersion.getIncrementalVersion() == other.getIncrementalVersion()) {
+		if (sameMajorMinorIncremental(other)) {
 			if (!StringUtils.hasLength(this.artifactVersion.getQualifier())
 					|| "RELEASE".equals(this.artifactVersion.getQualifier())) {
 				return false;
 			}
-			if ("SNAPSHOT".equals(this.artifactVersion.getQualifier())
-					|| "BUILD".equals(this.artifactVersion.getQualifier())) {
+			if (isSnapshot()) {
 				return true;
 			}
-			else if ("SNAPSHOT".equals(other.getQualifier()) || "BUILD".equals(other.getQualifier())) {
+			else if (((ArtifactVersionDependencyVersion) candidate).isSnapshot()) {
 				return movingToSnapshots;
 			}
 		}
 		return super.isUpgrade(candidate, movingToSnapshots);
+	}
+
+	private boolean sameMajorMinorIncremental(ArtifactVersion other) {
+		return this.artifactVersion.getMajorVersion() == other.getMajorVersion()
+				&& this.artifactVersion.getMinorVersion() == other.getMinorVersion()
+				&& this.artifactVersion.getIncrementalVersion() == other.getIncrementalVersion();
+	}
+
+	private boolean isSnapshot() {
+		return "SNAPSHOT".equals(this.artifactVersion.getQualifier())
+				|| "BUILD".equals(this.artifactVersion.getQualifier());
+	}
+
+	@Override
+	public boolean isSnapshotFor(DependencyVersion candidate) {
+		if (!isSnapshot() || !(candidate instanceof ArtifactVersionDependencyVersion)) {
+			return false;
+		}
+		return sameMajorMinorIncremental(((ArtifactVersionDependencyVersion) candidate).artifactVersion);
 	}
 
 	@Override
