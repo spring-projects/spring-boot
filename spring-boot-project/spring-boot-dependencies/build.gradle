@@ -1500,7 +1500,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "5.1.0-M2") {
+	library("Spring Batch", "5.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.batch") {
 			imports = [
