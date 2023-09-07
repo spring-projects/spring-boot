@@ -27,7 +27,6 @@ import java.util.Set;
 
 import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
-import reactor.netty.resources.LoopResources;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -78,7 +77,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
 			Duration lifecycleTimeout, Shutdown shutdown) {
-		return new NettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
+		return new NettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown, this.resourceFactory);
 	}
 
 	/**
@@ -158,15 +157,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpServer createHttpServer() {
-		HttpServer server = HttpServer.create();
-		if (this.resourceFactory != null) {
-			LoopResources resources = this.resourceFactory.getLoopResources();
-			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");
-			server = server.runOn(resources).bindAddress(this::getListenAddress);
-		}
-		else {
-			server = server.bindAddress(this::getListenAddress);
-		}
+		HttpServer server = HttpServer.create().bindAddress(this::getListenAddress);
 		if (Ssl.isEnabled(getSsl())) {
 			server = customizeSslConfiguration(server);
 		}

@@ -41,12 +41,14 @@ import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -78,6 +80,23 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		assertThat(this.webServer.getPort()).isEqualTo(-1);
+	}
+
+	@Test
+	void resourceFactoryAndWebServerLifecycle() {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setPort(0);
+		ReactorResourceFactory resourceFactory = new ReactorResourceFactory();
+		factory.setResourceFactory(resourceFactory);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		assertThatNoException().isThrownBy(() -> {
+			resourceFactory.start();
+			this.webServer.start();
+			this.webServer.stop();
+			resourceFactory.stop();
+			resourceFactory.start();
+			this.webServer.start();
+		});
 	}
 
 	private void portMatchesRequirement(PortInUseException exception) {
@@ -199,7 +218,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 		NoPortNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
 				Shutdown shutdown) {
-			super(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
+			super(httpServer, handlerAdapter, lifecycleTimeout, shutdown, null);
 		}
 
 		@Override
