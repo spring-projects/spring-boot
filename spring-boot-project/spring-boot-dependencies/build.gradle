@@ -1319,7 +1319,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2023.0.0-M2") {
+	library("Reactor Bom", "2023.0.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
