@@ -950,7 +950,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.10.10") {
+	library("Micrometer", "1.10.11-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
