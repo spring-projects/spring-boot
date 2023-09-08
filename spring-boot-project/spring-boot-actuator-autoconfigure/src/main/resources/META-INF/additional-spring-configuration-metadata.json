@@ -1606,6 +1606,13 @@
       }
     },
     {
+      "name": "management.metrics.export.signalfx.published-histogram-type",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.signalfx.metrics.export.published-histogram-type"
+      }
+    },
+    {
       "name": "management.metrics.export.signalfx.read-timeout",
       "type": "java.time.Duration",
       "deprecation": {
@@ -2145,6 +2152,10 @@
     {
       "name": "management.server.ssl.trust-store-type",
       "description": "Type of the trust store."
+    },
+    {
+      "name": "management.signalfx.metrics.export.published-histogram-type",
+      "defaultValue": "default"
     },
     {
       "name": "management.simple.metrics.export.mode",
