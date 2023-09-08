@@ -220,10 +220,12 @@ bom {
 	library("Ehcache3", "3.10.8") {
 		group("org.ehcache") {
 			modules = [
+					"ehcache",
 					"ehcache" {
 						classifier = 'jakarta'
 					},
 					"ehcache-clustered",
+					"ehcache-transactions",
 					"ehcache-transactions" {
 						classifier = 'jakarta'
 					}
