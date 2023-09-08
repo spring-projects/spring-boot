@@ -164,6 +164,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 			}
 			switch (arch) {
 				case "amd64":
+				case "x86_64":
 					return AMD64;
 				case "aarch64":
 					return AARCH64;
