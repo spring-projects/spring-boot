@@ -41,7 +41,7 @@ public class TomcatVirtualThreadsWebServerFactoryCustomizer
 
 	@Override
 	public int getOrder() {
-		return TomcatWebServerFactoryCustomizer.order + 1;
+		return TomcatWebServerFactoryCustomizer.ORDER + 1;
 	}
 
 }
