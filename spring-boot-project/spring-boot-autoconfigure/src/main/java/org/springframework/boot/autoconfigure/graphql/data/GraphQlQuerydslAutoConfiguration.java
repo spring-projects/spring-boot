@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.data;
 
+import java.util.Collections;
 import java.util.List;
 
 import graphql.GraphQL;
@@ -29,9 +30,9 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.data.querydsl.ReactiveQuerydslPredicateExecutor;
 import org.springframework.graphql.data.query.QuerydslDataFetcher;
 import org.springframework.graphql.execution.GraphQlSource;
+import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that creates a
@@ -50,10 +51,10 @@ import org.springframework.graphql.execution.GraphQlSource;
 public class GraphQlQuerydslAutoConfiguration {
 
 	@Bean
-	public GraphQlSourceBuilderCustomizer querydslRegistrar(ObjectProvider<QuerydslPredicateExecutor<?>> executors,
-			ObjectProvider<ReactiveQuerydslPredicateExecutor<?>> reactiveExecutors) {
-		return new GraphQlQuerydslSourceBuilderCustomizer<>(QuerydslDataFetcher::autoRegistrationConfigurer, executors,
-				reactiveExecutors);
+	public GraphQlSourceBuilderCustomizer querydslRegistrar(ObjectProvider<QuerydslPredicateExecutor<?>> executors) {
+		RuntimeWiringConfigurer configurer = QuerydslDataFetcher
+			.autoRegistrationConfigurer(executors.orderedStream().toList(), Collections.emptyList());
+		return (builder) -> builder.configureRuntimeWiring(configurer);
 	}
 
 }

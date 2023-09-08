@@ -50,7 +50,7 @@ class GraphQlQuerydslAutoConfigurationTests {
 		.withConfiguration(
 				AutoConfigurations.of(GraphQlAutoConfiguration.class, GraphQlQuerydslAutoConfiguration.class))
 		.withUserConfiguration(MockRepositoryConfig.class)
-		.withPropertyValues("spring.main.web-application-type=reactive");
+		.withPropertyValues("spring.main.web-application-type=servlet");
 
 	@Test
 	void shouldRegisterDataFetcherForQueryDslRepositories() {
