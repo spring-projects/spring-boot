@@ -64,6 +64,7 @@ import static org.mockito.Mockito.mock;
  * @author Josh Long
  * @author Ivan Sopov
  * @author Toshiaki Maki
+ * @author Yanming Zhou
  */
 @DirtiesUrlFactories
 class MultipartAutoConfigurationTests {
@@ -172,6 +173,17 @@ class MultipartAutoConfigurationTests {
 		StandardServletMultipartResolver multipartResolver = this.context
 			.getBean(StandardServletMultipartResolver.class);
 		assertThat(multipartResolver).hasFieldOrPropertyWithValue("resolveLazily", true);
+	}
+
+	@Test
+	void configureStrictServletCompliance() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		TestPropertyValues.of("spring.servlet.multipart.strict-servlet-compliance=true").applyTo(this.context);
+		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		StandardServletMultipartResolver multipartResolver = this.context
+				.getBean(StandardServletMultipartResolver.class);
+		assertThat(multipartResolver).hasFieldOrPropertyWithValue("strictServletCompliance", true);
 	}
 
 	@Test
