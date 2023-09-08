@@ -1749,7 +1749,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.2.15") {
+	library("Spring Data Bom", "2021.2.16-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		prohibit {
