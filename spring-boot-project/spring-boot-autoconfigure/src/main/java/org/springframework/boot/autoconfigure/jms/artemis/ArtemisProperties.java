@@ -44,7 +44,7 @@ public class ArtemisProperties {
 	private ArtemisMode mode;
 
 	/**
-	 * Artemis broker port.
+	 * Artemis broker url.
 	 */
 	private String brokerUrl;
 
