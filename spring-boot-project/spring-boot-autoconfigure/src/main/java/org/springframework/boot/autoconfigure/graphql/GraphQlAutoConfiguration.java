@@ -104,6 +104,9 @@ public class GraphQlAutoConfiguration {
 			.exceptionResolvers(exceptionResolvers.orderedStream().toList())
 			.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
 			.instrumentation(instrumentations.orderedStream().toList());
+		if (properties.getSchema().getInspection().isEnabled()) {
+			builder.inspectSchemaMappings(logger::info);
+		}
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}

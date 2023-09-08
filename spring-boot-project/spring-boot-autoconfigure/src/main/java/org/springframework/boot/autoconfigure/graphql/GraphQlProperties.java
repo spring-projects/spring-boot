@@ -79,6 +79,8 @@ public class GraphQlProperties {
 		 */
 		private String[] fileExtensions = new String[] { ".graphqls", ".gqls" };
 
+		private final Inspection inspection = new Inspection();
+
 		private final Introspection introspection = new Introspection();
 
 		private final Printer printer = new Printer();
@@ -105,12 +107,34 @@ public class GraphQlProperties {
 				.toArray(String[]::new);
 		}
 
+		public Inspection getInspection() {
+			return this.inspection;
+		}
+
 		public Introspection getIntrospection() {
 			return this.introspection;
 		}
 
 		public Printer getPrinter() {
 			return this.printer;
+		}
+
+		public static class Inspection {
+
+			/**
+			 * Whether schema should be compared to the application to detect missing
+			 * mappings.
+			 */
+			private boolean enabled = true;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
 		}
 
 		public static class Introspection {

@@ -30,6 +30,7 @@ import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
 import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -37,6 +38,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
@@ -56,6 +59,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link GraphQlAutoConfiguration}.
  */
+@ExtendWith(OutputCaptureExtension.class)
 class GraphQlAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -156,6 +160,11 @@ class GraphQlAutoConfigurationTests {
 				.getBean(GraphQlSourceBuilderCustomizerConfiguration.CustomGraphQlSourceBuilderCustomizer.class);
 			assertThat(customizer.applied).isTrue();
 		});
+	}
+
+	@Test
+	void schemaInspectionShouldBeEnabledByDefault(CapturedOutput output) {
+		this.contextRunner.run((context) -> assertThat(output).contains("GraphQL schema inspection"));
 	}
 
 	@Test
