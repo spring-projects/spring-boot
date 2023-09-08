@@ -1795,7 +1795,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.5.18") {
+	library("Spring Integration", "5.5.19-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			versionRange "[6.0.0-M1,)"
