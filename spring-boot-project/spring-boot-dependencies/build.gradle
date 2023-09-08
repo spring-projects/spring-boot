@@ -1420,6 +1420,8 @@ bom {
 				"spring-boot-starter-oauth2-authorization-server",
 				"spring-boot-starter-oauth2-client",
 				"spring-boot-starter-oauth2-resource-server",
+				"spring-boot-starter-pulsar",
+				"spring-boot-starter-pulsar-reactive",
 				"spring-boot-starter-quartz",
 				"spring-boot-starter-reactor-netty",
 				"spring-boot-starter-rsocket",
