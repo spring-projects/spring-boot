@@ -1032,8 +1032,7 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class,
-			OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice.class })
+	@Import({ LowestOrderedControllerAdvice.class, HighestOrderedControllerAdvice.class })
 	static class OrderedControllerAdviceBeansConfiguration {
 
 		@ControllerAdvice

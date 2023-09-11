@@ -68,7 +68,7 @@ class SignalFxPropertiesConfigAdapterTests
 	}
 
 	@Test
-	void whenPropertiesPublishHistogramTypeIsCumulativePublishCumulativeHistogramReturnsIt() {
+	void whenPropertiesPublishHistogramTypeIsCumulativeAdapterPublishCumulativeHistogramReturnsIt() {
 		SignalFxProperties properties = createProperties();
 		properties.setPublishedHistogramType(HistogramType.CUMULATIVE);
 		assertThat(createConfigAdapter(properties).publishCumulativeHistogram()).isTrue();
@@ -76,7 +76,7 @@ class SignalFxPropertiesConfigAdapterTests
 	}
 
 	@Test
-	void whenPropertiesPublishHistogramTypeIsDeltaPublishDeltaHistogramReturnsIt() {
+	void whenPropertiesPublishHistogramTypeIsDeltaAdapterPublishDeltaHistogramReturnsIt() {
 		SignalFxProperties properties = createProperties();
 		properties.setPublishedHistogramType(HistogramType.DELTA);
 		assertThat(createConfigAdapter(properties).publishDeltaHistogram()).isTrue();
