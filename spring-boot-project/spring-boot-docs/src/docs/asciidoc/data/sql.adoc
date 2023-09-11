@@ -183,7 +183,7 @@ You can inject it directly in your own beans as well, as shown in the following 
 
 include::code:MyBean[]
 
-If you rely on auto-configuration to create the underlying `JdbcTemplate`, any customization using `spring.jdbc.template.*` properties are taken into account in the client as well.
+If you rely on auto-configuration to create the underlying `JdbcTemplate`, any customization using `spring.jdbc.template.*` properties is taken into account in the client as well.
 
 
 

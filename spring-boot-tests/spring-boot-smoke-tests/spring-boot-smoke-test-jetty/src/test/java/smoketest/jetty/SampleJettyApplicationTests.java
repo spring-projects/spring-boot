@@ -65,7 +65,7 @@ class SampleJettyApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
-		// Jetty HttpClient decodes gzip reponses automatically and removes the
+		// Jetty HttpClient decodes gzip responses automatically and removes the
 		// Content-Encoding header. We have to assume that the response was gzipped.
 	}
 

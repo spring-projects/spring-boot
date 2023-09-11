@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ObservationHandlerGroupingTests {
 
 	@Test
-	void shouldGroupCategoriesIntoFirstMatchingHandlerAndRespectsCategoryOrder() {
+	void shouldGroupCategoriesIntoFirstMatchingHandlerAndRespectCategoryOrder() {
 		ObservationHandlerGrouping grouping = new ObservationHandlerGrouping(
 				List.of(ObservationHandlerA.class, ObservationHandlerB.class));
 		ObservationConfig config = new ObservationConfig();

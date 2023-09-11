@@ -396,7 +396,7 @@ class LiquibaseAutoConfigurationTests {
 	void rollbackFile(@TempDir Path temp) throws IOException {
 		File file = Files.createTempFile(temp, "rollback-file", "sql").toFile();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.liquibase.rollbackFile:" + file.getAbsolutePath())
+			.withPropertyValues("spring.liquibase.rollback-file:" + file.getAbsolutePath())
 			.run((context) -> {
 				SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 				File actualFile = (File) ReflectionTestUtils.getField(liquibase, "rollbackFile");
