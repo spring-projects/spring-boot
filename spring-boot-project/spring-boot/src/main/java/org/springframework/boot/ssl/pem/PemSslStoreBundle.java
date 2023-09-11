@@ -30,17 +30,16 @@ import org.springframework.util.StringUtils;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public class PemSslStoreBundle implements SslStoreBundle {
 
 	private static final String DEFAULT_KEY_ALIAS = "ssl";
 
-	private final PemSslStoreDetails keyStoreDetails;
+	private final KeyStore keyStore;
 
-	private final PemSslStoreDetails trustStoreDetails;
-
-	private final String keyAlias;
+	private final KeyStore trustStore;
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
@@ -59,14 +58,13 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 */
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
 			String keyAlias) {
-		this.keyAlias = keyAlias;
-		this.keyStoreDetails = keyStoreDetails;
-		this.trustStoreDetails = trustStoreDetails;
+		this.keyStore = createKeyStore("key", keyStoreDetails, keyAlias);
+		this.trustStore = createKeyStore("trust", trustStoreDetails, keyAlias);
 	}
 
 	@Override
 	public KeyStore getKeyStore() {
-		return createKeyStore("key", this.keyStoreDetails);
+		return this.keyStore;
 	}
 
 	@Override
@@ -76,10 +74,10 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public KeyStore getTrustStore() {
-		return createKeyStore("trust", this.trustStoreDetails);
+		return this.trustStore;
 	}
 
-	private KeyStore createKeyStore(String name, PemSslStoreDetails details) {
+	private KeyStore createKeyStore(String name, PemSslStoreDetails details, String alias) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
@@ -92,7 +90,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			String privateKeyContent = PemContent.load(details.privateKey());
 			X509Certificate[] certificates = PemCertificateParser.parse(certificateContent);
 			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent, details.privateKeyPassword());
-			addCertificates(store, certificates, privateKey);
+			addCertificates(store, certificates, privateKey, (alias != null) ? alias : DEFAULT_KEY_ALIAS);
 			return store;
 		}
 		catch (Exception ex) {
@@ -100,9 +98,8 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		}
 	}
 
-	private void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey)
+	private void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey, String alias)
 			throws KeyStoreException {
-		String alias = (this.keyAlias != null) ? this.keyAlias : DEFAULT_KEY_ALIAS;
 		if (privateKey != null) {
 			keyStore.setKeyEntry(alias, privateKey, null, certificates);
 		}
