@@ -192,7 +192,7 @@ class Neo4jAutoConfigurationTests {
 		authentication.setPassword("Urlaub");
 		authentication.setRealm("Test Realm");
 		assertThat(new PropertiesNeo4jConnectionDetails(properties,
-				AuthTokenManagers.expirationBased(
+				AuthTokenManagers.bearer(
 						() -> AuthTokens.basic("username", "password").expiringAt(System.currentTimeMillis() + 5000)))
 			.getAuthTokenManager()).isNotNull();
 	}

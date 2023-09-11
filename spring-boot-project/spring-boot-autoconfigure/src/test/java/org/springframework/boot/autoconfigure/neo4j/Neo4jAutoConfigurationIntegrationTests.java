@@ -118,7 +118,7 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 			@Bean
 			AuthTokenManager authTokenManager() {
-				return AuthTokenManagers.expirationBased(() -> AuthTokens.basic("neo4j", neo4jServer.getAdminPassword())
+				return AuthTokenManagers.bearer(() -> AuthTokens.basic("neo4j", neo4jServer.getAdminPassword())
 					.expiringAt(System.currentTimeMillis() + 5_000));
 			}
 
@@ -155,7 +155,7 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 			@Bean
 			AuthTokenManager authTokenManager() {
-				return AuthTokenManagers.expirationBased(() -> AuthTokens.basic("wrongagain", "stillwrong")
+				return AuthTokenManagers.bearer(() -> AuthTokens.basic("wrongagain", "stillwrong")
 					.expiringAt(System.currentTimeMillis() + 5_000));
 			}
 
