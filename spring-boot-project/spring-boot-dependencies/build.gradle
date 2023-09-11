@@ -459,7 +459,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "14.0.14.Final") {
+	library("Infinispan", "14.0.17.Final") {
 		group("org.infinispan") {
 			imports = [
 				"infinispan-bom"
