@@ -102,6 +102,20 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 
 	@Test
 	@CompileWithForkedClassLoader
+	void aotContributedInitializerBindsValueObjectWithSpecificConstructor() {
+		compile(createContext(ValueObjectSampleBeanWithSpecificConstructorConfiguration.class), (freshContext) -> {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello",
+					"test.counter=30");
+			freshContext.refresh();
+			ValueObjectWithSpecificConstructorSampleBean bean = freshContext
+				.getBean(ValueObjectWithSpecificConstructorSampleBean.class);
+			assertThat(bean.name).isEqualTo("Hello");
+			assertThat(bean.counter).isEqualTo(30);
+		});
+	}
+
+	@Test
+	@CompileWithForkedClassLoader
 	void aotContributedInitializerBindsJavaBean() {
 		compile(createContext(JavaBeanSampleBeanConfiguration.class), (freshContext) -> {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello");
@@ -189,6 +203,32 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 
 		ValueObjectSampleBean(String name) {
 			this.name = name;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ValueObjectWithSpecificConstructorSampleBean.class)
+	static class ValueObjectSampleBeanWithSpecificConstructorConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	public static class ValueObjectWithSpecificConstructorSampleBean {
+
+		@SuppressWarnings("unused")
+		private final String name;
+
+		@SuppressWarnings("unused")
+		private final Integer counter;
+
+		ValueObjectWithSpecificConstructorSampleBean(String name, Integer counter) {
+			this.name = name;
+			this.counter = counter;
+		}
+
+		private ValueObjectWithSpecificConstructorSampleBean(String name) {
+			this(name, 42);
 		}
 
 	}
