@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ public class CouchbaseProperties {
 		 * Length of time an HTTP connection may remain idle before it is closed and
 		 * removed from the pool.
 		 */
-		private Duration idleHttpConnectionTimeout = Duration.ofMillis(4500);
+		private Duration idleHttpConnectionTimeout = Duration.ofSeconds(1);
 
 		public int getMinEndpoints() {
 			return this.minEndpoints;
