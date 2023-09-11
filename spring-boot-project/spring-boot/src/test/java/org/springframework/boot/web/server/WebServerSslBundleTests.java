@@ -25,6 +25,8 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -38,7 +40,9 @@ import static org.mockito.Mockito.mock;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
+@MockPkcs11Security
 class WebServerSslBundleTests {
 
 	@Test
@@ -82,14 +86,13 @@ class WebServerSslBundleTests {
 	@Test
 	void whenFromJksPropertiesWithPkcs11StoreType() {
 		Ssl ssl = new Ssl();
-		ssl.setKeyStorePassword("secret");
 		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
 		ssl.setClientAuth(Ssl.ClientAuth.NONE);
-		SslBundle bundle = WebServerSslBundle.get(ssl);
-		assertThat(bundle).isNotNull();
-		assertThat(bundle.getStores().getKeyStorePassword()).isEqualTo("secret");
-		assertThat(bundle.getKey().getPassword()).isEqualTo("password");
+		assertThatIllegalStateException().isThrownBy(() -> WebServerSslBundle.get(ssl))
+			.withMessageContaining("must be empty or null for PKCS11 hardware key stores");
 	}
 
 	@Test

@@ -67,14 +67,12 @@ class SslConnectorCustomizerTests {
 
 	private Tomcat tomcat;
 
-	private Connector connector;
-
 	@BeforeEach
 	void setup() {
 		this.tomcat = new Tomcat();
-		this.connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		this.connector.setPort(0);
-		this.tomcat.setConnector(this.connector);
+		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+		connector.setPort(0);
+		this.tomcat.setConnector(connector);
 	}
 
 	@AfterEach
@@ -207,10 +205,11 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
-				WebServerSslBundle.get(ssl));
-		assertThatIllegalStateException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()))
-			.withMessageContaining("must be empty or null for PKCS11 hardware key stores");
+		assertThatIllegalStateException().isThrownBy(() -> {
+			SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+					WebServerSslBundle.get(ssl));
+			customizer.customize(this.tomcat.getConnector());
+		}).withMessageContaining("must be empty or null for PKCS11 hardware key stores");
 	}
 
 	@Test

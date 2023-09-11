@@ -35,13 +35,16 @@ import org.springframework.util.StringUtils;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public class JksSslStoreBundle implements SslStoreBundle {
 
 	private final JksSslStoreDetails keyStoreDetails;
 
-	private final JksSslStoreDetails trustStoreDetails;
+	private final KeyStore keyStore;
+
+	private final KeyStore trustStore;
 
 	/**
 	 * Create a new {@link JksSslStoreBundle} instance.
@@ -50,12 +53,13 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 */
 	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
 		this.keyStoreDetails = keyStoreDetails;
-		this.trustStoreDetails = trustStoreDetails;
+		this.keyStore = createKeyStore("key", this.keyStoreDetails);
+		this.trustStore = createKeyStore("trust", trustStoreDetails);
 	}
 
 	@Override
 	public KeyStore getKeyStore() {
-		return createKeyStore("key", this.keyStoreDetails);
+		return this.keyStore;
 	}
 
 	@Override
@@ -65,7 +69,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public KeyStore getTrustStore() {
-		return createKeyStore("trust", this.trustStoreDetails);
+		return this.trustStore;
 	}
 
 	private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
