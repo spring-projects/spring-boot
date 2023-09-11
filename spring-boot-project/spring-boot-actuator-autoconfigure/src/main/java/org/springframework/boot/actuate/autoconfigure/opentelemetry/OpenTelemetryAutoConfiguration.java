@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
+import java.util.Map.Entry;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -24,6 +26,7 @@ import io.opentelemetry.sdk.OpenTelemetrySdkBuilder;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.resources.ResourceBuilder;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
@@ -71,7 +74,15 @@ public class OpenTelemetryAutoConfiguration {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		return Resource.getDefault()
 			.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)))
-			.merge(properties.toResource());
+			.merge(toResource(properties));
+	}
+
+	private static Resource toResource(OpenTelemetryProperties properties) {
+		ResourceBuilder builder = Resource.builder();
+		for (Entry<String, String> entry : properties.getResourceAttributes().entrySet()) {
+			builder.put(entry.getKey(), entry.getValue());
+		}
+		return builder.build();
 	}
 
 }
