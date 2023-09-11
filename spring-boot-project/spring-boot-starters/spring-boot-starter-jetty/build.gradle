@@ -18,7 +18,6 @@ dependencies {
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-websocket-api")
 	}
 	api("org.eclipse.jetty.websocket:websocket-jetty-server") {
-		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
 }
