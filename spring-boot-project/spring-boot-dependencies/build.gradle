@@ -179,7 +179,7 @@ bom {
 			]
 		}
 	}
-	library("Commons DBCP2", "2.9.0") {
+	library("Commons DBCP2", "2.10.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-dbcp2" {
