@@ -39,6 +39,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Zisis Pavloudis
  * @since 2.0.0
  */
 public class ValidatorAdapter implements SmartValidator, ApplicationContextAware, InitializingBean, DisposableBean {
@@ -151,6 +152,15 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 			return new ValidatorAdapter(new SpringValidatorAdapter(jakartaValidator), existingBean);
 		}
 		return validator;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T unwrap(Class<T> type) {
+		if (type.isInstance(this.target)) {
+			return (T) this.target;
+		}
+		return this.target.unwrap(type);
 	}
 
 }
