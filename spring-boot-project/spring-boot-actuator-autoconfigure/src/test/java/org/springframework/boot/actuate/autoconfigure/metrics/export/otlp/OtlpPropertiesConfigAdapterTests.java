@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -41,10 +42,13 @@ class OtlpPropertiesConfigAdapterTests {
 
 	private OpenTelemetryProperties openTelemetryProperties;
 
+	private MockEnvironment environment;
+
 	@BeforeEach
 	void setUp() {
 		this.properties = new OtlpProperties();
 		this.openTelemetryProperties = new OpenTelemetryProperties();
+		this.environment = new MockEnvironment();
 	}
 
 	@Test
@@ -93,7 +97,8 @@ class OtlpPropertiesConfigAdapterTests {
 	void openTelemetryPropertiesShouldOverrideOtlpPropertiesIfNotEmpty() {
 		this.properties.setResourceAttributes(Map.of("a", "alpha"));
 		this.openTelemetryProperties.setResourceAttributes(Map.of("b", "beta"));
-		assertThat(createAdapter().resourceAttributes()).containsExactly(entry("b", "beta"));
+		assertThat(createAdapter().resourceAttributes()).contains(entry("b", "beta"));
+		assertThat(createAdapter().resourceAttributes()).doesNotContain(entry("a", "alpha"));
 	}
 
 	@Test
@@ -101,11 +106,37 @@ class OtlpPropertiesConfigAdapterTests {
 	void openTelemetryPropertiesShouldNotOverrideOtlpPropertiesIfEmpty() {
 		this.properties.setResourceAttributes(Map.of("a", "alpha"));
 		this.openTelemetryProperties.setResourceAttributes(Collections.emptyMap());
-		assertThat(createAdapter().resourceAttributes()).containsExactly(entry("a", "alpha"));
+		assertThat(createAdapter().resourceAttributes()).contains(entry("a", "alpha"));
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	void serviceNameOverridesApplicationName() {
+		this.environment.setProperty("spring.application.name", "alpha");
+		this.properties.setResourceAttributes(Map.of("service.name", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
+	}
+
+	@Test
+	void serviceNameOverridesApplicationNameWhenUsingOtelProperties() {
+		this.environment.setProperty("spring.application.name", "alpha");
+		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
+	}
+
+	@Test
+	void shouldUseApplicationNameIfServiceNameIsNotSet() {
+		this.environment.setProperty("spring.application.name", "alpha");
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "alpha");
+	}
+
+	@Test
+	void shouldUseDefaultApplicationNameIfApplicationNameIsNotSet() {
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "application");
 	}
 
 	private OtlpPropertiesConfigAdapter createAdapter() {
-		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties);
+		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties, this.environment);
 	}
 
 }

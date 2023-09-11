@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to OTLP.
@@ -49,20 +50,11 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties({ OtlpProperties.class, OpenTelemetryProperties.class })
 public class OtlpMetricsExportAutoConfiguration {
 
-	private final OtlpProperties properties;
-
-	private final OpenTelemetryProperties openTelemetryProperties;
-
-	public OtlpMetricsExportAutoConfiguration(OtlpProperties properties,
-			OpenTelemetryProperties openTelemetryProperties) {
-		this.properties = properties;
-		this.openTelemetryProperties = openTelemetryProperties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public OtlpConfig otlpConfig() {
-		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties);
+	OtlpConfig otlpConfig(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
+			Environment environment) {
+		return new OtlpPropertiesConfigAdapter(properties, openTelemetryProperties, environment);
 	}
 
 	@Bean
