@@ -157,14 +157,10 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T unwrap(Class<T> type) {
-		if (type.isAssignableFrom(this.target.getClass())) {
-			if (this.target instanceof SpringValidatorAdapter adapter) {
-				return adapter.unwrap(type);
-			}
+		if (type.isInstance(this.target)) {
 			return (T) this.target;
 		}
-
-		throw new IllegalArgumentException("Cannot unwrap " + this.target + " to " + type.getName());
+		return this.target.unwrap(type);
 	}
 
 }
