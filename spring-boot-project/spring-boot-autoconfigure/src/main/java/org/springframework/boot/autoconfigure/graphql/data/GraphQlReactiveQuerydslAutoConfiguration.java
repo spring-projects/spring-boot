@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.graphql.data;
 import java.util.Collections;
 import java.util.List;
 
+import com.querydsl.core.Query;
 import graphql.GraphQL;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -46,7 +47,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
  * @see QuerydslDataFetcher#autoRegistrationConfigurer(List, List)
  */
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
-@ConditionalOnClass({ GraphQL.class, QuerydslDataFetcher.class, ReactiveQuerydslPredicateExecutor.class })
+@ConditionalOnClass({ GraphQL.class, Query.class, QuerydslDataFetcher.class, ReactiveQuerydslPredicateExecutor.class })
 @ConditionalOnBean(GraphQlSource.class)
 public class GraphQlReactiveQuerydslAutoConfiguration {
 

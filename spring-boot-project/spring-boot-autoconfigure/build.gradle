@@ -29,6 +29,7 @@ dependencies {
 	optional("com.nimbusds:oauth2-oidc-sdk")
 	optional("com.oracle.database.jdbc:ojdbc8")
 	optional("com.oracle.database.jdbc:ucp")
+	optional("com.querydsl:querydsl-core")
 	optional("com.samskivert:jmustache")
 	optional("io.lettuce:lettuce-core")
 	optional("io.projectreactor.netty:reactor-netty-http")
