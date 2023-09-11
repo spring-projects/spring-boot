@@ -1486,7 +1486,7 @@ bom {
 			]
 		}
 	}
-	library("SnakeYAML", "2.1") {
+	library("SnakeYAML", "2.2") {
 		group("org.yaml") {
 			modules = [
 				"snakeyaml"
