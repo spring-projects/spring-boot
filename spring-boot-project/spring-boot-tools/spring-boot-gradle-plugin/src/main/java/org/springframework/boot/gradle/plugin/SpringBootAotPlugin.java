@@ -35,6 +35,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -152,6 +153,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 
 	@SuppressWarnings("unchecked")
 	private Configuration createAotProcessingClasspath(Project project, String taskName, SourceSet inputSourceSet) {
+		ProviderFactory providers = project.getProviders();
 		Configuration base = project.getConfigurations()
 			.getByName(inputSourceSet.getRuntimeClasspathConfigurationName());
 		Configuration aotClasspath = project.getConfigurations().create(taskName + "Classpath", (classpath) -> {
@@ -162,7 +164,8 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			classpath.attributes((attributes) -> {
 				AttributeContainer baseAttributes = base.getAttributes();
 				for (Attribute<?> attribute : baseAttributes.keySet()) {
-					attributes.attribute((Attribute<Object>) attribute, baseAttributes.getAttribute(attribute));
+					Attribute<Object> attr = (Attribute<Object>) attribute;
+					attributes.attributeProvider(attr, providers.provider(() -> baseAttributes.getAttribute(attr)));
 				}
 			});
 		});
