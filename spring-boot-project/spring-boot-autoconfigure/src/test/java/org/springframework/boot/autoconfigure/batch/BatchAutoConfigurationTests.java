@@ -39,7 +39,6 @@ import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
-import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -96,6 +95,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Kazuki Shimizu
+ * @author Mahmoud Ben Hassine
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -516,13 +516,6 @@ class BatchAutoConfigurationTests {
 		private JobRepository jobRepository;
 
 		@Bean
-		static JobRegistryBeanPostProcessor registryProcessor(JobRegistry jobRegistry) {
-			JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
-			processor.setJobRegistry(jobRegistry);
-			return processor;
-		}
-
-		@Bean
 		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
 
@@ -685,7 +678,17 @@ class BatchAutoConfigurationTests {
 
 		@Bean
 		Job job2() {
-			return mock(Job.class);
+			return new Job() {
+				@Override
+				public String getName() {
+					return "discreteLocalJob2";
+				}
+
+				@Override
+				public void execute(JobExecution execution) {
+					execution.setStatus(BatchStatus.COMPLETED);
+				}
+			};
 		}
 
 	}
