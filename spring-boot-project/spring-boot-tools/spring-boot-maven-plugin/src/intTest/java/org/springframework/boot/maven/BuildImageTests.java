@@ -26,6 +26,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -400,6 +401,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	@EnabledOnOs(value = OS.LINUX, disabledReason = "Works with Docker Engine on Linux but is not reliable with "
+			+ "Docker Desktop on other OSs")
 	void whenBuildImageIsInvokedWithBindCaches(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
 		mavenBuild.project("build-image-bind-caches")
