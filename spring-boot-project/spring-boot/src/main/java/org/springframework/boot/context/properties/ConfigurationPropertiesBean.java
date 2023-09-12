@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,8 +41,6 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -237,34 +234,10 @@ public final class ConfigurationPropertiesBean {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
-				Method resolvedFactoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
-				if (resolvedFactoryMethod != null) {
-					return resolvedFactoryMethod;
-				}
+				return rootBeanDefinition.getResolvedFactoryMethod();
 			}
-			return findFactoryMethodUsingReflection(beanFactory, beanDefinition);
 		}
 		return null;
-	}
-
-	private static Method findFactoryMethodUsingReflection(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinition beanDefinition) {
-		String factoryMethodName = beanDefinition.getFactoryMethodName();
-		String factoryBeanName = beanDefinition.getFactoryBeanName();
-		if (factoryMethodName == null || factoryBeanName == null) {
-			return null;
-		}
-		Class<?> factoryType = beanFactory.getType(factoryBeanName);
-		if (factoryType.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
-			factoryType = factoryType.getSuperclass();
-		}
-		AtomicReference<Method> factoryMethod = new AtomicReference<>();
-		ReflectionUtils.doWithMethods(factoryType, (method) -> {
-			if (method.getName().equals(factoryMethodName)) {
-				factoryMethod.set(method);
-			}
-		});
-		return factoryMethod.get();
 	}
 
 	static ConfigurationPropertiesBean forValueObject(Class<?> beanType, String beanName) {
