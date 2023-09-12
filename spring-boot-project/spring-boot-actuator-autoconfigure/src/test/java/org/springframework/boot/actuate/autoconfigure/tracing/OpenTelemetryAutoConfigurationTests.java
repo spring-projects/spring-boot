@@ -50,7 +50,6 @@ import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
-import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -170,6 +169,7 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void shouldSetupDefaultResourceAttributes() {
 		this.contextRunner
 			.withConfiguration(
@@ -182,7 +182,9 @@ class OpenTelemetryAutoConfigurationTests {
 				exporter.await(Duration.ofSeconds(10));
 				SpanData spanData = exporter.getExportedSpans().get(0);
 				Map<AttributeKey<?>, Object> expectedAttributes = Resource.getDefault()
-					.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "application")))
+					.merge(Resource.create(
+							Attributes.of(io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME,
+									"application")))
 					.getAttributes()
 					.asMap();
 				assertThat(spanData.getResource().getAttributes().asMap()).isEqualTo(expectedAttributes);

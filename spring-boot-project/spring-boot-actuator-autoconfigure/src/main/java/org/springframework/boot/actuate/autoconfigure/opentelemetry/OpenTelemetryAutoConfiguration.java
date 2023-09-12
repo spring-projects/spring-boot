@@ -28,7 +28,6 @@ import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.resources.ResourceBuilder;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -70,10 +69,12 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("deprecation")
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		return Resource.getDefault()
-			.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)))
+			.merge(Resource.create(Attributes
+				.of(io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME, applicationName)))
 			.merge(toResource(properties));
 	}
 
