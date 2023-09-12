@@ -967,6 +967,7 @@ bom {
 	}
 	library("Micrometer Tracing", "1.0.10") {
 		considerSnapshots()
+		calendarName = "Tracing"
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
