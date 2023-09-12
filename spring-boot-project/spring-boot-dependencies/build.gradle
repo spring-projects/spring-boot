@@ -1520,10 +1520,6 @@ bom {
 	library("Spring Data Bom", "2023.1.0-M2") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
-		prohibit {
-			versionRange "[2022.0.0-M1,)"
-			because "it uses Spring Framework 6"
-		}
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
