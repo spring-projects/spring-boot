@@ -21,9 +21,6 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -33,16 +30,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
-import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
-import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
@@ -53,48 +44,22 @@ import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
  * @author Dmytro Nosan
  * @since 3.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
-@ConditionalOnClass(Observation.class)
-@ConditionalOnBean(ObservationRegistry.class)
+@AutoConfiguration(after = { SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
+@ConditionalOnClass({ Observation.class, MeterRegistry.class })
+@ConditionalOnBean({ ObservationRegistry.class, MeterRegistry.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-@SuppressWarnings("removal")
 public class WebFluxObservationAutoConfiguration {
 
-	private final ObservationProperties observationProperties;
-
-	public WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
-		this.observationProperties = observationProperties;
-	}
-
 	@Bean
-	@ConditionalOnMissingBean(ServerHttpObservationFilter.class)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
-	public ServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
-			ObjectProvider<ServerRequestObservationConvention> customConvention) {
-		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
-		ServerRequestObservationConvention convention = customConvention
-			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
-		return new ServerHttpObservationFilter(registry, convention);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MeterRegistry.class)
-	@ConditionalOnBean(MeterRegistry.class)
-	static class MeterFilterConfiguration {
-
-		@Bean
-		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
-				ObservationProperties observationProperties) {
-			String name = observationProperties.getHttp().getServer().getRequests().getName();
-			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
-			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
-					filter);
-		}
-
+	@Order(0)
+	MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
+			ObservationProperties observationProperties) {
+		String name = observationProperties.getHttp().getServer().getRequests().getName();
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
+		return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
 }
