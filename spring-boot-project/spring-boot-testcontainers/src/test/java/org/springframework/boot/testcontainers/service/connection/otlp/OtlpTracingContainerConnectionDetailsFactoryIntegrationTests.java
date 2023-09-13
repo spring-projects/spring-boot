@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfi
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -42,7 +43,7 @@ class OtlpTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = new GenericContainer<>("otel/opentelemetry-collector-contrib:0.75.0")
+	static final GenericContainer<?> container = new GenericContainer<>(DockerImageNames.opentelemetry())
 		.withExposedPorts(4318);
 
 	@Autowired

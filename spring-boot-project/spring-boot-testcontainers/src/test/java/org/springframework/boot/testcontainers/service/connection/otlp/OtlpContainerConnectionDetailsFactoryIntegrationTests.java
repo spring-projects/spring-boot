@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
@@ -64,7 +65,7 @@ class OtlpContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = new GenericContainer<>("otel/opentelemetry-collector-contrib:0.75.0")
+	static final GenericContainer<?> container = new GenericContainer<>(DockerImageNames.opentelemetry())
 		.withCommand("--config=/etc/" + CONFIG_FILE_NAME)
 		.withCopyToContainer(MountableFile.forClasspathResource(CONFIG_FILE_NAME), "/etc/" + CONFIG_FILE_NAME)
 		.withExposedPorts(4318, 9090);
