@@ -98,7 +98,7 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		private String getAnnotationsDescription(Set<Class<?>> annotations) {
 			StringBuilder result = new StringBuilder();
 			for (Class<?> annotation : annotations) {
-				if (result.length() != 0) {
+				if (!result.isEmpty()) {
 					result.append(", ");
 				}
 				result.append('@').append(ClassUtils.getShortName(annotation));

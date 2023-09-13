@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.util.stream.Collectors;
-
 import jakarta.jms.ConnectionFactory;
 import jakarta.transaction.TransactionManager;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -38,6 +36,7 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Phillip Webb
  * @author Aurélien Leboulanger
+ * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(TransactionManager.class)
@@ -48,10 +47,10 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper)
-			throws Exception {
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper,
+			ActiveMQConnectionDetails connectionDetails) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
+				factoryCustomizers.orderedStream().toList(), connectionDetails)
 			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
@@ -60,9 +59,10 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
+			ActiveMQConnectionDetails connectionDetails) {
+		return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.orderedStream().toList(),
+				connectionDetails)
 			.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 

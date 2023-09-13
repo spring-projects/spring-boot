@@ -21,13 +21,13 @@ import java.lang.reflect.Constructor;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
  * An {@link AbstractInjectionFailureAnalyzer} for
@@ -49,9 +49,9 @@ class NotConstructorBoundInjectionFailureAnalyzer
 		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
 		if (isConstructorBindingConfigurationProperties(injectionPoint)) {
 			String simpleName = injectionPoint.getMember().getDeclaringClass().getSimpleName();
-			String action = String.format("Update your configuration so that " + simpleName + " is defined via @"
+			String action = "Update your configuration so that " + simpleName + " is defined via @"
 					+ ConfigurationPropertiesScan.class.getSimpleName() + " or @"
-					+ EnableConfigurationProperties.class.getSimpleName() + ".", simpleName);
+					+ EnableConfigurationProperties.class.getSimpleName() + ".";
 			return new FailureAnalysis(
 					simpleName + " is annotated with @" + ConstructorBinding.class.getSimpleName()
 							+ " but it is defined as a regular bean which caused dependency injection to fail.",
@@ -61,14 +61,15 @@ class NotConstructorBoundInjectionFailureAnalyzer
 	}
 
 	private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
-		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor) {
-			Class<?> declaringClass = constructor.getDeclaringClass();
-			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
-				.get(ConfigurationProperties.class);
-			return configurationProperties.isPresent()
-					&& BindMethod.get(constructor.getDeclaringClass()) == BindMethod.VALUE_OBJECT;
-		}
-		return false;
+		return (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor)
+				? isConstructorBindingConfigurationProperties(constructor) : false;
+	}
+
+	private boolean isConstructorBindingConfigurationProperties(Constructor<?> constructor) {
+		Class<?> declaringClass = constructor.getDeclaringClass();
+		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(declaringClass);
+		return MergedAnnotations.from(declaringClass, SearchStrategy.TYPE_HIERARCHY)
+			.isPresent(ConfigurationProperties.class) && bindMethod == BindMethod.VALUE_OBJECT;
 	}
 
 	private InjectionPoint findInjectionPoint(Throwable failure) {

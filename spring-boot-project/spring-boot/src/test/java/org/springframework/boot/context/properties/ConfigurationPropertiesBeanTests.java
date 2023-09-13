@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.boot.context.properties.bind.BindConstructorProvider;
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -64,19 +64,19 @@ class ConfigurationPropertiesBeanTests {
 			assertThat(component.getInstance()).isInstanceOf(AnnotatedComponent.class);
 			assertThat(component.getAnnotation()).isNotNull();
 			assertThat(component.getType()).isEqualTo(AnnotatedComponent.class);
-			assertThat(component.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(component.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ConfigurationPropertiesBean bean = all.get("annotatedBean");
 			assertThat(bean.getName()).isEqualTo("annotatedBean");
 			assertThat(bean.getInstance()).isInstanceOf(AnnotatedBean.class);
 			assertThat(bean.getType()).isEqualTo(AnnotatedBean.class);
 			assertThat(bean.getAnnotation()).isNotNull();
-			assertThat(bean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(bean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ConfigurationPropertiesBean valueObject = all.get(ValueObject.class.getName());
 			assertThat(valueObject.getName()).isEqualTo(ValueObject.class.getName());
 			assertThat(valueObject.getInstance()).isInstanceOf(ValueObject.class);
 			assertThat(valueObject.getType()).isEqualTo(ValueObject.class);
 			assertThat(valueObject.getAnnotation()).isNotNull();
-			assertThat(valueObject.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+			assertThat(valueObject.asBindTarget().getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
 		}
 	}
 
@@ -113,7 +113,7 @@ class ConfigurationPropertiesBeanTests {
 			assertThat(propertiesBean.getInstance()).isInstanceOf(AnnotatedComponent.class);
 			assertThat(propertiesBean.getType()).isEqualTo(AnnotatedComponent.class);
 			assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("prefix");
-			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 		});
 	}
 
@@ -125,7 +125,7 @@ class ConfigurationPropertiesBeanTests {
 			assertThat(propertiesBean.getInstance()).isInstanceOf(NonAnnotatedBean.class);
 			assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedBean.class);
 			assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("prefix");
-			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 		});
 	}
 
@@ -138,7 +138,7 @@ class ConfigurationPropertiesBeanTests {
 					assertThat(propertiesBean.getInstance()).isInstanceOf(NonAnnotatedBean.class);
 					assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedBean.class);
 					assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("prefix");
-					assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+					assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 				});
 	}
 
@@ -150,7 +150,7 @@ class ConfigurationPropertiesBeanTests {
 			assertThat(propertiesBean.getInstance()).isInstanceOf(NonAnnotatedBean.class);
 			assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedBean.class);
 			assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("prefix");
-			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 		});
 	}
 
@@ -158,7 +158,7 @@ class ConfigurationPropertiesBeanTests {
 	void getWhenHasFactoryMethodBindsUsingMethodReturnType() throws Throwable {
 		get(NonAnnotatedGenericBeanConfiguration.class, "nonAnnotatedGenericBean", (propertiesBean) -> {
 			assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedGenericBean.class);
-			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ResolvableType type = propertiesBean.asBindTarget().getType();
 			assertThat(type.resolve()).isEqualTo(NonAnnotatedGenericBean.class);
 			assertThat(type.resolveGeneric(0)).isEqualTo(String.class);
@@ -169,7 +169,7 @@ class ConfigurationPropertiesBeanTests {
 	void getWhenHasFactoryMethodWithoutAnnotationBindsUsingMethodType() throws Throwable {
 		get(AnnotatedGenericBeanConfiguration.class, "annotatedGenericBean", (propertiesBean) -> {
 			assertThat(propertiesBean.getType()).isEqualTo(AnnotatedGenericBean.class);
-			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ResolvableType type = propertiesBean.asBindTarget().getType();
 			assertThat(type.resolve()).isEqualTo(AnnotatedGenericBean.class);
 			assertThat(type.resolveGeneric(0)).isEqualTo(String.class);
@@ -180,7 +180,7 @@ class ConfigurationPropertiesBeanTests {
 	void getWhenHasNoFactoryMethodBindsUsingObjectType() throws Throwable {
 		get(AnnotatedGenericComponent.class, "annotatedGenericComponent", (propertiesBean) -> {
 			assertThat(propertiesBean.getType()).isEqualTo(AnnotatedGenericComponent.class);
-			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ResolvableType type = propertiesBean.asBindTarget().getType();
 			assertThat(type.resolve()).isEqualTo(AnnotatedGenericComponent.class);
 			assertThat(type.getGeneric(0).resolve()).isNull();
@@ -224,31 +224,12 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
 		assertThat(propertiesBean.getInstance()).isNull();
 		assertThat(propertiesBean.getType()).isEqualTo(ConstructorBindingOnConstructor.class);
-		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
 		assertThat(propertiesBean.getAnnotation()).isNotNull();
 		Bindable<?> target = propertiesBean.asBindTarget();
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
 		assertThat(BindConstructorProvider.DEFAULT.getBindConstructor(ConstructorBindingOnConstructor.class, false))
-			.isNotNull();
-	}
-
-	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	void forValueObjectWithDeprecatedConstructorBindingAnnotatedClassReturnsBean() {
-		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
-			.forValueObject(DeprecatedConstructorBindingOnConstructor.class, "valueObjectBean");
-		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
-		assertThat(propertiesBean.getInstance()).isNull();
-		assertThat(propertiesBean.getType()).isEqualTo(DeprecatedConstructorBindingOnConstructor.class);
-		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
-		assertThat(propertiesBean.getAnnotation()).isNotNull();
-		Bindable<?> target = propertiesBean.asBindTarget();
-		assertThat(target.getType())
-			.isEqualTo(ResolvableType.forClass(DeprecatedConstructorBindingOnConstructor.class));
-		assertThat(target.getValue()).isNull();
-		assertThat(BindConstructorProvider.DEFAULT.getBindConstructor(DeprecatedConstructorBindingOnConstructor.class,
-				false))
 			.isNotNull();
 	}
 
@@ -269,7 +250,7 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(propertiesBean.getName()).isEqualTo("implicitBindingRecord");
 		assertThat(propertiesBean.getInstance()).isNull();
 		assertThat(propertiesBean.getType()).isEqualTo(implicitConstructorBinding);
-		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
 		assertThat(propertiesBean.getAnnotation()).isNotNull();
 		Bindable<?> target = propertiesBean.asBindTarget();
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(implicitConstructorBinding));
@@ -292,64 +273,66 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindMethodGetWhenNoConstructorBindingReturnsJavaBean() {
-		BindMethod bindType = BindMethod.get(NoConstructorBinding.class);
+	void deduceBindMethodWhenNoConstructorBindingReturnsJavaBean() {
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(NoConstructorBinding.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindMethodGetWhenConstructorBindingOnConstructorReturnsValueObject() {
-		BindMethod bindType = BindMethod.get(ConstructorBindingOnConstructor.class);
+	void deduceBindMethodWhenConstructorBindingOnConstructorReturnsValueObject() {
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(ConstructorBindingOnConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindMethodGetWhenNoConstructorBindingAnnotationOnSingleParameterizedConstructorReturnsValueObject() {
-		BindMethod bindType = BindMethod.get(ConstructorBindingNoAnnotation.class);
+	void deduceBindMethodWhenNoConstructorBindingAnnotationOnSingleParameterizedConstructorReturnsValueObject() {
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(ConstructorBindingNoAnnotation.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindMethodGetWhenConstructorBindingOnMultipleConstructorsThrowsException() {
+	void deduceBindMethodWhenConstructorBindingOnMultipleConstructorsThrowsException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> BindMethod.get(ConstructorBindingOnMultipleConstructors.class))
+			.isThrownBy(
+					() -> ConfigurationPropertiesBean.deduceBindMethod(ConstructorBindingOnMultipleConstructors.class))
 			.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
 					+ " has more than one @ConstructorBinding constructor");
 	}
 
 	@Test
-	void bindMethodGetWithMultipleConstructorsReturnJavaBean() {
-		BindMethod bindType = BindMethod.get(NoConstructorBindingOnMultipleConstructors.class);
+	void deduceBindMethodWithMultipleConstructorsReturnJavaBean() {
+		BindMethod bindType = ConfigurationPropertiesBean
+			.deduceBindMethod(NoConstructorBindingOnMultipleConstructors.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindMethodGetWithNoArgConstructorReturnsJavaBean() {
-		BindMethod bindType = BindMethod.get(JavaBeanWithNoArgConstructor.class);
+	void deduceBindMethodWithNoArgConstructorReturnsJavaBean() {
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(JavaBeanWithNoArgConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindMethodGetWithSingleArgAutowiredConstructorReturnsJavaBean() {
-		BindMethod bindType = BindMethod.get(JavaBeanWithAutowiredConstructor.class);
+	void deduceBindMethodWithSingleArgAutowiredConstructorReturnsJavaBean() {
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(JavaBeanWithAutowiredConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
 	void constructorBindingAndAutowiredConstructorsShouldThrowException() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> BindMethod.get(ConstructorBindingAndAutowiredConstructors.class));
+		assertThatIllegalStateException().isThrownBy(
+				() -> ConfigurationPropertiesBean.deduceBindMethod(ConstructorBindingAndAutowiredConstructors.class));
 	}
 
 	@Test
 	void innerClassWithSyntheticFieldShouldReturnJavaBean() {
-		BindMethod bindType = BindMethod.get(Inner.class);
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(Inner.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
 	void innerClassWithParameterizedConstructorShouldReturnJavaBean() {
-		BindMethod bindType = BindMethod.get(ParameterizedConstructorInner.class);
+		BindMethod bindType = ConfigurationPropertiesBean.deduceBindMethod(ParameterizedConstructorInner.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
@@ -553,20 +536,6 @@ class ConfigurationPropertiesBeanTests {
 
 		@ConstructorBinding
 		ConstructorBindingOnConstructor(String name, int age) {
-		}
-
-	}
-
-	@ConfigurationProperties
-	@SuppressWarnings("removal")
-	static class DeprecatedConstructorBindingOnConstructor {
-
-		DeprecatedConstructorBindingOnConstructor(String name) {
-			this(name, -1);
-		}
-
-		@org.springframework.boot.context.properties.ConstructorBinding
-		DeprecatedConstructorBindingOnConstructor(String name, int age) {
 		}
 
 	}

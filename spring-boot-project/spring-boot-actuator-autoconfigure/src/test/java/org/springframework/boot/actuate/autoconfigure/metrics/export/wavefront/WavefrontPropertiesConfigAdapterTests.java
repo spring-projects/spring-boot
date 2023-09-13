@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WavefrontPropertiesConfigAdapterTests extends
 		PushRegistryPropertiesConfigAdapterTests<WavefrontProperties.Metrics.Export, WavefrontPropertiesConfigAdapter> {
+
+	protected WavefrontPropertiesConfigAdapterTests() {
+		super(WavefrontPropertiesConfigAdapter.class);
+	}
 
 	@Override
 	protected WavefrontProperties.Metrics.Export createProperties() {
@@ -80,6 +84,27 @@ class WavefrontPropertiesConfigAdapterTests extends
 		WavefrontProperties properties = new WavefrontProperties();
 		properties.setSource("DESKTOP-GA5");
 		assertThat(new WavefrontPropertiesConfigAdapter(properties).source()).isEqualTo("DESKTOP-GA5");
+	}
+
+	@Test
+	void whenPropertiesReportMinuteDistributionIsSetAdapterReportMinuteDistributionReturnsIt() {
+		Export properties = createProperties();
+		properties.setReportMinuteDistribution(false);
+		assertThat(createConfigAdapter(properties).reportMinuteDistribution()).isFalse();
+	}
+
+	@Test
+	void whenPropertiesReportHourDistributionIsSetAdapterReportHourDistributionReturnsIt() {
+		Export properties = createProperties();
+		properties.setReportHourDistribution(true);
+		assertThat(createConfigAdapter(properties).reportHourDistribution()).isTrue();
+	}
+
+	@Test
+	void whenPropertiesReportDayDistributionIsSetAdapterReportDayDistributionReturnsIt() {
+		Export properties = createProperties();
+		properties.setReportDayDistribution(true);
+		assertThat(createConfigAdapter(properties).reportDayDistribution()).isTrue();
 	}
 
 }

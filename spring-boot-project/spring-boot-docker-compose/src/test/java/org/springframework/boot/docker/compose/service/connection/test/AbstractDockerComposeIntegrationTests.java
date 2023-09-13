@@ -16,10 +16,17 @@
 
 package org.springframework.boot.docker.compose.service.connection.test;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.io.TempDir;
+import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
@@ -28,28 +35,38 @@ import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.function.ThrowingSupplier;
+
+import static org.junit.Assert.fail;
 
 /**
  * Abstract base class for integration tests.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @DisabledIfProcessUnavailable({ "docker", "version" })
 @DisabledIfProcessUnavailable({ "docker", "compose" })
 public abstract class AbstractDockerComposeIntegrationTests {
 
+	@TempDir
+	private static Path tempDir;
+
 	private final Resource composeResource;
 
+	private final DockerImageName dockerImageName;
+
 	@AfterAll
-	static void shutdown() {
+	static void shutDown() {
 		SpringApplicationShutdownHandlers shutdownHandlers = SpringApplication.getShutdownHandlers();
 		((Runnable) shutdownHandlers).run();
 	}
 
-	protected AbstractDockerComposeIntegrationTests(String composeResource) {
+	protected AbstractDockerComposeIntegrationTests(String composeResource, DockerImageName dockerImageName) {
 		this.composeResource = new ClassPathResource(composeResource, getClass());
+		this.dockerImageName = dockerImageName;
 	}
 
 	protected final <T extends ConnectionDetails> T run(Class<T> type) {
@@ -57,9 +74,24 @@ public abstract class AbstractDockerComposeIntegrationTests {
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("spring.docker.compose.skip.in-tests", "false");
 		properties.put("spring.docker.compose.file",
-				ThrowingSupplier.of(this.composeResource::getFile).get().getAbsolutePath());
+				transformedComposeFile(ThrowingSupplier.of(this.composeResource::getFile).get(), this.dockerImageName));
+		properties.put("spring.docker.compose.stop.command", "down");
 		application.setDefaultProperties(properties);
 		return application.run().getBean(type);
+	}
+
+	private File transformedComposeFile(File composeFile, DockerImageName imageName) {
+		File tempComposeFile = Path.of(tempDir.toString(), composeFile.getName()).toFile();
+		try {
+			String composeFileContent = FileCopyUtils.copyToString(new FileReader(composeFile));
+			composeFileContent = composeFileContent.replace("{imageName}", imageName.asCanonicalNameString());
+			FileCopyUtils.copy(composeFileContent, new FileWriter(tempComposeFile));
+		}
+		catch (IOException ex) {
+			fail("Error transforming Docker compose file '" + composeFile + "' to '" + tempComposeFile + "': "
+					+ ex.getMessage());
+		}
+		return tempComposeFile;
 	}
 
 	@Configuration(proxyBeanMethods = false)

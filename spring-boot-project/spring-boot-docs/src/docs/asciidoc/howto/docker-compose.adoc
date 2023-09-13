@@ -1,0 +1,28 @@
+[[howto.docker-compose]]
+== Docker Compose
+
+This section includes topics relating to the Docker Compose support in Spring Boot.
+
+[[howto.docker-compose.jdbc-url]]
+=== Customizing the JDBC URL
+
+When using `JdbcConnectionDetails` with Docker Compose, the parameters of the JDBC URL
+can be customized by applying the `org.springframework.boot.jdbc.parameters` label to the
+service. For example:
+
+[source,yaml,indent=0]
+----
+services:
+  postgres:
+    image: 'postgres:15.3'
+    environment:
+      - 'POSTGRES_USER=myuser'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_DB=mydb'
+    ports:
+      - '5432:5432'
+    labels:
+      org.springframework.boot.jdbc.parameters: 'ssl=true&sslmode=require'
+----
+
+With this Docker Compose file in place, the JDBC URL used is `jdbc:postgresql://127.0.0.1:5432/mydb?ssl=true&sslmode=require`.

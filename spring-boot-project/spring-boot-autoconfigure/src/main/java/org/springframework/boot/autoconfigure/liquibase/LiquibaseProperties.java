@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.Assert;
 
 /**
@@ -255,17 +254,6 @@ public class LiquibaseProperties {
 
 	public void setLabelFilter(String labelFilter) {
 		this.labelFilter = labelFilter;
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(replacement = "spring.liquibase.label-filter")
-	public String getLabels() {
-		return getLabelFilter();
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	public void setLabels(String labels) {
-		setLabelFilter(labels);
 	}
 
 	public Map<String, String> getParameters() {

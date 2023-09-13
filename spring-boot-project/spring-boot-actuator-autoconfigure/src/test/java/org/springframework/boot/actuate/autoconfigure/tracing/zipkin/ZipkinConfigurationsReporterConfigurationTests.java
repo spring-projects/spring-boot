@@ -56,10 +56,11 @@ class ZipkinConfigurationsReporterConfigurationTests {
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("customReporter");
-			assertThat(context).hasSingleBean(Reporter.class);
-		});
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("customReporter");
+				assertThat(context).hasSingleBean(Reporter.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

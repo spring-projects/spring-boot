@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ZipkinDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	ZipkinDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("zipkin-compose.yaml");
+		super("zipkin-compose.yaml", DockerImageNames.zipkin());
 	}
 
 	@Test

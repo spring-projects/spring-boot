@@ -57,7 +57,7 @@ org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor,\
 org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor,\
 org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor,\
 org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor,\
-org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor
+org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\

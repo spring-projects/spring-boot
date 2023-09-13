@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class ConditionEvaluationReportLogger {
 
 	private void logMessage(String logLevel) {
 		this.logger.info(String.format("%n%nError starting ApplicationContext. To display the "
-				+ "condition evaluation report re-run your application with '" + logLevel + "' enabled."));
+				+ "condition evaluation report re-run your application with '%s' enabled.", logLevel));
 	}
 
 }

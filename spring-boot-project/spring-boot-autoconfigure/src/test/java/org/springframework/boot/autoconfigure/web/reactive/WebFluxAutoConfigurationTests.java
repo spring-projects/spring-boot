@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -36,6 +37,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -43,10 +45,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -62,6 +67,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
@@ -77,8 +83,10 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
+import org.springframework.web.method.ControllerAdviceBean;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
+import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -655,10 +663,8 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class))
 			.withBean(ExceptionHandlerInterceptor.class)
 			.withPropertyValues("spring.webflux.problemdetails.enabled:true")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(ProblemDetailsExceptionHandler.class);
-				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class))).isTrue();
-			});
+			.run((context) -> assertThat(context).getBean(ProblemDetailsExceptionHandler.class)
+				.matches(AopUtils::isCglibProxy));
 	}
 
 	@Test
@@ -667,6 +673,58 @@ class WebFluxAutoConfigurationTests {
 			.withUserConfiguration(CustomExceptionHandlerConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(ProblemDetailsExceptionHandler.class)
 				.hasSingleBean(CustomExceptionHandler.class));
+	}
+
+	@Test
+	void problemDetailsExceptionHandlerIsOrderedAt0() {
+		this.contextRunner.withPropertyValues("spring.webflux.problemdetails.enabled:true")
+			.withUserConfiguration(OrderedControllerAdviceBeansConfiguration.class)
+			.run((context) -> assertThat(
+					ControllerAdviceBean.findAnnotatedBeans(context).stream().map(ControllerAdviceBean::getBeanType))
+				.asInstanceOf(InstanceOfAssertFactories.list(Class.class))
+				.containsExactly(HighestOrderedControllerAdvice.class, ProblemDetailsExceptionHandler.class,
+						LowestOrderedControllerAdvice.class));
+	}
+
+	@Test
+	void asyncTaskExecutorWithApplicationTaskExecutor() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isSameAs(context.getBean("applicationTaskExecutor"));
+			});
+	}
+
+	@Test
+	void asyncTaskExecutorWithNonMatchApplicationTaskExecutorBean() {
+		this.contextRunner.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isNotSameAs(context.getBean("applicationTaskExecutor"));
+			});
+	}
+
+	@Test
+	void asyncTaskExecutorWithWebFluxConfigurerCanOverrideExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("scheduler.executor")
+				.isSameAs(context.getBean(CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
+	}
+
+	@Test
+	void asyncTaskExecutorWithCustomNonApplicationTaskExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isNotSameAs(context.getBean("customTaskExecutor"));
+			});
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
@@ -973,12 +1031,62 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@Import({ LowestOrderedControllerAdvice.class, HighestOrderedControllerAdvice.class })
+	static class OrderedControllerAdviceBeansConfiguration {
+
+		@ControllerAdvice
+		@Order
+		static class LowestOrderedControllerAdvice {
+
+		}
+
+		@ControllerAdvice
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		static class HighestOrderedControllerAdvice {
+
+		}
+
+	}
+
 	@Aspect
 	static class ExceptionHandlerInterceptor {
 
 		@AfterReturning(pointcut = "@annotation(org.springframework.web.bind.annotation.ExceptionHandler)",
 				returning = "returnValue")
 		void exceptionHandlerIntercept(JoinPoint joinPoint, Object returnValue) {
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomApplicationTaskExecutorConfig {
+
+		@Bean
+		Executor applicationTaskExecutor() {
+			return mock(Executor.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomAsyncTaskExecutorConfig {
+
+		@Bean
+		AsyncTaskExecutor customTaskExecutor() {
+			return mock(AsyncTaskExecutor.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomAsyncTaskExecutorConfigurer implements WebFluxConfigurer {
+
+		private final AsyncTaskExecutor taskExecutor = mock(AsyncTaskExecutor.class);
+
+		@Override
+		public void configureBlockingExecution(BlockingExecutionConfigurer configurer) {
+			configurer.setExecutor(this.taskExecutor);
 		}
 
 	}

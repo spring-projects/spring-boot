@@ -198,6 +198,11 @@ The JSON object contained in the `deprecation` attribute of each `properties` el
 | String
 | The full name of the property that _replaces_ this deprecated property.
   If there is no replacement for this property, it may be omitted.
+
+| `since`
+| String
+| The version in which the property became deprecated.
+  Can be omitted.
 |===
 
 NOTE: Prior to Spring Boot 1.3, a single `deprecated` boolean attribute can be used instead of the `deprecation` element.

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
@@ -46,6 +47,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 	private final RabbitProperties rabbitProperties;
+
+	private Executor taskExecutor;
 
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
@@ -79,6 +82,15 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	protected void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
+	}
+
+	/**
+	 * Set the task executor to use.
+	 * @param taskExecutor the task executor
+	 * @since 3.2.0
+	 */
+	public void setTaskExecutor(Executor taskExecutor) {
+		this.taskExecutor = taskExecutor;
 	}
 
 	protected final RabbitProperties getRabbitProperties() {
@@ -118,6 +130,10 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		}
 		factory.setMissingQueuesFatal(configuration.isMissingQueuesFatal());
 		factory.setDeBatchingEnabled(configuration.isDeBatchingEnabled());
+		factory.setForceStop(configuration.isForceStop());
+		if (this.taskExecutor != null) {
+			factory.setTaskExecutor(this.taskExecutor);
+		}
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()

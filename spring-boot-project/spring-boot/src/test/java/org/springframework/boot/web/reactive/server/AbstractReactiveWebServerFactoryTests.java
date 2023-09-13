@@ -41,10 +41,10 @@ import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http2.client.HTTP2Client;
-import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -77,6 +77,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -95,6 +96,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		if (this.webServer != null) {
 			try {
 				this.webServer.stop();
+				try {
+					this.webServer.destroy();
+				}
+				catch (Exception ex) {
+					// Ignore
+				}
 			}
 			catch (Exception ex) {
 				// Ignore
@@ -125,12 +132,36 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	protected void restartAfterStop() throws Exception {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		assertThat(getResponse(port, "/test")).isEqualTo("Hello World");
+		this.webServer.stop();
+		assertThatException().isThrownBy(() -> getResponse(port, "/test"));
+		this.webServer.start();
+		assertThat(getResponse(this.webServer.getPort(), "/test")).isEqualTo("Hello World");
+	}
+
+	private String getResponse(int port, String uri) {
+		WebClient webClient = getWebClient(port).build();
+		Mono<String> result = webClient.post()
+			.uri(uri)
+			.contentType(MediaType.TEXT_PLAIN)
+			.body(BodyInserters.fromValue("Hello World"))
+			.retrieve()
+			.bodyToMono(String.class);
+		return result.block(Duration.ofSeconds(30));
+	}
+
+	@Test
 	void portIsMinusOneWhenConnectionIsClosed() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		assertThat(this.webServer.getPort()).isGreaterThan(0);
-		this.webServer.stop();
+		this.webServer.destroy();
 		assertThat(this.webServer.getPort()).isEqualTo(-1);
 	}
 
@@ -194,8 +225,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			.retrieve()
 			.bodyToMono(String.class);
 
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -572,6 +602,25 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
 
+	@Test
+	void startedLogMessageWithSinglePort() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Netty|Tomcat|Undertow) started on port "
+				+ this.webServer.getPort() + "( \\(http(/1.1)?\\))?( with context path '(/)?')?");
+	}
+
+	@Test
+	protected void startedLogMessageWithMultiplePorts() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		addConnector(0, factory);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on ports " + this.webServer.getPort()
+				+ "( \\(http(/1.1)?\\))?, [0-9]+( \\(http(/1.1)?\\))?( with context path '(/)?')?");
+	}
+
 	protected WebClient prepareCompressionTest() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
@@ -642,6 +691,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			action.run(blockedPort);
 		}
 	}
+
+	protected abstract String startedLogMessage();
+
+	protected abstract void addConnector(int port, AbstractReactiveWebServerFactory factory);
 
 	public interface BlockedPortAction {
 

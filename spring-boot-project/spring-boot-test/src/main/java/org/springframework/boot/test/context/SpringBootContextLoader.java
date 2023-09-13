@@ -187,7 +187,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (mergedConfig instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
 			if (!isEmbeddedWebEnvironment(mergedConfig)) {
-				new WebConfigurer().configure(mergedConfig, application, initializers);
+				new WebConfigurer().configure(mergedConfig, initializers);
 			}
 		}
 		else if (mergedConfig instanceof ReactiveWebMergedContextConfiguration) {
@@ -230,8 +230,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		setActiveProfiles(environment, mergedConfig.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
-		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
-				mergedConfig.getPropertySourceLocations());
+		TestPropertySourceUtils.addPropertySourcesToEnvironment(environment, resourceLoader,
+				mergedConfig.getPropertySourceDescriptors());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(mergedConfig));
 	}
 
@@ -374,8 +374,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	 */
 	private static class WebConfigurer {
 
-		void configure(MergedContextConfiguration mergedConfig, SpringApplication application,
-				List<ApplicationContextInitializer<?>> initializers) {
+		void configure(MergedContextConfiguration mergedConfig, List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webMergedConfig = (WebMergedContextConfiguration) mergedConfig;
 			addMockServletContext(initializers, webMergedConfig);
 		}

@@ -40,6 +40,8 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -47,8 +49,11 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
@@ -570,6 +575,31 @@ class KafkaAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldUsePlatformThreadsByDefault() {
+		this.contextRunner.run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+				.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).isNotNull();
+			AsyncTaskExecutor listenerTaskExecutor = factory.getContainerProperties().getListenerTaskExecutor();
+			assertThat(listenerTaskExecutor).isNull();
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldUseVirtualThreadsIfEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+				.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).isNotNull();
+			AsyncTaskExecutor listenerTaskExecutor = factory.getContainerProperties().getListenerTaskExecutor();
+			assertThat(listenerTaskExecutor).isInstanceOf(SimpleAsyncTaskExecutor.class);
+			SimpleAsyncTaskExecutorAssert.assertThat((SimpleAsyncTaskExecutor) listenerTaskExecutor)
+				.usesVirtualThreads();
+		});
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	void listenerProperties() {
@@ -839,8 +869,8 @@ class KafkaAutoConfigurationTests {
 		return new KafkaConnectionDetails() {
 
 			@Override
-			public List<Node> getBootstrapNodes() {
-				return List.of(new Node("kafka.example.com", 12345));
+			public List<String> getBootstrapServers() {
+				return List.of("kafka.example.com:12345");
 			}
 
 		};

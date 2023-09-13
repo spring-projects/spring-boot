@@ -17,7 +17,7 @@
 package org.springframework.boot.docker.compose.lifecycle;
 
 /**
- * Docker compose lifecycle management.
+ * Docker Compose lifecycle management.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -27,43 +27,43 @@ package org.springframework.boot.docker.compose.lifecycle;
 public enum LifecycleManagement {
 
 	/**
-	 * Don't start or stop docker compose.
+	 * Don't start or stop Docker Compose.
 	 */
 	NONE(false, false),
 
 	/**
-	 * Only start docker compose if it's not running.
+	 * Start Docker Compose if it's not running.
 	 */
 	START_ONLY(true, false),
 
 	/**
-	 * Start and stop docker compose if it's not running.
+	 * Start Docker Compose if it's not running and stop it when the JVM exits.
 	 */
 	START_AND_STOP(true, true);
 
-	private final boolean startup;
+	private final boolean start;
 
-	private final boolean shutdown;
+	private final boolean stop;
 
-	LifecycleManagement(boolean startup, boolean shutdown) {
-		this.startup = startup;
-		this.shutdown = shutdown;
+	LifecycleManagement(boolean start, boolean stop) {
+		this.start = start;
+		this.stop = stop;
 	}
 
 	/**
-	 * Return whether docker compose should be started.
-	 * @return whether docker compose should be started.
+	 * Return whether Docker Compose should be started.
+	 * @return whether Docker Compose should be started
 	 */
-	boolean shouldStartup() {
-		return this.startup;
+	boolean shouldStart() {
+		return this.start;
 	}
 
 	/**
-	 * Return whether docker compose should be stopped.
-	 * @return whether docker compose should be stopped
+	 * Return whether Docker Compose should be stopped.
+	 * @return whether Docker Compose should be stopped
 	 */
-	boolean shouldShutdown() {
-		return this.shutdown;
+	boolean shouldStop() {
+		return this.stop;
 	}
 
 }

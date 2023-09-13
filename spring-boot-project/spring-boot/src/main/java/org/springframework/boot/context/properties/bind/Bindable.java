@@ -57,13 +57,16 @@ public final class Bindable<T> {
 
 	private final EnumSet<BindRestriction> bindRestrictions;
 
+	private final BindMethod bindMethod;
+
 	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations,
-			EnumSet<BindRestriction> bindRestrictions) {
+			EnumSet<BindRestriction> bindRestrictions, BindMethod bindMethod) {
 		this.type = type;
 		this.boxedType = boxedType;
 		this.value = value;
 		this.annotations = annotations;
 		this.bindRestrictions = bindRestrictions;
+		this.bindMethod = bindMethod;
 	}
 
 	/**
@@ -124,6 +127,16 @@ public final class Bindable<T> {
 		return this.bindRestrictions.contains(bindRestriction);
 	}
 
+	/**
+	 * Returns the {@link BindMethod method} to be used to bind this bindable, or
+	 * {@code null} if no specific binding method is required.
+	 * @return the bind method or {@code null}
+	 * @since 3.0.8
+	 */
+	public BindMethod getBindMethod() {
+		return this.bindMethod;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -137,17 +150,13 @@ public final class Bindable<T> {
 		result = result && nullSafeEquals(this.type.resolve(), other.type.resolve());
 		result = result && nullSafeEquals(this.annotations, other.annotations);
 		result = result && nullSafeEquals(this.bindRestrictions, other.bindRestrictions);
+		result = result && nullSafeEquals(this.bindMethod, other.bindMethod);
 		return result;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.bindRestrictions);
-		return result;
+		return ObjectUtils.nullSafeHash(this.type, this.annotations, this.bindRestrictions, this.bindMethod);
 	}
 
 	@Override
@@ -156,6 +165,7 @@ public final class Bindable<T> {
 		creator.append("type", this.type);
 		creator.append("value", (this.value != null) ? "provided" : "none");
 		creator.append("annotations", this.annotations);
+		creator.append("bindMethod", this.bindMethod);
 		return creator.toString();
 	}
 
@@ -170,11 +180,12 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations != null) ? annotations : NO_ANNOTATIONS, NO_BIND_RESTRICTIONS);
+				(annotations != null) ? annotations : NO_ANNOTATIONS, NO_BIND_RESTRICTIONS, this.bindMethod);
 	}
 
 	/**
-	 * Create an updated {@link Bindable} instance with an existing value.
+	 * Create an updated {@link Bindable} instance with an existing value. Implies that
+	 * Java Bean binding will be used.
 	 * @param existingValue the existing value
 	 * @return an updated {@link Bindable}
 	 */
@@ -182,8 +193,11 @@ public final class Bindable<T> {
 		Assert.isTrue(
 				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
+		Assert.state(this.bindMethod != BindMethod.VALUE_OBJECT,
+				() -> "An existing value cannot be provided when binding as a value object");
 		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
-		return new Bindable<>(this.type, this.boxedType, value, this.annotations, this.bindRestrictions);
+		return new Bindable<>(this.type, this.boxedType, value, this.annotations, this.bindRestrictions,
+				BindMethod.JAVA_BEAN);
 	}
 
 	/**
@@ -192,7 +206,8 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
-		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations, this.bindRestrictions);
+		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations, this.bindRestrictions,
+				this.bindMethod);
 	}
 
 	/**
@@ -204,7 +219,23 @@ public final class Bindable<T> {
 	public Bindable<T> withBindRestrictions(BindRestriction... additionalRestrictions) {
 		EnumSet<BindRestriction> bindRestrictions = EnumSet.copyOf(this.bindRestrictions);
 		bindRestrictions.addAll(Arrays.asList(additionalRestrictions));
-		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations, bindRestrictions);
+		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations, bindRestrictions,
+				this.bindMethod);
+	}
+
+	/**
+	 * Create an updated {@link Bindable} instance with a specific bind method. To use
+	 * {@link BindMethod#VALUE_OBJECT value object binding}, the current instance must not
+	 * have an existing or supplied value.
+	 * @param bindMethod the method to use to bind the bindable
+	 * @return an updated {@link Bindable}
+	 * @since 3.0.8
+	 */
+	public Bindable<T> withBindMethod(BindMethod bindMethod) {
+		Assert.state(bindMethod != BindMethod.VALUE_OBJECT || this.value == null,
+				() -> "Value object binding cannot be used with an existing or supplied value");
+		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations, this.bindRestrictions,
+				bindMethod);
 	}
 
 	/**
@@ -277,7 +308,7 @@ public final class Bindable<T> {
 	public static <T> Bindable<T> of(ResolvableType type) {
 		Assert.notNull(type, "Type must not be null");
 		ResolvableType boxedType = box(type);
-		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS, NO_BIND_RESTRICTIONS);
+		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS, NO_BIND_RESTRICTIONS, null);
 	}
 
 	private static ResolvableType box(ResolvableType type) {

@@ -23,4 +23,7 @@ test {
 			}
 	 	}
 	}
+	predictiveSelection {
+		enabled = false
+	}
 }

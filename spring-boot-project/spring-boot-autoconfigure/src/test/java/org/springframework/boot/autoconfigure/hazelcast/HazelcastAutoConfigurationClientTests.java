@@ -16,6 +16,14 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
@@ -34,6 +42,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,9 +59,15 @@ class HazelcastAutoConfigurationClientTests {
 	 */
 	private static HazelcastInstance hazelcastServer;
 
+	private static String endpointAddress;
+
 	@BeforeAll
 	static void init() {
-		hazelcastServer = Hazelcast.newHazelcastInstance();
+		Config config = Config.load();
+		config.getNetworkConfig().setPort(0);
+		hazelcastServer = Hazelcast.newHazelcastInstance(config);
+		InetSocketAddress inetSocketAddress = (InetSocketAddress) hazelcastServer.getLocalEndpoint().getSocketAddress();
+		endpointAddress = inetSocketAddress.getHostString() + ":" + inetSocketAddress.getPort();
 	}
 
 	@AfterAll
@@ -67,73 +82,52 @@ class HazelcastAutoConfigurationClientTests {
 
 	@Test
 	void systemPropertyWithXml() {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
 		this.contextRunner
-			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-					+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.xml")
+			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY + "=" + config.getAbsolutePath())
 			.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
 
 	@Test
 	void systemPropertyWithYaml() {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml");
 		this.contextRunner
-			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-					+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml")
+			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY + "=" + config.getAbsolutePath())
 			.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
 
 	@Test
 	void systemPropertyWithYml() {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yml");
 		this.contextRunner
-			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-					+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.yml")
+			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY + "=" + config.getAbsolutePath())
 			.run(assertSpecificHazelcastClient("explicit-yml"));
 	}
 
 	@Test
-	void explicitConfigFileWithXml() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-					+ "hazelcast/hazelcast-client-specific.xml")
+	void explicitConfigUrlWithXml() throws MalformedURLException {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
 
 	@Test
-	void explicitConfigFileWithYaml() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-					+ "hazelcast/hazelcast-client-specific.yaml")
+	void explicitConfigUrlWithYaml() throws MalformedURLException {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml");
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
 
 	@Test
-	void explicitConfigFileWithYml() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-					+ "hazelcast/hazelcast-client-specific.yml")
-			.run(assertSpecificHazelcastClient("explicit-yml"));
-	}
-
-	@Test
-	void explicitConfigUrlWithXml() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
-					+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml")
-			.run(assertSpecificHazelcastClient("explicit-xml"));
-	}
-
-	@Test
-	void explicitConfigUrlWithYaml() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
-					+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml")
-			.run(assertSpecificHazelcastClient("explicit-yaml"));
-	}
-
-	@Test
-	void explicitConfigUrlWithYml() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
-					+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yml")
+	void explicitConfigUrlWithYml() throws MalformedURLException {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yml");
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run(assertSpecificHazelcastClient("explicit-yml"));
 	}
 
@@ -154,28 +148,26 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
-	void clientConfigWithInstanceNameCreatesClientIfNecessary() {
+	void clientConfigWithInstanceNameCreatesClientIfNecessary() throws MalformedURLException {
 		assertThat(HazelcastClient.getHazelcastClientByName("spring-boot")).isNull();
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
-					+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml")
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml");
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
 				.extracting(HazelcastInstance::getName)
 				.isEqualTo("spring-boot"));
 	}
 
 	@Test
-	void autoConfiguredClientConfigUsesApplicationClassLoader() {
-		this.contextRunner
-			.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-					+ "hazelcast/hazelcast-client-specific.xml")
-			.run((context) -> {
-				HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
-				assertThat(hazelcast).isInstanceOf(HazelcastClientProxy.class);
-				ClientConfig clientConfig = ((HazelcastClientProxy) hazelcast).getClientConfig();
-				assertThat(clientConfig.getClassLoader())
-					.isSameAs(context.getSourceApplicationContext().getClassLoader());
-			});
+	void autoConfiguredClientConfigUsesApplicationClassLoader() throws MalformedURLException {
+		File config = prepareConfiguration("src/test/resources/org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL()).run((context) -> {
+			HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+			assertThat(hazelcast).isInstanceOf(HazelcastClientProxy.class);
+			ClientConfig clientConfig = ((HazelcastClientProxy) hazelcast).getClientConfig();
+			assertThat(clientConfig.getClassLoader()).isSameAs(context.getSourceApplicationContext().getClassLoader());
+		});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {
@@ -191,6 +183,22 @@ class HazelcastAutoConfigurationClientTests {
 			.anyMatch((e) -> e.equals(label)), "Label equals to " + label);
 	}
 
+	private File prepareConfiguration(String input) {
+		File configFile = new File(input);
+		try {
+			String config = FileCopyUtils.copyToString(new FileReader(configFile));
+			config = config.replace("${address}", endpointAddress);
+			System.out.println(config);
+			File outputFile = new File(Files.createTempDirectory(getClass().getSimpleName()).toFile(),
+					configFile.getName());
+			FileCopyUtils.copy(config, new FileWriter(outputFile));
+			return outputFile;
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HazelcastServerAndClientConfig {
 
@@ -201,7 +209,10 @@ class HazelcastAutoConfigurationClientTests {
 
 		@Bean
 		ClientConfig clientConfig() {
-			return new ClientConfig();
+			ClientConfig config = new ClientConfig();
+			config.getConnectionStrategyConfig().getConnectionRetryConfig().setClusterConnectTimeoutMillis(60000);
+			config.getNetworkConfig().getAddresses().add(endpointAddress);
+			return config;
 		}
 
 	}

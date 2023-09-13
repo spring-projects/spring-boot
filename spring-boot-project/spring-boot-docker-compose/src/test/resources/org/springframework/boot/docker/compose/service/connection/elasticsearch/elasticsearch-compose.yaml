@@ -1,6 +1,6 @@
 services:
   elasticsearch:
-    image: 'elasticsearch:8.6.1'
+    image: '{imageName}'
     environment:
       - 'ELASTIC_PASSWORD=secret'
       - 'ES_JAVA_OPTS=-Xmx512m'

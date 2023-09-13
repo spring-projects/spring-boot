@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.observation.ObservationHandler;
@@ -30,6 +31,7 @@ import org.springframework.util.MultiValueMap;
  * Groups {@link ObservationHandler ObservationHandlers} by type.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 @SuppressWarnings("rawtypes")
 class ObservationHandlerGrouping {
@@ -46,13 +48,14 @@ class ObservationHandlerGrouping {
 
 	void apply(List<ObservationHandler<?>> handlers, ObservationConfig config) {
 		MultiValueMap<Class<? extends ObservationHandler>, ObservationHandler<?>> groupings = new LinkedMultiValueMap<>();
+		List<ObservationHandler<?>> handlersWithoutCategory = new ArrayList<>();
 		for (ObservationHandler<?> handler : handlers) {
 			Class<? extends ObservationHandler> category = findCategory(handler);
 			if (category != null) {
 				groupings.add(category, handler);
 			}
 			else {
-				config.observationHandler(handler);
+				handlersWithoutCategory.add(handler);
 			}
 		}
 		for (Class<? extends ObservationHandler> category : this.categories) {
@@ -60,6 +63,9 @@ class ObservationHandlerGrouping {
 			if (!CollectionUtils.isEmpty(handlerGroup)) {
 				config.observationHandler(new FirstMatchingCompositeObservationHandler(handlerGroup));
 			}
+		}
+		for (ObservationHandler<?> observationHandler : handlersWithoutCategory) {
+			config.observationHandler(observationHandler);
 		}
 	}
 

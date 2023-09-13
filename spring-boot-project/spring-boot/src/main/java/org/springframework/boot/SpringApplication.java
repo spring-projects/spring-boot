@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -569,8 +570,8 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Apply any relevant post processing the {@link ApplicationContext}. Subclasses can
-	 * apply additional processing as required.
+	 * Apply any relevant post-processing to the {@link ApplicationContext}. Subclasses
+	 * can apply additional processing as required.
 	 * @param context the application context
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
@@ -1364,8 +1365,8 @@ public class SpringApplication {
 	 * writing a test harness that needs to start an application with additional
 	 * configuration.
 	 * @param main the main method entry point that runs the {@link SpringApplication}
-	 * @return an {@link SpringApplication.Augmented} instance that can be used to add
-	 * configuration and run the application.
+	 * @return a {@link SpringApplication.Augmented} instance that can be used to add
+	 * configuration and run the application
 	 * @since 3.1.0
 	 * @see #withHook(SpringApplicationHook, Runnable)
 	 */
@@ -1453,15 +1454,60 @@ public class SpringApplication {
 		/**
 		 * Run the application using the given args.
 		 * @param args the main method args
+		 * @return the running {@link ApplicationContext}
 		 */
-		public void run(String... args) {
-			withHook(this::getRunListener, () -> this.main.accept(args));
+		public SpringApplication.Running run(String... args) {
+			RunListener runListener = new RunListener();
+			SpringApplicationHook hook = new SingleUseSpringApplicationHook((springApplication) -> {
+				springApplication.addPrimarySources(this.sources);
+				return runListener;
+			});
+			withHook(hook, () -> this.main.accept(args));
+			return runListener;
 		}
 
-		private SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
-			springApplication.addPrimarySources(this.sources);
-			return null;
+		/**
+		 * {@link SpringApplicationRunListener} to capture {@link Running} application
+		 * details.
+		 */
+		private static class RunListener implements SpringApplicationRunListener, Running {
+
+			private final List<ConfigurableApplicationContext> contexts = Collections
+				.synchronizedList(new ArrayList<>());
+
+			@Override
+			public void contextLoaded(ConfigurableApplicationContext context) {
+				this.contexts.add(context);
+			}
+
+			@Override
+			public ConfigurableApplicationContext getApplicationContext() {
+				List<ConfigurableApplicationContext> rootContexts = this.contexts.stream()
+					.filter((context) -> context.getParent() == null)
+					.toList();
+				Assert.state(!rootContexts.isEmpty(), "No root application context located");
+				Assert.state(rootContexts.size() == 1, "No unique root application context located");
+				return rootContexts.get(0);
+			}
+
 		}
+
+	}
+
+	/**
+	 * Provides access to details of a {@link SpringApplication} run using
+	 * {@link Augmented#run(String...)}.
+	 *
+	 * @since 3.1.0
+	 */
+	public interface Running {
+
+		/**
+		 * Return the root {@link ConfigurableApplicationContext} of the running
+		 * application.
+		 * @return the root application context
+		 */
+		ConfigurableApplicationContext getApplicationContext();
 
 	}
 
@@ -1531,6 +1577,23 @@ public class SpringApplication {
 		 */
 		public ConfigurableApplicationContext getApplicationContext() {
 			return this.applicationContext;
+		}
+
+	}
+
+	private static final class SingleUseSpringApplicationHook implements SpringApplicationHook {
+
+		private final AtomicBoolean used = new AtomicBoolean();
+
+		private final SpringApplicationHook delegate;
+
+		private SingleUseSpringApplicationHook(SpringApplicationHook delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
+			return this.used.compareAndSet(false, true) ? this.delegate.getRunListener(springApplication) : null;
 		}
 
 	}

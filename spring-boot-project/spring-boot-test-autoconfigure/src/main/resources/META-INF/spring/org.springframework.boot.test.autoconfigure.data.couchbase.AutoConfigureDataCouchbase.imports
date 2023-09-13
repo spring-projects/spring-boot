@@ -5,3 +5,5 @@ org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfigura
 org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration
+org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
+optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

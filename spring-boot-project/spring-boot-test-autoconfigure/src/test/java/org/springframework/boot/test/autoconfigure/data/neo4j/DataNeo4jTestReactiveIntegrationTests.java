@@ -76,8 +76,12 @@ class DataNeo4jTestReactiveIntegrationTests {
 			.flatMap(this.exampleRepository::save)
 			.as(StepVerifier::create)
 			.expectNextCount(1)
-			.verifyComplete();
-		StepVerifier.create(this.neo4jTemplate.count(ExampleGraph.class)).expectNext(1L).verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
+		StepVerifier.create(this.neo4jTemplate.count(ExampleGraph.class))
+			.expectNext(1L)
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test

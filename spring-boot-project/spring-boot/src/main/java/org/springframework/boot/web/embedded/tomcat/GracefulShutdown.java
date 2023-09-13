@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,13 +60,13 @@ final class GracefulShutdown {
 		try {
 			for (Container host : this.tomcat.getEngine().findChildren()) {
 				for (Container context : host.findChildren()) {
-					while (isActive(context)) {
-						if (this.aborted) {
-							logger.info("Graceful shutdown aborted with one or more requests still active");
-							callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
-							return;
-						}
+					while (!this.aborted && isActive(context)) {
 						Thread.sleep(50);
+					}
+					if (this.aborted) {
+						logger.info("Graceful shutdown aborted with one or more requests still active");
+						callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
+						return;
 					}
 				}
 			}

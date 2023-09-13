@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,21 +37,21 @@ class HttpTransportTests {
 
 	@Test
 	void createWhenDockerHostVariableIsAddressReturnsRemote() {
-		HttpTransport transport = HttpTransport.create(new DockerHost("tcp://192.168.1.0"));
+		HttpTransport transport = HttpTransport.create(DockerHostConfiguration.forAddress("tcp://192.168.1.0"));
 		assertThat(transport).isInstanceOf(RemoteHttpClientTransport.class);
 	}
 
 	@Test
 	void createWhenDockerHostVariableIsFileReturnsLocal(@TempDir Path tempDir) throws IOException {
 		String dummySocketFilePath = Files.createTempFile(tempDir, "http-transport", null).toAbsolutePath().toString();
-		HttpTransport transport = HttpTransport.create(new DockerHost(dummySocketFilePath));
+		HttpTransport transport = HttpTransport.create(DockerHostConfiguration.forAddress(dummySocketFilePath));
 		assertThat(transport).isInstanceOf(LocalHttpClientTransport.class);
 	}
 
 	@Test
 	void createWhenDockerHostVariableIsUnixSchemePrefixedFileReturnsLocal(@TempDir Path tempDir) throws IOException {
 		String dummySocketFilePath = "unix://" + Files.createTempFile(tempDir, "http-transport", null).toAbsolutePath();
-		HttpTransport transport = HttpTransport.create(new DockerHost(dummySocketFilePath));
+		HttpTransport transport = HttpTransport.create(DockerHostConfiguration.forAddress(dummySocketFilePath));
 		assertThat(transport).isInstanceOf(LocalHttpClientTransport.class);
 	}
 

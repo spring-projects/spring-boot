@@ -20,13 +20,11 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-
 import org.springframework.boot.SpringApplicationAotProcessor;
 import org.springframework.util.ClassUtils;
 
 /**
- * Checks if docker compose support should be skipped.
+ * Checks if Docker Compose support should be skipped.
  *
  * @author Phillip Webb
  */
@@ -46,7 +44,7 @@ class DockerComposeSkipCheck {
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
 
-	boolean shouldSkip(ClassLoader classLoader, Log logger, DockerComposeProperties.Skip properties) {
+	boolean shouldSkip(ClassLoader classLoader, DockerComposeProperties.Skip properties) {
 		if (properties.isInTests() && hasAtLeastOneRequiredClass(classLoader)) {
 			Thread thread = Thread.currentThread();
 			for (StackTraceElement element : thread.getStackTrace()) {

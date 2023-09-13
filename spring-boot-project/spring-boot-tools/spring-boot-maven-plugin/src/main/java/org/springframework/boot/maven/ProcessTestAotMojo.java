@@ -26,13 +26,12 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ResolutionErrorHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -40,7 +39,13 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.repository.RepositorySystem;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.filter.DependencyFilterUtils;
 
 /**
  * Invoke the AOT engine on tests.
@@ -98,18 +103,6 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
 	private File generatedClasses;
 
-	/**
-	 * Local artifact repository used to resolve JUnit platform launcher jars.
-	 */
-	@Parameter(defaultValue = "${localRepository}", required = true, readonly = true)
-	private ArtifactRepository localRepository;
-
-	/**
-	 * Remote artifact repositories used to resolve JUnit platform launcher jars.
-	 */
-	@Parameter(defaultValue = "${project.remoteArtifactRepositories}", required = true, readonly = true)
-	private List<ArtifactRepository> remoteRepositories;
-
 	@Component
 	private RepositorySystem repositorySystem;
 
@@ -118,6 +111,10 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 
 	@Override
 	protected void executeAot() throws Exception {
+		if (this.project.getPackaging().equals("pom")) {
+			getLog().debug("process-test-aot goal could not be applied to pom project.");
+			return;
+		}
 		if (Boolean.getBoolean("skipTests") || Boolean.getBoolean("maven.test.skip")) {
 			getLog().info("Skipping AOT test processing since tests are skipped");
 			return;
@@ -160,10 +157,10 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		String version = getJUnitPlatformVersion();
 		DefaultArtifactHandler handler = new DefaultArtifactHandler("jar");
 		handler.setIncludesDependencies(true);
-		ArtifactResolutionResult resolutionResult = resolveArtifact(new DefaultArtifact(JUNIT_PLATFORM_GROUP_ID,
+		Set<Artifact> artifacts = resolveArtifact(new DefaultArtifact(JUNIT_PLATFORM_GROUP_ID,
 				JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID, version, null, "jar", null, handler));
 		Set<URL> fullClassPath = new LinkedHashSet<>(Arrays.asList(classPath));
-		for (Artifact artifact : resolutionResult.getArtifacts()) {
+		for (Artifact artifact : artifacts) {
 			fullClassPath.add(artifact.getFile().toURI().toURL());
 		}
 		return fullClassPath.toArray(URL[]::new);
@@ -175,21 +172,25 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		String version = (platformCommonsArtifact != null) ? platformCommonsArtifact.getBaseVersion() : null;
 		if (version == null) {
 			throw new MojoExecutionException(
-					"Unable to find '%s' dependnecy. Please ensure JUnit is correctly configured.".formatted(id));
+					"Unable to find '%s' dependency. Please ensure JUnit is correctly configured.".formatted(id));
 		}
 		return version;
 	}
 
-	private ArtifactResolutionResult resolveArtifact(Artifact artifact) throws Exception {
-		ArtifactResolutionRequest request = new ArtifactResolutionRequest();
-		request.setArtifact(artifact);
-		request.setLocalRepository(this.localRepository);
-		request.setResolveTransitively(true);
-		request.setCollectionFilter(new RuntimeArtifactFilter());
-		request.setRemoteRepositories(this.remoteRepositories);
-		ArtifactResolutionResult result = this.repositorySystem.resolve(request);
-		this.resolutionErrorHandler.throwErrors(request, result);
-		return result;
+	private Set<Artifact> resolveArtifact(Artifact artifact) throws Exception {
+		CollectRequest collectRequest = new CollectRequest();
+		collectRequest.setRoot(RepositoryUtils.toDependency(artifact, null));
+		collectRequest.setRepositories(this.project.getRemotePluginRepositories());
+		DependencyRequest request = new DependencyRequest();
+		request.setCollectRequest(collectRequest);
+		request.setFilter(DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME));
+		DependencyResult dependencyResult = this.repositorySystem
+			.resolveDependencies(getSession().getRepositorySession(), request);
+		return dependencyResult.getArtifactResults()
+			.stream()
+			.map(ArtifactResult::getArtifact)
+			.map(RepositoryUtils::toArtifact)
+			.collect(Collectors.toSet());
 	}
 
 }

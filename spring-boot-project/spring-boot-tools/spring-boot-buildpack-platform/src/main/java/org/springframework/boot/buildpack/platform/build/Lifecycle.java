@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import com.sun.jna.Platform;
@@ -34,6 +35,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.util.Assert;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * A buildpack lifecycle used to run the build {@link Phase phases} needed to package an
@@ -72,9 +74,9 @@ class Lifecycle implements Closeable {
 
 	private final VolumeName applicationVolume;
 
-	private final VolumeName buildCacheVolume;
+	private final Cache buildCache;
 
-	private final VolumeName launchCacheVolume;
+	private final Cache launchCache;
 
 	private final String applicationDirectory;
 
@@ -101,8 +103,8 @@ class Lifecycle implements Closeable {
 		this.platformVersion = getPlatformVersion(builder.getBuilderMetadata().getLifecycle());
 		this.layersVolume = createRandomVolumeName("pack-layers-");
 		this.applicationVolume = createRandomVolumeName("pack-app-");
-		this.buildCacheVolume = getBuildCacheVolumeName(request);
-		this.launchCacheVolume = getLaunchCacheVolumeName(request);
+		this.buildCache = getBuildCache(request);
+		this.launchCache = getLaunchCache(request);
 		this.applicationDirectory = getApplicationDirectory(request);
 	}
 
@@ -110,33 +112,27 @@ class Lifecycle implements Closeable {
 		return VolumeName.random(prefix);
 	}
 
-	private VolumeName getBuildCacheVolumeName(BuildRequest request) {
+	private Cache getBuildCache(BuildRequest request) {
 		if (request.getBuildCache() != null) {
-			return getVolumeName(request.getBuildCache());
+			return request.getBuildCache();
 		}
-		return createCacheVolumeName(request, "build");
+		return createVolumeCache(request, "build");
 	}
 
-	private VolumeName getLaunchCacheVolumeName(BuildRequest request) {
+	private Cache getLaunchCache(BuildRequest request) {
 		if (request.getLaunchCache() != null) {
-			return getVolumeName(request.getLaunchCache());
+			return request.getLaunchCache();
 		}
-		return createCacheVolumeName(request, "launch");
-	}
-
-	private VolumeName getVolumeName(Cache cache) {
-		if (cache.getVolume() != null) {
-			return VolumeName.of(cache.getVolume().getName());
-		}
-		return null;
+		return createVolumeCache(request, "launch");
 	}
 
 	private String getApplicationDirectory(BuildRequest request) {
 		return (request.getApplicationDirectory() != null) ? request.getApplicationDirectory() : Directory.APPLICATION;
 	}
 
-	private VolumeName createCacheVolumeName(BuildRequest request, String suffix) {
-		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6);
+	private Cache createVolumeCache(BuildRequest request, String suffix) {
+		return Cache.volume(
+				VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6));
 	}
 
 	private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {
@@ -155,9 +151,14 @@ class Lifecycle implements Closeable {
 	void execute() throws IOException {
 		Assert.state(!this.executed, "Lifecycle has already been executed");
 		this.executed = true;
-		this.log.executingLifecycle(this.request, this.lifecycleVersion, this.buildCacheVolume);
+		this.log.executingLifecycle(this.request, this.lifecycleVersion, this.buildCache);
 		if (this.request.isCleanCache()) {
-			deleteVolume(this.buildCacheVolume);
+			if (this.buildCache.getVolume() != null) {
+				deleteVolume(this.buildCache.getVolume().getVolumeName());
+			}
+			if (this.buildCache.getBind() != null) {
+				deleteBind(this.buildCache.getBind().getSource());
+			}
 		}
 		run(createPhase());
 		this.log.executedLifecycle(this.request);
@@ -184,8 +185,8 @@ class Lifecycle implements Closeable {
 		phase.withArgs(this.request.getName());
 		phase.withBinding(Binding.from(this.layersVolume, Directory.LAYERS));
 		phase.withBinding(Binding.from(this.applicationVolume, this.applicationDirectory));
-		phase.withBinding(Binding.from(this.buildCacheVolume, Directory.CACHE));
-		phase.withBinding(Binding.from(this.launchCacheVolume, Directory.LAUNCH_CACHE));
+		phase.withBinding(Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		phase.withBinding(Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		if (this.request.getBindings() != null) {
 			this.request.getBindings().forEach(phase::withBinding);
 		}
@@ -197,6 +198,10 @@ class Lifecycle implements Closeable {
 			phase.withEnv(SOURCE_DATE_EPOCH_KEY, Long.toString(this.request.getCreatedDate().getEpochSecond()));
 		}
 		return phase;
+	}
+
+	private String getCacheBindingSource(Cache cache) {
+		return (cache.getVolume() != null) ? cache.getVolume().getName() : cache.getBind().getSource();
 	}
 
 	private void configureDaemonAccess(Phase phase) {
@@ -267,6 +272,15 @@ class Lifecycle implements Closeable {
 
 	private void deleteVolume(VolumeName name) throws IOException {
 		this.docker.volume().delete(name, true);
+	}
+
+	private void deleteBind(String source) {
+		try {
+			FileSystemUtils.deleteRecursively(Path.of(source));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Error cleaning bind mount directory '" + source + "'", ex);
+		}
 	}
 
 	/**

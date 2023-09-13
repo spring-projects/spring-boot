@@ -33,7 +33,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class CouchbaseContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<CouchbaseConnectionDetails, CouchbaseContainer> {
+		extends ContainerConnectionDetailsFactory<CouchbaseContainer, CouchbaseConnectionDetails> {
 
 	@Override
 	protected CouchbaseConnectionDetails getContainerConnectionDetails(
@@ -44,29 +44,26 @@ class CouchbaseContainerConnectionDetailsFactory
 	/**
 	 * {@link CouchbaseConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class CouchbaseContainerConnectionDetails extends ContainerConnectionDetails
-			implements CouchbaseConnectionDetails {
-
-		private final CouchbaseContainer container;
+	private static final class CouchbaseContainerConnectionDetails
+			extends ContainerConnectionDetails<CouchbaseContainer> implements CouchbaseConnectionDetails {
 
 		private CouchbaseContainerConnectionDetails(ContainerConnectionSource<CouchbaseContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public String getUsername() {
-			return this.container.getUsername();
+			return getContainer().getUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.container.getPassword();
+			return getContainer().getPassword();
 		}
 
 		@Override
 		public String getConnectionString() {
-			return this.container.getConnectionString();
+			return getContainer().getConnectionString();
 		}
 
 	}

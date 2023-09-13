@@ -111,15 +111,16 @@ class PropertyDescriptorResolverTests {
 	void propertiesWithDeducedConstructorBinding() {
 		process(ImmutableDeducedConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag")));
-		process(ImmutableDeducedConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
-			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+		process(ImmutableDeducedConstructorBindingProperties.class,
+				properties((stream) -> assertThat(stream).isNotEmpty()
+					.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
 	void propertiesWithConstructorWithConstructorBinding() {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
-		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream)
+		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
@@ -127,14 +128,14 @@ class PropertyDescriptorResolverTests {
 	void propertiesWithConstructorAndClassConstructorBinding() {
 		process(ImmutableClassConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
+		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
 	void propertiesWithAutowiredConstructor() {
 		process(AutowiredProperties.class, propertyNames((stream) -> assertThat(stream).containsExactly("theName")));
-		process(AutowiredProperties.class, properties((stream) -> assertThat(stream)
+		process(AutowiredProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 
@@ -142,19 +143,8 @@ class PropertyDescriptorResolverTests {
 	void propertiesWithMultiConstructor() {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
+		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
-	}
-
-	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void propertiesWithMultiConstructorAndDeprecatedAnnotation() {
-		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
-				properties((stream) -> assertThat(stream)
-					.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test

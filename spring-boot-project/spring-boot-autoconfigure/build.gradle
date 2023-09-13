@@ -29,6 +29,7 @@ dependencies {
 	optional("com.nimbusds:oauth2-oidc-sdk")
 	optional("com.oracle.database.jdbc:ojdbc8")
 	optional("com.oracle.database.jdbc:ucp")
+	optional("com.querydsl:querydsl-core")
 	optional("com.samskivert:jmustache")
 	optional("io.lettuce:lettuce-core")
 	optional("io.projectreactor.netty:reactor-netty-http")
@@ -59,7 +60,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.apache.httpcomponents.client5:httpclient5")
-	optional("org.apache.httpcomponents.core5:httpcore5-reactive");
+	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
 	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
@@ -78,20 +79,10 @@ dependencies {
 	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-spring")
-	optional("org.eclipse.jetty:jetty-webapp") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
+	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
-	optional("org.eclipse.jetty.websocket:websocket-jakarta-server") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-websocket-api")
-	}
-	optional("org.eclipse.jetty.websocket:websocket-jetty-server") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
+	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
+	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
 	optional("org.ehcache:ehcache") {
 		artifact {
 			classifier = 'jakarta'
@@ -104,6 +95,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
+	optional("org.flywaydb:flyway-database-oracle")
 	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
@@ -130,6 +122,7 @@ dependencies {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.liquibase:liquibase-core") {
+		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.messaginghub:pooled-jms") {
@@ -177,6 +170,8 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.hateoas:spring-hateoas")
+	optional("org.springframework.pulsar:spring-pulsar")
+	optional("org.springframework.pulsar:spring-pulsar-reactive")
 	optional("org.springframework.security:spring-security-acl")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-data") {
@@ -222,7 +217,6 @@ dependencies {
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.mysql:mysql-connector-j")
-	testImplementation("com.querydsl:querydsl-core")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
@@ -253,6 +247,7 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
+	testImplementation("org.testcontainers:pulsar")
 	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.yaml:snakeyaml")
 

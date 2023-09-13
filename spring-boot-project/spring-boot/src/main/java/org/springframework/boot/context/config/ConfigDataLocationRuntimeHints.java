@@ -49,8 +49,10 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 			logger.debug("Registering application configuration hints for " + fileNames + "(" + extensions + ") at "
 					+ locations);
 		}
-		new FilePatternResourceHintsRegistrar(fileNames, locations, extensions).registerHints(hints.resources(),
-				classLoader);
+		FilePatternResourceHintsRegistrar.forClassPathLocations(locations)
+			.withFilePrefixes(fileNames)
+			.withFileExtensions(extensions)
+			.registerHints(hints.resources(), classLoader);
 	}
 
 	/**

@@ -17,27 +17,29 @@
 package org.springframework.boot.autoconfigure.graphql;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executor;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.schema.FieldCoordinates;
-import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.PropertyDataFetcher;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
 import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
@@ -57,6 +59,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link GraphQlAutoConfiguration}.
  */
+@ExtendWith(OutputCaptureExtension.class)
 class GraphQlAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -160,6 +163,11 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
+	void schemaInspectionShouldBeEnabledByDefault(CapturedOutput output) {
+		this.contextRunner.run((context) -> assertThat(output).contains("GraphQL schema inspection"));
+	}
+
+	@Test
 	void fieldIntrospectionShouldBeEnabledByDefault() {
 		this.contextRunner.run((context) -> {
 			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
@@ -213,13 +221,22 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldContributeConnectionDataFetcher() {
-		this.contextRunner.withUserConfiguration(CustomGraphQlBuilderConfiguration.class).run((context) -> {
-			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
-			GraphQLFieldDefinition books = graphQlSource.schema().getQueryType().getField("books");
-			FieldCoordinates booksCoordinates = FieldCoordinates.coordinates("Query", "books");
-			assertThat(graphQlSource.schema().getCodeRegistry().getDataFetcher(booksCoordinates, books))
-				.isNotInstanceOf(PropertyDataFetcher.class);
+	void whenApplicationTaskExecutorIsDefinedThenAnnotatedControllerConfigurerShouldUseIt() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				AnnotatedControllerConfigurer annotatedControllerConfigurer = context
+					.getBean(AnnotatedControllerConfigurer.class);
+				assertThat(annotatedControllerConfigurer).extracting("executor")
+					.isSameAs(context.getBean("applicationTaskExecutor"));
+			});
+	}
+
+	@Test
+	void whenCustomExecutorIsDefinedThenAnnotatedControllerConfigurerDoesNotUseIt() {
+		this.contextRunner.withUserConfiguration(CustomExecutorConfiguration.class).run((context) -> {
+			AnnotatedControllerConfigurer annotatedControllerConfigurer = context
+				.getBean(AnnotatedControllerConfigurer.class);
+			assertThat(annotatedControllerConfigurer).extracting("executor").isNull();
 		});
 	}
 
@@ -304,6 +321,16 @@ class GraphQlAutoConfigurationTests {
 				this.applied = true;
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExecutorConfiguration {
+
+		@Bean
+		Executor customExecutor() {
+			return mock(Executor.class);
 		}
 
 	}

@@ -27,6 +27,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
+
 /**
  * Abstract base class for health groups with an additional path.
  *
@@ -50,6 +52,18 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 					"management.endpoint.health.group.live.additional-path=server:/healthz",
 					"management.endpoint.health.group.live.show-components=always")
 			.run(withWebTestClient(this::testResponse, "local.server.port"));
+	}
+
+	@Test
+	void multipleGroupsAreAvailableAtAdditionalPaths() {
+		this.runner
+			.withPropertyValues("management.endpoint.health.group.one.include=diskSpace",
+					"management.endpoint.health.group.two.include=diskSpace",
+					"management.endpoint.health.group.one.additional-path=server:/alpha",
+					"management.endpoint.health.group.two.additional-path=server:/bravo",
+					"management.endpoint.health.group.one.show-components=always",
+					"management.endpoint.health.group.two.show-components=always")
+			.run(withWebTestClient((client) -> testResponses(client, "/alpha", "/bravo"), "local.server.port"));
 	}
 
 	@Test
@@ -125,17 +139,24 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 	}
 
 	private void testResponse(WebTestClient client) {
-		client.get()
-			.uri("/healthz")
-			.accept(MediaType.APPLICATION_JSON)
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("status")
-			.isEqualTo("UP")
-			.jsonPath("components.diskSpace")
-			.exists();
+		testResponses(client, "/healthz");
+	}
+
+	private void testResponses(WebTestClient client, String... paths) {
+		for (String path : paths) {
+			assertThatNoException().as(path)
+				.isThrownBy(() -> client.get()
+					.uri(path)
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("status")
+					.isEqualTo("UP")
+					.jsonPath("components.diskSpace")
+					.exists());
+		}
 	}
 
 	private ContextConsumer<A> withWebTestClient(Consumer<WebTestClient> consumer, String property) {

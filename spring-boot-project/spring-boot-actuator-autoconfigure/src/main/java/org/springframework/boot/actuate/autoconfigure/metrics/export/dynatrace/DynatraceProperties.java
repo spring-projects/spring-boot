@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,6 +140,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private boolean useDynatraceSummaryInstruments = true;
 
+		/**
+		 * Whether to export meter metadata (unit and description) to the Dynatrace
+		 * backend.
+		 */
+		private boolean exportMeterMetadata = true;
+
 		public Map<String, String> getDefaultDimensions() {
 			return this.defaultDimensions;
 		}
@@ -170,6 +176,14 @@ public class DynatraceProperties extends StepRegistryProperties {
 
 		public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
 			this.useDynatraceSummaryInstruments = useDynatraceSummaryInstruments;
+		}
+
+		public boolean isExportMeterMetadata() {
+			return this.exportMeterMetadata;
+		}
+
+		public void setExportMeterMetadata(boolean exportMeterMetadata) {
+			this.exportMeterMetadata = exportMeterMetadata;
 		}
 
 	}

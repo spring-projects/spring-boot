@@ -17,9 +17,11 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -28,6 +30,7 @@ import org.springframework.kafka.listener.BatchInterceptor;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
@@ -40,6 +43,7 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  * @author Gary Russell
  * @author Eddú Meléndez
  * @author Thomas Kåsene
+ * @author Moritz Halbritter
  * @since 1.5.0
  */
 public class ConcurrentKafkaListenerContainerFactoryConfigurer {
@@ -65,6 +69,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private RecordInterceptor<Object, Object> recordInterceptor;
 
 	private BatchInterceptor<Object, Object> batchInterceptor;
+
+	private Function<MessageListenerContainer, String> threadNameSupplier;
+
+	private SimpleAsyncTaskExecutor listenerTaskExecutor;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -157,6 +165,22 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the thread name supplier to use.
+	 * @param threadNameSupplier the thread name supplier to use
+	 */
+	void setThreadNameSupplier(Function<MessageListenerContainer, String> threadNameSupplier) {
+		this.threadNameSupplier = threadNameSupplier;
+	}
+
+	/**
+	 * Set the executor for threads that poll the consumer.
+	 * @param listenerTaskExecutor task executor
+	 */
+	void setListenerTaskExecutor(SimpleAsyncTaskExecutor listenerTaskExecutor) {
+		this.listenerTaskExecutor = listenerTaskExecutor;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -186,6 +210,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
 		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
 		map.from(this.batchInterceptor).to(factory::setBatchInterceptor);
+		map.from(this.threadNameSupplier).to(factory::setThreadNameSupplier);
+		map.from(properties::getChangeConsumerThreadName).to(factory::setChangeConsumerThreadName);
 	}
 
 	private void configureContainer(ContainerProperties container) {
@@ -212,6 +238,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::isImmediateStop).to(container::setStopImmediate);
 		map.from(this.transactionManager).to(container::setTransactionManager);
 		map.from(this.rebalanceListener).to(container::setConsumerRebalanceListener);
+		map.from(this.listenerTaskExecutor).to(container::setListenerTaskExecutor);
 	}
 
 }

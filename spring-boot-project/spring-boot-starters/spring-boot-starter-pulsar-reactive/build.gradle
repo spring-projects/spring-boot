@@ -1,0 +1,19 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring for Apache Pulsar Reactive"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework.pulsar:spring-pulsar-reactive")
+}
+
+checkRuntimeClasspathForConflicts {
+	ignore { name -> name.startsWith("org/bouncycastle/") ||
+				name.matches("^org\\/apache\\/pulsar\\/.*\\/package-info.class\$") ||
+				name.equals("findbugsExclude.xml") ||
+				name.startsWith("org/springframework/pulsar/shade/com/github/benmanes/caffeine/") ||
+				name.startsWith("org/springframework/pulsar/shade/com/google/errorprone/") ||
+				name.startsWith("org/springframework/pulsar/shade/org/checkerframework/") }
+}

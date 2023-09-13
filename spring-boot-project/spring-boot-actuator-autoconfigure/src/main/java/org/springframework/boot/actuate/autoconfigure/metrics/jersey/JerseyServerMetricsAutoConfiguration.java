@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -57,13 +57,12 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
 @EnableConfigurationProperties(MetricsProperties.class)
-@SuppressWarnings("removal")
 public class JerseyServerMetricsAutoConfiguration {
 
-	private final MetricsProperties properties;
+	private final ObservationProperties observationProperties;
 
-	public JerseyServerMetricsAutoConfiguration(MetricsProperties properties) {
-		this.properties = properties;
+	public JerseyServerMetricsAutoConfiguration(ObservationProperties observationProperties) {
+		this.observationProperties = observationProperties;
 	}
 
 	@Bean
@@ -75,19 +74,19 @@ public class JerseyServerMetricsAutoConfiguration {
 	@Bean
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
 			JerseyTagsProvider tagsProvider) {
-		Server server = this.properties.getWeb().getServer();
-		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry, tagsProvider,
-				server.getRequest().getMetricName(), true, new AnnotationUtilsAnnotationFinder()));
+		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
+		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry, tagsProvider, metricName,
+				true, new AnnotationUtilsAnnotationFinder()));
 	}
 
 	@Bean
 	@Order(0)
-	public MeterFilter jerseyMetricsUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequest().getMetricName();
+	public MeterFilter jerseyMetricsUriTagFilter(MetricsProperties metricsProperties) {
+		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
 				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri", this.properties.getWeb().getServer().getMaxUriTags(),
-				filter);
+		return MeterFilter.maximumAllowableTags(metricName, "uri",
+				metricsProperties.getWeb().getServer().getMaxUriTags(), filter);
 	}
 
 	/**

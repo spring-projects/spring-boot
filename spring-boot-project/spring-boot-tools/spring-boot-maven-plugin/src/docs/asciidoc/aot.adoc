@@ -9,7 +9,7 @@ NOTE: For an overview of GraalVM Native Images support in Spring Boot, check the
 The Spring Boot Maven plugin offers goals that can be used to perform AOT processing on both application and test code.
 
 
-
+[[aot.processing-applications]]
 == Processing Applications
 To configure your application to use this feature, add an execution for the `process-aot` goal, as shown in the following example:
 
@@ -24,7 +24,7 @@ For instance, if you want to opt-in or opt-out for certain features, you need to
 The `process-aot` goal shares a number of properties with the <<run,run goal>> for that reason.
 
 
-
+[[aot.processing-applications.using-the-native-profile]]
 === Using the Native Profile
 If you use `spring-boot-starter-parent` as the `parent` of your project, a `native` profile can be used to streamline the steps required to build a native image.
 
@@ -77,7 +77,7 @@ Such module must define the Native Build Tools and Spring Boot plugins as descri
 include::goals/process-aot.adoc[leveloffset=+1]
 
 
-
+[[aot.processint-tests]]
 == Processing Tests
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
 Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitialzer` code.

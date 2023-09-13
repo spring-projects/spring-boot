@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.io.restclient.webclient.ssl;
 
-import org.neo4j.cypherdsl.core.Relationship.Details;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl;

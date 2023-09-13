@@ -16,7 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection.redpanda;
 
-import java.net.URI;
 import java.util.List;
 
 import org.testcontainers.redpanda.RedpandaContainer;
@@ -33,7 +32,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  */
 class RedpandaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaConnectionDetails, RedpandaContainer> {
+		extends ContainerConnectionDetailsFactory<RedpandaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(
@@ -44,20 +43,16 @@ class RedpandaContainerConnectionDetailsFactory
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails<RedpandaContainer>
 			implements KafkaConnectionDetails {
-
-		private final RedpandaContainer container;
 
 		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
-		public List<Node> getBootstrapNodes() {
-			URI uri = URI.create(this.container.getBootstrapServers());
-			return List.of(new Node(uri.getHost(), uri.getPort()));
+		public List<String> getBootstrapServers() {
+			return List.of(getContainer().getBootstrapServers());
 		}
 
 	}

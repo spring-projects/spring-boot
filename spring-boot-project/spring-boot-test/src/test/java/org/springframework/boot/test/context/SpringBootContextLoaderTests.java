@@ -255,7 +255,7 @@ class SpringBootContextLoaderTests {
 	private Map<String, Object> getMergedContextConfigurationProperties(Class<?> testClass) {
 		TestContext context = new ExposedTestContextManager(testClass).getExposedTestContext();
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils.getField(context,
-				"mergedContextConfiguration");
+				"mergedConfig");
 		return TestPropertySourceUtils.convertInlinedPropertiesToMap(config.getPropertySourceProperties());
 	}
 

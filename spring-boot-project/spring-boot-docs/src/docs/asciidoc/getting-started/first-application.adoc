@@ -1,11 +1,11 @@
 [[getting-started.first-application]]
 == Developing Your First Spring Boot Application
 This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
-We use Maven to build this project, since most IDEs support it.
+You can choose between Maven or Gradle as the build system.
 
 [TIP]
 ====
-The https://spring.io[spring.io] web site contains many "`Getting Started`" https://spring.io/guides[guides] that use Spring Boot.
+The https://spring.io[spring.io] website contains many "`Getting Started`" https://spring.io/guides[guides] that use Spring Boot.
 If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
@@ -13,7 +13,11 @@ Doing so generates a new project structure so that you can <<getting-started#get
 Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
-Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven installed:
+
+
+[[getting-started.first-application.prerequisites]]
+=== Prerequisites
+Before we begin, open a terminal and run the following commands to ensure that you have a valid version of Java installed:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -23,6 +27,15 @@ Before we begin, open a terminal and run the following commands to ensure that y
 	OpenJDK 64-Bit Server VM (build 17.0.4.1+1-LTS, mixed mode, sharing)
 ----
 
+NOTE: This sample needs to be created in its own directory.
+Subsequent instructions assume that you have created a suitable directory and that it is your current directory.
+
+
+
+[[getting-started.first-application.prerequisites.maven]]
+==== Maven
+If you want to use Maven, ensure that you have Maven installed:
+
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ mvn -v
@@ -31,13 +44,34 @@ Before we begin, open a terminal and run the following commands to ensure that y
 	Java version: 17.0.4.1, vendor: BellSoft, runtime: /Users/developer/sdkman/candidates/java/17.0.4.1-librca
 ----
 
-NOTE: This sample needs to be created in its own directory.
-Subsequent instructions assume that you have created a suitable directory and that it is your current directory.
+
+
+[[getting-started.first-application.prerequisites.gradle]]
+==== Gradle
+If you want to use Gradle, ensure that you have Gradle installed:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ gradle --version
+
+	------------------------------------------------------------
+	Gradle 8.1.1
+	------------------------------------------------------------
+
+	Build time:   2023-04-21 12:31:26 UTC
+	Revision:     1cf537a851c635c364a4214885f8b9798051175b
+
+	Kotlin:       1.8.10
+	Groovy:       3.0.15
+	Ant:          Apache Ant(TM) version 1.10.11 compiled on July 10 2021
+	JVM:          17.0.7 (BellSoft 17.0.7+7-LTS)
+	OS:           Linux 6.2.12-200.fc37.aarch64 aarch64
+----
 
 
 
 [[getting-started.first-application.pom]]
-=== Creating the POM
+=== Setting up the project with Maven
 We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
 Open your favorite text editor and add the following:
@@ -96,14 +130,58 @@ For simplicity, we continue to use a plain text editor for this example.
 
 
 
+[[getting-started.first-application.gradle]]
+=== Setting up the project with Gradle
+We need to start by creating a Gradle `build.gradle` file.
+The `build.gradle` is the build script that is used to build your project.
+Open your favorite text editor and add the following:
+
+[source,gradle,indent=0,subs="verbatim,attributes"]
+----
+	plugins {
+		id 'java'
+		id 'org.springframework.boot' version '{spring-boot-version}'
+	}
+
+	apply plugin: 'io.spring.dependency-management'
+
+	group = 'com.example'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = '17'
+
+	repositories {
+		mavenCentral()
+ifeval::["{artifact-release-type}" != "release"]
+		maven { url 'https://repo.spring.io/milestone' }
+		maven { url 'https://repo.spring.io/snapshot' }
+endif::[]
+	}
+
+	dependencies {
+	}
+----
+
+The preceding listing should give you a working build.
+You can test it by running `gradle classes`.
+
+NOTE: At this point, you could import the project into an IDE (most modern Java IDEs include built-in support for Gradle).
+For simplicity, we continue to use a plain text editor for this example.
+
+
+
 [[getting-started.first-application.dependencies]]
 === Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
-Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent` section of the POM.
+"`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
+
+
+
+[[getting-started.first-application.dependencies.maven]]
+==== Maven
+Most Spring Boot applications use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
 It also provides a <<using#using.build-systems.dependency-management,`dependency-management`>> section so that you can omit `version` tags for "`blessed`" dependencies.
 
-Other "`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
 Before that, we can look at what we currently have by running the following command:
 
@@ -132,10 +210,45 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 
 
 
+[[getting-started.first-application.dependencies.gradle]]
+==== Gradle
+Most Spring Boot applications use the `org.springframework.boot` Gradle plugin.
+This plugin provides useful defaults and Gradle tasks.
+The `io.spring.dependency-management` Gradle plugin provides <<using#using.build-systems.dependency-management, dependency management>> so that you can omit `version` tags for "`blessed`" dependencies.
+
+Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
+Before that, we can look at what we currently have by running the following command:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ gradle dependencies
+
+	> Task :dependencies
+
+	------------------------------------------------------------
+	Root project 'myproject'
+	------------------------------------------------------------
+----
+
+The `gradle dependencies` command prints a tree representation of your project dependencies.
+Right now, the project has no dependencies.
+To add the necessary dependencies, edit your `build.gradle` and add the `spring-boot-starter-web` dependency in the `dependencies` section:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+	}
+----
+
+If you run `gradle dependencies` again, you see that there are now a number of additional dependencies, including the Tomcat web server and Spring Boot itself.
+
+
+
 [[getting-started.first-application.code]]
 === Writing the Code
 To finish our application, we need to create a single Java file.
-By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
+By default, Maven and Gradle compile sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
 
 include::code:MyApplication[]
 
@@ -191,6 +304,11 @@ The `args` array is also passed through to expose any command-line arguments.
 
 [[getting-started.first-application.run]]
 === Running the Example
+
+
+
+[[getting-started.first-application.run.maven]]
+==== Maven
 At this point, your application should work.
 Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goal that you can use to start the application.
 Type `mvn spring-boot:run` from the root project directory to start the application.
@@ -199,6 +317,41 @@ You should see output similar to the following:
 [source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ mvn spring-boot:run
+
+	  .   ____          _            __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, | / / / /
+	 =========|_|==============|___/=/_/_/_/
+	 :: Spring Boot ::  (v{spring-boot-version})
+	....... . . .
+	....... . . . (log output here)
+	....... . . .
+	........ Started MyApplication in 0.906 seconds (process running for 6.514)
+----
+
+If you open a web browser to `http://localhost:8080`, you should see the following output:
+
+[indent=0]
+----
+	Hello World!
+----
+
+To gracefully exit the application, press `ctrl-c`.
+
+
+
+[[getting-started.first-application.run.gradle]]
+==== Gradle
+At this point, your application should work.
+Since you used the `org.springframework.boot` Gradle plugin, you have a useful `bootRun` goal that you can use to start the application.
+Type `gradle bootRun` from the root project directory to start the application.
+You should see output similar to the following:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ gradle bootRun
 
 	  .   ____          _            __ _ _
 	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -242,6 +395,10 @@ It can also be problematic if the same filename is used (but with different cont
 Spring Boot takes a <<executable-jar#appendix.executable-jar, different approach>> and lets you actually nest jars directly.
 ****
 
+
+
+[[getting-started.first-application.executable-jar.maven]]
+==== Maven
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.
 To do so, insert the following lines just below the `dependencies` section:
 
@@ -283,7 +440,7 @@ Save your `pom.xml` and run `mvn package` from the command line, as follows:
 ----
 
 If you look in the `target` directory, you should see `myproject-0.0.1-SNAPSHOT.jar`.
-The file should be around 10 MB in size.
+The file should be around 18 MB in size.
 If you want to peek inside, you can use `jar tvf`, as follows:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -310,7 +467,51 @@ To run that application, use the `java -jar` command, as follows:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started MyApplication in 2.536 seconds (process running for 2.864)
+	........ Started MyApplication in 0.999 seconds (process running for 1.253)
+----
+
+As before, to exit the application, press `ctrl-c`.
+
+
+
+[[getting-started.first-application.executable-jar.gradle]]
+==== Gradle
+To create an executable jar, we need to run `gradle bootJar` from the command line, as follows:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+    $ gradle bootJar
+
+    BUILD SUCCESSFUL in 639ms
+    3 actionable tasks: 3 executed
+----
+
+If you look in the `build/libs` directory, you should see `myproject-0.0.1-SNAPSHOT.jar`.
+The file should be around 18 MB in size.
+If you want to peek inside, you can use `jar tvf`, as follows:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ jar tvf build/libs/myproject-0.0.1-SNAPSHOT.jar
+----
+
+To run that application, use the `java -jar` command, as follows:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ java -jar build/libs/myproject-0.0.1-SNAPSHOT.jar
+
+	  .   ____          _            __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, | / / / /
+	 =========|_|==============|___/=/_/_/_/
+	 :: Spring Boot ::  (v{spring-boot-version})
+	....... . . .
+	....... . . . (log output here)
+	....... . . .
+	........ Started MyApplication in 0.999 seconds (process running for 1.253)
 ----
 
 As before, to exit the application, press `ctrl-c`.

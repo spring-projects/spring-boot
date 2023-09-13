@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -34,11 +35,17 @@ abstract class SpringBootApplicationClassFinder {
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
 	static String findSingleClass(File classesDirectory) throws MojoExecutionException {
+		return findSingleClass(List.of(classesDirectory));
+	}
+
+	static String findSingleClass(List<File> classesDirectories) throws MojoExecutionException {
 		try {
-			String mainClass = MainClassFinder.findSingleMainClass(classesDirectory,
-					SPRING_BOOT_APPLICATION_CLASS_NAME);
-			if (mainClass != null) {
-				return mainClass;
+			for (File classesDirectory : classesDirectories) {
+				String mainClass = MainClassFinder.findSingleMainClass(classesDirectory,
+						SPRING_BOOT_APPLICATION_CLASS_NAME);
+				if (mainClass != null) {
+					return mainClass;
+				}
 			}
 			throw new MojoExecutionException("Unable to find a suitable main class, please add a 'mainClass' property");
 		}

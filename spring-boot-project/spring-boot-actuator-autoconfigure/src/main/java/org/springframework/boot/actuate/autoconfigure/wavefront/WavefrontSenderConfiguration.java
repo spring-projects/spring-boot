@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,17 @@ import java.time.Duration;
 import com.wavefront.sdk.common.WavefrontSender;
 import com.wavefront.sdk.common.clients.WavefrontClient.Builder;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 
@@ -46,6 +50,7 @@ public class WavefrontSenderConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@Conditional(WavefrontTracingOrMetricsCondition.class)
 	public WavefrontSender wavefrontSender(WavefrontProperties properties) {
 		Builder builder = new Builder(properties.getEffectiveUri().toString(), properties.getApiTokenOrThrow());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -55,6 +60,24 @@ public class WavefrontSenderConfiguration {
 		map.from(sender.getMessageSize()).asInt(DataSize::toBytes).to(builder::messageSizeBytes);
 		map.from(sender.getBatchSize()).to(builder::batchSize);
 		return builder.build();
+	}
+
+	static final class WavefrontTracingOrMetricsCondition extends AnyNestedCondition {
+
+		WavefrontTracingOrMetricsCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnEnabledTracing
+		static class TracingCondition {
+
+		}
+
+		@ConditionalOnEnabledMetricsExport("wavefront")
+		static class MetricsCondition {
+
+		}
+
 	}
 
 }

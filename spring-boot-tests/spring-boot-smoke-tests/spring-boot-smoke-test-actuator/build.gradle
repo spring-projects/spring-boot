@@ -11,6 +11,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation"))
+	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 
 	runtimeOnly("com.h2database:h2")
 

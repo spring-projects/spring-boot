@@ -43,7 +43,7 @@ You can restore it at any time by configuring your project:
 include::../maven/running/hot-refresh-pom.xml[tags=hot-refresh]
 ----
 
-When `addResources` is enabled, any `src/main/resources` directory will be added to the application classpath when you run the application and any duplicate found in `target/classes` will be removed.
+When `addResources` is enabled, any `src/main/resources` directory will be added to the application classpath when you run the application and any duplicate found in the classes output will be removed.
 This allows hot refreshing of resources which can be very useful when developing web applications.
 For example, you can work on HTML, CSS or JavaScript files and see your changes immediately without recompiling your application.
 It is also a helpful way of allowing your front end developers to work without needing to download and install a Java IDE.
@@ -53,13 +53,13 @@ NOTE: A side effect of using this feature is that filtering of resources at buil
 In order to be consistent with the `repackage` goal, the `run` goal builds the classpath in such a way that any dependency that is excluded in the plugin's configuration gets excluded from the classpath as well.
 For more details, see <<packaging.examples.exclude-dependency,the dedicated example>>.
 
-Sometimes it is useful to include test dependencies when running the application.
-For example, if you want to run your application in a test mode that uses stub classes.
-If you wish to do this, you can set the `useTestClasspath` parameter to true.
-
-NOTE: This is only applied when you run an application: the `repackage` goal will not add test dependencies to the resulting JAR/WAR.
+Sometimes it is useful to run a test variant of your application.
+For example, if you want to {spring-boot-reference}/#features.testing.testcontainers.at-development-time[use Testcontainers at development time] or make use of some test stubs.
+Use the `test-run` goal with many of the same features and configuration options as `run` for this purpose.
 
 include::goals/run.adoc[leveloffset=+1]
+
+include::goals/test-run.adoc[leveloffset=+1]
 
 
 
@@ -70,7 +70,7 @@ include::goals/run.adoc[leveloffset=+1]
 
 [[run.examples.debug]]
 === Debug the Application
-The `run` goal runs your application in a forked process.
+The `run` and `test-run` goals run your application in a forked process.
 If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
 The following configuration suspend the process until a debugger has joined on port 5005:
 

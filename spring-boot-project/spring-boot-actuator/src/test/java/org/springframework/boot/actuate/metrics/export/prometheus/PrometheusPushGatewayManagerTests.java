@@ -141,18 +141,6 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	void shutdownWhenShutdownOperationIsPushPerformsPushAddOnShutdown() throws Exception {
-		givenScheduleAtFixedRateWithReturnFuture();
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
-				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUSH);
-		manager.shutdown();
-		then(this.future).should().cancel(false);
-		then(this.pushGateway).should().pushAdd(this.registry, "job", this.groupingKey);
-	}
-
-	@Test
 	void shutdownWhenShutdownOperationIsPostPerformsPushAddOnShutdown() throws Exception {
 		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,

@@ -13,20 +13,28 @@ configurations {
 }
 
 dependencies {
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
+
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
-	compileOnly("org.apache.maven.shared:maven-common-artifact-filters") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
+	compileOnly("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	compileOnly("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 
-	implementation("org.springframework:spring-context")
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	implementation("org.springframework:spring-context")
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -40,15 +48,27 @@ dependencies {
 	intTestImplementation("org.testcontainers:junit-jupiter")
 
 	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 
 	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
+	testImplementation("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
@@ -142,4 +162,20 @@ prepareMavenBinaries {
 
 artifacts {
 	"documentation" zip
+}
+
+tasks.named("documentPluginGoals") {
+	goalSections = [
+		"build-image": "build-image",
+		"build-image-no-fork": "build-image",
+		"build-info": "build-info",
+		"help": "help",
+		"process-aot": "aot",
+		"process-test-aot": "aot",
+		"repackage": "packaging",
+		"run": "run",
+		"start": "integration-tests",
+		"stop": "integration-tests",
+		"test-run": "run"
+	]
 }

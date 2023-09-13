@@ -72,6 +72,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -644,24 +645,36 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadShouldUseConverterBean() {
-		prepareConverterContext(ConverterConfiguration.class, PersonProperties.class);
+		prepareConverterContext(PersonConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
 	}
 
 	@Test
-	void loadWhenBeanFactoryConversionServiceAndConverterBean() {
+	void loadWhenBeanFactoryConversionServiceAndConverterBeanCanUseBeanFactoryConverter() {
 		DefaultConversionService conversionService = new DefaultConversionService();
 		conversionService.addConverter(new AlienConverter());
 		this.context.getBeanFactory().setConversionService(conversionService);
-		load(new Class<?>[] { ConverterConfiguration.class, PersonAndAlienProperties.class }, "test.person=John Smith",
-				"test.alien=Alf Tanner");
+		load(new Class<?>[] { PersonConverterConfiguration.class, PersonAndAlienProperties.class },
+				"test.person=John Smith", "test.alien=Alf Tanner");
 		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
 		assertThat(properties.getPerson().firstName).isEqualTo("John");
 		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
-		assertThat(properties.getAlien().firstName).isEqualTo("Alf");
-		assertThat(properties.getAlien().lastName).isEqualTo("Tanner");
+		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
+	}
+
+	@Test
+	void loadWhenBeanFactoryConversionServiceAndConverterBeanCanUseConverterBean() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new PersonConverter());
+		this.context.getBeanFactory().setConversionService(conversionService);
+		load(new Class<?>[] { AlienConverterConfiguration.class, PersonAndAlienProperties.class },
+				"test.person=John Smith", "test.alien=Alf Tanner");
+		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
+		assertThat(properties.getPerson().firstName).isEqualTo("John");
+		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
+		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
 	}
 
 	@Test
@@ -729,6 +742,16 @@ class ConfigurationPropertiesTests {
 			assertThat(ex).hasCauseInstanceOf(BindException.class);
 			assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
 		});
+	}
+
+	@Test
+	void loadWhenConstructorBoundConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> load(ValidatorConstructorBoundPropertiesConfiguration.class))
+			.satisfies((ex) -> {
+				assertThat(ex).hasCauseInstanceOf(BindException.class);
+				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
+			});
 	}
 
 	@Test
@@ -1142,6 +1165,14 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getNested().name()).isEqualTo("spring");
 	}
 
+	@Test
+	void loadWhenPotentiallyConstructorBoundPropertiesAreImportedUsesJavaBeanBinding() {
+		load(PotentiallyConstructorBoundPropertiesImporter.class, "test.prop=alpha");
+		PotentiallyConstructorBoundProperties properties = this.context
+			.getBean(PotentiallyConstructorBoundProperties.class);
+		assertThat(properties.getProp()).isEqualTo("alpha");
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
 	}
@@ -1430,12 +1461,23 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ConverterConfiguration {
+	static class PersonConverterConfiguration {
 
 		@Bean
 		@ConfigurationPropertiesBinding
 		Converter<String, Person> personConverter() {
 			return new PersonConverter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AlienConverterConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		Converter<String, Alien> alienConverter() {
+			return new AlienConverter();
 		}
 
 	}
@@ -2060,6 +2102,36 @@ class ConfigurationPropertiesTests {
 
 	}
 
+	@EnableConfigurationProperties(ValidatorConstructorBoundProperties.class)
+	static class ValidatorConstructorBoundPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties
+	static class ValidatorConstructorBoundProperties implements Validator {
+
+		private final String foo;
+
+		ValidatorConstructorBoundProperties(String foo) {
+			this.foo = foo;
+		}
+
+		@Override
+		public boolean supports(Class<?> type) {
+			return type == ValidatorConstructorBoundProperties.class;
+		}
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
+		}
+
+		String getFoo() {
+			return this.foo;
+		}
+
+	}
+
 	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "test")
 	static class WithSetterThatThrowsValidationExceptionProperties {
@@ -2358,8 +2430,7 @@ class ConfigurationPropertiesTests {
 
 		@Override
 		public Alien convert(String source) {
-			String[] content = StringUtils.split(source, " ");
-			return new Alien(content[0], content[1]);
+			return new Alien(new StringBuilder(source).reverse().toString());
 		}
 
 	}
@@ -2427,21 +2498,14 @@ class ConfigurationPropertiesTests {
 
 	static class Alien {
 
-		private final String firstName;
+		private final String name;
 
-		private final String lastName;
-
-		Alien(String firstName, String lastName) {
-			this.firstName = firstName;
-			this.lastName = lastName;
+		Alien(String name) {
+			this.name = name;
 		}
 
-		String getFirstName() {
-			return this.firstName;
-		}
-
-		String getLastName() {
-			return this.lastName;
+		String getName() {
+			return this.name;
 		}
 
 	}
@@ -2962,6 +3026,36 @@ class ConfigurationPropertiesTests {
 	}
 
 	static record NestedRecord(String name) {
+	}
+
+	@EnableConfigurationProperties
+	@Import(PotentiallyConstructorBoundProperties.class)
+	static class PotentiallyConstructorBoundPropertiesImporter {
+
+		@Bean
+		String notAProperty() {
+			return "notAProperty";
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class PotentiallyConstructorBoundProperties {
+
+		private String prop;
+
+		PotentiallyConstructorBoundProperties(String notAProperty) {
+
+		}
+
+		String getProp() {
+			return this.prop;
+		}
+
+		void setProp(String prop) {
+			this.prop = prop;
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -55,21 +56,36 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS));
 			registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class);
 		});
-		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
-			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
-			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class);
+		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.JETTY_CLIENT_CLASS, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.JETTY_CLIENT_CLASS));
+			registerReflectionHints(hints, JettyClientHttpRequestFactory.class, long.class);
 		});
 		hints.registerType(SimpleClientHttpRequestFactory.class, (typeHint) -> {
 			typeHint.onReachableType(HttpURLConnection.class);
 			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
 		});
+		registerOkHttpHints(hints, classLoader);
+	}
+
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	private void registerOkHttpHints(ReflectionHints hints, ClassLoader classLoader) {
+		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
+			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class);
+		});
+
 	}
 
 	private void registerReflectionHints(ReflectionHints hints,
 			Class<? extends ClientHttpRequestFactory> requestFactoryType) {
+		registerReflectionHints(hints, requestFactoryType, int.class);
+	}
+
+	private void registerReflectionHints(ReflectionHints hints,
+			Class<? extends ClientHttpRequestFactory> requestFactoryType, Class<?> readTimeoutType) {
 		registerMethod(hints, requestFactoryType, "setConnectTimeout", int.class);
-		registerMethod(hints, requestFactoryType, "setReadTimeout", int.class);
-		registerMethod(hints, requestFactoryType, "setBufferRequestBody", boolean.class);
+		registerMethod(hints, requestFactoryType, "setReadTimeout", readTimeoutType);
 	}
 
 	private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,

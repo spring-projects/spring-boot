@@ -16,13 +16,20 @@
 
 package org.springframework.boot.web.client;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -94,8 +101,9 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
 
-	@Test
-	void connectWithSslBundle() throws Exception {
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST" })
+	void connectWithSslBundle(String httpMethod) throws Exception {
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(ClientAuth.NEED);
@@ -103,7 +111,8 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setTrustStore("classpath:test.jks");
 		webServerFactory.setSsl(ssl);
-		WebServer webServer = webServerFactory.getWebServer();
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
 		try {
 			webServer.start();
 			int port = webServer.getPort();
@@ -118,9 +127,9 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 			SslBundle sslBundle = SslBundle.of(stores, SslBundleKey.of("password"));
 			ClientHttpRequestFactory secureRequestFactory = ClientHttpRequestFactories
 				.get(ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(sslBundle));
-			ClientHttpRequest secureRequest = secureRequestFactory.createRequest(uri, HttpMethod.GET);
+			ClientHttpRequest secureRequest = secureRequestFactory.createRequest(uri, HttpMethod.valueOf(httpMethod));
 			String secureResponse = StreamUtils.copyToString(secureRequest.execute().getBody(), StandardCharsets.UTF_8);
-			assertThat(secureResponse).contains("HTTP Status 404 – Not Found");
+			assertThat(secureResponse).contains("Received " + httpMethod + " request to /");
 		}
 		finally {
 			webServer.stop();
@@ -130,5 +139,14 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	protected abstract long connectTimeout(T requestFactory);
 
 	protected abstract long readTimeout(T requestFactory);
+
+	public static class TestServlet extends HttpServlet {
+
+		@Override
+		public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+			res.getWriter().println("Received " + req.getMethod() + " request to " + req.getRequestURI());
+		}
+
+	}
 
 }

@@ -43,6 +43,7 @@ class ElasticsearchClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
+		.withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
 

@@ -35,6 +35,7 @@ import static org.mockito.Mockito.spy;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("removal")
 class TaskSchedulerBuilderTests {
 
 	private final TaskSchedulerBuilder builder = new TaskSchedulerBuilder();

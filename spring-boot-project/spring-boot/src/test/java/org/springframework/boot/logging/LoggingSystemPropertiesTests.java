@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  */
 class LoggingSystemPropertiesTests {
 
@@ -43,8 +45,9 @@ class LoggingSystemPropertiesTests {
 
 	@BeforeEach
 	void captureSystemPropertyNames() {
-		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
-		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
@@ -56,58 +59,100 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void pidIsSet() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
+		assertThat(getSystemProperty(LoggingSystemProperty.PID)).isNotNull();
 	}
 
 	@Test
 	void consoleLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.console", "console pattern"))
 			.apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console pattern");
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN)).isEqualTo("console pattern");
 	}
 
 	@Test
 	void consoleCharsetWhenNoPropertyUsesUtf8() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET)).isEqualTo("UTF-8");
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET)).isEqualTo("UTF-8");
 	}
 
 	@Test
 	void consoleCharsetIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.charset.console", "UTF-16"))
 			.apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET)).isEqualTo("UTF-16");
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET)).isEqualTo("UTF-16");
 	}
 
 	@Test
 	void fileLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.file", "file pattern"))
 			.apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file pattern");
+		assertThat(getSystemProperty(LoggingSystemProperty.FILE_PATTERN)).isEqualTo("file pattern");
 	}
 
 	@Test
 	void fileCharsetWhenNoPropertyUsesUtf8() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_CHARSET)).isEqualTo("UTF-8");
+		assertThat(getSystemProperty(LoggingSystemProperty.FILE_CHARSET)).isEqualTo("UTF-8");
 	}
 
 	@Test
 	void fileCharsetIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.charset.file", "UTF-16")).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_CHARSET)).isEqualTo("UTF-16");
+		assertThat(getSystemProperty(LoggingSystemProperty.FILE_CHARSET)).isEqualTo("UTF-16");
 	}
 
 	@Test
 	void consoleLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.console", "${PID:unknown}")).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).matches("[0-9]+");
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN)).matches("[0-9]+");
 	}
 
 	@Test
 	void fileLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
+		assertThat(getSystemProperty(LoggingSystemProperty.FILE_PATTERN)).matches("[0-9]+");
+	}
+
+	private String getSystemProperty(LoggingSystemProperty property) {
+		return System.getProperty(property.getEnvironmentVariableName());
+	}
+
+	@Test
+	void correlationPatternIsSet() {
+		new LoggingSystemProperties(
+				new MockEnvironment().withProperty("logging.pattern.correlation", "correlation pattern"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName()))
+			.isEqualTo("correlation pattern");
+	}
+
+	@Test
+	void defaultValueResolverIsUsed() {
+		MockEnvironment environment = new MockEnvironment();
+		Map<String, String> defaultValues = Map
+			.of(LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName(), "default correlation pattern");
+		new LoggingSystemProperties(environment, defaultValues::get, null).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName()))
+			.isEqualTo("default correlation pattern");
+	}
+
+	@Test
+	void loggedApplicationNameWhenHasApplicationName() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isEqualTo("[test] ");
+	}
+
+	@Test
+	void loggedApplicationNameWhenHasNoApplicationName() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isNull();
+	}
+
+	@Test
+	void loggedApplicationNameWhenApplicationNameLoggingDisabled() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")
+			.withProperty("logging.include-application-name", "false")).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isNull();
 	}
 
 	private Environment environment(String key, Object value) {

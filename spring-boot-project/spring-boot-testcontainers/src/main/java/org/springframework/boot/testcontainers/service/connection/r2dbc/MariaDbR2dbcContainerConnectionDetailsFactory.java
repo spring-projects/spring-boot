@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class MariaDbR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MariaDBContainer<?>> {
+		extends ContainerConnectionDetailsFactory<MariaDBContainer<?>, R2dbcConnectionDetails> {
 
 	MariaDbR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
@@ -42,23 +42,22 @@ class MariaDbR2dbcContainerConnectionDetailsFactory
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
+		return new MariaDbR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails implements R2dbcConnectionDetails {
+	private static final class MariaDbR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MariaDBContainer<?>> implements R2dbcConnectionDetails {
 
-		private final MariaDBContainer<?> container;
-
-		private R2dbcDatabaseContainerConnectionDetails(MariaDBContainer<?> container) {
-			this.container = container;
+		private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
+			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return MariaDBR2DBCDatabaseContainer.getOptions(this.container);
+			return MariaDBR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

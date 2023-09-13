@@ -53,6 +53,7 @@ include "spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-process
 include "spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"
 include "spring-boot-project:spring-boot-tools:spring-boot-cli"
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"
+include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata-changelog-generator"
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"

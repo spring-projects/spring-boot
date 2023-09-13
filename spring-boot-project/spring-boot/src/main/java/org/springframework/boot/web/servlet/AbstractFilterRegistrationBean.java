@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,9 +169,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	}
 
 	/**
-	 * Sets the dispatcher types that should be used with the registration. If not
-	 * specified the types will be deduced based on the value of
-	 * {@link #isAsyncSupported()}.
+	 * Sets the dispatcher types that should be used with the registration.
 	 * @param dispatcherTypes the dispatcher types
 	 */
 	public void setDispatcherTypes(EnumSet<DispatcherType> dispatcherTypes) {

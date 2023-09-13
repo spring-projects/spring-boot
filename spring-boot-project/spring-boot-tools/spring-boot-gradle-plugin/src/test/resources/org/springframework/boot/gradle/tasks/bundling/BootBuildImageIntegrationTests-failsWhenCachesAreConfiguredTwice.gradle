@@ -3,17 +3,19 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+java {
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
+}
 
 bootBuildImage {
 	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2"
 	buildCache {
 		volume {
-			name = "build-cache-volume1"
+			name = "build-cache-volume"
 		}
-		volume {
-			name = "build-cache-volum2"
+		bind {
+			name = "/tmp/build-cache-bind"
 		}
 	}
 }

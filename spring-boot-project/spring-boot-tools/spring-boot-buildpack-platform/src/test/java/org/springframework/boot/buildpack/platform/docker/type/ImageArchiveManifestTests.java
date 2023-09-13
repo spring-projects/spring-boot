@@ -52,7 +52,7 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 		String content = "[{\"Layers\": []}]";
 		ImageArchiveManifest manifest = new ImageArchiveManifest(getObjectMapper().readTree(content));
 		assertThat(manifest.getEntries()).hasSize(1);
-		assertThat(manifest.getEntries().get(0).getLayers()).hasSize(0);
+		assertThat(manifest.getEntries().get(0).getLayers()).isEmpty();
 	}
 
 	@Test

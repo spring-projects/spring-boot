@@ -22,8 +22,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.testcontainers.containers.Container;
+import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AliasFor;
 
 /**
@@ -40,9 +42,18 @@ import org.springframework.core.annotation.AliasFor;
 public @interface ServiceConnection {
 
 	/**
-	 * The name of the service being connected to. If not specified, the image name will
-	 * be used. Container names are used to determine the connection details that should
-	 * be created when a technology-specific {@link Container} subclass is not available.
+	 * The name of the service being connected to. Container names are used to determine
+	 * the connection details that should be created when a technology-specific
+	 * {@link Container} subclass is not available.
+	 * <p>
+	 * If not specified, and if the {@link Container} instance is available, the
+	 * {@link DockerImageName#getRepository() repository} part of the
+	 * {@link Container#getDockerImageName() docker image name} will be used. Note that
+	 * {@link Container} instances are <em>not</em> available early enough when the
+	 * container is defined as a {@link Bean @Bean} method. All
+	 * {@link ServiceConnection @ServiceConnection} {@link Bean @Bean} methods that need
+	 * to match on the connection name <em>must</em> declare this attribute.
+	 * <p>
 	 * This attribute is an alias for {@link #name()}.
 	 * @return the name of the service
 	 * @see #name()
@@ -51,9 +62,19 @@ public @interface ServiceConnection {
 	String value() default "";
 
 	/**
-	 * The name of the service being connected to. If not specified, the image name will
-	 * be used. Container names are used to determine the connection details that should
-	 * be created when a technology-specific {@link Container} subclass is not available.
+	 * The name of the service being connected to. Container names are used to determine
+	 * the connection details that should be created when a technology-specific
+	 * {@link Container} subclass is not available.
+	 * <p>
+	 * If not specified, and if the {@link Container} instance is available, the
+	 * {@link DockerImageName#getRepository() repository} part of the
+	 * {@link Container#getDockerImageName() docker image name} will be used. Note that
+	 * {@link Container} instances are <em>not</em> available early enough when the
+	 * container is defined as a {@link Bean @Bean} method. All
+	 * {@link ServiceConnection @ServiceConnection} {@link Bean @Bean} methods that need
+	 * to match on the connection name <em>must</em> declare this attribute.
+	 * <p>
+	 * This attribute is an alias for {@link #value()}.
 	 * @return the name of the service
 	 * @see #value()
 	 */

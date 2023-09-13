@@ -27,6 +27,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.http.MediaType;
@@ -153,6 +154,17 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 
 	private void awaitFile(File file) {
 		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(file::exists, is(true));
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((UndertowWebServer) this.webServer).getStartLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		((UndertowReactiveWebServerFactory) factory)
+			.addBuilderCustomizers((builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}
 
 }

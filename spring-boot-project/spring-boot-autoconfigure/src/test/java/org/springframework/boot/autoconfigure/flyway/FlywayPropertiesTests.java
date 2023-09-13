@@ -92,6 +92,13 @@ class FlywayPropertiesTests {
 		assertThat(properties.getPlaceholderSeparator()).isEqualTo(configuration.getPlaceholderSeparator());
 		assertThat(properties.getScriptPlaceholderPrefix()).isEqualTo(configuration.getScriptPlaceholderPrefix());
 		assertThat(properties.getScriptPlaceholderSuffix()).isEqualTo(configuration.getScriptPlaceholderSuffix());
+		assertThat(properties.isExecuteInTransaction()).isEqualTo(configuration.isExecuteInTransaction());
+	}
+
+	@Test
+	void loggersIsOverriddenToSlf4j() {
+		assertThat(new FluentConfiguration().getLoggers()).containsExactly("auto");
+		assertThat(new FlywayProperties().getLoggers()).containsExactly("slf4j");
 	}
 
 	@Test
@@ -102,14 +109,19 @@ class FlywayPropertiesTests {
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
 		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled");
-		// Property that moved to a separate SQL plugin
-		ignoreProperties(properties, "sqlServerKerberosLoginFile");
+		// Deprecated properties
+		ignoreProperties(properties, "oracleKerberosCacheFile", "oracleSqlplus", "oracleSqlplusWarn",
+				"oracleWalletLocation", "sqlServerKerberosLoginFile");
+		// Properties that are managed by specific extensions
+		ignoreProperties(properties, "oracle", "postgresql", "sqlserver");
+		// https://github.com/flyway/flyway/issues/3732
+		ignoreProperties(configuration, "environment");
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver",
-				"modernConfig", "currentResolvedEnvironment", "reportFilename");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
+				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
@@ -121,7 +133,7 @@ class FlywayPropertiesTests {
 		// Handled as createSchemas
 		ignoreProperties(configuration, "shouldCreateSchemas");
 		// Getters for the DataSource settings rather than actual properties
-		ignoreProperties(configuration, "password", "url", "user");
+		ignoreProperties(configuration, "databaseType", "password", "url", "user");
 		// Properties not exposed by Flyway
 		ignoreProperties(configuration, "failOnMissingTarget");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());

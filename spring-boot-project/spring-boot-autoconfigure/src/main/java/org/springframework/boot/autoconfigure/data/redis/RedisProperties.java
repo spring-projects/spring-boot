@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.redis")
@@ -41,7 +42,7 @@ public class RedisProperties {
 	private int database = 0;
 
 	/**
-	 * Connection URL. Overrides host, port, and password. User is ignored. Example:
+	 * Connection URL. Overrides host, port, username, and password. Example:
 	 * redis://user:password@example.com:6379
 	 */
 	private String url;
@@ -67,11 +68,6 @@ public class RedisProperties {
 	private int port = 6379;
 
 	/**
-	 * Whether to enable SSL support.
-	 */
-	private boolean ssl;
-
-	/**
 	 * Read timeout.
 	 */
 	private Duration timeout;
@@ -94,6 +90,8 @@ public class RedisProperties {
 	private Sentinel sentinel;
 
 	private Cluster cluster;
+
+	private final Ssl ssl = new Ssl();
 
 	private final Jedis jedis = new Jedis();
 
@@ -147,12 +145,8 @@ public class RedisProperties {
 		this.port = port;
 	}
 
-	public boolean isSsl() {
+	public Ssl getSsl() {
 		return this.ssl;
-	}
-
-	public void setSsl(boolean ssl) {
-		this.ssl = ssl;
 	}
 
 	public void setTimeout(Duration timeout) {
@@ -412,6 +406,37 @@ public class RedisProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
 		}
 
 	}

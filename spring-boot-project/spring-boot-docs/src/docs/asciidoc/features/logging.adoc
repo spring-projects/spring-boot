@@ -1,7 +1,7 @@
 [[features.logging]]
 == Logging
 Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal logging but leaves the underlying log implementation open.
-Default configurations are provided for {java-api}/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4j2], and https://logback.qos.ch/[Logback].
+Default configurations are provided for {java-api}/java.logging/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4j2], and https://logback.qos.ch/[Logback].
 In each case, loggers are pre-configured to use console output with optional file output also available.
 
 By default, if you use the "`Starters`", Logback is used for logging.
@@ -31,13 +31,16 @@ The following items are output:
 * Log Level: `ERROR`, `WARN`, `INFO`, `DEBUG`, or `TRACE`.
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
+* Application name: Enclosed in square brackets (logged by default only if configprop:spring.application.name[] is set)
 * Thread name: Enclosed in square brackets (may be truncated for console output).
+* Correlation ID: If tracing is enabled (not shown in the sample above)
 * Logger name: This is usually the source class name (often abbreviated).
 * The log message.
 
 NOTE: Logback does not have a `FATAL` level.
 It is mapped to `ERROR`.
 
+TIP: If you have a configprop:spring.application.name[] property but don't want it logged you can set configprop:logging.include-application-name[] to `false`.
 
 
 [[features.logging.console-output]]
@@ -307,7 +310,9 @@ If you use standard configuration locations, Spring cannot completely control lo
 WARNING: There are known classloading issues with Java Util Logging that cause problems when running from an 'executable jar'.
 We recommend that you avoid it when running from an 'executable jar' if at all possible.
 
-To help with the customization, some other properties are transferred from the Spring `Environment` to System properties, as described in the following table:
+To help with the customization, some other properties are transferred from the Spring `Environment` to System properties.
+This allows the properties to be consumed by logging system configuration. For example, setting `logging.file.name` in `application.properties` or `LOGGING_FILE_NAME` as an environment variable will result in the `LOG_FILE` System property being set.
+The properties that are transferred are described in the following table:
 
 |===
 | Spring Environment | System Property | Comments

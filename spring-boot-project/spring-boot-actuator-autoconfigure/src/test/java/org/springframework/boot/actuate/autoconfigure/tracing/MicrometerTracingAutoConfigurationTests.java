@@ -111,17 +111,6 @@ class MicrometerTracingAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.contextRunner.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
-			.withPropertyValues("management.tracing.enabled=false")
-			.run((context) -> {
-				assertThat(context).doesNotHaveBean(DefaultTracingObservationHandler.class);
-				assertThat(context).doesNotHaveBean(PropagatingReceiverTracingObservationHandler.class);
-				assertThat(context).doesNotHaveBean(PropagatingSenderTracingObservationHandler.class);
-			});
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	private static class TracerConfiguration {
 

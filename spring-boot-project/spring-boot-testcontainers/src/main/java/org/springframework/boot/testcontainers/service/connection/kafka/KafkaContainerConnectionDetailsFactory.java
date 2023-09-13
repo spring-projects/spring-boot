@@ -16,7 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection.kafka;
 
-import java.net.URI;
 import java.util.List;
 
 import org.testcontainers.containers.KafkaContainer;
@@ -35,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class KafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaConnectionDetails, KafkaContainer> {
+		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
@@ -45,20 +44,16 @@ class KafkaContainerConnectionDetailsFactory
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class KafkaContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class KafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
 			implements KafkaConnectionDetails {
-
-		private final KafkaContainer container;
 
 		private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
-		public List<Node> getBootstrapNodes() {
-			URI uri = URI.create(this.container.getBootstrapServers());
-			return List.of(new Node(uri.getHost(), uri.getPort()));
+		public List<String> getBootstrapServers() {
+			return List.of(getContainer().getBootstrapServers());
 		}
 
 	}

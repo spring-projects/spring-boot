@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,10 +45,14 @@ class DockerComposePropertiesTests {
 		assertThat(properties.getFile()).isNull();
 		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_AND_STOP);
 		assertThat(properties.getHost()).isNull();
-		assertThat(properties.getStartup().getCommand()).isEqualTo(StartupCommand.UP);
-		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutdownCommand.DOWN);
-		assertThat(properties.getShutdown().getTimeout()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(properties.getStart().getCommand()).isEqualTo(StartCommand.UP);
+		assertThat(properties.getStop().getCommand()).isEqualTo(StopCommand.STOP);
+		assertThat(properties.getStop().getTimeout()).isEqualTo(Duration.ofSeconds(10));
 		assertThat(properties.getProfiles().getActive()).isEmpty();
+		assertThat(properties.getReadiness().getWait()).isEqualTo(Wait.ALWAYS);
+		assertThat(properties.getReadiness().getTimeout()).isEqualTo(Duration.ofMinutes(2));
+		assertThat(properties.getReadiness().getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(200));
+		assertThat(properties.getReadiness().getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(200));
 	}
 
 	@Test
@@ -56,19 +61,27 @@ class DockerComposePropertiesTests {
 		source.put("spring.docker.compose.file", "my-compose.yml");
 		source.put("spring.docker.compose.lifecycle-management", "start-only");
 		source.put("spring.docker.compose.host", "myhost");
-		source.put("spring.docker.compose.startup.command", "start");
-		source.put("spring.docker.compose.shutdown.command", "stop");
-		source.put("spring.docker.compose.shutdown.timeout", "5s");
+		source.put("spring.docker.compose.start.command", "start");
+		source.put("spring.docker.compose.stop.command", "down");
+		source.put("spring.docker.compose.stop.timeout", "5s");
 		source.put("spring.docker.compose.profiles.active", "myprofile");
+		source.put("spring.docker.compose.readiness.wait", "only-if-started");
+		source.put("spring.docker.compose.readiness.timeout", "10s");
+		source.put("spring.docker.compose.readiness.tcp.connect-timeout", "400ms");
+		source.put("spring.docker.compose.readiness.tcp.read-timeout", "500ms");
 		Binder binder = new Binder(new MapConfigurationPropertySource(source));
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
 		assertThat(properties.getFile()).isEqualTo(new File("my-compose.yml"));
 		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_ONLY);
 		assertThat(properties.getHost()).isEqualTo("myhost");
-		assertThat(properties.getStartup().getCommand()).isEqualTo(StartupCommand.START);
-		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutdownCommand.STOP);
-		assertThat(properties.getShutdown().getTimeout()).isEqualTo(Duration.ofSeconds(5));
+		assertThat(properties.getStart().getCommand()).isEqualTo(StartCommand.START);
+		assertThat(properties.getStop().getCommand()).isEqualTo(StopCommand.DOWN);
+		assertThat(properties.getStop().getTimeout()).isEqualTo(Duration.ofSeconds(5));
 		assertThat(properties.getProfiles().getActive()).containsExactly("myprofile");
+		assertThat(properties.getReadiness().getWait()).isEqualTo(Wait.ONLY_IF_STARTED);
+		assertThat(properties.getReadiness().getTimeout()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(properties.getReadiness().getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(400));
+		assertThat(properties.getReadiness().getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(500));
 	}
 
 }

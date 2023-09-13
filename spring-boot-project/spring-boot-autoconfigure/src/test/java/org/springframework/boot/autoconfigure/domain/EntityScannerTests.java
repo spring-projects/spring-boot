@@ -22,7 +22,6 @@ import java.util.Set;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;
@@ -39,6 +38,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -109,12 +109,13 @@ class EntityScannerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		TestEntityScanner scanner = new TestEntityScanner(context, candidateComponentProvider);
 		scanner.scan(Entity.class);
-		ArgumentCaptor<AnnotationTypeFilter> annotationTypeFilter = ArgumentCaptor.forClass(AnnotationTypeFilter.class);
-		then(candidateComponentProvider).should().addIncludeFilter(annotationTypeFilter.capture());
+		then(candidateComponentProvider).should()
+			.addIncludeFilter(
+					assertArg((typeFilter) -> assertThat(typeFilter).isInstanceOfSatisfying(AnnotationTypeFilter.class,
+							(filter) -> assertThat(filter.getAnnotationType()).isEqualTo(Entity.class))));
 		then(candidateComponentProvider).should()
 			.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan");
 		then(candidateComponentProvider).shouldHaveNoMoreInteractions();
-		assertThat(annotationTypeFilter.getValue().getAnnotationType()).isEqualTo(Entity.class);
 	}
 
 	@Test

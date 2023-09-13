@@ -1,6 +1,6 @@
 services:
   cassandra:
-    image: 'cassandra:3.11.10'
+    image: '{imageName}'
     ports:
       - '9042'
     environment:

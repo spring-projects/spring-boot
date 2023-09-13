@@ -33,7 +33,7 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.util.ClassUtils;
@@ -113,7 +113,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testSystemPropertyInitializesFormat(CapturedOutput output) {
-		System.setProperty(LoggingSystemProperties.PID_KEY, "1234");
+		System.setProperty(LoggingSystemProperty.PID.getEnvironmentVariableName(), "1234");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null,
 				"classpath:" + ClassUtils.addResourcePathToPackagePath(getClass(), "logging.properties"), null);
@@ -166,7 +166,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfigurations() {
+	void getLoggerConfigurations() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -176,7 +176,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void getLoggingConfiguration() {
+	void getLoggerConfiguration() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);

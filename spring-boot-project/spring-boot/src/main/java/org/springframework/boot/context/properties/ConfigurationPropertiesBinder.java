@@ -51,6 +51,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
@@ -142,10 +143,23 @@ class ConfigurationPropertiesBinder {
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
 			validators.add(getJsr303Validator());
 		}
-		if (target.getValue() != null && target.getValue().get() instanceof Validator validator) {
-			validators.add(validator);
+		Validator selfValidator = getSelfValidator(target);
+		if (selfValidator != null) {
+			validators.add(selfValidator);
 		}
 		return validators;
+	}
+
+	private Validator getSelfValidator(Bindable<?> target) {
+		if (target.getValue() != null) {
+			Object value = target.getValue().get();
+			return (value instanceof Validator validator) ? validator : null;
+		}
+		Class<?> type = target.getType().resolve();
+		if (Validator.class.isAssignableFrom(type)) {
+			return new SelfValidatingConstructorBoundBindableValidator(type);
+		}
+		return null;
 	}
 
 	private Validator getJsr303Validator() {
@@ -246,6 +260,30 @@ class ConfigurationPropertiesBinder {
 		public ConfigurationPropertiesBinder getObject() throws Exception {
 			Assert.state(this.binder != null, "Binder was not created due to missing setApplicationContext call");
 			return this.binder;
+		}
+
+	}
+
+	/**
+	 * A {@code Validator} for a constructor-bound {@code Bindable} where the type being
+	 * bound is itself a {@code Validator} implementation.
+	 */
+	static class SelfValidatingConstructorBoundBindableValidator implements Validator {
+
+		private final Class<?> type;
+
+		SelfValidatingConstructorBoundBindableValidator(Class<?> type) {
+			this.type = type;
+		}
+
+		@Override
+		public boolean supports(Class<?> candidate) {
+			return candidate.isAssignableFrom(this.type);
+		}
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			((Validator) target).validate(target, errors);
 		}
 
 	}

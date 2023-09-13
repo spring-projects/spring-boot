@@ -27,6 +27,8 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.SessionRepository;
@@ -61,6 +63,7 @@ class RedisSessionConfiguration {
 	static class DefaultRedisSessionConfiguration {
 
 		@Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
 		SessionRepositoryCustomizer<RedisSessionRepository> springBootSessionRepositoryCustomizer(
 				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 				ServerProperties serverProperties) {
@@ -98,6 +101,7 @@ class RedisSessionConfiguration {
 		}
 
 		@Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
 		SessionRepositoryCustomizer<RedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 				ServerProperties serverProperties) {

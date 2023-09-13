@@ -26,6 +26,7 @@ import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ReflectionUtils;
@@ -59,15 +60,11 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		assertThat(reflection
 			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
-		assertThat(
-				reflection.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-			.accepts(hints);
-		assertThat(reflection
-			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
-			.accepts(hints);
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0")
+	@SuppressWarnings("removal")
 	void shouldRegisterOkHttpHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
@@ -80,6 +77,17 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 	}
 
 	@Test
+	void shouldRegisterJettyClientHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection.onMethod(method(JettyClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+			.accepts(hints);
+		assertThat(reflection.onMethod(method(JettyClientHttpRequestFactory.class, "setReadTimeout", long.class)))
+			.accepts(hints);
+	}
+
+	@Test
 	void shouldRegisterSimpleHttpHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
@@ -87,9 +95,6 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
 		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-			.accepts(hints);
-		assertThat(reflection
-			.onMethod(method(SimpleClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
 			.accepts(hints);
 	}
 

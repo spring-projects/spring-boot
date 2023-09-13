@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,78 +38,93 @@ class ArtifactVersionDependencyVersionTests {
 	}
 
 	@Test
-	void isNewerThanWhenInputIsOlderMajorShouldReturnTrue() {
-		assertThat(version("2.1.2").isNewerThan(version("1.9.0"))).isTrue();
+	void isSameMajorWhenSameMajorAndMinorShouldReturnTrue() {
+		assertThat(version("1.10.2").isSameMajor(version("1.10.0"))).isTrue();
 	}
 
 	@Test
-	void isNewerThanWhenInputIsOlderMinorShouldReturnTrue() {
-		assertThat(version("2.1.2").isNewerThan(version("2.0.2"))).isTrue();
+	void isSameMajorWhenSameMajorShouldReturnTrue() {
+		assertThat(version("1.10.2").isSameMajor(version("1.9.0"))).isTrue();
 	}
 
 	@Test
-	void isNewerThanWhenInputIsOlderPatchShouldReturnTrue() {
-		assertThat(version("2.1.2").isNewerThan(version("2.1.1"))).isTrue();
+	void isSameMajorWhenDifferentMajorShouldReturnFalse() {
+		assertThat(version("2.0.2").isSameMajor(version("1.9.0"))).isFalse();
 	}
 
 	@Test
-	void isNewerThanWhenInputIsNewerMajorShouldReturnFalse() {
-		assertThat(version("2.1.2").isNewerThan(version("3.2.1"))).isFalse();
+	void isSameMinorWhenSameMinorShouldReturnTrue() {
+		assertThat(version("1.10.2").isSameMinor(version("1.10.1"))).isTrue();
 	}
 
 	@Test
-	void isSameMajorAndNewerThanWhenMinorIsOlderShouldReturnTrue() {
-		assertThat(version("1.10.2").isSameMajorAndNewerThan(version("1.9.0"))).isTrue();
+	void isSameMinorWhenDifferentMinorShouldReturnFalse() {
+		assertThat(version("1.10.2").isSameMinor(version("1.9.1"))).isFalse();
 	}
 
 	@Test
-	void isSameMajorAndNewerThanWhenMajorIsOlderShouldReturnFalse() {
-		assertThat(version("2.0.2").isSameMajorAndNewerThan(version("1.9.0"))).isFalse();
+	void isSnapshotForWhenSnapshotForReleaseShouldReturnTrue() {
+		assertThat(version("1.10.2-SNAPSHOT").isSnapshotFor(version("1.10.2"))).isTrue();
 	}
 
 	@Test
-	void isSameMajorAndNewerThanWhenPatchIsNewerShouldReturnTrue() {
-		assertThat(version("2.1.2").isSameMajorAndNewerThan(version("2.1.1"))).isTrue();
+	void isSnapshotForWhenBuildSnapshotForReleaseShouldReturnTrue() {
+		assertThat(version("1.10.2.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RELEASE"))).isTrue();
 	}
 
 	@Test
-	void isSameMajorAndNewerThanWhenMinorIsNewerShouldReturnFalse() {
-		assertThat(version("2.1.2").isSameMajorAndNewerThan(version("2.2.1"))).isFalse();
+	void isSnapshotForWhenSnapshotForReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.2-SNAPSHOT").isSnapshotFor(version("1.10.2-RC2"))).isTrue();
 	}
 
 	@Test
-	void isSameMajorAndNewerThanWhenMajorIsNewerShouldReturnFalse() {
-		assertThat(version("2.1.2").isSameMajorAndNewerThan(version("3.0.1"))).isFalse();
+	void isSnapshotForWhenBuildSnapshotForReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.2.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RC2"))).isTrue();
 	}
 
 	@Test
-	void isSameMinorAndNewerThanWhenPatchIsOlderShouldReturnTrue() {
-		assertThat(version("1.10.2").isSameMinorAndNewerThan(version("1.10.1"))).isTrue();
+	void isSnapshotForWhenSnapshotForMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.2-SNAPSHOT").isSnapshotFor(version("1.10.2-M1"))).isTrue();
 	}
 
 	@Test
-	void isSameMinorAndNewerThanWhenMinorIsOlderShouldReturnFalse() {
-		assertThat(version("2.1.2").isSameMinorAndNewerThan(version("2.0.1"))).isFalse();
+	void isSnapshotForWhenBuildSnapshotForMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.2.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.M1"))).isTrue();
 	}
 
 	@Test
-	void isSameMinorAndNewerThanWhenVersionsAreTheSameShouldReturnFalse() {
-		assertThat(version("2.1.2").isSameMinorAndNewerThan(version("2.1.2"))).isFalse();
+	void isSnapshotForWhenSnapshotForDifferentReleaseShouldReturnFalse() {
+		assertThat(version("1.10.1-SNAPSHOT").isSnapshotFor(version("1.10.2"))).isFalse();
 	}
 
 	@Test
-	void isSameMinorAndNewerThanWhenPatchIsNewerShouldReturnFalse() {
-		assertThat(version("2.1.2").isSameMinorAndNewerThan(version("2.1.3"))).isFalse();
+	void isSnapshotForWhenBuildSnapshotForDifferentReleaseShouldReturnTrue() {
+		assertThat(version("1.10.1.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RELEASE"))).isFalse();
 	}
 
 	@Test
-	void isSameMinorAndNewerThanWhenMinorIsNewerShouldReturnFalse() {
-		assertThat(version("2.1.2").isSameMinorAndNewerThan(version("2.0.1"))).isFalse();
+	void isSnapshotForWhenSnapshotForDifferentReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.1-SNAPSHOT").isSnapshotFor(version("1.10.2-RC2"))).isFalse();
 	}
 
 	@Test
-	void isSameMinorAndNewerThanWhenMajorIsNewerShouldReturnFalse() {
-		assertThat(version("3.1.2").isSameMinorAndNewerThan(version("2.0.1"))).isFalse();
+	void isSnapshotForWhenBuildSnapshotForDifferentReleaseCandidateShouldReturnTrue() {
+		assertThat(version("1.10.1.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.RC2"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenSnapshotForDifferentMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.1-SNAPSHOT").isSnapshotFor(version("1.10.2-M1"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenBuildSnapshotForDifferentMilestoneShouldReturnTrue() {
+		assertThat(version("1.10.1.BUILD-SNAPSHOT").isSnapshotFor(version("1.10.2.M1"))).isFalse();
+	}
+
+	@Test
+	void isSnapshotForWhenNotSnapshotShouldReturnFalse() {
+		assertThat(version("1.10.1-M1").isSnapshotFor(version("1.10.1"))).isFalse();
 	}
 
 	private ArtifactVersionDependencyVersion version(String version) {

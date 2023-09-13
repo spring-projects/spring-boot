@@ -59,8 +59,8 @@ class SslOptionsTests {
 		Set<String> ciphers = Set.of("a", "b", "c");
 		Set<String> enabledProtocols = Set.of("d", "e", "f");
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
-		assertThat(options.getCiphers()).isEqualTo(ciphers);
-		assertThat(options.getEnabledProtocols()).isEqualTo(enabledProtocols);
+		assertThat(options.getCiphers()).contains("a", "b", "c");
+		assertThat(options.getEnabledProtocols()).contains("d", "e", "f");
 	}
 
 	@Test

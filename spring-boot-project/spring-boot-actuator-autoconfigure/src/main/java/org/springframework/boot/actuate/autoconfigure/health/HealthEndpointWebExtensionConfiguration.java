@@ -81,7 +81,8 @@ class HealthEndpointWebExtensionConfiguration {
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.get();
+			.orElseThrow(
+					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)
@@ -162,7 +163,7 @@ class HealthEndpointWebExtensionConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.SERVER, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-				.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
+				.createEndpointResources(mapping, Collections.singletonList(this.endpoint))
 				.stream()
 				.filter(Objects::nonNull)
 				.toList();

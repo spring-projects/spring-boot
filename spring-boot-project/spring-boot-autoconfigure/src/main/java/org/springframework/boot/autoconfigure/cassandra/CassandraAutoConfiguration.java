@@ -58,6 +58,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -116,7 +117,7 @@ public class CassandraAutoConfiguration {
 			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
 		configureAuthentication(builder, connectionDetails);
-		configureSsl(builder, connectionDetails, sslBundles.getIfAvailable());
+		configureSsl(builder, sslBundles.getIfAvailable());
 		builder.withKeyspace(this.properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
@@ -129,11 +130,7 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private void configureSsl(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails,
-			SslBundles sslBundles) {
-		if (!(connectionDetails instanceof PropertiesCassandraConnectionDetails)) {
-			return;
-		}
+	private void configureSsl(CqlSessionBuilder builder, SslBundles sslBundles) {
 		Ssl properties = this.properties.getSsl();
 		if (properties == null || !properties.isEnabled()) {
 			return;
@@ -158,8 +155,9 @@ public class CassandraAutoConfiguration {
 
 	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
-		String[] ciphers = (options.getCiphers() != null) ? options.getCiphers().toArray(String[]::new) : null;
-		builder.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), ciphers));
+		Assert.state(options.getEnabledProtocols() == null, "SSL protocol options cannot be specified with Cassandra");
+		builder
+			.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), options.getCiphers()));
 	}
 
 	@Bean(destroyMethod = "")

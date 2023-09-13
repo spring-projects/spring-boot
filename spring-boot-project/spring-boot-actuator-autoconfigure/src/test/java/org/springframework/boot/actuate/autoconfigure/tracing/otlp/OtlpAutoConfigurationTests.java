@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OtlpAutoConfiguration}.
  *
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  * @author Eddú Meléndez
  */
 class OtlpAutoConfigurationTests {
@@ -41,10 +42,19 @@ class OtlpAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(OtlpAutoConfiguration.class));
 
+	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
+		.withPropertyValues("management.tracing.enabled=false");
+
+	@Test
+	void shouldNotSupplyBeansIfPropertyIsNotSet() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(OtlpHttpSpanExporter.class));
+	}
+
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class)
-			.hasSingleBean(SpanExporter.class));
+		this.contextRunner.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
+			.run((context) -> assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class)
+				.hasSingleBean(SpanExporter.class));
 	}
 
 	@Test
@@ -92,9 +102,17 @@ class OtlpAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldNotSupplyOtlpHttpSpanExporterIfTracingIsDisabled() {
+		this.tracingDisabledContextRunner
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
+			.run((context) -> assertThat(context).doesNotHaveBean(OtlpHttpSpanExporter.class));
+	}
+
+	@Test
 	void definesPropertiesBasedConnectionDetailsByDefault() {
-		this.contextRunner.run((context) -> assertThat(context)
-			.hasSingleBean(OtlpAutoConfiguration.PropertiesOtlpTracingConnectionDetails.class));
+		this.contextRunner.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
+			.run((context) -> assertThat(context)
+				.hasSingleBean(OtlpAutoConfiguration.PropertiesOtlpTracingConnectionDetails.class));
 	}
 
 	@Test
@@ -103,7 +121,7 @@ class OtlpAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtlpTracingConnectionDetails.class)
 				.doesNotHaveBean(OtlpAutoConfiguration.PropertiesOtlpTracingConnectionDetails.class);
 			OtlpHttpSpanExporter otlpHttpSpanExporter = context.getBean(OtlpHttpSpanExporter.class);
-			assertThat(otlpHttpSpanExporter).extracting("delegate.url")
+			assertThat(otlpHttpSpanExporter).extracting("delegate.httpSender.url")
 				.isEqualTo(HttpUrl.get("http://localhost:12345/v1/traces"));
 		});
 	}

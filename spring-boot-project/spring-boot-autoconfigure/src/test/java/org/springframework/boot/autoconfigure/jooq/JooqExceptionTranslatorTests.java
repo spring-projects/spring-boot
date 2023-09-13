@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import org.jooq.SQLDialect;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.jdbc.BadSqlGrammarException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -53,9 +53,7 @@ class JooqExceptionTranslatorTests {
 		given(configuration.dialect()).willReturn(dialect);
 		given(context.sqlException()).willReturn(sqlException);
 		this.exceptionTranslator.exception(context);
-		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
-		then(context).should().exception(captor.capture());
-		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
+		then(context).should().exception(assertArg((ex) -> assertThat(ex).isInstanceOf(BadSqlGrammarException.class)));
 	}
 
 	@Test

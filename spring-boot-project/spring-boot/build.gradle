@@ -56,17 +56,12 @@ dependencies {
 	optional("org.assertj:assertj-core")
 	optional("org.apache.groovy:groovy")
 	optional("org.apache.groovy:groovy-xml")
-	optional("org.eclipse.jetty:jetty-servlets")
+	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
+	optional("org.eclipse.jetty:jetty-client")
 	optional("org.eclipse.jetty:jetty-util")
-	optional("org.eclipse.jetty:jetty-webapp") {
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
-	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server") {
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
-	optional("org.eclipse.jetty.http2:http2-server") {
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
+	optional("org.eclipse.jetty.ee10:jetty-ee10-servlets")
+	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	optional("org.eclipse.jetty.http2:jetty-http2-server")
 	optional("org.flywaydb:flyway-core")
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate.orm:hibernate-core")
@@ -75,6 +70,7 @@ dependencies {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
 	optional("org.liquibase:liquibase-core") {
+		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
 	optional("org.postgresql:postgresql")
@@ -118,8 +114,8 @@ dependencies {
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.codehaus.janino:janino")
 	testImplementation("org.eclipse.jetty:jetty-client")
-	testImplementation("org.eclipse.jetty.http2:http2-client")
-	testImplementation("org.eclipse.jetty.http2:http2-http-client-transport")
+	testImplementation("org.eclipse.jetty.http2:jetty-http2-client")
+	testImplementation("org.eclipse.jetty.http2:jetty-http2-client-transport")
 	testImplementation("org.firebirdsql.jdbc:jaybird") {
 		exclude group: "javax.resource", module: "connector-api"
 	}

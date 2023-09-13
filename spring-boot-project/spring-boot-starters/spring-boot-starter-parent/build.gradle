@@ -234,11 +234,22 @@ publishing.publications.withType(MavenPublication) {
 						pluginManagement {
 							plugins {
 								plugin {
+									delegate.groupId('org.apache.maven.plugins')
+									delegate.artifactId('maven-jar-plugin')
+									configuration {
+										archive {
+											manifestEntries {
+												delegate.'Spring-Boot-Native-Processed'("true")
+											}
+										}
+									}
+								}
+								plugin {
 									delegate.groupId('org.springframework.boot')
 									delegate.artifactId('spring-boot-maven-plugin')
 									configuration {
 										image {
-											delegate.builder("paketobuildpacks/builder:tiny");
+											delegate.builder("paketobuildpacks/builder-jammy-tiny:latest");
 											env {
 												delegate.BP_NATIVE_IMAGE("true")
 											}

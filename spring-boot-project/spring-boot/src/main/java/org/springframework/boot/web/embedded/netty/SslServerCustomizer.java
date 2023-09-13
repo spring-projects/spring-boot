@@ -66,7 +66,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 			builder.trustManager(this.sslBundle.getManagers().getTrustManagerFactory());
 			SslOptions options = this.sslBundle.getOptions();
 			builder.protocols(options.getEnabledProtocols());
-			builder.ciphers(options.getCiphers());
+			builder.ciphers(SslOptions.asSet(options.getCiphers()));
 			builder.clientAuth(org.springframework.boot.web.server.Ssl.ClientAuth.map(this.clientAuth, ClientAuth.NONE,
 					ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
 		});

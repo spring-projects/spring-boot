@@ -18,10 +18,14 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.gridfs.GridFSBucket;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -64,6 +68,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MongoDataAutoConfigurationTests {
 
@@ -77,32 +82,43 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.database:grid").run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
-			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
-			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid");
+			GridFSBucket bucket = ((Supplier<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.get();
+			assertThat(bucket).extracting("filesCollection", InstanceOfAssertFactories.type(MongoCollection.class))
+				.extracting((collection) -> collection.getNamespace().getDatabaseName())
+				.isEqualTo("grid");
 		});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void usesMongoConnectionDetailsIfAvailable() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
-			assertThat(template).hasFieldOrPropertyWithValue("bucket", "connection-details-bucket");
-			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
-			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid-database-1");
+			GridFSBucket bucket = ((Supplier<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.get();
+			assertThat(bucket.getBucketName()).isEqualTo("connection-details-bucket");
+			assertThat(bucket).extracting("filesCollection", InstanceOfAssertFactories.type(MongoCollection.class))
+				.extracting((collection) -> collection.getNamespace().getDatabaseName())
+				.isEqualTo("grid-database-1");
 		});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void whenGridFsBucketIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
-			assertThat(template).hasFieldOrPropertyWithValue("bucket", "test-bucket");
+			GridFSBucket bucket = ((Supplier<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.get();
+			assertThat(bucket.getBucketName()).isEqualTo("test-bucket");
 		});
 	}
 
@@ -224,6 +240,64 @@ class MongoDataAutoConfigurationTests {
 	void autoConfiguresIfUserProvidesMongoDatabaseFactoryButNoClient() {
 		this.contextRunner.withUserConfiguration(MongoDatabaseFactoryConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
+	}
+
+	@Test
+	void databaseHasDefault() {
+		this.contextRunner.run((context) -> {
+			MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("test");
+		});
+	}
+
+	@Test
+	void databasePropertyIsUsed() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.database=mydb").run((context) -> {
+			MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+		});
+	}
+
+	@Test
+	void databaseInUriPropertyIsUsed() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/mydb")
+			.run((context) -> {
+				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void databasePropertyOverridesUriProperty() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/notused",
+					"spring.data.mongodb.database=mydb")
+			.run((context) -> {
+				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void databasePropertyIsUsedWhenNoDatabaseInUri() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/",
+					"spring.data.mongodb.database=mydb")
+			.run((context) -> {
+				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void contextFailsWhenDatabaseNotSet() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/")
+			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
 	}
 
 	@Test

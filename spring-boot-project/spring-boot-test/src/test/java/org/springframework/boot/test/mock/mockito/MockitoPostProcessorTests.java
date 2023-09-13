@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.Assert;
 
@@ -73,11 +74,24 @@ class MockitoPostProcessorTests {
 	}
 
 	@Test
-	void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
+	void canMockBeanProducedByFactoryBeanWithClassObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
-		factoryBeanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, SomeInterface.class.getName());
+		factoryBeanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, SomeInterface.class);
+		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
+		context.register(MockedFactoryBean.class);
+		context.refresh();
+		assertThat(Mockito.mockingDetails(context.getBean("beanToBeMocked")).isMock()).isTrue();
+	}
+
+	@Test
+	void canMockBeanProducedByFactoryBeanWithResolvableTypeObjectTypeAttribute() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		MockitoPostProcessor.register(context);
+		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
+		ResolvableType objectType = ResolvableType.forClass(SomeInterface.class);
+		factoryBeanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, objectType);
 		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
 		context.register(MockedFactoryBean.class);
 		context.refresh();

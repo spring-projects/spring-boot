@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.r2dbc;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ class ConnectionPoolMetricsTests {
 	@AfterEach
 	void close() {
 		if (this.connectionFactory != null) {
-			StepVerifier.create(this.connectionFactory.close()).verifyComplete();
+			StepVerifier.create(this.connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(30));
 		}
 	}
 
@@ -71,9 +72,18 @@ class ConnectionPoolMetricsTests {
 		ConnectionPoolMetrics metrics = new ConnectionPoolMetrics(connectionPool, "test-pool",
 				Tags.of(testTag, regionTag));
 		metrics.bindTo(registry);
+		connectionPool.warmup().as(StepVerifier::create).expectNext(3).expectComplete().verify(Duration.ofSeconds(30));
 		// acquire two connections
-		connectionPool.create().as(StepVerifier::create).expectNextCount(1).verifyComplete();
-		connectionPool.create().as(StepVerifier::create).expectNextCount(1).verifyComplete();
+		connectionPool.create()
+			.as(StepVerifier::create)
+			.expectNextCount(1)
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
+		connectionPool.create()
+			.as(StepVerifier::create)
+			.expectNextCount(1)
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertGauge(registry, "r2dbc.pool.acquired", 2);
 		assertGauge(registry, "r2dbc.pool.allocated", 3);
 		assertGauge(registry, "r2dbc.pool.idle", 1);

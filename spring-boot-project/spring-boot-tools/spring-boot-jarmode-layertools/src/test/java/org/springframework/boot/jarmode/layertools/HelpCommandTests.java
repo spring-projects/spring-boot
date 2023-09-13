@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,13 +62,13 @@ class HelpCommandTests {
 
 	@Test
 	void runWhenHasNoParametersPrintsUsage() {
-		this.command.run(this.out, Collections.emptyMap(), Collections.emptyList());
+		this.command.run(this.out, Collections.emptyList());
 		assertThat(this.out).hasSameContentAsResource("help-output.txt");
 	}
 
 	@Test
 	void runWhenHasNoCommandParameterPrintsUsage() {
-		this.command.run(this.out, Collections.emptyMap(), Arrays.asList("extract"));
+		this.command.run(this.out, Arrays.asList("extract"));
 		System.out.println(this.out);
 		assertThat(this.out).hasSameContentAsResource("help-extract-output.txt");
 	}

@@ -17,16 +17,15 @@
 package org.springframework.boot.docs.features.testing.testcontainers.serviceconnections
 
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-
-@SpringBootTest
 @Testcontainers
-internal class MyIntegrationTests {
+@SpringBootTest
+class MyIntegrationTests {
 
 	@Test
 	fun myTest() {
@@ -37,7 +36,7 @@ internal class MyIntegrationTests {
 
 		@Container
 		@ServiceConnection
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
+		val neo4j = Neo4jContainer("neo4j:5")
 
 	}
 

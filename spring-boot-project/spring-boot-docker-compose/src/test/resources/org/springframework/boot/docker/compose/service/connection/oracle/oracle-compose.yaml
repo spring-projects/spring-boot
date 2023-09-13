@@ -1,0 +1,15 @@
+services:
+  database:
+    image: '{imageName}'
+    ports:
+      - '1521'
+    environment:
+      - 'APP_USER=app_user'
+      - 'APP_USER_PASSWORD=app_user_secret'
+      - 'ORACLE_PASSWORD=secret'
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+

@@ -16,12 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.test
 
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.test.main as myApplicationMain
+import org.springframework.boot.fromApplication
+import org.springframework.boot.with
 
-object Main {
-	@JvmStatic
-	fun main(args: Array<String>) {
-		SpringApplication.from(::myApplicationMain).with(MyContainersConfiguration::class.java).run(*args)
-	}
+fun main(args: Array<String>) {
+	fromApplication<MyApplication>().with(MyContainersConfiguration::class).run(*args)
 }

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import retrofit2.Retrofit;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration.PropertiesInfluxDbConnectionDetails;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.2.0", forRemoval = true)
 class InfluxDbAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -52,35 +52,6 @@ class InfluxDbAutoConfigurationTests {
 	@Test
 	void influxDbRequiresUrl() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfluxDB.class));
-	}
-
-	@Test
-	void definesPropertiesBasedConnectionDetailsByDefault() {
-		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost")
-			.run((context) -> assertThat(context).hasSingleBean(PropertiesInfluxDbConnectionDetails.class));
-	}
-
-	@Test
-	void shouldUseCustomConnectionDetailsWhenDefined() {
-		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails).run((context) -> {
-			assertThat(context).hasSingleBean(InfluxDB.class)
-				.hasSingleBean(InfluxDbConnectionDetails.class)
-				.doesNotHaveBean(PropertiesInfluxDbConnectionDetails.class);
-			InfluxDB influxDb = context.getBean(InfluxDB.class);
-			assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
-		});
-	}
-
-	@Test
-	void connectionDetailsOverwriteProperties() {
-		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails)
-			.withPropertyValues("spring.influx.url=http://some-other-host", "spring.influx.user=user",
-					"spring.influx.password=password")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(InfluxDB.class);
-				InfluxDB influxDb = context.getBean(InfluxDB.class);
-				assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
-			});
 	}
 
 	@Test
@@ -129,31 +100,11 @@ class InfluxDbAutoConfigurationTests {
 		return callFactory.readTimeoutMillis();
 	}
 
-	private InfluxDbConnectionDetails influxDbConnectionDetails() {
-		return new InfluxDbConnectionDetails() {
-
-			@Override
-			public URI getUrl() {
-				return URI.create("http://localhost");
-			}
-
-			@Override
-			public String getUsername() {
-				return "user-1";
-			}
-
-			@Override
-			public String getPassword() {
-				return "password-1";
-			}
-
-		};
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class CustomOkHttpClientBuilderProviderConfig {
 
 		@Bean
+		@SuppressWarnings("removal")
 		InfluxDbOkHttpClientBuilderProvider influxDbOkHttpClientBuilderProvider() {
 			return () -> new OkHttpClient.Builder().readTimeout(40, TimeUnit.SECONDS);
 		}

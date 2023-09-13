@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class MySqlR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MySQLContainer<?>> {
+		extends ContainerConnectionDetailsFactory<MySQLContainer<?>, R2dbcConnectionDetails> {
 
 	MySqlR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
@@ -42,23 +42,22 @@ class MySqlR2dbcContainerConnectionDetailsFactory
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
+		return new MySqlR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails implements R2dbcConnectionDetails {
+	private static final class MySqlR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MySQLContainer<?>> implements R2dbcConnectionDetails {
 
-		private final MySQLContainer<?> container;
-
-		private R2dbcDatabaseContainerConnectionDetails(MySQLContainer<?> container) {
-			this.container = container;
+		private MySqlR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
+			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return MySQLR2DBCDatabaseContainer.getOptions(this.container);
+			return MySQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

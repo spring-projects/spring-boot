@@ -59,6 +59,7 @@ import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
@@ -248,27 +249,28 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
-		if (logFile != null) {
-			loadConfiguration(getPackagedConfigFile("log4j2-file.xml"), logFile, getOverrides(initializationContext));
+		String location = getPackagedConfigFile((logFile != null) ? "log4j2-file.xml" : "log4j2.xml");
+		load(initializationContext, location, logFile);
+	}
+
+	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
+			LogFile logFile) {
+		load(initializationContext, location, logFile);
+	}
+
+	private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
+		List<String> overrides = getOverrides(initializationContext);
+		if (initializationContext != null) {
+			applySystemProperties(initializationContext.getEnvironment(), logFile);
 		}
-		else {
-			loadConfiguration(getPackagedConfigFile("log4j2.xml"), logFile, getOverrides(initializationContext));
-		}
+		loadConfiguration(location, logFile, overrides);
 	}
 
 	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
 		BindResult<List<String>> overrides = Binder.get(initializationContext.getEnvironment())
 			.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
 		return overrides.orElse(Collections.emptyList());
-	}
-
-	@Override
-	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
-			LogFile logFile) {
-		if (initializationContext != null) {
-			applySystemProperties(initializationContext.getEnvironment(), logFile);
-		}
-		loadConfiguration(location, logFile, getOverrides(initializationContext));
 	}
 
 	/**
@@ -432,13 +434,18 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (loggerConfig == null) {
 			return null;
 		}
-		LogLevel level = LEVELS.convertNativeToSystem(loggerConfig.getLevel());
+		LevelConfiguration effectiveLevelConfiguration = getLevelConfiguration(loggerConfig.getLevel());
 		if (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) {
 			name = ROOT_LOGGER_NAME;
 		}
-		boolean isLoggerConfigured = loggerConfig.getName().equals(name);
-		LogLevel configuredLevel = (isLoggerConfigured) ? level : null;
-		return new LoggerConfiguration(name, configuredLevel, level);
+		boolean isAssigned = loggerConfig.getName().equals(name);
+		LevelConfiguration assignedLevelConfiguration = (!isAssigned) ? null : effectiveLevelConfiguration;
+		return new LoggerConfiguration(name, assignedLevelConfiguration, effectiveLevelConfiguration);
+	}
+
+	private LevelConfiguration getLevelConfiguration(Level level) {
+		LogLevel logLevel = LEVELS.convertNativeToSystem(level);
+		return (logLevel != null) ? LevelConfiguration.of(logLevel) : LevelConfiguration.ofCustom(level.name());
 	}
 
 	@Override
@@ -484,6 +491,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.setExternalContext(null);
+	}
+
+	@Override
+	protected String getDefaultLogCorrelationPattern() {
+		return "%correlationId";
 	}
 
 	/**

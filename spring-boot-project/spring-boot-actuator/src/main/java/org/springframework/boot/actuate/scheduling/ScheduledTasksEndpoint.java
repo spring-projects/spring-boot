@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.scheduling;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -186,7 +187,8 @@ public class ScheduledTasksEndpoint {
 
 		protected IntervalTaskDescriptor(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
 			super(type, task.getRunnable());
-			this.initialDelay = trigger.getInitialDelayDuration().toMillis();
+			Duration initialDelayDuration = trigger.getInitialDelayDuration();
+			this.initialDelay = (initialDelayDuration != null) ? initialDelayDuration.toMillis() : 0;
 			this.interval = trigger.getPeriodDuration().toMillis();
 		}
 

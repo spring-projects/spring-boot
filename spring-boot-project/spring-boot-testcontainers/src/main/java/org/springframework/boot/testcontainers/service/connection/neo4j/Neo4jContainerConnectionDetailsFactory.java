@@ -36,7 +36,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class Neo4jContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Neo4jConnectionDetails, Neo4jContainer<?>> {
+		extends ContainerConnectionDetailsFactory<Neo4jContainer<?>, Neo4jConnectionDetails> {
 
 	Neo4jContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "org.neo4j.driver.AuthToken");
@@ -51,24 +51,21 @@ class Neo4jContainerConnectionDetailsFactory
 	/**
 	 * {@link Neo4jConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class Neo4jContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class Neo4jContainerConnectionDetails extends ContainerConnectionDetails<Neo4jContainer<?>>
 			implements Neo4jConnectionDetails {
-
-		private final Neo4jContainer<?> container;
 
 		private Neo4jContainerConnectionDetails(ContainerConnectionSource<Neo4jContainer<?>> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public URI getUri() {
-			return URI.create(this.container.getBoltUrl());
+			return URI.create(getContainer().getBoltUrl());
 		}
 
 		@Override
 		public AuthToken getAuthToken() {
-			String password = this.container.getAdminPassword();
+			String password = getContainer().getAdminPassword();
 			return (password != null) ? AuthTokens.basic("neo4j", password) : AuthTokens.none();
 		}
 

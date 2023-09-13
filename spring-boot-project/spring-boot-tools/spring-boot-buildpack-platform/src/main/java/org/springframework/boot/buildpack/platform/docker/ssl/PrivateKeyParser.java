@@ -18,11 +18,13 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -32,11 +34,16 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.boot.buildpack.platform.docker.ssl.PrivateKeyParser.DerElement.TagType;
+import org.springframework.boot.buildpack.platform.docker.ssl.PrivateKeyParser.DerElement.ValueType;
+import org.springframework.util.Assert;
+
 /**
  * Parser for PKCS private key files in PEM format.
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 final class PrivateKeyParser {
 
@@ -57,9 +64,9 @@ final class PrivateKeyParser {
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, "RSA", PrivateKeyParser::createKeySpecForPkcs1));
-		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, "EC", PrivateKeyParser::createKeySpecForEc));
-		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, "RSA", PKCS8EncodedKeySpec::new));
+		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, PrivateKeyParser::createKeySpecForPkcs1, "RSA"));
+		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, PrivateKeyParser::createKeySpecForEc, "EC"));
+		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, PKCS8EncodedKeySpec::new, "RSA", "EC", "DSA", "Ed25519"));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -86,7 +93,38 @@ final class PrivateKeyParser {
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForEc(byte[] bytes) {
-		return createKeySpecForAlgorithm(bytes, EC_ALGORITHM, EC_PARAMETERS);
+		DerElement ecPrivateKey = DerElement.of(bytes);
+		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
+				"Key spec should be an ASN.1 encoded sequence");
+		DerElement version = DerElement.of(ecPrivateKey.getContents());
+		Assert.state(version != null && version.isType(ValueType.PRIMITIVE, TagType.INTEGER),
+				"Key spec should start with version");
+		Assert.state(version.getContents().remaining() == 1 && version.getContents().get() == 1,
+				"Key spec version must be 1");
+		DerElement privateKey = DerElement.of(ecPrivateKey.getContents());
+		Assert.state(privateKey != null && privateKey.isType(ValueType.PRIMITIVE, TagType.OCTET_STRING),
+				"Key spec should contain private key");
+		DerElement parameters = DerElement.of(ecPrivateKey.getContents());
+		return createKeySpecForAlgorithm(bytes, EC_ALGORITHM, getEcParameters(parameters));
+	}
+
+	private static int[] getEcParameters(DerElement parameters) {
+		if (parameters == null) {
+			return EC_PARAMETERS;
+		}
+		Assert.state(parameters.isType(ValueType.ENCODED), "Key spec should contain encoded parameters");
+		DerElement contents = DerElement.of(parameters.getContents());
+		Assert.state(contents.isType(ValueType.PRIMITIVE, TagType.OBJECT_IDENTIFIER),
+				"Key spec parameters should contain object identifier");
+		return getEcParameters(contents.getContents());
+	}
+
+	private static int[] getEcParameters(ByteBuffer bytes) {
+		int[] result = new int[bytes.remaining()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = bytes.get() & 0xFF;
+		}
+		return result;
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, int[] algorithm, int[] parameters) {
@@ -134,14 +172,14 @@ final class PrivateKeyParser {
 
 		private final Pattern pattern;
 
-		private final String algorithm;
-
 		private final Function<byte[], PKCS8EncodedKeySpec> keySpecFactory;
 
-		PemParser(String header, String footer, String algorithm,
-				Function<byte[], PKCS8EncodedKeySpec> keySpecFactory) {
+		private final String[] algorithms;
+
+		PemParser(String header, String footer, Function<byte[], PKCS8EncodedKeySpec> keySpecFactory,
+				String... algorithms) {
 			this.pattern = Pattern.compile(header + BASE64_TEXT + footer, Pattern.CASE_INSENSITIVE);
-			this.algorithm = algorithm;
+			this.algorithms = algorithms;
 			this.keySpecFactory = keySpecFactory;
 		}
 
@@ -158,8 +196,15 @@ final class PrivateKeyParser {
 		private PrivateKey parse(byte[] bytes) {
 			try {
 				PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes);
-				KeyFactory keyFactory = KeyFactory.getInstance(this.algorithm);
-				return keyFactory.generatePrivate(keySpec);
+				for (String algorithm : this.algorithms) {
+					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+					try {
+						return keyFactory.generatePrivate(keySpec);
+					}
+					catch (InvalidKeySpecException ex) {
+					}
+				}
+				return null;
 			}
 			catch (GeneralSecurityException ex) {
 				throw new IllegalArgumentException("Unexpected key format", ex);
@@ -238,6 +283,104 @@ final class PrivateKeyParser {
 
 		byte[] toByteArray() {
 			return this.stream.toByteArray();
+		}
+
+	}
+
+	/**
+	 * An ASN.1 DER encoded element.
+	 */
+	static final class DerElement {
+
+		private final ValueType valueType;
+
+		private final long tagType;
+
+		private ByteBuffer contents;
+
+		private DerElement(ByteBuffer bytes) {
+			byte b = bytes.get();
+			this.valueType = ((b & 0x20) == 0) ? ValueType.PRIMITIVE : ValueType.ENCODED;
+			this.tagType = decodeTagType(b, bytes);
+			int length = decodeLength(bytes);
+			bytes.limit(bytes.position() + length);
+			this.contents = bytes.slice();
+			bytes.limit(bytes.capacity());
+			bytes.position(bytes.position() + length);
+		}
+
+		private long decodeTagType(byte b, ByteBuffer bytes) {
+			long tagType = (b & 0x1F);
+			if (tagType != 0x1F) {
+				return tagType;
+			}
+			tagType = 0;
+			b = bytes.get();
+			while ((b & 0x80) != 0) {
+				tagType <<= 7;
+				tagType = tagType | (b & 0x7F);
+				b = bytes.get();
+			}
+			return tagType;
+		}
+
+		private int decodeLength(ByteBuffer bytes) {
+			byte b = bytes.get();
+			if ((b & 0x80) == 0) {
+				return b & 0x7F;
+			}
+			int numberOfLengthBytes = (b & 0x7F);
+			Assert.state(numberOfLengthBytes != 0, "Infinite length encoding is not supported");
+			Assert.state(numberOfLengthBytes != 0x7F, "Reserved length encoding is not supported");
+			Assert.state(numberOfLengthBytes <= 4, "Length overflow");
+			int length = 0;
+			for (int i = 0; i < numberOfLengthBytes; i++) {
+				length <<= 8;
+				length |= (bytes.get() & 0xFF);
+			}
+			return length;
+		}
+
+		boolean isType(ValueType valueType) {
+			return this.valueType == valueType;
+		}
+
+		boolean isType(ValueType valueType, TagType tagType) {
+			return this.valueType == valueType && this.tagType == tagType.getNumber();
+		}
+
+		ByteBuffer getContents() {
+			return this.contents;
+		}
+
+		static DerElement of(byte[] bytes) {
+			return of(ByteBuffer.wrap(bytes));
+		}
+
+		static DerElement of(ByteBuffer bytes) {
+			return (bytes.remaining() > 0) ? new DerElement(bytes) : null;
+		}
+
+		enum ValueType {
+
+			PRIMITIVE, ENCODED
+
+		}
+
+		enum TagType {
+
+			INTEGER(0x02), OCTET_STRING(0x04), OBJECT_IDENTIFIER(0x06), SEQUENCE(0x10);
+
+			private final int number;
+
+			TagType(int number) {
+				this.number = number;
+			}
+
+			int getNumber() {
+				return this.number;
+			}
+
 		}
 
 	}

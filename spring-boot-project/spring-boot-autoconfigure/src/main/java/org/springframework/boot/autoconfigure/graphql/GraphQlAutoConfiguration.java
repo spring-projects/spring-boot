@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.Instrumentation;
@@ -33,10 +34,12 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
@@ -101,6 +104,9 @@ public class GraphQlAutoConfiguration {
 			.exceptionResolvers(exceptionResolvers.orderedStream().toList())
 			.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
 			.instrumentation(instrumentations.orderedStream().toList());
+		if (properties.getSchema().getInspection().isEnabled()) {
+			builder.inspectSchemaMappings(logger::info);
+		}
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}
@@ -152,10 +158,12 @@ public class GraphQlAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AnnotatedControllerConfigurer annotatedControllerConfigurer() {
+	public AnnotatedControllerConfigurer annotatedControllerConfigurer(
+			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<Executor> executorProvider) {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
 		controllerConfigurer
 			.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
+		executorProvider.ifAvailable(controllerConfigurer::setExecutor);
 		return controllerConfigurer;
 	}
 

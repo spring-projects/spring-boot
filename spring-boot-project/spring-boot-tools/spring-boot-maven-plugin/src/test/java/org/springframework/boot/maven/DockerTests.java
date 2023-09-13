@@ -21,7 +21,7 @@ import java.util.Base64;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -54,10 +54,11 @@ class DockerTests {
 		docker.setTlsVerify(true);
 		docker.setCertPath("/tmp/ca-cert");
 		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
-		DockerHost host = dockerConfiguration.getHost();
+		DockerHostConfiguration host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
 		assertThat(host.isSecure()).isTrue();
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
+		assertThat(host.getContext()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
@@ -68,6 +69,34 @@ class DockerTests {
 	}
 
 	@Test
+	void asDockerConfigurationWithContextConfiguration() {
+		Docker docker = new Docker();
+		docker.setContext("test-context");
+		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
+		DockerHostConfiguration host = dockerConfiguration.getHost();
+		assertThat(host.getContext()).isEqualTo("test-context");
+		assertThat(host.getAddress()).isNull();
+		assertThat(host.isSecure()).isFalse();
+		assertThat(host.getCertificatePath()).isNull();
+		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
+		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+			.contains("\"username\" : \"\"")
+			.contains("\"password\" : \"\"")
+			.contains("\"email\" : \"\"")
+			.contains("\"serveraddress\" : \"\"");
+	}
+
+	@Test
+	void asDockerConfigurationWithHostAndContextFails() {
+		Docker docker = new Docker();
+		docker.setContext("test-context");
+		docker.setHost("docker.example.com");
+		assertThatIllegalArgumentException().isThrownBy(docker::asDockerConfiguration)
+			.withMessageContaining("Invalid Docker configuration");
+	}
+
+	@Test
 	void asDockerConfigurationWithBindHostToBuilder() {
 		Docker docker = new Docker();
 		docker.setHost("docker.example.com");
@@ -75,7 +104,7 @@ class DockerTests {
 		docker.setCertPath("/tmp/ca-cert");
 		docker.setBindHostToBuilder(true);
 		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
-		DockerHost host = dockerConfiguration.getHost();
+		DockerHostConfiguration host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
 		assertThat(host.isSecure()).isTrue();
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");

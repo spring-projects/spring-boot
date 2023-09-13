@@ -48,6 +48,10 @@ import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -57,6 +61,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.autoconfigure.orm.jpa.mapping.NonAnnotatedEntity;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
@@ -91,6 +96,7 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
  * @author Chris Bono
+ * @author Moritz Halbritter
  */
 class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
@@ -147,7 +153,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Test
 	void testLiquibasePlusValidation() {
 		contextRunner()
-			.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+			.withPropertyValues("spring.liquibase.change-log:classpath:db/changelog/db.changelog-city.yaml",
 					"spring.jpa.hibernate.ddl-auto:validate")
 			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 			.run((context) -> assertThat(context).hasNotFailed());
@@ -475,6 +481,31 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				Map<String, Object> map = factoryBean.getProperties();
 				assertThat(map).containsEntry("configured", "manually");
 			});
+	}
+
+	@Test
+	void registersHintsForJtaClasses() {
+		RuntimeHints hints = new RuntimeHints();
+		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		for (String noJtaPlatformClass : Arrays.asList(
+				"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
+				"org.hibernate.service.jta.platform.internal.NoJtaPlatform")) {
+			assertThat(RuntimeHintsPredicates.reflection()
+				.onType(TypeReference.of(noJtaPlatformClass))
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(hints);
+		}
+	}
+
+	@Test
+	void registersHintsForNamingClasses() {
+		RuntimeHints hints = new RuntimeHints();
+		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		for (Class<?> noJtaPlatformClass : Arrays.asList(SpringImplicitNamingStrategy.class,
+				CamelCaseToUnderscoresNamingStrategy.class)) {
+			assertThat(RuntimeHintsPredicates.reflection()
+				.onType(noJtaPlatformClass)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(hints);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -25,6 +25,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
@@ -125,7 +126,8 @@ class ReactiveTokenValidatorTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
 			.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
@@ -139,7 +141,8 @@ class ReactiveTokenValidatorTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
 			.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
@@ -171,7 +174,8 @@ class ReactiveTokenValidatorTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
 			.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		fetchTokenKeys.assertWasNotSubscribed();
 	}
 

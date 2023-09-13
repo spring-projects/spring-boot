@@ -111,19 +111,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	private SslConnectionFactory createSslConnectionFactory(SslContextFactory.Server sslContextFactory,
 			String protocol) {
-		try {
-			return new SslConnectionFactory(sslContextFactory, protocol);
-		}
-		catch (NoSuchMethodError ex) {
-			// Jetty 10
-			try {
-				return SslConnectionFactory.class.getConstructor(SslContextFactory.Server.class, String.class)
-					.newInstance(sslContextFactory, protocol);
-			}
-			catch (Exception ex2) {
-				throw new RuntimeException(ex2);
-			}
-		}
+		return new SslConnectionFactory(sslContextFactory, protocol);
 	}
 
 	private boolean isJettyAlpnPresent() {
@@ -179,11 +167,12 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 		factory.setCertAlias(key.getAlias());
 		if (options.getCiphers() != null) {
-			factory.setIncludeCipherSuites(options.getCiphers().toArray(String[]::new));
+			factory.setIncludeCipherSuites(options.getCiphers());
 			factory.setExcludeCipherSuites();
 		}
 		if (options.getEnabledProtocols() != null) {
-			factory.setIncludeProtocols(options.getEnabledProtocols().toArray(String[]::new));
+			factory.setIncludeProtocols(options.getEnabledProtocols());
+			factory.setExcludeProtocols();
 		}
 		try {
 			if (key.getPassword() != null) {

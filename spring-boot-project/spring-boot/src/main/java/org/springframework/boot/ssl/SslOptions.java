@@ -17,6 +17,7 @@
 package org.springframework.boot.ssl;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -38,12 +39,20 @@ public interface SslOptions {
 	SslOptions NONE = of((Set<String>) null, (Set<String>) null);
 
 	/**
+	 * Return if any SSL options have been specified.
+	 * @return {@code true} if SSL options have been specified
+	 */
+	default boolean isSpecified() {
+		return (getCiphers() != null) && (getEnabledProtocols() != null);
+	}
+
+	/**
 	 * Return the ciphers that can be used or an empty set. The cipher names in this set
 	 * should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedCipherSuites()}.
 	 * @return the ciphers that can be used or {@code null}
 	 */
-	Set<String> getCiphers();
+	String[] getCiphers();
 
 	/**
 	 * Return the protocols that should be enabled or an empty set. The protocols names in
@@ -51,7 +60,7 @@ public interface SslOptions {
 	 * {@link SSLEngine#getSupportedProtocols()}.
 	 * @return the protocols to enable or {@code null}
 	 */
-	Set<String> getEnabledProtocols();
+	String[] getEnabledProtocols();
 
 	/**
 	 * Factory method to create a new {@link SslOptions} instance.
@@ -60,7 +69,19 @@ public interface SslOptions {
 	 * @return a new {@link SslOptions} instance
 	 */
 	static SslOptions of(String[] ciphers, String[] enabledProtocols) {
-		return of(asSet(ciphers), asSet(enabledProtocols));
+		return new SslOptions() {
+
+			@Override
+			public String[] getCiphers() {
+				return ciphers;
+			}
+
+			@Override
+			public String[] getEnabledProtocols() {
+				return enabledProtocols;
+			}
+
+		};
 	}
 
 	/**
@@ -70,24 +91,21 @@ public interface SslOptions {
 	 * @return a new {@link SslOptions} instance
 	 */
 	static SslOptions of(Set<String> ciphers, Set<String> enabledProtocols) {
-		return new SslOptions() {
-
-			@Override
-			public Set<String> getCiphers() {
-				return ciphers;
-			}
-
-			@Override
-			public Set<String> getEnabledProtocols() {
-				return enabledProtocols;
-			}
-
-		};
-
+		return of(toArray(ciphers), toArray(enabledProtocols));
 	}
 
-	private static Set<String> asSet(String[] array) {
+	/**
+	 * Helper method that provides a null-safe way to convert a {@code String[]} to a
+	 * {@link Collection} for client libraries to use.
+	 * @param array the array to convert
+	 * @return a collection or {@code null}
+	 */
+	static Set<String> asSet(String[] array) {
 		return (array != null) ? Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(array))) : null;
+	}
+
+	private static String[] toArray(Collection<String> collection) {
+		return (collection != null) ? collection.toArray(String[]::new) : null;
 	}
 
 }

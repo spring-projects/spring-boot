@@ -115,7 +115,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 		ExposableWebEndpoint health = webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.get();
+			.orElseThrow(
+					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(health,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
@@ -157,8 +158,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			for (HttpMessageConverter<?> converter : converters) {
-				if (converter instanceof MappingJackson2HttpMessageConverter) {
-					configure((MappingJackson2HttpMessageConverter) converter);
+				if (converter instanceof MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
+					configure(mappingJackson2HttpMessageConverter);
 				}
 			}
 		}

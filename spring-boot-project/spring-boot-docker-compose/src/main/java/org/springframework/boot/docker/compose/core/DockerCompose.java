@@ -33,35 +33,35 @@ import org.springframework.boot.logging.LogLevel;
 public interface DockerCompose {
 
 	/**
-	 * Timeout duration used to request a forced shutdown.
+	 * Timeout duration used to request a forced stop.
 	 */
-	Duration FORCE_SHUTDOWN = Duration.ZERO;
+	Duration FORCE_STOP = Duration.ZERO;
 
 	/**
-	 * Run {@code docker compose up} to startup services. Waits until all contains are
-	 * started and healthy.
+	 * Run {@code docker compose up} to create and start services. Waits until all
+	 * contains are started and healthy.
 	 * @param logLevel the log level used to report progress
 	 */
 	void up(LogLevel logLevel);
 
 	/**
-	 * Run {@code docker compose down} to shutdown any running services.
-	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shutdown
-	 * without waiting.
+	 * Run {@code docker compose down} to stop and remove any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
+	 * waiting.
 	 */
 	void down(Duration timeout);
 
 	/**
-	 * Run {@code docker compose start} to startup services. Waits until all contains are
+	 * Run {@code docker compose start} to start services. Waits until all containers are
 	 * started and healthy.
 	 * @param logLevel the log level used to report progress
 	 */
 	void start(LogLevel logLevel);
 
 	/**
-	 * Run {@code docker compose stop} to shutdown any running services.
-	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shutdown
-	 * without waiting.
+	 * Run {@code docker compose stop} to stop any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
+	 * waiting.
 	 */
 	void stop(Duration timeout);
 
@@ -72,15 +72,6 @@ public interface DockerCompose {
 	 * @see #hasDefinedServices()
 	 */
 	boolean hasDefinedServices();
-
-	/**
-	 * Return if services defined in the {@link DockerComposeFile} for the active profile
-	 * are running.
-	 * @return {@code true} if services are running
-	 * @see #hasDefinedServices()
-	 * @see #getRunningServices()
-	 */
-	boolean hasRunningServices();
 
 	/**
 	 * Return the running services for the active profile, or an empty list if no services

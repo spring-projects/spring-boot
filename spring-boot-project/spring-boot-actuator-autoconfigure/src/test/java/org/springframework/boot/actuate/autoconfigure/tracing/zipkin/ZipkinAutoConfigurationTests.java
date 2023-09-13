@@ -41,7 +41,8 @@ class ZipkinAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(BytesEncoder.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(BytesEncoder.class)
+			.hasSingleBean(PropertiesZipkinConnectionDetails.class));
 	}
 
 	@Test
@@ -56,12 +57,6 @@ class ZipkinAutoConfigurationTests {
 			assertThat(context).hasBean("customBytesEncoder");
 			assertThat(context).hasSingleBean(BytesEncoder.class);
 		});
-	}
-
-	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
 	}
 
 	@Test
@@ -81,6 +76,14 @@ class ZipkinAutoConfigurationTests {
 		})
 			.run((context) -> assertThat(context).hasSingleBean(ZipkinConnectionDetails.class)
 				.doesNotHaveBean(PropertiesZipkinConnectionDetails.class));
+	}
+
+	@Test
+	void shouldWorkWithoutSenders() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.client",
+					"org.springframework.web.reactive.function.client"))
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Configuration(proxyBeanMethods = false)

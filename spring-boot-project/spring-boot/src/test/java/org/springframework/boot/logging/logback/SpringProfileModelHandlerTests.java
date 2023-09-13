@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import ch.qos.logback.core.model.processor.ModelHandlerException;
 import ch.qos.logback.core.model.processor.ModelInterpretationContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
@@ -59,14 +59,14 @@ class SpringProfileModelHandlerTests {
 		SpringProfileModel model = new SpringProfileModel();
 		model.setName("dev");
 		this.action.handle(this.interpretationContext, model);
-		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		then(this.environment).should().acceptsProfiles(profiles.capture());
-		List<String> profileNames = new ArrayList<>();
-		profiles.getValue().matches((profile) -> {
-			profileNames.add(profile);
-			return false;
-		});
-		assertThat(profileNames).containsExactly("dev");
+		then(this.environment).should().acceptsProfiles(ArgumentMatchers.<Profiles>assertArg(((profiles) -> {
+			List<String> profileNames = new ArrayList<>();
+			profiles.matches((profile) -> {
+				profileNames.add(profile);
+				return false;
+			});
+			assertThat(profileNames).containsExactly("dev");
+		})));
 	}
 
 	@Test
@@ -74,14 +74,14 @@ class SpringProfileModelHandlerTests {
 		SpringProfileModel model = new SpringProfileModel();
 		model.setName("dev,qa");
 		this.action.handle(this.interpretationContext, model);
-		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		then(this.environment).should().acceptsProfiles(profiles.capture());
-		List<String> profileNames = new ArrayList<>();
-		profiles.getValue().matches((profile) -> {
-			profileNames.add(profile);
-			return false;
-		});
-		assertThat(profileNames).containsExactly("dev", "qa");
+		then(this.environment).should().acceptsProfiles(ArgumentMatchers.<Profiles>assertArg(((profiles) -> {
+			List<String> profileNames = new ArrayList<>();
+			profiles.matches((profile) -> {
+				profileNames.add(profile);
+				return false;
+			});
+			assertThat(profileNames).containsExactly("dev", "qa");
+		})));
 	}
 
 	@Test
@@ -90,14 +90,14 @@ class SpringProfileModelHandlerTests {
 		model.setName("${profile}");
 		this.context.putProperty("profile", "dev");
 		this.action.handle(this.interpretationContext, model);
-		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		then(this.environment).should().acceptsProfiles(profiles.capture());
-		List<String> profileNames = new ArrayList<>();
-		profiles.getValue().matches((profile) -> {
-			profileNames.add(profile);
-			return false;
-		});
-		assertThat(profileNames).containsExactly("dev");
+		then(this.environment).should().acceptsProfiles(ArgumentMatchers.<Profiles>assertArg(((profiles) -> {
+			List<String> profileNames = new ArrayList<>();
+			profiles.matches((profile) -> {
+				profileNames.add(profile);
+				return false;
+			});
+			assertThat(profileNames).containsExactly("dev");
+		})));
 	}
 
 	@Test
@@ -108,14 +108,14 @@ class SpringProfileModelHandlerTests {
 		this.context.putProperty("profile1", "dev");
 		this.context.putProperty("profile2", "qa");
 		this.action.handle(this.interpretationContext, model);
-		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		then(this.environment).should().acceptsProfiles(profiles.capture());
-		List<String> profileNames = new ArrayList<>();
-		profiles.getValue().matches((profile) -> {
-			profileNames.add(profile);
-			return false;
-		});
-		assertThat(profileNames).containsExactly("dev", "qa");
+		then(this.environment).should().acceptsProfiles(ArgumentMatchers.<Profiles>assertArg(((profiles) -> {
+			List<String> profileNames = new ArrayList<>();
+			profiles.matches((profile) -> {
+				profileNames.add(profile);
+				return false;
+			});
+			assertThat(profileNames).containsExactly("dev", "qa");
+		})));
 	}
 
 }

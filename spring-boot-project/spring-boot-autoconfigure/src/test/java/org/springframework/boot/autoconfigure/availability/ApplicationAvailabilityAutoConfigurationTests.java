@@ -18,8 +18,11 @@ package org.springframework.boot.autoconfigure.availability;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +52,15 @@ class ApplicationAvailabilityAutoConfigurationTests {
 					() -> mock(ApplicationAvailability.class))
 			.run(((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 				.hasBean("customApplicationAvailability")));
+	}
+
+	@Test
+	void whenLazyInitializationIsEnabledApplicationAvailabilityBeanShouldStillReceiveAvailabilityChangeEvents() {
+		this.contextRunner.withBean(LazyInitializationBeanFactoryPostProcessor.class).run((context) -> {
+			AvailabilityChangeEvent.publish(context, ReadinessState.ACCEPTING_TRAFFIC);
+			ApplicationAvailability applicationAvailability = context.getBean(ApplicationAvailability.class);
+			assertThat(applicationAvailability.getLastChangeEvent(ReadinessState.class)).isNotNull();
+		});
 	}
 
 }

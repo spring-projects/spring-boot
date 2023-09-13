@@ -27,8 +27,16 @@ package org.springframework.boot.autoconfigure.service.connection;
  */
 public class ConnectionDetailsFactoryNotFoundException extends RuntimeException {
 
-	public <S> ConnectionDetailsFactoryNotFoundException(S source) {
-		super("No ConnectionDetailsFactory found for source '" + source + "'");
+	<S> ConnectionDetailsFactoryNotFoundException(S source) {
+		this("No ConnectionDetailsFactory found for source '%s'".formatted(source));
+	}
+
+	public ConnectionDetailsFactoryNotFoundException(String message) {
+		super(message);
+	}
+
+	public ConnectionDetailsFactoryNotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

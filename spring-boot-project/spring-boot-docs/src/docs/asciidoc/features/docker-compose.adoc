@@ -3,18 +3,42 @@
 Docker Compose is a popular technology that can be used to define and manage multiple containers for services that your application needs.
 A `compose.yml` file is typically created next to your application which defines and configures service containers.
 
-A typical workflow with Docker Compose is to run `docker compose up`.
-Work on your application with it connecting to started services.
-Then run `docker compose down` when you are finished.
+A typical workflow with Docker Compose is to run `docker compose up`, work on your application with it connecting to started services, then run `docker compose down` when you are finished.
 
-To help with this workflow, the `spring-boot-docker-compose` module can be used. When this modules is included as a dependency Spring Boot will do the following:
+The `spring-boot-docker-compose` module can be included in a project to provide support for working with containers using Docker Compose.
+Add the module dependency to your build, as shown in the following listings for Maven and Gradle:
+
+.Maven
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-docker-compose</artifactId>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+----
+
+.Gradle
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+	}
+----
+
+When this module is included as a dependency Spring Boot will do the following:
 
 * Search for a `compose.yml` and other common compose filenames in your application directory
 * Call `docker compose up` with the discovered `compose.yml`
 * Create service connection beans for each supported container
-* Call `docker compose down` when the application is shutdown
+* Call `docker compose stop` when the application is shutdown
 
 NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
+
+NOTE: By default, Spring Boot's Docker Compose support is disabled when running tests.
+To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
 
 
 
@@ -27,7 +51,7 @@ When doing so, the connection details take precedence over any connection-relate
 When using Spring Boot’s Docker Compose support, service connections are established to the port mapped by the container.
 
 NOTE: Docker compose is usually used in such a way that the ports inside the container are mapped to ephemeral ports on your computer.
-For example, A Postgres server my run inside the container using port 5432 but be mapped to a totally different port locally.
+For example, a Postgres server may run inside the container using port 5432 but be mapped to a totally different port locally.
 The service connection will always discover and use the locally mapped port.
 
 Service connections are established by using the image name of the container.
@@ -37,6 +61,9 @@ The following service connections are currently supported:
 |===
 | Connection Details | Matched on
 
+| `ActiveMQConnectionDetails`
+| Containers named "symptoma/activemq"
+
 | `CassandraConnectionDetails`
 | Containers named "cassandra"
 
@@ -44,13 +71,16 @@ The following service connections are currently supported:
 | Containers named "elasticsearch"
 
 | `JdbcConnectionDetails`
-| Containers named "mariadb", "mysql" or "postgres"
+| Containers named "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | `MongoConnectionDetails`
 | Containers named "mongo"
 
+| `PulsarConnectionDetails`
+| Containers named "apachepulsar/pulsar"
+
 | `R2dbcConnectionDetails`
-| Containers named "mariadb", "mssql/server", "mysql" or "postgres"
+| Containers named "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | `RabbitConnectionDetails`
 | Containers named "rabbitmq"
@@ -133,7 +163,7 @@ The recommended way of checking for readiness is to add a `healthcheck` section 
 Since it's not uncommon for `healthcheck` configuration to be omitted from `compose.yml` files, Spring Boot also checks directly for service readiness.
 By default, a container is considered ready when a TCP/IP connection can be established to its mapped port.
 
-You can disable this on a per-container basis by add a `org.springframework.boot.readiness-check.tcp.disable` label in your `compose.yml` file.
+You can disable this on a per-container basis by adding a `org.springframework.boot.readiness-check.tcp.disable` label in your `compose.yml` file.
 
 For example:
 
@@ -163,23 +193,21 @@ You can also change timeout values in your `application.properties` or `applicat
 
 The overall timeout can be configured using configprop:spring.docker.compose.readiness.timeout[].
 
-TIP: You can also provide your own `ServiceReadinessCheck` implementations and register them in the `spring.factories` file.
-
 
 
 [[features.docker-compose.lifecycle]]
 === Controlling the Docker Compose Lifecycle
-By default Spring Boot calls `docker compose up` when your application starts and `docker compose down` when it's shutdown.
+By default Spring Boot calls `docker compose up` when your application starts and `docker compose stop` when it's shut down.
 If you prefer to have different lifecycle management you can use the configprop:spring.docker.compose.lifecycle-management[] property.
 
 The following values are supported:
 
 * `none` - Do not start or stop Docker Compose
-* `start-only` - Start Docker Compose on application startup and leave it running
-* `start-and-stop` - Start Docker Compose on application startup and stop it on application shutdown
+* `start-only` - Start Docker Compose when the application starts and leave it running
+* `start-and-stop` - Start Docker Compose when the application starts and stop it when the JVM exits
 
-In addition you can use the configprop:spring.docker.compose.startup.command[] property to change if `docker up` or `docker start` is used.
-The configprop:spring.docker.compose.shutdown.command[] allows you to configure if `docker down` or `docker stop` is used.
+In addition you can use the configprop:spring.docker.compose.start.command[] property to change whether `docker compose up` or `docker compose start` is used.
+The configprop:spring.docker.compose.stop.command[] allows you to configure if `docker compose down` or `docker compose stop` is used.
 
 The following example shows how lifecycle management can be configured:
 
@@ -189,10 +217,10 @@ The following example shows how lifecycle management can be configured:
 	  docker:
 	    compose:
 	      lifecycle-management: start-and-stop
-	      startup:
+	      start:
 	        command: start
-	      shutdown:
-	        command: stop
+	      stop:
+	        command: down
 	        timeout: 1m
 ----
 

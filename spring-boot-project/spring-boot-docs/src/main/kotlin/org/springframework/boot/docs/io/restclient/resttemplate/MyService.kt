@@ -20,7 +20,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
-@Suppress("UNUSED_PARAMETER")
 @Service
 class MyService(restTemplateBuilder: RestTemplateBuilder) {
 
@@ -31,10 +30,7 @@ class MyService(restTemplateBuilder: RestTemplateBuilder) {
 	}
 
 	fun someRestCall(name: String): Details {
-		return restTemplate.getForObject(
-			"/{name}/details",
-			Details::class.java, name
-		)!!
+		return restTemplate.getForObject("/{name}/details", Details::class.java, name)!!
 	}
 
 }

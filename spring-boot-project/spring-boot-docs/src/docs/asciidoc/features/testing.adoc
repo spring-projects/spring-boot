@@ -621,6 +621,22 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 
 
 
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-r2dbc]]
+==== Auto-configured Data R2DBC Tests
+`@DataR2dbcTest` is similar to `@DataJdbcTest` but is for tests that use Spring Data R2DBC repositories.
+By default, it configures an in-memory embedded database, a `R2dbcEntityTemplate`, and Spring Data R2DBC repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataR2dbcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+
+TIP: A list of the auto-configurations that are enabled by `@DataR2dbcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+By default, Data R2DBC tests are not transactional.
+
+If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
+(See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
+
+
+
 [[features.testing.spring-boot-applications.autoconfigured-jooq]]
 ==== Auto-configured jOOQ Tests
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
@@ -861,15 +877,15 @@ If you <<using#using.structuring-your-code, structure your code>> in a sensible 
 
 It then becomes important not to litter the application's main class with configuration settings that are specific to a particular area of its functionality.
 
-Assume that you are using Spring Batch and you rely on the auto-configuration for it.
+Assume that you are using Spring Data MongoDB, you rely on the auto-configuration for it, and you have enabled auditing.
 You could define your `@SpringBootApplication` as follows:
 
 include::code:MyApplication[]
 
-Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
+Because this class is the source configuration for the test, any slice test actually tries to enable Mongo auditing, which is definitely not what you want to do.
 A recommended approach is to move that area-specific configuration to a separate `@Configuration` class at the same level as your application, as shown in the following example:
 
-include::code:MyBatchConfiguration[]
+include::code:MyMongoConfiguration[]
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
 The latter approach lets you enable it in one of your tests, if necessary, with the `@Import` annotation.
@@ -946,6 +962,9 @@ The following service connection factories are provided in the `spring-boot-test
 |===
 | Connection Details | Matched on
 
+| `ActiveMQConnectionDetails`
+| Containers named "symptoma/activemq"
+
 | `CassandraConnectionDetails`
 | Containers of type `CassandraContainer`
 
@@ -957,9 +976,6 @@ The following service connection factories are provided in the `spring-boot-test
 
 | `FlywayConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
-
-| `InfluxDbConnectionDetails`
-| Containers of type `InfluxDBContainer`
 
 | `JdbcConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
@@ -979,6 +995,9 @@ The following service connection factories are provided in the `spring-boot-test
 | `OtlpConnectionDetails`
 | Containers named "otel/opentelemetry-collector-contrib"
 
+| `PulsarConnectionDetails`
+| Containers of type `PulsarContainer`
+
 | `R2dbcConnectionDetails`
 | Containers of type `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
 
@@ -987,6 +1006,9 @@ The following service connection factories are provided in the `spring-boot-test
 
 | `RedisConnectionDetails`
 | Containers named "redis"
+
+| `ZipkinConnectionDetails`
+| Containers named "openzipkin/zipkin"
 |===
 
 [TIP]
@@ -1050,6 +1072,53 @@ Once you have defined your test configuration, you can use the `with(...)` metho
 include::code:test/TestMyApplication[]
 
 You can now launch `TestMyApplication` as you would any regular Java `main` method application to start your application and the containers that it needs to run.
+
+TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootTestRun` to do this from the command line.
+
+[[features.testing.testcontainers.at-development-time.dynamic-properties]]
+===== Contributing Dynamic Properties at Development Time
+If you want to contribute dynamic properties at development time from your `Container` `@Bean` methods, you can do so by injecting a `DynamicPropertyRegistry`.
+This works in a similar way to the <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotation>> that you can use in your tests.
+It allows you to add properties that will become available once your container has started.
+
+A typical configuration would look like this:
+
+include::code:MyContainersConfiguration[]
+
+NOTE: Using a `@ServiceConnection` is recommended whenever possible, however, dynamic properties can be a useful fallback for technologies that don't yet have `@ServiceConnection` support.
+
+
+
+[[features.testing.testcontainers.at-development-time.importing-container-declarations]]
+===== Importing Testcontainer Declaration Classes
+A common pattern when using Testcontainers is to declare `Container` instances as static fields.
+Often these fields are defined directly on the test class.
+They can also be declared on a parent class or on an interface that the test implements.
+
+For example, the following `MyContainers` interface declares `mongo` and `neo4j` containers:
+
+include::code:MyContainers[]
+
+If you already have containers defined in this way, or you just prefer this style, you can import these declaration classes rather than defining you containers as `@Bean` methods.
+To do so, add the `@ImportTestcontainers` annotation to your test configuration class:
+
+include::code:MyContainersConfiguration[]
+
+TIP: You can use the `@ServiceConnection` annotation on `Container` fields to establish service connections.
+You can also add <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotated methods>> to your declaration class.
+
+
+
+[[features.testing.testcontainers.at-development-time.devtools]]
+===== Using DevTools with Testcontainers at Development Time
+When using devtools, you can annotate beans and bean methods with `@RestartScope`.
+Such beans won't be recreated when the devtools restart the application.
+This is especially useful for Testcontainer `Container` beans, as they keep their state despite the application restart.
+
+include::code:MyContainersConfiguration[]
+
+WARNING: If you're using Gradle and want to use this feature, you need to change the configuration of the `spring-boot-devtools` dependency from `developmentOnly` to `testImplementation`.
+With the default scope of `developmentOnly`, the `bootTestRun` task will not pick up changes in your code, as the devtools are not active.
 
 
 

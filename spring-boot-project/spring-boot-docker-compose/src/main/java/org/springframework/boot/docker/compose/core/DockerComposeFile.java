@@ -109,8 +109,8 @@ public final class DockerComposeFile {
 	 */
 	public static DockerComposeFile of(File file) {
 		Assert.notNull(file, "File must not be null");
-		Assert.isTrue(file.exists(), () -> "'%s' does not exist".formatted(file));
-		Assert.isTrue(file.isFile(), () -> "'%s' is not a file".formatted(file));
+		Assert.isTrue(file.exists(), () -> "Docker Compose file '%s' does not exist".formatted(file));
+		Assert.isTrue(file.isFile(), () -> "Docker compose file '%s' is not a file".formatted(file));
 		return new DockerComposeFile(file);
 	}
 

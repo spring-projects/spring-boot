@@ -16,60 +16,132 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
+import org.springframework.mock.env.MockEnvironment;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link OtlpPropertiesConfigAdapter}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class OtlpPropertiesConfigAdapterTests {
 
+	private OtlpProperties properties;
+
+	private OpenTelemetryProperties openTelemetryProperties;
+
+	private MockEnvironment environment;
+
+	private OtlpConnectionDetails connectionDetails;
+
+	@BeforeEach
+	void setUp() {
+		this.properties = new OtlpProperties();
+		this.openTelemetryProperties = new OpenTelemetryProperties();
+		this.environment = new MockEnvironment();
+		this.connectionDetails = new PropertiesOtlpConnectionDetails(this.properties);
+	}
+
 	@Test
 	void whenPropertiesUrlIsSetAdapterUrlReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setUrl("http://another-url:4318/v1/metrics");
-		assertThat(otlpPropertiesConfigAdapter(properties).url()).isEqualTo("http://another-url:4318/v1/metrics");
+		this.properties.setUrl("http://another-url:4318/v1/metrics");
+		assertThat(createAdapter().url()).isEqualTo("http://another-url:4318/v1/metrics");
 	}
 
 	@Test
 	void whenPropertiesAggregationTemporalityIsNotSetAdapterAggregationTemporalityReturnsCumulative() {
-		OtlpProperties properties = new OtlpProperties();
-		assertThat(otlpPropertiesConfigAdapter(properties).aggregationTemporality())
-			.isSameAs(AggregationTemporality.CUMULATIVE);
+		assertThat(createAdapter().aggregationTemporality()).isSameAs(AggregationTemporality.CUMULATIVE);
 	}
 
 	@Test
 	void whenPropertiesAggregationTemporalityIsSetAdapterAggregationTemporalityReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setAggregationTemporality(AggregationTemporality.DELTA);
-		assertThat(otlpPropertiesConfigAdapter(properties).aggregationTemporality())
-			.isSameAs(AggregationTemporality.DELTA);
+		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
+		assertThat(createAdapter().aggregationTemporality()).isSameAs(AggregationTemporality.DELTA);
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setResourceAttributes(Map.of("service.name", "boot-service"));
-		assertThat(otlpPropertiesConfigAdapter(properties).resourceAttributes()).containsEntry("service.name",
-				"boot-service");
+		this.properties.setResourceAttributes(Map.of("service.name", "boot-service"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "boot-service");
 	}
 
 	@Test
 	void whenPropertiesHeadersIsSetAdapterHeadersReturnsIt() {
-		OtlpProperties properties = new OtlpProperties();
-		properties.setHeaders(Map.of("header", "value"));
-		assertThat(otlpPropertiesConfigAdapter(properties).headers()).containsEntry("header", "value");
+		this.properties.setHeaders(Map.of("header", "value"));
+		assertThat(createAdapter().headers()).containsEntry("header", "value");
 	}
 
-	private static OtlpPropertiesConfigAdapter otlpPropertiesConfigAdapter(OtlpProperties properties) {
-		return new OtlpPropertiesConfigAdapter(properties,
-				new OtlpMetricsExportAutoConfiguration.PropertiesOtlpConnectionDetails(properties));
+	@Test
+	void whenPropertiesBaseTimeUnitIsNotSetAdapterBaseTimeUnitReturnsMillis() {
+		assertThat(createAdapter().baseTimeUnit()).isSameAs(TimeUnit.MILLISECONDS);
+	}
+
+	@Test
+	void whenPropertiesBaseTimeUnitIsSetAdapterBaseTimeUnitReturnsIt() {
+		this.properties.setBaseTimeUnit(TimeUnit.SECONDS);
+		assertThat(createAdapter().baseTimeUnit()).isSameAs(TimeUnit.SECONDS);
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	void openTelemetryPropertiesShouldOverrideOtlpPropertiesIfNotEmpty() {
+		this.properties.setResourceAttributes(Map.of("a", "alpha"));
+		this.openTelemetryProperties.setResourceAttributes(Map.of("b", "beta"));
+		assertThat(createAdapter().resourceAttributes()).contains(entry("b", "beta"));
+		assertThat(createAdapter().resourceAttributes()).doesNotContain(entry("a", "alpha"));
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	void openTelemetryPropertiesShouldNotOverrideOtlpPropertiesIfEmpty() {
+		this.properties.setResourceAttributes(Map.of("a", "alpha"));
+		this.openTelemetryProperties.setResourceAttributes(Collections.emptyMap());
+		assertThat(createAdapter().resourceAttributes()).contains(entry("a", "alpha"));
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	void serviceNameOverridesApplicationName() {
+		this.environment.setProperty("spring.application.name", "alpha");
+		this.properties.setResourceAttributes(Map.of("service.name", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
+	}
+
+	@Test
+	void serviceNameOverridesApplicationNameWhenUsingOtelProperties() {
+		this.environment.setProperty("spring.application.name", "alpha");
+		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
+	}
+
+	@Test
+	void shouldUseApplicationNameIfServiceNameIsNotSet() {
+		this.environment.setProperty("spring.application.name", "alpha");
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "alpha");
+	}
+
+	@Test
+	void shouldUseDefaultApplicationNameIfApplicationNameIsNotSet() {
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "application");
+	}
+
+	private OtlpPropertiesConfigAdapter createAdapter() {
+		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties, this.connectionDetails,
+				this.environment);
 	}
 
 }

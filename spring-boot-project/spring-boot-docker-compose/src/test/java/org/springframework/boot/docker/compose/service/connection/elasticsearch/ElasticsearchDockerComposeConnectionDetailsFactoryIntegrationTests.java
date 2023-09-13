@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnect
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("elasticsearch-compose.yaml");
+		super("elasticsearch-compose.yaml", DockerImageNames.elasticsearch8());
 	}
 
 	@Test

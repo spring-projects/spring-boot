@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * Integration tests for the Maven plugin's run goal.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ExtendWith(MavenBuildExtension.class)
 class RunIntegrationTests {
@@ -105,6 +106,28 @@ class RunIntegrationTests {
 		mavenBuild.project("run-working-directory")
 			.goals("spring-boot:run")
 			.execute((project) -> assertThat(buildLog(project)).containsPattern("I haz been run from.*src.main.java"));
+	}
+
+	@TestTemplate
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void whenDirectoriesAreConfiguredTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-directories")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenAdditionalClasspathDirectoryIsConfiguredItsResourcesAreAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-additional-classpath-directory")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenAdditionalClasspathFileIsConfiguredItsContentIsAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-additional-classpath-jar")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
 
 	@TestTemplate

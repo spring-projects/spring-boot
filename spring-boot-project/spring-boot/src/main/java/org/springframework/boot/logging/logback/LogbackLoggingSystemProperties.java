@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import ch.qos.logback.core.util.FileSize;
 
@@ -35,6 +36,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Phillip Webb
  * @since 2.4.0
+ * @see RollingPolicySystemProperty
  */
 public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 
@@ -44,28 +46,53 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	/**
 	 * The name of the System property that contains the rolled-over log file name
 	 * pattern.
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
+	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
+	 * {@link RollingPolicySystemProperty#FILE_NAME_PATTERN}
 	 */
-	public static final String ROLLINGPOLICY_FILE_NAME_PATTERN = "LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN";
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public static final String ROLLINGPOLICY_FILE_NAME_PATTERN = RollingPolicySystemProperty.FILE_NAME_PATTERN
+		.getEnvironmentVariableName();
 
 	/**
 	 * The name of the System property that contains the clean history on start flag.
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
+	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
+	 * {@link RollingPolicySystemProperty#CLEAN_HISTORY_ON_START}
 	 */
-	public static final String ROLLINGPOLICY_CLEAN_HISTORY_ON_START = "LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START";
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public static final String ROLLINGPOLICY_CLEAN_HISTORY_ON_START = RollingPolicySystemProperty.CLEAN_HISTORY_ON_START
+		.getEnvironmentVariableName();
 
 	/**
 	 * The name of the System property that contains the file log max size.
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
+	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
+	 * {@link RollingPolicySystemProperty#MAX_FILE_SIZE}
 	 */
-	public static final String ROLLINGPOLICY_MAX_FILE_SIZE = "LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE";
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public static final String ROLLINGPOLICY_MAX_FILE_SIZE = RollingPolicySystemProperty.MAX_FILE_SIZE
+		.getEnvironmentVariableName();
 
 	/**
 	 * The name of the System property that contains the file total size cap.
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
+	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
+	 * {@link RollingPolicySystemProperty#TOTAL_SIZE_CAP}
 	 */
-	public static final String ROLLINGPOLICY_TOTAL_SIZE_CAP = "LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP";
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public static final String ROLLINGPOLICY_TOTAL_SIZE_CAP = RollingPolicySystemProperty.TOTAL_SIZE_CAP
+		.getEnvironmentVariableName();
 
 	/**
 	 * The name of the System property that contains the file log max history.
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
+	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
+	 * {@link RollingPolicySystemProperty#MAX_HISTORY}
 	 */
-	public static final String ROLLINGPOLICY_MAX_HISTORY = "LOGBACK_ROLLINGPOLICY_MAX_HISTORY";
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public static final String ROLLINGPOLICY_MAX_HISTORY = RollingPolicySystemProperty.MAX_HISTORY
+		.getEnvironmentVariableName();
 
 	public LogbackLoggingSystemProperties(Environment environment) {
 		super(environment);
@@ -79,6 +106,19 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 */
 	public LogbackLoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
 		super(environment, setter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param defaultValueResolver function used to resolve default values or {@code null}
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
+	 * @since 3.2.0
+	 */
+	public LogbackLoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
+			BiConsumer<String, String> setter) {
+		super(environment, defaultValueResolver, setter);
 	}
 
 	@Override
@@ -100,32 +140,24 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	}
 
 	private void applyRollingPolicyProperties(PropertyResolver resolver) {
-		applyRollingPolicy(resolver, ROLLINGPOLICY_FILE_NAME_PATTERN, "logging.logback.rollingpolicy.file-name-pattern",
-				"logging.pattern.rolling-file-name");
-		applyRollingPolicy(resolver, ROLLINGPOLICY_CLEAN_HISTORY_ON_START,
-				"logging.logback.rollingpolicy.clean-history-on-start", "logging.file.clean-history-on-start");
-		applyRollingPolicy(resolver, ROLLINGPOLICY_MAX_FILE_SIZE, "logging.logback.rollingpolicy.max-file-size",
-				"logging.file.max-size", DataSize.class);
-		applyRollingPolicy(resolver, ROLLINGPOLICY_TOTAL_SIZE_CAP, "logging.logback.rollingpolicy.total-size-cap",
-				"logging.file.total-size-cap", DataSize.class);
-		applyRollingPolicy(resolver, ROLLINGPOLICY_MAX_HISTORY, "logging.logback.rollingpolicy.max-history",
-				"logging.file.max-history");
+		applyRollingPolicy(RollingPolicySystemProperty.FILE_NAME_PATTERN, resolver);
+		applyRollingPolicy(RollingPolicySystemProperty.CLEAN_HISTORY_ON_START, resolver);
+		applyRollingPolicy(RollingPolicySystemProperty.MAX_FILE_SIZE, resolver, DataSize.class);
+		applyRollingPolicy(RollingPolicySystemProperty.TOTAL_SIZE_CAP, resolver, DataSize.class);
+		applyRollingPolicy(RollingPolicySystemProperty.MAX_HISTORY, resolver);
 	}
 
-	private void applyRollingPolicy(PropertyResolver resolver, String systemPropertyName, String propertyName,
-			String deprecatedPropertyName) {
-		applyRollingPolicy(resolver, systemPropertyName, propertyName, deprecatedPropertyName, String.class);
+	private void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver) {
+		applyRollingPolicy(property, resolver, String.class);
 	}
 
-	private <T> void applyRollingPolicy(PropertyResolver resolver, String systemPropertyName, String propertyName,
-			String deprecatedPropertyName, Class<T> type) {
-		T value = getProperty(resolver, propertyName, type);
-		if (value == null) {
-			value = getProperty(resolver, deprecatedPropertyName, type);
-		}
+	private <T> void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver,
+			Class<T> type) {
+		T value = getProperty(resolver, property.getApplicationPropertyName(), type);
+		value = (value != null) ? value : getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
 		if (value != null) {
 			String stringValue = String.valueOf((value instanceof DataSize dataSize) ? dataSize.toBytes() : value);
-			setSystemProperty(systemPropertyName, stringValue);
+			setSystemProperty(property.getEnvironmentVariableName(), stringValue);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class ArtifactCollector {
 	Collection<DeployableArtifact> collectArtifacts(Path root) {
 		try (Stream<Path> artifacts = Files.walk(root)) {
 			return artifacts.filter(Files::isRegularFile).filter(this.excludeFilter)
-					.map((artifact) -> deployableArtifact(artifact, root)).collect(Collectors.toList());
+					.map((artifact) -> deployableArtifact(artifact, root)).toList();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException("Could not read artifacts from '" + root + "'");

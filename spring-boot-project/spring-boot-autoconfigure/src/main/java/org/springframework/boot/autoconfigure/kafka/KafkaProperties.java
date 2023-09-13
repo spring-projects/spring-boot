@@ -649,12 +649,12 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-		 * The close timeout.
+		 * Close timeout.
 		 */
 		private Duration closeTimeout;
 
 		/**
-		 * The operation timeout.
+		 * Operation timeout.
 		 */
 		private Duration operationTimeout;
 
@@ -837,7 +837,8 @@ public class KafkaProperties {
 			this.bootstrapServers = bootstrapServers;
 		}
 
-		@DeprecatedConfigurationProperty(replacement = "spring.kafka.streams.state-store-cache-max-size")
+		@DeprecatedConfigurationProperty(replacement = "spring.kafka.streams.state-store-cache-max-size",
+				since = "3.1.0")
 		@Deprecated(since = "3.1.0", forRemoval = true)
 		public DataSize getCacheMaxSizeBuffering() {
 			return this.cacheMaxSizeBuffering;
@@ -1043,6 +1044,12 @@ public class KafkaProperties {
 		 */
 		private boolean autoStartup = true;
 
+		/**
+		 * Whether to instruct the container to change the consumer thread name during
+		 * initialization.
+		 */
+		private Boolean changeConsumerThreadName;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1177,6 +1184,14 @@ public class KafkaProperties {
 
 		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
+		}
+
+		public Boolean getChangeConsumerThreadName() {
+			return this.changeConsumerThreadName;
+		}
+
+		public void setChangeConsumerThreadName(Boolean changeConsumerThreadName) {
+			this.changeConsumerThreadName = changeConsumerThreadName;
 		}
 
 	}

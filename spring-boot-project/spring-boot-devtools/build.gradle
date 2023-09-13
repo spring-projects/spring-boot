@@ -65,9 +65,7 @@ dependencies {
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.eclipse.jetty.websocket:websocket-jakarta-client") {
-		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-websocket-api"
-	}
+	testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-client")
 	testImplementation("org.hamcrest:hamcrest-library")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")

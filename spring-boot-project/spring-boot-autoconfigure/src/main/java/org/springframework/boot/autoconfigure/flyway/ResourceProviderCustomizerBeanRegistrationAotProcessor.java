@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.lang.reflect.Executable;
-
 import javax.lang.model.element.Modifier;
 
 import org.springframework.aot.generate.GeneratedMethod;
@@ -58,8 +56,7 @@ class ResourceProviderCustomizerBeanRegistrationAotProcessor implements BeanRegi
 
 		@Override
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
-				BeanRegistrationCode beanRegistrationCode, Executable constructorOrFactoryMethod,
-				boolean allowDirectSupplierShortcut) {
+				BeanRegistrationCode beanRegistrationCode, boolean allowDirectSupplierShortcut) {
 			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {
 				method.addJavadoc("Get the bean instance for '$L'.", this.registeredBean.getBeanName());
 				method.addModifiers(Modifier.PRIVATE, Modifier.STATIC);

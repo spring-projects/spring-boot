@@ -20,7 +20,7 @@ bom {
 			]
 		}
 	}
-	library("API Guardian", "1.1.0") {
+	library("API Guardian", "1.1.2") {
 		group("org.apiguardian") {
 			modules = [
 				"apiguardian-api"
@@ -34,14 +34,14 @@ bom {
 			]
 		}
 	}
-	library("Commons Compress", "1.21") {
+	library("Commons Compress", "1.23.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-compress"
 			]
 		}
 	}
-	library("Commons FileUpload", "1.4") {
+	library("Commons FileUpload", "1.5") {
 		group("commons-fileupload") {
 			modules = [
 				"commons-fileupload"
@@ -55,7 +55,7 @@ bom {
 			]
 		}
 	}
-	library("Janino", "3.1.8") {
+	library("Janino", "3.1.10") {
 		group("org.codehaus.janino") {
 			imports = [
 				"janino"
@@ -73,7 +73,7 @@ bom {
 			]
 		}
 	}
-	library("JNA", "5.7.0") {
+	library("JNA", "5.13.0") {
 		group("net.java.dev.jna") {
 			modules = [
 				"jna-platform"
@@ -87,37 +87,38 @@ bom {
 			]
 		}
 	}
-	library("Maven", "3.6.3") {
+	library("Maven", "3.9.4") {
 		group("org.apache.maven") {
 			modules = [
+				"maven-core",
+				"maven-model-builder",
 				"maven-plugin-api",
-				"maven-resolver-provider",
-				"maven-settings-builder"
+				"maven-resolver-provider"
 			]
 		}
 	}
-	library("Maven Common Artifact Filters", "3.2.0") {
+	library("Maven Common Artifact Filters", "3.3.2") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-common-artifact-filters"
 			]
 		}
 	}
-	library("Maven Invoker", "3.1.0") {
+	library("Maven Invoker", "3.2.0") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-invoker"
 			]
 		}
 	}
-	library("Maven Plugin Tools", "3.6.0") {
+	library("Maven Plugin Tools", "3.9.0") {
 		group("org.apache.maven.plugin-tools") {
 			modules = [
 				"maven-plugin-annotations"
 			]
 		}
 	}
-	library("Maven Resolver", "1.6.3") {
+	library("Maven Resolver", "1.9.14") {
 		group("org.apache.maven.resolver") {
 			modules = [
 				"maven-resolver-api",
@@ -130,14 +131,14 @@ bom {
 			]
 		}
 	}
-	library("Maven Shade Plugin", "3.2.4") {
+	library("Maven Shade Plugin", "3.5.0") {
 		group("org.apache.maven.plugins") {
 			modules = [
 				"maven-shade-plugin"
 			]
 		}
 	}
-	library("MockK", "1.10.6") {
+	library("MockK", "1.13.5") {
 		group("io.mockk") {
 			modules = [
 				"mockk"
@@ -179,7 +180,7 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "2.2-M1-groovy-4.0") {
+	library("Spock Framework", "2.3-groovy-4.0") {
 		group("org.spockframework") {
 			imports = [
 				"spock-bom"
@@ -193,7 +194,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.6.1") {
+	library("Spring Asciidoctor Extensions", "0.6.2") {
 		group("io.spring.asciidoctor") {
 			modules = [
 				"spring-asciidoctor-extensions-spring-boot",

@@ -109,7 +109,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	@Override
 	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
-		return new LogbackLoggingSystemProperties(environment);
+		return new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	@Override
@@ -186,6 +186,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, logFile)) {
 			super.initialize(initializationContext, configLocation, logFile);
 		}
+		loggerContext.putObject(Environment.class.getName(), initializationContext.getEnvironment());
 		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
@@ -223,7 +224,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		Environment environment = initializationContext.getEnvironment();
 		// Apply system properties directly in case the same JVM runs multiple apps
-		new LogbackLoggingSystemProperties(environment, context::putProperty).apply(logFile);
+		new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), context::putProperty)
+			.apply(logFile);
 		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
 				: new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(logFile).apply(configurator);
@@ -248,25 +250,32 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	private void reportConfigurationErrorsIfNecessary(LoggerContext loggerContext) {
-		List<Status> statuses = loggerContext.getStatusManager().getCopyOfStatusList();
 		StringBuilder errors = new StringBuilder();
-		for (Status status : statuses) {
+		List<Throwable> suppressedExceptions = new ArrayList<>();
+		for (Status status : loggerContext.getStatusManager().getCopyOfStatusList()) {
 			if (status.getLevel() == Status.ERROR) {
 				errors.append((errors.length() > 0) ? String.format("%n") : "");
 				errors.append(status.toString());
+				if (status.getThrowable() != null) {
+					suppressedExceptions.add(status.getThrowable());
+				}
 			}
 		}
-		if (errors.length() > 0) {
-			throw new IllegalStateException(String.format("Logback configuration error detected: %n%s", errors));
+		if (errors.length() == 0) {
+			if (!StatusUtil.contextHasStatusListener(loggerContext)) {
+				StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
+			}
+			return;
 		}
-		if (!StatusUtil.contextHasStatusListener(loggerContext)) {
-			StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
-		}
+		IllegalStateException ex = new IllegalStateException(
+				String.format("Logback configuration error detected: %n%s", errors));
+		suppressedExceptions.forEach(ex::addSuppressed);
+		throw ex;
 	}
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (url.toString().endsWith(".xml")) {
+		if (url.getPath().endsWith(".xml")) {
 			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
@@ -413,6 +422,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.removeObject(LoggingSystem.class.getName());
+	}
+
+	@Override
+	protected String getDefaultLogCorrelationPattern() {
+		return "%correlationId";
 	}
 
 	@Override

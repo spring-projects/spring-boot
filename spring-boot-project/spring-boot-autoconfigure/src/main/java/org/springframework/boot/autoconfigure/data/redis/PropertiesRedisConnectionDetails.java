@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisConnectionConfigur
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
@@ -39,11 +40,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	public String getUsername() {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
-			String userInfo = connectionInfo.getUri().getUserInfo();
-			int index = (userInfo != null) ? userInfo.indexOf(':') : -1;
-			if (index != -1) {
-				return userInfo.substring(0, index);
-			}
+			return connectionInfo.getUsername();
 		}
 		return this.properties.getUsername();
 	}
@@ -52,11 +49,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	public String getPassword() {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
-			String userInfo = connectionInfo.getUri().getUserInfo();
-			int index = (userInfo != null) ? userInfo.indexOf(':') : -1;
-			if (index != -1) {
-				return userInfo.substring(index + 1);
-			}
+			return connectionInfo.getPassword();
 		}
 		return this.properties.getPassword();
 	}

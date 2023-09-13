@@ -22,9 +22,9 @@ import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-@SpringBootTest
 @Testcontainers
-internal class MyIntegrationTests {
+@SpringBootTest
+class MyIntegrationTests {
 
 	@Test
 	fun myTest() {
@@ -33,7 +33,7 @@ internal class MyIntegrationTests {
 
 	companion object {
 		@Container
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
+		val neo4j = Neo4jContainer("neo4j:5")
 	}
 
 }

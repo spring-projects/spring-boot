@@ -1,6 +1,6 @@
 [[data.sql]]
 == SQL Databases
-The {spring-framework}[Spring Framework] provides extensive support for working with SQL databases, from direct JDBC access using `JdbcTemplate` to complete "`object relational mapping`" technologies such as Hibernate.
+The {spring-framework}[Spring Framework] provides extensive support for working with SQL databases, from direct JDBC access using `JdbcClient` or `JdbcTemplate` to complete "`object relational mapping`" technologies such as Hibernate.
 {spring-data}[Spring Data] provides an additional level of functionality: creating `Repository` implementations directly from interfaces and using conventions to generate queries from your method names.
 
 
@@ -176,6 +176,17 @@ If more than one `JdbcTemplate` is defined and no primary candidate exists, the 
 
 
 
+[[data.sql.jdbc-client]]
+=== Using JdbcClient
+Spring's `JdbcClient` is auto-configured based on the presence of a `NamedParameterJdbcTemplate`.
+You can inject it directly in your own beans as well, as shown in the following example:
+
+include::code:MyBean[]
+
+If you rely on auto-configuration to create the underlying `JdbcTemplate`, any customization using `spring.jdbc.template.*` properties is taken into account in the client as well.
+
+
+
 [[data.sql.jpa-and-spring-data]]
 === JPA and Spring Data JPA
 The Java Persistence API is a standard technology that lets you "`map`" objects to relational databases.
@@ -217,6 +228,8 @@ For more complex queries, you can annotate your method with Spring Data's {sprin
 
 Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
 If you use auto-configuration, repositories are searched from the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) down.
+
+TIP: You can customize the locations to look for repositories using `@EnableJpaRepositories`.
 
 The following example shows a typical Spring Data repository interface definition:
 
@@ -451,7 +464,7 @@ Information specified in the URL takes precedence over individual properties, th
 TIP: The "`How-to`" section includes a <<howto#howto.data-initialization.using-basic-sql-scripts, section on how to initialize a database>>.
 
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
-The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
+The following example shows how to manually override the database port while the rest of the options are taken from the application configuration:
 
 include::code:MyR2dbcConfiguration[]
 

@@ -43,8 +43,8 @@ A closed-world assumption implies the following restrictions:
 
 * The classpath is fixed and fully defined at build time
 * The beans defined in your application cannot change at runtime, meaning:
- - The Spring `@Profile` annotation and profile-specific configuration is not supported
- - Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
+- The Spring `@Profile` annotation and profile-specific configuration <<howto#howto.aot.conditions,have limitations>>.
+- Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
 
 When these restrictions are in place, it becomes possible for Spring to perform ahead-of-time processing during build-time and generate additional assets that GraalVM can use.
 A Spring AOT processed application will typically generate:

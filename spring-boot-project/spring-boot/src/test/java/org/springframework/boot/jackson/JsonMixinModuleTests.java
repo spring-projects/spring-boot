@@ -17,7 +17,6 @@
 package org.springframework.boot.jackson;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.Module;
@@ -35,7 +34,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link JsonMixinModule}.
@@ -51,14 +49,6 @@ class JsonMixinModuleTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void createWhenContextIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new JsonMixinModule(null, Collections.emptyList()))
-			.withMessageContaining("Context must not be null");
 	}
 
 	@Test

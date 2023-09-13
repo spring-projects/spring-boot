@@ -42,6 +42,17 @@ class WavefrontSenderConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(WavefrontSenderConfiguration.class));
 
+	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
+		.withPropertyValues("management.tracing.enabled=false");
+
+	private final ApplicationContextRunner metricsDisabledContextRunner = this.contextRunner.withPropertyValues(
+			"management.defaults.metrics.export.enabled=false", "management.simple.metrics.export.enabled=true");
+
+	// Both metrics and tracing are disabled
+	private final ApplicationContextRunner observabilityDisabledContextRunner = this.contextRunner.withPropertyValues(
+			"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false",
+			"management.simple.metrics.export.enabled=true");
+
 	@Test
 	void shouldNotFailIfWavefrontIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("com.wavefront"))
@@ -81,6 +92,24 @@ class WavefrontSenderConfigurationTests {
 					.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size()).isEqualTo(100));
 				assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
 			});
+	}
+
+	@Test
+	void shouldNotSupplyWavefrontSenderIfObservabilityIsDisabled() {
+		this.observabilityDisabledContextRunner.withPropertyValues("management.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontSender.class));
+	}
+
+	@Test
+	void shouldSupplyWavefrontSenderIfOnlyTracingIsDisabled() {
+		this.tracingDisabledContextRunner.withPropertyValues("management.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).hasSingleBean(WavefrontSender.class));
+	}
+
+	@Test
+	void shouldSupplyWavefrontSenderIfOnlyMetricsAreDisabled() {
+		this.metricsDisabledContextRunner.withPropertyValues("management.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).hasSingleBean(WavefrontSender.class));
 	}
 
 	@Test

@@ -31,8 +31,12 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
+import org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
+import org.flywaydb.database.oracle.OracleConfigurationExtension;
+import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -48,6 +52,9 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
@@ -83,6 +90,7 @@ import org.springframework.stereotype.Component;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -602,17 +610,104 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void oracleExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new OracleFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
+	}
+
+	@Test
 	void oracleSqlplusIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.sqlplus=true")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplus()).isTrue());
+
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleSqlplusIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle-sqlplus=true")
-			.run(validateFlywayTeamsPropertyOnly("oracle.sqlplus"));
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplus()).isTrue());
+
 	}
 
 	@Test
 	void oracleSqlplusWarnIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.sqlplus-warn=true")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplusWarn()).isTrue());
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleSqlplusWarnIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle-sqlplus-warn=true")
-			.run(validateFlywayTeamsPropertyOnly("oracle.sqlplusWarn"));
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplusWarn()).isTrue());
+	}
+
+	@Test
+	void oracleWallerLocationIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.wallet-location=/tmp/my.wallet")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleWallerLocationIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle-wallet-location=/tmp/my.wallet")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
+	}
+
+	@Test
+	void oracleKerberosCacheFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.kerberos-cache-file=/tmp/cache")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleKerberosCacheFileIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
 	}
 
 	@Test
@@ -683,13 +778,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void oracleKerberosCacheFileIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
-			.run(validateFlywayTeamsPropertyOnly("oracle.kerberosCacheFile"));
-	}
-
-	@Test
 	void outputQueryResultsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.output-query-results=false")
@@ -697,10 +785,55 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void postgresqlExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new PostgresqlFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void postgresqlTransactionalLockIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.postgresql.transactional-lock=false")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(PostgreSQLConfigurationExtension.class)
+				.isTransactionalLock()).isFalse());
+	}
+
+	@Test
+	void sqlServerExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new SqlServerFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
+	}
+
+	@Test
 	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.sqlserver.kerberos-login-file=/tmp/config")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(SQLServerConfigurationExtension.class)
+				.getKerberos()
+				.getLogin()
+				.getFile()).isEqualTo("/tmp/config"));
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void sqlServerKerberosLoginFileIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
-			.run(validateFlywayTeamsPropertyOnly("sqlserver.kerberos.login.file"));
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(SQLServerConfigurationExtension.class)
+				.getKerberos()
+				.getLogin()
+				.getFile()).isEqualTo("/tmp/config"));
 	}
 
 	@Test
@@ -761,6 +894,21 @@ class FlywayAutoConfigurationTests {
 	void containsResourceProviderCustomizer() {
 		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 			.run((context) -> assertThat(context).hasSingleBean(ResourceProviderCustomizer.class));
+	}
+
+	@Test
+	void loggers() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
+				.containsExactly("slf4j"));
+	}
+
+	@Test
+	void overrideLoggers() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.loggers=log4j2")
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
+				.containsExactly("log4j2"));
 	}
 
 	@Test

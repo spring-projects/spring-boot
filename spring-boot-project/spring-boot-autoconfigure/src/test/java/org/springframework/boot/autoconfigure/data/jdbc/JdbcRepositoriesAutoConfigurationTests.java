@@ -232,7 +232,7 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 		@Bean
 		JdbcMappingContext customJdbcMappingContext() {
-			return mock(JdbcMappingContext.class);
+			return mock(JdbcMappingContext.class, Answers.RETURNS_MOCKS);
 		}
 
 	}
@@ -242,7 +242,7 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 		@Bean
 		JdbcConverter customJdbcConverter() {
-			return mock(JdbcConverter.class);
+			return mock(JdbcConverter.class, Answers.RETURNS_MOCKS);
 		}
 
 	}
@@ -262,7 +262,7 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 		@Bean
 		JdbcAggregateTemplate customJdbcAggregateTemplate() {
-			return mock(JdbcAggregateTemplate.class);
+			return mock(JdbcAggregateTemplate.class, Answers.RETURNS_MOCKS);
 		}
 
 	}
@@ -272,7 +272,7 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 		@Bean
 		DataAccessStrategy customDataAccessStrategy() {
-			return mock(DataAccessStrategy.class);
+			return mock(DataAccessStrategy.class, Answers.RETURNS_MOCKS);
 		}
 
 	}

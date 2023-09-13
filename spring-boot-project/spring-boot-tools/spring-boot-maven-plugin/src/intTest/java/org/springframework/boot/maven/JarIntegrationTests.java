@@ -428,7 +428,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenJarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/jar-output-timestamp-0.0.1.BUILD-SNAPSHOT.jar");
-			List<String> sortedLibs = Arrays.asList("BOOT-INF/lib/jakarta.servlet-api", "BOOT-INF/lib/spring-aop",
+			List<String> sortedLibs = Arrays.asList("BOOT-INF/lib/jakarta.servlet-api",
+					"BOOT-INF/lib/micrometer-commons", "BOOT-INF/lib/micrometer-observation", "BOOT-INF/lib/spring-aop",
 					"BOOT-INF/lib/spring-beans", "BOOT-INF/lib/spring-boot-jarmode-layertools",
 					"BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-expression",
 					"BOOT-INF/lib/spring-jcl");

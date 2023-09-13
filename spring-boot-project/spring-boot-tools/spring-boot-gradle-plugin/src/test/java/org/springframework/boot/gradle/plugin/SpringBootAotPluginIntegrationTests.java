@@ -96,6 +96,18 @@ class SpringBootAotPluginIntegrationTests {
 	}
 
 	@TestTemplate
+	void processAotDoesNotHaveDevelopmentOnlyDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processAotClasspath").getOutput();
+		assertThat(output).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
+	void processTestAotDoesNotHaveDevelopmentOnlyDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processTestAotClasspath", "--stacktrace").getOutput();
+		assertThat(output).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
 	void processAotRunsWhenProjectHasMainSource() throws IOException {
 		writeMainClass("org.springframework.boot", "SpringApplicationAotProcessor");
 		writeMainClass("com.example", "Main");

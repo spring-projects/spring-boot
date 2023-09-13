@@ -65,23 +65,25 @@ class DockerComposeServiceConnectionsApplicationListener
 	private void registerConnectionDetails(BeanDefinitionRegistry registry, List<RunningService> runningServices) {
 		for (RunningService runningService : runningServices) {
 			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService);
-			this.factories.getConnectionDetails(source)
-				.forEach((connectionDetailsType, connectionDetails) -> register(registry, runningService,
-						connectionDetailsType, connectionDetails));
+			this.factories.getConnectionDetails(source, false).forEach((connectionDetailsType, connectionDetails) -> {
+				register(registry, runningService, connectionDetailsType, connectionDetails);
+				this.factories.getConnectionDetails(connectionDetails, false)
+					.forEach((adaptedType, adaptedDetails) -> register(registry, runningService, adaptedType,
+							adaptedDetails));
+			});
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> void register(BeanDefinitionRegistry registry, RunningService runningService,
 			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
-		String beanName = getBeanName(runningService, connectionDetailsType, connectionDetails);
+		String beanName = getBeanName(runningService, connectionDetailsType);
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
 		Supplier<T> beanSupplier = () -> (T) connectionDetails;
 		registry.registerBeanDefinition(beanName, new RootBeanDefinition(beanType, beanSupplier));
 	}
 
-	private String getBeanName(RunningService runningService, Class<?> connectionDetailsType,
-			ConnectionDetails connectionDetails) {
+	private String getBeanName(RunningService runningService, Class<?> connectionDetailsType) {
 		List<String> parts = new ArrayList<>();
 		parts.add(ClassUtils.getShortNameAsProperty(connectionDetailsType));
 		parts.add("for");

@@ -30,11 +30,11 @@ class BeanOrigin implements Origin {
 
 	private final String beanName;
 
-	private final BeanDefinition beanDefinition;
+	private final String resourceDescription;
 
 	BeanOrigin(String beanName, BeanDefinition beanDefinition) {
 		this.beanName = beanName;
-		this.beanDefinition = beanDefinition;
+		this.resourceDescription = (beanDefinition != null) ? beanDefinition.getResourceDescription() : null;
 	}
 
 	@Override
@@ -46,8 +46,7 @@ class BeanOrigin implements Origin {
 			return false;
 		}
 		BeanOrigin other = (BeanOrigin) obj;
-		return Objects.equals(this.beanName, other.beanName) && Objects
-			.equals(this.beanDefinition.getResourceDescription(), other.beanDefinition.getResourceDescription());
+		return Objects.equals(this.beanName, other.beanName);
 	}
 
 	@Override
@@ -57,14 +56,13 @@ class BeanOrigin implements Origin {
 
 	@Override
 	public String toString() {
-		String resourceDescription = this.beanDefinition.getResourceDescription();
 		StringBuilder result = new StringBuilder();
 		result.append("Bean '");
 		result.append(this.beanName);
 		result.append("'");
-		if (resourceDescription != null) {
+		if (this.resourceDescription != null) {
 			result.append(" defined in ");
-			result.append(resourceDescription);
+			result.append(this.resourceDescription);
 		}
 		return result.toString();
 	}

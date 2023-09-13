@@ -68,6 +68,7 @@ org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
@@ -93,6 +94,8 @@ org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+org.springframework.boot.autoconfigure.pulsar.PulsarAutoConfiguration
+org.springframework.boot.autoconfigure.pulsar.PulsarReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
@@ -123,6 +126,7 @@ org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration
+org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration

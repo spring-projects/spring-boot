@@ -50,6 +50,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 
 	private final MeterFilter mapFilter;
 
+	@SuppressWarnings("removal")
 	public PropertiesMeterFilter(MetricsProperties properties) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;

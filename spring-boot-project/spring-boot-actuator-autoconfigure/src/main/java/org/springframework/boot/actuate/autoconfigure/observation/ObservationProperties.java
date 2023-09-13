@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -23,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * observations.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 3.0.0
  */
 @ConfigurationProperties("management.observations")
@@ -30,8 +34,35 @@ public class ObservationProperties {
 
 	private final Http http = new Http();
 
+	/**
+	 * Common key-values that are applied to every observation.
+	 */
+	private Map<String, String> keyValues = new LinkedHashMap<>();
+
+	/**
+	 * Whether observations starting with the specified name should be enabled. The
+	 * longest match wins, the key 'all' can also be used to configure all observations.
+	 */
+	private Map<String, Boolean> enable = new LinkedHashMap<>();
+
+	public Map<String, Boolean> getEnable() {
+		return this.enable;
+	}
+
+	public void setEnable(Map<String, Boolean> enable) {
+		this.enable = enable;
+	}
+
 	public Http getHttp() {
 		return this.http;
+	}
+
+	public Map<String, String> getKeyValues() {
+		return this.keyValues;
+	}
+
+	public void setKeyValues(Map<String, String> keyValues) {
+		this.keyValues = keyValues;
 	}
 
 	public static class Http {
@@ -59,10 +90,9 @@ public class ObservationProperties {
 			public static class ClientRequests {
 
 				/**
-				 * Name of the observation for client requests. If empty, will use the
-				 * default "http.client.requests".
+				 * Name of the observation for client requests.
 				 */
-				private String name;
+				private String name = "http.client.requests";
 
 				public String getName() {
 					return this.name;
@@ -87,10 +117,9 @@ public class ObservationProperties {
 			public static class ServerRequests {
 
 				/**
-				 * Name of the observation for server requests. If empty, will use the
-				 * default "http.server.requests".
+				 * Name of the observation for server requests.
 				 */
-				private String name;
+				private String name = "http.server.requests";
 
 				public String getName() {
 					return this.name;

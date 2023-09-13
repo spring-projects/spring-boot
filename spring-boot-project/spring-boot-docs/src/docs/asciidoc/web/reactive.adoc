@@ -46,6 +46,28 @@ If you want to take complete control of Spring WebFlux, you can add your own `@C
 
 
 
+[[web.reactive.webflux.conversion-service]]
+==== Spring WebFlux Conversion Service
+If you want to customize the `ConversionService` used by Spring WebFlux, you can provide a `WebFluxConfigurer` bean with an `addFormatters` method.
+
+Conversion can also be customized using the `spring.webflux.format.*` configuration properties.
+When not configured, the following defaults are used:
+
+|===
+|Property |`DateTimeFormatter`
+
+|configprop:spring.webflux.format.date[]
+|`ofLocalizedDate(FormatStyle.SHORT)`
+
+|configprop:spring.webflux.format.time[]
+|`ofLocalizedTime(FormatStyle.SHORT)`
+
+|configprop:spring.webflux.format.date-time[]
+|`ofLocalizedDateTime(FormatStyle.SHORT)`
+|===
+
+
+
 [[web.reactive.webflux.httpcodecs]]
 ==== HTTP Codecs with HttpMessageReaders and HttpMessageWriters
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interfaces to convert HTTP requests and responses.
@@ -97,6 +119,21 @@ Spring Boot supports both static and templated welcome pages.
 It first looks for an `index.html` file in the configured static content locations.
 If one is not found, it then looks for an `index` template.
 If either is found, it is automatically used as the welcome page of the application.
+
+This only acts as a fallback for actual index routes defined by the application.
+The ordering is defined by the order of `HandlerMapping` beans which is by default the following:
+
+[cols="1,1"]
+|===
+|`RouterFunctionMapping`
+|Endpoints declared with `RouterFunction` beans
+
+|`RequestMappingHandlerMapping`
+|Endpoints declared in `@Controller` beans
+
+|`RouterFunctionMapping` for the Welcome Page
+|The welcome page support
+|===
 
 
 
@@ -207,9 +244,6 @@ When it does so, the orders shown in the following table will be used:
 
 |===
 | Web Filter | Order
-
-| `ServerHttpObservationFilter` (Micrometer Observability)
-| `Ordered.HIGHEST_PRECEDENCE + 1`
 
 | `WebFilterChainProxy` (Spring Security)
 | `-100`

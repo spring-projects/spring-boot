@@ -32,6 +32,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.2.0", forRemoval = true)
 class InfluxDbHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

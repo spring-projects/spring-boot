@@ -35,6 +35,7 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(MongoDatabaseFactory.class)
@@ -44,7 +45,11 @@ class MongoDatabaseFactoryConfiguration {
 	@Bean
 	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties,
 			MongoConnectionDetails connectionDetails) {
-		return new SimpleMongoClientDatabaseFactory(mongoClient, connectionDetails.getConnectionString().getDatabase());
+		String database = properties.getDatabase();
+		if (database == null) {
+			database = connectionDetails.getConnectionString().getDatabase();
+		}
+		return new SimpleMongoClientDatabaseFactory(mongoClient, database);
 	}
 
 }

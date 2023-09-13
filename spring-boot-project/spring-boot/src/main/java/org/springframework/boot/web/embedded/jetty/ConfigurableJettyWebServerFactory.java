@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
  * {@link ConfigurableWebServerFactory} for Jetty-specific features.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see JettyServletWebServerFactory
  * @see JettyReactiveWebServerFactory
@@ -62,5 +63,12 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	 * @param customizers the customizers to add
 	 */
 	void addServerCustomizers(JettyServerCustomizer... customizers);
+
+	/**
+	 * Sets the maximum number of concurrent connections.
+	 * @param maxConnections the maximum number of concurrent connections
+	 * @since 3.2.0
+	 */
+	void setMaxConnections(int maxConnections);
 
 }

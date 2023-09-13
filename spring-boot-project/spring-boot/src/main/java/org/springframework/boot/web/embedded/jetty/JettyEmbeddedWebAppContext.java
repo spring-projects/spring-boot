@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.servlet.ServletHandler;
+import org.eclipse.jetty.ee10.webapp.ClassMatcher;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 
 /**
  * Jetty {@link WebAppContext} used by {@link JettyWebServer} to support deferred
@@ -26,6 +27,11 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * @author Phillip Webb
  */
 class JettyEmbeddedWebAppContext extends WebAppContext {
+
+	JettyEmbeddedWebAppContext() {
+		setServerClassMatcher(new ClassMatcher("org.springframework.boot.loader."));
+		// setTempDirectory(WebInfConfiguration.getCanonicalNameForWebAppTmpDir(this));
+	}
 
 	@Override
 	protected ServletHandler newServletHandler() {

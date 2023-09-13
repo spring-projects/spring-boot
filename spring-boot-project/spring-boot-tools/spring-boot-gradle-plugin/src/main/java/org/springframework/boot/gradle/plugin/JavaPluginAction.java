@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -85,6 +84,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
 		configureBootRunTask(project, resolveMainClassName);
+		TaskProvider<ResolveMainClassName> resolveMainTestClassName = configureResolveMainTestClassNameTask(project);
+		configureBootTestRunTask(project, resolveMainTestClassName);
 		project.afterEvaluate(this::configureUtf8Encoding);
 		configureParametersCompilerArg(project);
 		configureAdditionalMetadataLocations(project);
@@ -128,6 +129,23 @@ final class JavaPluginAction implements PluginApplicationAction {
 					});
 	}
 
+	private TaskProvider<ResolveMainClassName> configureResolveMainTestClassNameTask(Project project) {
+		return project.getTasks()
+			.register(SpringBootPlugin.RESOLVE_TEST_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class,
+					(resolveMainClassName) -> {
+						resolveMainClassName.setDescription("Resolves the name of the application's test main class.");
+						resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
+						Callable<FileCollection> classpath = () -> {
+							SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+							return project.files(sourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME).getOutput(),
+									sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput());
+						};
+						resolveMainClassName.setClasspath(classpath);
+						resolveMainClassName.getOutputFile()
+							.set(project.getLayout().getBuildDirectory().file("resolvedMainTestClassName"));
+					});
+	}
+
 	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
 		JavaApplication javaApplication = extensions.findByType(JavaApplication.class);
 		if (javaApplication == null) {
@@ -144,6 +162,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		Configuration runtimeClasspath = project.getConfigurations()
+			.getByName(mainSourceSet.getRuntimeClasspathConfigurationName());
 		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
 			.minus((developmentOnly.minus(productionRuntimeClasspath)))
 			.filter(new JarTypeFileSpec());
@@ -159,6 +179,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 						? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 			bootJar.getTargetJavaVersion()
 				.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
+			bootJar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts());
 		});
 	}
 
@@ -179,16 +200,24 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.findByName(SourceSet.MAIN_SOURCE_SET_NAME)
 			.getRuntimeClasspath()
 			.filter(new JarTypeFileSpec());
-		project.getTasks().register("bootRun", BootRun.class, (run) -> {
+		project.getTasks().register(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
-			run.getConventionMapping().map("jvmArgs", () -> {
-				if (project.hasProperty("applicationDefaultJvmArgs")) {
-					return project.property("applicationDefaultJvmArgs");
-				}
-				return Collections.emptyList();
-			});
+			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
+			configureToolchainConvention(project, run);
+		});
+	}
+
+	private void configureBootTestRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
+		Callable<FileCollection> classpath = () -> javaPluginExtension(project).getSourceSets()
+			.findByName(SourceSet.TEST_SOURCE_SET_NAME)
+			.getRuntimeClasspath()
+			.filter(new JarTypeFileSpec());
+		project.getTasks().register("bootTestRun", BootRun.class, (run) -> {
+			run.setDescription("Runs this project as a Spring Boot application using the test runtime classpath.");
+			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
+			run.classpath(classpath);
 			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});

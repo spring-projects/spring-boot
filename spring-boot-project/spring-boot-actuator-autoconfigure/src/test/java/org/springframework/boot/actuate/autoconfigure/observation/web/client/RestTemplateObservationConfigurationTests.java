@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Tags;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistryAssert;
@@ -28,9 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
-import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer;
-import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -40,9 +36,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.observation.ClientRequestObservationContext;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -58,7 +52,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SuppressWarnings("removal")
 class RestTemplateObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -68,8 +61,7 @@ class RestTemplateObservationConfigurationTests {
 
 	@Test
 	void contributesCustomizerBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationRestTemplateCustomizer.class)
-			.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationRestTemplateCustomizer.class));
 	}
 
 	@Test
@@ -94,32 +86,6 @@ class RestTemplateObservationConfigurationTests {
 				TestObservationRegistryAssert.assertThat(registry)
 					.hasObservationWithNameEqualToIgnoringCase(observationName);
 			});
-	}
-
-	@Test
-	void restTemplateCreatedWithBuilderUsesCustomMetricName() {
-		final String metricName = "test.metric.name";
-		this.contextRunner.withPropertyValues("management.metrics.web.client.request.metric-name=" + metricName)
-			.run((context) -> {
-				RestTemplate restTemplate = buildRestTemplate(context);
-				restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
-				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-				TestObservationRegistryAssert.assertThat(registry)
-					.hasObservationWithNameEqualToIgnoringCase(metricName);
-			});
-	}
-
-	@Test
-	void restTemplateCreatedWithBuilderUsesCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsConfiguration.class).run((context) -> {
-			RestTemplate restTemplate = buildRestTemplate(context);
-			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
-			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasObservationWithNameEqualTo("http.client.requests")
-				.that()
-				.hasLowCardinalityKeyValue("project", "spring-boot");
-		});
 	}
 
 	@Test
@@ -163,8 +129,7 @@ class RestTemplateObservationConfigurationTests {
 		new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
 					HttpClientObservationsAutoConfiguration.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
-				.doesNotHaveBean(ObservationRestTemplateCustomizer.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ObservationRestTemplateCustomizer.class));
 	}
 
 	private RestTemplate buildRestTemplate(AssertableApplicationContext context) {
@@ -172,26 +137,6 @@ class RestTemplateObservationConfigurationTests {
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 		server.expect(requestTo("/projects/spring-boot")).andRespond(withStatus(HttpStatus.OK));
 		return restTemplate;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTagsConfiguration {
-
-		@Bean
-		CustomTagsProvider customTagsProvider() {
-			return new CustomTagsProvider();
-		}
-
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	static class CustomTagsProvider implements RestTemplateExchangeTagsProvider {
-
-		@Override
-		public Iterable<Tag> getTags(String urlTemplate, HttpRequest request, ClientHttpResponse response) {
-			return Tags.of("project", "spring-boot");
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

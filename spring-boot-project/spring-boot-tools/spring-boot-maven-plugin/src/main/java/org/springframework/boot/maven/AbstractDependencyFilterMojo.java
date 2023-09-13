@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,22 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
  * @since 1.1.0
  */
 public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
+
+	static final ExcludeFilter DEVTOOLS_EXCLUDE_FILTER;
+	static {
+		Exclude exclude = new Exclude();
+		exclude.setGroupId("org.springframework.boot");
+		exclude.setArtifactId("spring-boot-devtools");
+		DEVTOOLS_EXCLUDE_FILTER = new ExcludeFilter(exclude);
+	}
+
+	static final ExcludeFilter DOCKER_COMPOSE_EXCLUDE_FILTER;
+	static {
+		Exclude exclude = new Exclude();
+		exclude.setGroupId("org.springframework.boot");
+		exclude.setArtifactId("spring-boot-docker-compose");
+		DOCKER_COMPOSE_EXCLUDE_FILTER = new ExcludeFilter(exclude);
+	}
 
 	/**
 	 * The Maven project.

@@ -67,6 +67,8 @@ import org.springframework.util.unit.DataSize;
 public class TomcatWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, Ordered {
 
+	static final int ORDER = 0;
+
 	private final Environment environment;
 
 	private final ServerProperties serverProperties;
@@ -78,10 +80,11 @@ public class TomcatWebServerFactoryCustomizer
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return ORDER;
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat properties = this.serverProperties.getTomcat();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -198,6 +201,7 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addConnectorCustomizers((connector) -> connector.setProperty("relaxedQueryChars", relaxedChars));
 	}
 
+	@SuppressWarnings("deprecation")
 	private void customizeRejectIllegalHeader(ConfigurableTomcatWebServerFactory factory, boolean rejectIllegalHeader) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();

@@ -87,14 +87,24 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	    oauth2:
 	      client:
 	        registration:
+	          my-login-client:
+	            client-id: "abcd"
+	            client-secret: "password"
+	            client-name: "Client for OpenID Connect"
+	            provider: "my-oauth-provider"
+	            scope: "openid,profile,email,phone,address"
+	            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+	            client-authentication-method: "client_secret_basic"
+	            authorization-grant-type: "authorization_code"
+
 	          my-client-1:
 	            client-id: "abcd"
 	            client-secret: "password"
 	            client-name: "Client for user scope"
 	            provider: "my-oauth-provider"
 	            scope: "user"
-	            redirect-uri: "https://my-redirect-uri.com"
-	            client-authentication-method: "basic"
+	            redirect-uri: "{baseUrl}/authorized/user"
+	            client-authentication-method: "client_secret_basic"
 	            authorization-grant-type: "authorization_code"
 
 	          my-client-2:
@@ -103,17 +113,17 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	            client-name: "Client for email scope"
 	            provider: "my-oauth-provider"
 	            scope: "email"
-	            redirect-uri: "https://my-redirect-uri.com"
-	            client-authentication-method: "basic"
+	            redirect-uri: "{baseUrl}/authorized/email"
+	            client-authentication-method: "client_secret_basic"
 	            authorization-grant-type: "authorization_code"
 
 	        provider:
 	          my-oauth-provider:
-	            authorization-uri: "https://my-auth-server/oauth/authorize"
-	            token-uri: "https://my-auth-server/oauth/token"
-	            user-info-uri: "https://my-auth-server/userinfo"
+	            authorization-uri: "https://my-auth-server.com/oauth2/authorize"
+	            token-uri: "https://my-auth-server.com/oauth2/token"
+	            user-info-uri: "https://my-auth-server.com/userinfo"
 	            user-info-authentication-method: "header"
-	            jwk-set-uri: "https://my-auth-server/token_keys"
+	            jwk-set-uri: "https://my-auth-server.com/oauth2/jwks"
 	            user-name-attribute: "name"
 ----
 
@@ -201,8 +211,21 @@ For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, a
 NOTE: If the authorization server does not support a JWK Set URI, you can configure the resource server with the Public Key used for verifying the signature of the JWT.
 This can be done using the configprop:spring.security.oauth2.resourceserver.jwt.public-key-location[] property, where the value needs to point to a file containing the public key in the PEM-encoded x509 format.
 
-The same properties are applicable for both servlet and reactive applications.
+The configprop:spring.security.oauth2.resourceserver.jwt.audiences[] property can be used to specify the expected values of the aud claim in JWTs.
+For example, to require JWTs to contain an aud claim with the value `my-audience`:
 
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  security:
+	    oauth2:
+	      resourceserver:
+	        jwt:
+	          audiences:
+	            - "my-audience"
+----
+
+The same properties are applicable for both servlet and reactive applications.
 Alternatively, you can define your own `JwtDecoder` bean for servlet applications or a `ReactiveJwtDecoder` for reactive applications.
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens through introspection:
@@ -220,7 +243,6 @@ In cases where opaque tokens are used instead of JWTs, you can configure the fol
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
-
 Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servlet applications or a `ReactiveOpaqueTokenIntrospector` for reactive applications.
 
 

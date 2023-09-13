@@ -27,11 +27,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
@@ -45,10 +47,12 @@ import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.bomr.github.GitHub;
 import org.springframework.boot.build.bom.bomr.github.GitHubRepository;
 import org.springframework.boot.build.bom.bomr.github.Issue;
 import org.springframework.boot.build.bom.bomr.github.Milestone;
+import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.StringUtils;
 
 /**
@@ -61,10 +65,17 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	private final BomExtension bom;
 
+	private final boolean movingToSnapshots;
+
 	@Inject
 	public UpgradeDependencies(BomExtension bom) {
+		this(bom, false);
+	}
+
+	protected UpgradeDependencies(BomExtension bom, boolean movingToSnapshots) {
 		this.bom = bom;
 		getThreads().convention(2);
+		this.movingToSnapshots = movingToSnapshots;
 	}
 
 	@Input
@@ -90,7 +101,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				this.bom.getUpgrade().getGitHub().getRepository());
 		List<String> issueLabels = verifyLabels(repository);
 		Milestone milestone = determineMilestone(repository);
-		List<Upgrade> upgrades = resolveUpgrades();
+		List<Upgrade> upgrades = resolveUpgrades(milestone);
 		applyUpgrades(repository, issueLabels, milestone, upgrades);
 	}
 
@@ -100,45 +111,31 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
 		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
 		List<Issue> existingUpgradeIssues = repository.findIssues(issueLabels, milestone);
+		System.out.println("Applying upgrades...");
+		System.out.println("");
 		for (Upgrade upgrade : upgrades) {
+			System.out.println(upgrade.getLibrary().getName() + " " + upgrade.getVersion());
 			String title = issueTitle(upgrade);
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
-			if (existingUpgradeIssue != null) {
-				if (existingUpgradeIssue.getState() == Issue.State.CLOSED) {
-					System.out.println(title + " (supersedes #" + existingUpgradeIssue.getNumber() + " "
-							+ existingUpgradeIssue.getTitle() + ")");
-				}
-				else {
-					System.out.println(title + " (completes existing upgrade)");
-				}
-			}
-			else {
-				System.out.println(title);
-			}
 			try {
 				Path modified = upgradeApplicator.apply(upgrade);
-				int issueNumber;
-				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.OPEN) {
-					issueNumber = existingUpgradeIssue.getNumber();
+				int issueNumber = getOrOpenUpgradeIssue(repository, issueLabels, milestone, title,
+						existingUpgradeIssue);
+				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
+					existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
 				}
-				else {
-					issueNumber = repository.openIssue(title,
-							(existingUpgradeIssue != null) ? "Supersedes #" + existingUpgradeIssue.getNumber() : "",
-							issueLabels, milestone);
-					if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
-						existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
-					}
-				}
+				System.out.println("   Issue: " + issueNumber + " - " + title
+						+ getExistingUpgradeIssueMessageDetails(existingUpgradeIssue));
 				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath())
 					.start()
 					.waitFor() != 0) {
 					throw new IllegalStateException("git add failed");
 				}
-				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage(upgrade, issueNumber))
-					.start()
-					.waitFor() != 0) {
+				String commitMessage = commitMessage(upgrade, issueNumber);
+				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage).start().waitFor() != 0) {
 					throw new IllegalStateException("git commit failed");
 				}
+				System.out.println("  Commit: " + commitMessage.substring(0, commitMessage.indexOf('\n')));
 			}
 			catch (IOException ex) {
 				throw new TaskExecutionException(this, ex);
@@ -147,6 +144,25 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	private int getOrOpenUpgradeIssue(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
+			String title, Issue existingUpgradeIssue) {
+		if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.OPEN) {
+			return existingUpgradeIssue.getNumber();
+		}
+		String body = (existingUpgradeIssue != null) ? "Supersedes #" + existingUpgradeIssue.getNumber() : "";
+		return repository.openIssue(title, body, issueLabels, milestone);
+	}
+
+	private String getExistingUpgradeIssueMessageDetails(Issue existingUpgradeIssue) {
+		if (existingUpgradeIssue == null) {
+			return "";
+		}
+		if (existingUpgradeIssue.getState() != Issue.State.CLOSED) {
+			return " (completes existing upgrade)";
+		}
+		return " (supersedes #" + existingUpgradeIssue.getNumber() + " " + existingUpgradeIssue.getTitle() + ")";
 	}
 
 	private List<String> verifyLabels(GitHubRepository repository) {
@@ -188,9 +204,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
 		String toMatch = "Upgrade to " + upgrade.getLibrary().getName();
 		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
-			if (existingUpgradeIssue.getTitle()
-				.substring(0, existingUpgradeIssue.getTitle().lastIndexOf(' '))
-				.equals(toMatch)) {
+			String title = existingUpgradeIssue.getTitle();
+			int lastSpaceIndex = title.lastIndexOf(' ');
+			if (lastSpaceIndex > -1) {
+				title = title.substring(0, lastSpaceIndex);
+			}
+			if (title.equals(toMatch)) {
 				return existingUpgradeIssue;
 			}
 		}
@@ -198,27 +217,67 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	@SuppressWarnings("deprecation")
-	private List<Upgrade> resolveUpgrades() {
+	private List<Upgrade> resolveUpgrades(Milestone milestone) {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
-				new MultithreadedLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
-						this.bom.getUpgrade().getPolicy(), getThreads().get()))
-			.resolveUpgrades(matchingLibraries(getLibraries().getOrNull()), this.bom.getLibraries());
+				new MultithreadedLibraryUpdateResolver(getThreads().get(),
+						new StandardLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
+								determineUpdatePredicates(milestone))))
+			.resolveUpgrades(matchingLibraries(), this.bom.getLibraries());
 		return upgrades;
 	}
 
-	private List<Library> matchingLibraries(String pattern) {
-		if (pattern == null) {
-			return this.bom.getLibraries();
-		}
-		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
-		List<Library> matchingLibraries = this.bom.getLibraries()
-			.stream()
-			.filter((library) -> libraryPredicate.test(library.getName()))
-			.toList();
+	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
+		BiPredicate<Library, DependencyVersion> compilesWithUpgradePolicy = (library,
+				candidate) -> this.bom.getUpgrade().getPolicy().test(candidate, library.getVersion().getVersion());
+		BiPredicate<Library, DependencyVersion> isAnUpgrade = (library,
+				candidate) -> library.getVersion().getVersion().isUpgrade(candidate, this.movingToSnapshots);
+		BiPredicate<Library, DependencyVersion> isPermitted = (library, candidate) -> {
+			for (ProhibitedVersion prohibitedVersion : library.getProhibitedVersions()) {
+				String candidateString = candidate.toString();
+				if (prohibitedVersion.getRange() != null
+						&& prohibitedVersion.getRange().containsVersion(new DefaultArtifactVersion(candidateString))) {
+					return false;
+				}
+				for (String startsWith : prohibitedVersion.getStartsWith()) {
+					if (candidateString.startsWith(startsWith)) {
+						return false;
+					}
+				}
+				for (String endsWith : prohibitedVersion.getEndsWith()) {
+					if (candidateString.endsWith(endsWith)) {
+						return false;
+					}
+				}
+				for (String contains : prohibitedVersion.getContains()) {
+					if (candidateString.contains(contains)) {
+						return false;
+					}
+				}
+			}
+			return true;
+		};
+		List<BiPredicate<Library, DependencyVersion>> updatePredicates = new ArrayList<>();
+		updatePredicates.add(compilesWithUpgradePolicy);
+		updatePredicates.add(isAnUpgrade);
+		updatePredicates.add(isPermitted);
+		return updatePredicates;
+	}
+
+	private List<Library> matchingLibraries() {
+		List<Library> matchingLibraries = this.bom.getLibraries().stream().filter(this::eligible).toList();
 		if (matchingLibraries.isEmpty()) {
-			throw new InvalidUserDataException("No libraries matched '" + pattern + "'");
+			throw new InvalidUserDataException("No libraries to upgrade");
 		}
 		return matchingLibraries;
+	}
+
+	protected boolean eligible(Library library) {
+		String pattern = getLibraries().getOrNull();
+		if (pattern == null) {
+			return true;
+		}
+		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
+		return libraryPredicate.test(library.getName());
 	}
 
 	protected abstract String issueTitle(Upgrade upgrade);

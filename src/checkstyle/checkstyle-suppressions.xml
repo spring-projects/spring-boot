@@ -32,6 +32,7 @@
 	<suppress files="[\\/]spring-boot-docs[\\/].*MyConfiguration__BeanDefinitions" checks="JavadocMethod|SpringHideUtilityClassConstructor" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocPackage|JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/].*SamplePulsarApplicationTests" checks="SpringHideUtilityClassConstructor" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" id="mainCodeIllegalImportCheck" />
 	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocPackage|JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
@@ -68,11 +69,15 @@
 	<suppress files="DeprecatedElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DeprecatedElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DeprecatedReactiveElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
+	<suppress files="DevToolsTestApplication\.java" checks="SpringMethodVisibility" />
 	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
+	<suppress files="ConfigurationMetadataChangelogGenerator" checks="SpringMethodVisibility" />
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
 	<suppress files="WebEndpointTest\.java" checks="SpringTestFileName" />
 	<suppress files="ConversionServiceTest\.java" checks="SpringTestFileName" />
+	<suppress files="ImportTestcontainersTests\.java" checks="InterfaceIsType" />
+	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
 </suppressions>

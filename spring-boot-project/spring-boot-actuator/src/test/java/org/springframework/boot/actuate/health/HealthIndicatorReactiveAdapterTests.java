@@ -37,7 +37,7 @@ class HealthIndicatorReactiveAdapterTests {
 		HealthIndicatorReactiveAdapter adapter = new HealthIndicatorReactiveAdapter(delegate);
 		Health status = Health.up().build();
 		given(delegate.health()).willReturn(status);
-		StepVerifier.create(adapter.health()).expectNext(status).verifyComplete();
+		StepVerifier.create(adapter.health()).expectNext(status).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -55,7 +55,10 @@ class HealthIndicatorReactiveAdapterTests {
 			.status(Thread.currentThread().getName().equals(currentThread) ? Status.DOWN : Status.UP)
 			.build();
 		HealthIndicatorReactiveAdapter adapter = new HealthIndicatorReactiveAdapter(delegate);
-		StepVerifier.create(adapter.health()).expectNext(Health.status(Status.UP).build()).verifyComplete();
+		StepVerifier.create(adapter.health())
+			.expectNext(Health.status(Status.UP).build())
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 }

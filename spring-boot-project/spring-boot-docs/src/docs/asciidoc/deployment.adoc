@@ -14,4 +14,6 @@ include::deployment/cloud.adoc[]
 
 include::deployment/installing.adoc[]
 
+include::deployment/efficient.adoc[]
+
 include::deployment/whats-next.adoc[]

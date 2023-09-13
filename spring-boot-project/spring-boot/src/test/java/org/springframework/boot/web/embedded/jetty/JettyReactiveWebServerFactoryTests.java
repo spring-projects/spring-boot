@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -29,10 +30,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
-import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -47,8 +47,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
-@Servlet5ClassPathOverrides
 class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
@@ -58,7 +58,8 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 	@Test
 	@Override
-	@Disabled("Jetty 11 does not support User-Agent-based compression")
+	@Disabled("Jetty 12 does not support User-Agent-based compression")
+	// TODO Is this true with Jetty 12?
 	protected void noCompressionForUserAgent() {
 
 	}
@@ -112,20 +113,6 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
-	void useServerResources() throws Exception {
-		JettyResourceFactory resourceFactory = new JettyResourceFactory();
-		resourceFactory.afterPropertiesSet();
-		JettyReactiveWebServerFactory factory = getFactory();
-		factory.setResourceFactory(resourceFactory);
-		JettyWebServer webServer = (JettyWebServer) factory.getWebServer(new EchoHandler());
-		webServer.start();
-		Connector connector = webServer.getServer().getConnectors()[0];
-		assertThat(connector.getByteBufferPool()).isEqualTo(resourceFactory.getByteBufferPool());
-		assertThat(connector.getExecutor()).isEqualTo(resourceFactory.getExecutor());
-		assertThat(connector.getScheduler()).isEqualTo(resourceFactory.getScheduler());
-	}
-
-	@Test
 	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
@@ -146,6 +133,31 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			}
 		});
 		this.webServer.stop();
+	}
+
+	@Test
+	void shouldApplyMaxConnections() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).isNotNull();
+		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((JettyWebServer) this.webServer).getStartedLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		((JettyReactiveWebServerFactory) factory).addServerCustomizers((server) -> {
+			ServerConnector connector = new ServerConnector(server);
+			connector.setPort(port);
+			server.addConnector(connector);
+		});
 	}
 
 }

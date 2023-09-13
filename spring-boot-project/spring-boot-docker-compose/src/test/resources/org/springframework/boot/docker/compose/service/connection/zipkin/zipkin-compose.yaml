@@ -1,5 +1,5 @@
 services:
   zipkin:
-    image: 'openzipkin/zipkin:2.24'
+    image: '{imageName}'
     ports:
       - '9411'

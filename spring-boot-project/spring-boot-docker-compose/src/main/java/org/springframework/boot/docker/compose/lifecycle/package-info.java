@@ -15,6 +15,6 @@
  */
 
 /**
- * Lifecycle management for docker compose with the context of a Spring application.
+ * Lifecycle management for Docker Compose with the context of a Spring application.
  */
 package org.springframework.boot.docker.compose.lifecycle;

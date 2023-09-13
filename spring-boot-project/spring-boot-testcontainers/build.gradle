@@ -29,16 +29,19 @@ dependencies {
 	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:oracle-xe")
 	optional("org.testcontainers:postgresql")
+	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("io.micrometer:micrometer-registry-otlp")
 	testImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
+	testImplementation("org.apache.activemq:activemq-client-jakarta")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.influxdb:influxdb-java")
@@ -48,11 +51,12 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework:spring-jms")
 	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.kafka:spring-kafka")
+	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
 
 	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 }
-

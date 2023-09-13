@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import io.netty.channel.Channel;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.CoreSubscriber;
@@ -109,8 +110,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Test
 	void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
 		Mono<String> result = testSslWithAlias("test-alias");
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -134,6 +134,12 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			}
 		});
 		this.webServer.stop();
+	}
+
+	@Override
+	@Test
+	@Disabled("Reactor Netty does not support mutiple ports")
+	protected void startedLogMessageWithMultiplePorts() {
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {
@@ -163,6 +169,16 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Override
 	protected NettyReactiveWebServerFactory getFactory() {
 		return new NettyReactiveWebServerFactory(0);
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((NettyWebServer) this.webServer).getStartedLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		throw new UnsupportedOperationException("Reactor Netty does not support multiple ports");
 	}
 
 	static class NoPortNettyReactiveWebServerFactory extends NettyReactiveWebServerFactory {

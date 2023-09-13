@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,7 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class JmxPropertiesConfigAdapterTests {
+class JmxPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<JmxProperties, JmxPropertiesConfigAdapter> {
+
+	JmxPropertiesConfigAdapterTests() {
+		super(JmxPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {

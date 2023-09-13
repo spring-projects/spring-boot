@@ -104,7 +104,9 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.profiles");
 		config.accept("spring.quartz");
 		config.accept("spring.reactor");
+		config.accept("spring.ssl");
 		config.accept("spring.task");
+		config.accept("spring.threads");
 		config.accept("spring.mandatory-file-encoding");
 		config.accept("info");
 		config.accept("spring.output.ansi.enabled");
@@ -169,6 +171,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.integration");
 		prefix.accept("spring.jms");
 		prefix.accept("spring.kafka");
+		prefix.accept("spring.pulsar");
 		prefix.accept("spring.rabbitmq");
 		prefix.accept("spring.hazelcast");
 		prefix.accept("spring.webservices");

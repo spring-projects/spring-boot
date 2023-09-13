@@ -1606,6 +1606,13 @@
       }
     },
     {
+      "name": "management.metrics.export.signalfx.published-histogram-type",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.signalfx.metrics.export.published-histogram-type"
+      }
+    },
+    {
       "name": "management.metrics.export.signalfx.read-timeout",
       "type": "java.time.Duration",
       "deprecation": {
@@ -1981,10 +1988,18 @@
       }
     },
     {
+      "name": "management.metrics.web.client.request.metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.client.requests.name",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.web.client.requests-metric-name",
       "type": "java.lang.String",
       "deprecation": {
-        "replacement": "management.metrics.web.client.request.metric-name",
+        "replacement": "management.observations.http.client.requests.name",
         "level": "error"
       }
     },
@@ -2031,12 +2046,24 @@
       }
     },
     {
+      "name": "management.metrics.web.server.request.metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.server.requests.name",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.web.server.requests-metric-name",
       "type": "java.lang.String",
       "deprecation": {
-        "replacement": "management.metrics.web.server.request.metric-name",
+        "replacement": "management.observations.http.server.requests.name",
         "level": "error"
       }
+    },
+    {
+      "name": "management.otlp.metrics.export.base-time-unit",
+      "defaultValue": "milliseconds"
     },
     {
       "name": "management.otlp.tracing.compression",
@@ -2147,6 +2174,10 @@
       "description": "Type of the trust store."
     },
     {
+      "name": "management.signalfx.metrics.export.published-histogram-type",
+      "defaultValue": "default"
+    },
+    {
       "name": "management.simple.metrics.export.mode",
       "defaultValue": "cumulative"
     },
@@ -2180,8 +2211,18 @@
       }
     },
     {
-      "name": "management.tracing.propagation.type",
-      "defaultValue": "W3C"
+      "name": "management.tracing.propagation.consume",
+      "defaultValue": [
+        "W3C",
+        "B3",
+        "B3_MULTI"
+      ]
+    },
+    {
+      "name": "management.tracing.propagation.produce",
+      "defaultValue": [
+        "W3C"
+      ]
     }
   ],
   "hints": [

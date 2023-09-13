@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails.Node;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,14 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CassandraDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	CassandraDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("cassandra-compose.yaml");
+		super("cassandra-compose.yaml", DockerImageNames.cassandra());
 	}
 
 	@Test
 	void runCreatesConnectionDetails() {
 		CassandraConnectionDetails connectionDetails = run(CassandraConnectionDetails.class);
 		List<Node> contactPoints = connectionDetails.getContactPoints();
-		assertThat(contactPoints.size()).isEqualTo(1);
+		assertThat(contactPoints).hasSize(1);
 		Node node = contactPoints.get(0);
 		assertThat(node.host()).isNotNull();
 		assertThat(node.port()).isGreaterThan(0);

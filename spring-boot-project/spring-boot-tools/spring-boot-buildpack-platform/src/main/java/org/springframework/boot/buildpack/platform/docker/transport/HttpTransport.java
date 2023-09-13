@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -93,7 +94,7 @@ public interface HttpTransport {
 	 * @param dockerHost the Docker host information
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(DockerHost dockerHost) {
+	static HttpTransport create(DockerHostConfiguration dockerHost) {
 		ResolvedDockerHost host = ResolvedDockerHost.from(dockerHost);
 		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(host);
 		return (remote != null) ? remote : LocalHttpClientTransport.create(host);

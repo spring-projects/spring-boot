@@ -39,6 +39,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Base class to run a Spring Boot application.
@@ -165,27 +167,31 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private String mainClass;
 
 	/**
-	 * Additional directories besides the classes directory that should be added to the
+	 * Additional directories containing classes or resources that should be added to the
 	 * classpath.
 	 * @since 1.0.0
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * 'additionalClasspathElements'
 	 */
 	@Parameter(property = "spring-boot.run.directories")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	private String[] directories;
 
 	/**
-	 * Directory containing the classes and resource files that should be packaged into
-	 * the archive.
+	 * Additional classpath elements that should be added to the classpath. An element can
+	 * be a directory with classes and resources or a jar file.
+	 * @since 3.2.0
+	 */
+	@Parameter(property = "spring-boot.run.additional-classpath-elements")
+	private String[] additionalClasspathElements;
+
+	/**
+	 * Directory containing the classes and resource files that should be used to run the
+	 * application.
 	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
 	private File classesDirectory;
-
-	/**
-	 * Flag to include the test classpath when running.
-	 * @since 1.3.0
-	 */
-	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private Boolean useTestClasspath;
 
 	/**
 	 * Skip the execution.
@@ -200,10 +206,28 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			getLog().debug("skipping run as per configuration.");
 			return;
 		}
-		String startClass = (this.mainClass != null) ? this.mainClass
-				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
-		run(startClass);
+		run(determineMainClass());
 	}
+
+	private String determineMainClass() throws MojoExecutionException {
+		if (this.mainClass != null) {
+			return this.mainClass;
+		}
+		return SpringBootApplicationClassFinder.findSingleClass(getClassesDirectories());
+	}
+
+	/**
+	 * Returns the directories that contain the application's classes and resources. When
+	 * the application's main class has not been configured, each directory is searched in
+	 * turn for an appropriate main class.
+	 * @return the directories that contain the application's classes and resources
+	 * @since 3.1.0
+	 */
+	protected List<File> getClassesDirectories() {
+		return List.of(this.classesDirectory);
+	}
+
+	protected abstract boolean isUseTestClasspath();
 
 	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		List<String> args = new ArrayList<>();
@@ -337,7 +361,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
-			addUserDefinedDirectories(urls);
+			addAdditionalClasspathLocations(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
@@ -348,10 +372,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addUserDefinedDirectories(List<URL> urls) throws MalformedURLException {
-		if (this.directories != null) {
-			for (String directory : this.directories) {
-				urls.add(new File(directory).toURI().toURL());
+	@SuppressWarnings("removal")
+	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
+		Assert.state(ObjectUtils.isEmpty(this.directories) || ObjectUtils.isEmpty(this.additionalClasspathElements),
+				"Either additionalClasspathElements or directories (deprecated) should be set, not both");
+		String[] elements = !ObjectUtils.isEmpty(this.additionalClasspathElements) ? this.additionalClasspathElements
+				: this.directories;
+		if (elements != null) {
+			for (String element : elements) {
+				urls.add(new File(element).toURI().toURL());
 			}
 		}
 	}
@@ -361,17 +390,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
 				urls.add(directory.toURI().toURL());
-				FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory, directory);
+				for (File classesDirectory : getClassesDirectories()) {
+					FileUtils.removeDuplicatesFromOutputDirectory(classesDirectory, directory);
+				}
 			}
 		}
 	}
 
 	private void addProjectClasses(List<URL> urls) throws MalformedURLException {
-		urls.add(this.classesDirectory.toURI().toURL());
+		for (File classesDirectory : getClassesDirectories()) {
+			urls.add(classesDirectory.toURI().toURL());
+		}
 	}
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
-		Set<Artifact> artifacts = (this.useTestClasspath) ? filterDependencies(this.project.getArtifacts())
+		Set<Artifact> artifacts = (isUseTestClasspath()) ? filterDependencies(this.project.getArtifacts())
 				: filterDependencies(this.project.getArtifacts(), new ExcludeTestScopeArtifactFilter());
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {

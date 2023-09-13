@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
-import org.eclipse.jetty.reactive.client.ReactiveRequest;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClient;
 
@@ -62,36 +61,20 @@ class ClientHttpConnectorAutoConfigurationTests {
 	}
 
 	@Test
-	void whenReactorIsUnavailableThenJettyBeansAreDefined() {
+	void whenReactorIsUnavailableThenHttpClientBeansAreDefined() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class)).run((context) -> {
 			BeanDefinition customizerDefinition = context.getBeanFactory()
 				.getBeanDefinition("webClientHttpConnectorCustomizer");
 			assertThat(customizerDefinition.isLazyInit()).isTrue();
 			BeanDefinition connectorDefinition = context.getBeanFactory().getBeanDefinition("webClientHttpConnector");
 			assertThat(connectorDefinition.isLazyInit()).isTrue();
-			assertThat(context).hasBean("jettyClientResourceFactory");
-			assertThat(context).hasBean("jettyClientHttpConnectorFactory");
+			assertThat(context).hasBean("httpComponentsClientHttpConnectorFactory");
 		});
 	}
 
 	@Test
-	void whenReactorAndJettyAreUnavailableThenHttpClientBeansAreDefined() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class, ReactiveRequest.class))
-			.run((context) -> {
-				BeanDefinition customizerDefinition = context.getBeanFactory()
-					.getBeanDefinition("webClientHttpConnectorCustomizer");
-				assertThat(customizerDefinition.isLazyInit()).isTrue();
-				BeanDefinition connectorDefinition = context.getBeanFactory()
-					.getBeanDefinition("webClientHttpConnector");
-				assertThat(connectorDefinition.isLazyInit()).isTrue();
-				assertThat(context).hasBean("httpComponentsClientHttpConnectorFactory");
-			});
-	}
-
-	@Test
-	void whenReactorJettyAndHttpClientBeansAreUnavailableThenJdkClientBeansAreDefined() {
-		this.contextRunner
-			.withClassLoader(new FilteredClassLoader(HttpClient.class, ReactiveRequest.class, HttpAsyncClients.class))
+	void whenReactorAndHttpClientBeansAreUnavailableThenJdkClientBeansAreDefined() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class, HttpAsyncClients.class))
 			.run((context) -> {
 				BeanDefinition customizerDefinition = context.getBeanFactory()
 					.getBeanDefinition("webClientHttpConnectorCustomizer");

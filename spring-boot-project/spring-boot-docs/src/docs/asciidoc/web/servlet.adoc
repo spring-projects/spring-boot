@@ -31,8 +31,8 @@ Beans can be ordered if you need to apply a precedence.
 [[web.servlet.spring-mvc.auto-configuration]]
 ==== Spring MVC Auto-configuration
 Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
-
-The auto-configuration adds the following features on top of Spring's defaults:
+It replaces the need for `@EnableWebMvc` and the two cannot be used together.
+In addition to Spring MVC's defaults, the auto-configuration provides the following features:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
 * Support for serving static resources, including support for WebJars (covered <<features#web.servlet.spring-mvc.static-content,later in this document>>).
@@ -46,16 +46,34 @@ If you want to keep those Spring Boot MVC customizations and make more {spring-f
 
 If you want to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
 
-If you want to take complete control of Spring MVC, you can add your own `@Configuration` annotated with `@EnableWebMvc`, or alternatively add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the Javadoc of `@EnableWebMvc`.
+If you do not want to use the auto-configuration and want to take complete control of Spring MVC, add your own `@Configuration` annotated with `@EnableWebMvc`.
+Alternatively, add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the Javadoc of `@EnableWebMvc`.
 
-[NOTE]
-====
+
+
+[[web.servlet.spring-mvc.conversion-service]]
+==== Spring MVC Conversion Service
 Spring MVC uses a different `ConversionService` to the one used to convert values from your `application.properties` or `application.yaml` file.
 It means that `Period`, `Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
 
 If you want to customize the `ConversionService` used by Spring MVC, you can provide a `WebMvcConfigurer` bean with an `addFormatters` method.
 From this method you can register any converter that you like, or you can delegate to the static methods available on `ApplicationConversionService`.
-====
+
+Conversion can also be customized using the `spring.mvc.format.*` configuration properties.
+When not configured, the following defaults are used:
+
+|===
+|Property |`DateTimeFormatter`
+
+|configprop:spring.mvc.format.date[]
+|`ofLocalizedDate(FormatStyle.SHORT)`
+
+|configprop:spring.mvc.format.time[]
+|`ofLocalizedTime(FormatStyle.SHORT)`
+
+|configprop:spring.mvc.format.date-time[]
+|`ofLocalizedDateTime(FormatStyle.SHORT)`
+|===
 
 
 
@@ -178,6 +196,20 @@ It first looks for an `index.html` file in the configured static content locatio
 If one is not found, it then looks for an `index` template.
 If either is found, it is automatically used as the welcome page of the application.
 
+This only acts as a fallback for actual index routes defined by the application.
+The ordering is defined by the order of `HandlerMapping` beans which is by default the following:
+
+[cols="1,1"]
+|===
+|`RouterFunctionMapping`
+|Endpoints declared with `RouterFunction` beans
+
+|`RequestMappingHandlerMapping`
+|Endpoints declared in `@Controller` beans
+
+|`WelcomePageHandlerMapping`
+|The welcome page support
+|===
 
 
 [[web.servlet.spring-mvc.favicon]]
@@ -229,25 +261,21 @@ Most standard media types are supported out-of-the-box, but you can also define 
 	        markdown: "text/markdown"
 ----
 
+As of Spring Framework 5.3, Spring MVC supports two strategies for matching request paths to controllers.
+By default, Spring Boot uses the `PathPatternParser` strategy.
+`PathPatternParser` is an https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[optimized implementation] but comes with some restrictions compared to the `AntPathMatcher` strategy.
+`PathPatternParser` restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
+It is also incompatible with configuring the `DispatcherServlet` with a path prefix (configprop:spring.mvc.servlet.path[]).
 
-
-As of Spring Framework 5.3, Spring MVC supports several implementation strategies for matching request paths to Controller handlers.
-It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
-Spring Boot now provides a configuration property to choose and opt in the new strategy:
+The strategy can be configured using the configprop:spring.mvc.pathmatch.matching-strategy[] configuration property, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
 	    pathmatch:
-	      matching-strategy: "path-pattern-parser"
+	      matching-strategy: "ant-path-matcher"
 ----
-
-For more details on why you should consider this new implementation, see the
-https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[dedicated blog post].
-
-NOTE: `PathPatternParser` is an optimized implementation but restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
-It is incompatible with suffix pattern matching or mapping the `DispatcherServlet` with a servlet prefix (configprop:spring.mvc.servlet.path[]).
 
 By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
 To have a `NoHandlerFoundException` thrown instead, set configprop:spring.mvc.throw-exception-if-no-handler-found to `true`.

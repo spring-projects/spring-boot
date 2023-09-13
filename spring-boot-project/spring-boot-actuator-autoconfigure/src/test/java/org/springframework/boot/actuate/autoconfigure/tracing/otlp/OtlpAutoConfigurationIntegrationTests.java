@@ -34,8 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -50,9 +50,10 @@ class OtlpAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.tracing.sampling.probability=1.0")
-		.withConfiguration(
-				AutoConfigurations.of(ObservationAutoConfiguration.class, MicrometerTracingAutoConfiguration.class,
-						OpenTelemetryAutoConfiguration.class, OtlpAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+				MicrometerTracingAutoConfiguration.class, OpenTelemetryAutoConfiguration.class,
+				org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration.class,
+				OtlpAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 
@@ -67,7 +68,7 @@ class OtlpAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void httpSpanExporterShouldUseProtoBufAndNoCompressionByDefault() {
+	void httpSpanExporterShouldUseProtobufAndNoCompressionByDefault() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
 			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:%d/v1/traces"
@@ -105,9 +106,9 @@ class OtlpAutoConfigurationIntegrationTests {
 				assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
 				assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
 				assertThat(request.getBodySize()).isPositive();
-				try (Buffer unCompressed = new Buffer(); Buffer body = request.getBody()) {
-					unCompressed.writeAll(new GzipSource(body));
-					assertThat(unCompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
+				try (Buffer uncompressed = new Buffer(); Buffer body = request.getBody()) {
+					uncompressed.writeAll(new GzipSource(body));
+					assertThat(uncompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
 				}
 			});
 	}

@@ -17,6 +17,7 @@
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
+					<checksumPolicy>ignore</checksumPolicy>
 				</repository>
 				<repository>
 					<id>spring-milestones</id>
@@ -42,6 +43,12 @@
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
+					<checksumPolicy>ignore</checksumPolicy>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>https://repo.spring.io/milestone</url>
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>

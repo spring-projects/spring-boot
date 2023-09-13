@@ -30,14 +30,17 @@ NOTE: There's an added logger statement in the `home()` method, which will be im
 Now we have to add the following dependencies:
 
 * `org.springframework.boot:spring-boot-starter-actuator`
-* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
-* `io.opentelemetry:opentelemetry-exporter-zipkin` - which is needed to report https://micrometer.io/docs/tracing#_glossary[traces] to Zipkin.
+* `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
+* `io.opentelemetry:opentelemetry-exporter-zipkin` - reports https://micrometer.io/docs/tracing#_glossary[traces] to Zipkin.
 
 Add the following application properties:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	management.tracing.sampling.probability: 1.0
+	management:
+	  tracing:
+	    sampling:
+	      probability: 1.0
 ----
 
 By default, Spring Boot samples only 10% of requests to prevent overwhelming the trace backend.
@@ -62,7 +65,37 @@ Now open the Zipkin UI at `http://localhost:9411` and press the "Run Query" butt
 You should see one trace.
 Press the "Show" button to see the details of that trace.
 
-TIP: You can include the current trace and span id in the logs by setting the `logging.pattern.level` property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
+
+
+[[actuator.micrometer-tracing.logging]]
+=== Logging Correlation IDs
+Correlation IDs provide a helpful way to link lines in your log files to spans/traces.
+By default, as long as configprop:management.tracing.enabled[] has not been set to `false`, Spring Boot will include correlation IDs in your logs whenever you are using Micrometer Tracing.
+
+The default correlation ID is built from `traceId` and `spanId` https://logback.qos.ch/manual/mdc.html[MDC] values.
+For example, if Micrometer Tracing has added an MDC `traceId` of `803B448A0489F84084905D3093480352` and an MDC `spanId` of `3425F23BB2432450` the log output will include the correlation ID `[803B448A0489F84084905D3093480352-3425F23BB2432450]`.
+
+If you prefer to use a different format for your correlation ID, you can use the configprop:logging.pattern.correlation[] property to define one.
+For example, the following will provide a correlation ID for Logback in format previously used by Spring Cloud Sleuth:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	logging:
+	  pattern:
+	    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
+	  include-application-name: false
+----
+
+NOTE: In the example above, configprop:logging.include-application-name[] is set to `false` to avoid the application name being duplicated in the log messages (configprop:logging.pattern.correlation[] already contains it).
+It's also worth mentioning that configprop:logging.pattern.correlation[] contains a trailing space so that it is separated from the logger name that comes right after it by default.
+
+
+
+[[actuator.micrometer-tracing.propagating-traces]]
+=== Propagating Traces
+To automatically propagate traces over the network, use the auto-configured <<io#io.rest-client.resttemplate, `RestTemplateBuilder`>> or <<io#io.rest-client.webclient, `WebClient.Builder`>> to construct the client.
+
+WARNING: If you create the `WebClient` or the `RestTemplate` without using the auto-configured builders, automatic trace propagation won't work!
 
 
 
@@ -101,7 +134,7 @@ Use the `management.wavefront.*` configuration properties to configure reporting
 Tracing with OpenTelemetry and reporting using OTLP requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
-* `io.opentelemetry:opentelemetry-exporter-otlp` - report traces to a collector that can accept OTLP.
+* `io.opentelemetry:opentelemetry-exporter-otlp` - reports traces to a collector that can accept OTLP.
 
 Use the `management.otlp.tracing.*` configuration properties to configure reporting using OTLP.
 
@@ -124,8 +157,8 @@ Use the `management.zipkin.tracing.*` configuration properties to configure repo
 ==== OpenZipkin Brave With Wavefront
 Tracing with OpenZipkin Brave and reporting to Wavefront requires the following dependencies:
 
-* `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
-* `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
+* `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
+* `io.micrometer:micrometer-tracing-reporter-wavefront` - reports traces to Wavefront.
 
 Use the `management.wavefront.*` configuration properties to configure reporting to Wavefront.
 
@@ -146,3 +179,20 @@ include::code:CustomObservation[]
 This will create an observation named "some-operation" with the tag "some-tag=some-value".
 
 TIP: If you want to create a span without creating a metric, you need to use the https://micrometer.io/docs/tracing#_using_micrometer_tracing_directly[lower-level `Tracer` API] from Micrometer.
+
+
+
+[[actuator.micrometer-tracing.baggage]]
+=== Baggage
+You can create baggage with the `Tracer` API:
+
+include::code:CreatingBaggage[]
+
+This example creates baggage named `baggage1` with the value `value1`.
+The baggage is automatically propagated over the network if you're using W3C propagation.
+If you're using B3 propagation, baggage is not automatically propagated.
+To manually propagate baggage over the network, use the configprop:management.tracing.baggage.remote-fields[] configuration property (this works for W3C, too).
+For the example above, setting this property to `baggage1` results in an HTTP header `baggage1: value1`.
+
+If you want to propagate the baggage to the MDC, use the configprop:management.tracing.baggage.correlation.fields[] configuration property.
+For the example above, setting this property to `baggage1` results in an MDC entry named `baggage1`.

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
-import java.net.URI;
-
 import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.InfluxDBImpl;
@@ -25,16 +23,11 @@ import org.influxdb.impl.InfluxDBImpl;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration.InfluxDBCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for InfluxDB.
@@ -46,26 +39,24 @@ import org.springframework.context.annotation.Conditional;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.2.0 for removal in 3.4.0 in favor of the
+ * <a href="https://github.com/influxdata/influxdb-client-java">new client</a> and its own
+ * Spring Boot integration.
  */
 @AutoConfiguration
 @ConditionalOnClass(InfluxDB.class)
-@Conditional(InfluxDBCondition.class)
 @EnableConfigurationProperties(InfluxDbProperties.class)
+@ConditionalOnProperty("spring.influx.url")
+@Deprecated(since = "3.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class InfluxDbAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(InfluxDbConnectionDetails.class)
-	PropertiesInfluxDbConnectionDetails influxDbConnectionDetails(InfluxDbProperties properties) {
-		return new PropertiesInfluxDbConnectionDetails(properties);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
-	public InfluxDB influxDb(InfluxDbConnectionDetails connectionDetails,
-			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
+	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<InfluxDbCustomizer> customizers) {
-		InfluxDB influxDb = new InfluxDBImpl(connectionDetails.getUrl().toString(), connectionDetails.getUsername(),
-				connectionDetails.getPassword(), determineBuilder(builder.getIfAvailable()));
+		InfluxDB influxDb = new InfluxDBImpl(properties.getUrl().toString(), properties.getUser(),
+				properties.getPassword(), determineBuilder(builder.getIfAvailable()));
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));
 		return influxDb;
 	}
@@ -75,56 +66,6 @@ public class InfluxDbAutoConfiguration {
 			return builder.get();
 		}
 		return new OkHttpClient.Builder();
-	}
-
-	/**
-	 * {@link Condition} that matches when either {@code spring.influx.url} has been set
-	 * or there is an {@link InfluxDbConnectionDetails} bean.
-	 */
-	static final class InfluxDBCondition extends AnyNestedCondition {
-
-		InfluxDBCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
-		}
-
-		@ConditionalOnProperty(prefix = "spring.influx", name = "url")
-		private static final class InfluxUrlCondition {
-
-		}
-
-		@ConditionalOnBean(InfluxDbConnectionDetails.class)
-		private static final class InfluxDbConnectionDetailsCondition {
-
-		}
-
-	}
-
-	/**
-	 * Adapts {@link InfluxDbProperties} to {@link InfluxDbConnectionDetails}.
-	 */
-	static class PropertiesInfluxDbConnectionDetails implements InfluxDbConnectionDetails {
-
-		private final InfluxDbProperties properties;
-
-		PropertiesInfluxDbConnectionDetails(InfluxDbProperties properties) {
-			this.properties = properties;
-		}
-
-		@Override
-		public URI getUrl() {
-			return URI.create(this.properties.getUrl());
-		}
-
-		@Override
-		public String getUsername() {
-			return this.properties.getUser();
-		}
-
-		@Override
-		public String getPassword() {
-			return this.properties.getPassword();
-		}
-
 	}
 
 }

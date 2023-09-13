@@ -27,9 +27,11 @@ import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.aop.ObservedAspect;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
+import org.aspectj.weaver.Advice;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -43,6 +45,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Micrometer Observation API.
@@ -50,6 +53,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Moritz Halbritter
  * @author Brian Clozel
  * @author Jonatan Ivanov
+ * @author Vedran Pavic
  * @since 3.0.0
  */
 @AutoConfiguration(after = { CompositeMeterRegistryAutoConfiguration.class, MicrometerTracingAutoConfiguration.class })
@@ -73,6 +77,12 @@ public class ObservationAutoConfiguration {
 	@ConditionalOnMissingBean
 	ObservationRegistry observationRegistry() {
 		return ObservationRegistry.create();
+	}
+
+	@Bean
+	@Order(0)
+	PropertiesObservationFilterPredicate propertiesObservationFilter(ObservationProperties properties) {
+		return new PropertiesObservationFilterPredicate(properties);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -138,6 +148,18 @@ public class ObservationAutoConfiguration {
 				return new TracingAwareMeterObservationHandler<>(delegate, tracer);
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Advice.class)
+	static class ObservedAspectConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		ObservedAspect observedAspect(ObservationRegistry observationRegistry) {
+			return new ObservedAspect(observationRegistry);
 		}
 
 	}

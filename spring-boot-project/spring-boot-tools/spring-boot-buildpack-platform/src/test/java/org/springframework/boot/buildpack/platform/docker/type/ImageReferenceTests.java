@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class ImageReferenceTests {
 
@@ -180,6 +181,14 @@ class ImageReferenceTests {
 	}
 
 	@Test
+	void ofWhenContainsUpperCaseThrowsException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ImageReference
+				.of("europe-west1-docker.pkg.dev/aaaaaa-bbbbb-123456/docker-registry/bootBuildImage:0.0.1"))
+			.withMessageContaining("Unable to parse image reference");
+	}
+
+	@Test
 	void forJarFile() {
 		assertForJarFile("spring-boot.2.0.0.BUILD-SNAPSHOT.jar", "library/spring-boot", "2.0.0.BUILD-SNAPSHOT");
 		assertForJarFile("spring-boot.2.0.0.M1.jar", "library/spring-boot", "2.0.0.M1");
@@ -270,6 +279,31 @@ class ImageReferenceTests {
 		ImageReference r3 = ImageReference.of("docker.io/library/ubuntu:latest");
 		assertThat(r1).hasSameHashCodeAs(r2);
 		assertThat(r1).isEqualTo(r1).isEqualTo(r2).isNotEqualTo(r3);
+	}
+
+	@Test
+	void withDigest() {
+		ImageReference reference = ImageReference.of("docker.io/library/ubuntu:bionic");
+		ImageReference updated = reference
+			.withDigest("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(updated).hasToString(
+				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+	}
+
+	@Test
+	void inTaglessFormWithDigest() {
+		ImageReference reference = ImageReference
+			.of("docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		ImageReference updated = reference.inTaglessForm();
+		assertThat(updated).hasToString(
+				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+	}
+
+	@Test
+	void inTaglessForm() {
+		ImageReference reference = ImageReference.of("docker.io/library/ubuntu:bionic");
+		ImageReference updated = reference.inTaglessForm();
+		assertThat(updated).hasToString("docker.io/library/ubuntu");
 	}
 
 }

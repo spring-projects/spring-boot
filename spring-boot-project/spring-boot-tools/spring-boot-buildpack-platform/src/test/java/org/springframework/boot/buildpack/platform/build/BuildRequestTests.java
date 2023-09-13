@@ -53,6 +53,8 @@ import static org.assertj.core.api.Assertions.entry;
  */
 class BuildRequestTests {
 
+	private static final ZoneId UTC = ZoneId.of("UTC");
+
 	@TempDir
 	File tempDir;
 
@@ -240,6 +242,14 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void withBuildBindCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withBuildCache(Cache.bind("/tmp/build-cache"));
+		assertThat(request.getBuildCache()).isNull();
+		assertThat(withCache.getBuildCache()).isEqualTo(Cache.bind("/tmp/build-cache"));
+	}
+
+	@Test
 	void withBuildVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildCache(null))
@@ -252,6 +262,14 @@ class BuildRequestTests {
 		BuildRequest withCache = request.withLaunchCache(Cache.volume("launch-volume"));
 		assertThat(request.getLaunchCache()).isNull();
 		assertThat(withCache.getLaunchCache()).isEqualTo(Cache.volume("launch-volume"));
+	}
+
+	@Test
+	void withLaunchBindCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withLaunchCache(Cache.bind("/tmp/launch-cache"));
+		assertThat(request.getLaunchCache()).isNull();
+		assertThat(withCache.getLaunchCache()).isEqualTo(Cache.bind("/tmp/launch-cache"));
 	}
 
 	@Test
@@ -271,15 +289,15 @@ class BuildRequestTests {
 
 	@Test
 	void withCreatedDateNowSetsCreatedDate() throws Exception {
-		OffsetDateTime now = OffsetDateTime.now();
+		OffsetDateTime now = OffsetDateTime.now(UTC);
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		BuildRequest withCreatedDate = request.withCreatedDate("now");
-		OffsetDateTime createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), ZoneId.of("UTC"));
+		OffsetDateTime createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), UTC);
 		assertThat(createdDate.getYear()).isEqualTo(now.getYear());
 		assertThat(createdDate.getMonth()).isEqualTo(now.getMonth());
 		assertThat(createdDate.getDayOfMonth()).isEqualTo(now.getDayOfMonth());
 		withCreatedDate = request.withCreatedDate("NOW");
-		createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), ZoneId.of("UTC"));
+		createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), UTC);
 		assertThat(createdDate.getYear()).isEqualTo(now.getYear());
 		assertThat(createdDate.getMonth()).isEqualTo(now.getMonth());
 		assertThat(createdDate.getDayOfMonth()).isEqualTo(now.getDayOfMonth());

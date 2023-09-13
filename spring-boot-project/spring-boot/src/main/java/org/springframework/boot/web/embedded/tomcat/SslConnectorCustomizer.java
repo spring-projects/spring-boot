@@ -86,7 +86,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		}
 		sslHostConfig.addCertificate(certificate);
 		if (options.getCiphers() != null) {
-			String ciphers = StringUtils.collectionToCommaDelimitedString(options.getCiphers());
+			String ciphers = StringUtils.arrayToCommaDelimitedString(options.getCiphers());
 			sslHostConfig.setCiphers(ciphers);
 		}
 		configureEnabledProtocols(protocol);
@@ -96,7 +96,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	private void configureEnabledProtocols(AbstractHttp11JsseProtocol<?> protocol) {
 		SslOptions options = this.sslBundle.getOptions();
 		if (options.getEnabledProtocols() != null) {
-			String enabledProtocols = StringUtils.collectionToCommaDelimitedString(options.getEnabledProtocols());
+			String enabledProtocols = StringUtils.arrayToDelimitedString(options.getEnabledProtocols(), "+");
 			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
 				sslHostConfig.setProtocols(enabledProtocols);
 			}

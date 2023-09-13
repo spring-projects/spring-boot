@@ -162,7 +162,7 @@ class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	void mapPropertiesDeprecatedNoReplacement() throws IOException {
+	void mapPropertiesDeprecatedNoReplacement() {
 		this.environment.getPropertySources()
 			.addFirst(
 					new MapPropertySource("first", Collections.singletonMap("custom.map-no-replacement.key", "value")));
@@ -173,7 +173,7 @@ class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	void mapPropertiesDeprecatedWithReplacement() throws IOException {
+	void mapPropertiesDeprecatedWithReplacement() {
 		this.environment.getPropertySources()
 			.addFirst(new MapPropertySource("first",
 					Collections.singletonMap("custom.map-with-replacement.key", "value")));
@@ -203,6 +203,14 @@ class PropertiesMigrationReporterTests {
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.mapwithreplacement.key")
 			.contains("Replacement: custom.the-map-replacement.key");
+	}
+
+	@Test // gh-35919
+	void directCircularReference() {
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("backcompat", Collections.singletonMap("wrong.two", "${test.two}")));
+		createAnalyzer(loadRepository("metadata/sample-metadata.json")).getReport();
+		assertThat(this.environment.getProperty("test.two")).isNull();
 	}
 
 	private List<String> mapToNames(PropertySources sources) {

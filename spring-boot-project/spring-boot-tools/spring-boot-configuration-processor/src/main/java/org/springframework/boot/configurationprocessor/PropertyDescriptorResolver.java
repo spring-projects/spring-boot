@@ -91,7 +91,7 @@ class PropertyDescriptorResolver {
 	private String getParameterName(VariableElement parameter) {
 		AnnotationMirror nameAnnotation = this.environment.getNameAnnotation(parameter);
 		if (nameAnnotation != null) {
-			return (String) this.environment.getAnnotationElementValues(nameAnnotation).get("value");
+			return this.environment.getAnnotationElementStringValue(nameAnnotation, "value");
 		}
 		return parameter.getSimpleName().toString();
 	}
@@ -204,7 +204,7 @@ class PropertyDescriptorResolver {
 				MetadataGenerationEnvironment env) {
 			if (constructors.size() == 1) {
 				ExecutableElement candidate = constructors.get(0);
-				if (candidate.getParameters().size() > 0 && !env.hasAutowiredAnnotation(candidate)) {
+				if (!candidate.getParameters().isEmpty() && !env.hasAutowiredAnnotation(candidate)) {
 					if (type.getNestingKind() == NestingKind.MEMBER
 							&& candidate.getModifiers().contains(Modifier.PRIVATE)) {
 						return null;

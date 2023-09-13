@@ -37,6 +37,7 @@ import static org.mockito.Mockito.spy;
  *
  * @author Dave Syer
  * @author Matt Benson
+ * @author Moritz Halbritter
  */
 class RandomValuePropertySourceTests {
 
@@ -190,6 +191,11 @@ class RandomValuePropertySourceTests {
 		assertThat(environment.getPropertySources().stream().map(PropertySource::getName)).containsExactly(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				RandomValuePropertySource.RANDOM_PROPERTY_SOURCE_NAME, "mockProperties");
+	}
+
+	@Test
+	void randomStringIs32CharsLong() {
+		assertThat(this.source.getProperty("random.string")).asString().hasSize(32);
 	}
 
 }

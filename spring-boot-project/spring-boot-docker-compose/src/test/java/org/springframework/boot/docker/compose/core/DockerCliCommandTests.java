@@ -88,7 +88,7 @@ class DockerCliCommandTests {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart(LogLevel.INFO);
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
-		assertThat(command.getCommand()).containsExactly("start", "--no-color", "--detach", "--wait");
+		assertThat(command.getCommand()).containsExactly("start");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 

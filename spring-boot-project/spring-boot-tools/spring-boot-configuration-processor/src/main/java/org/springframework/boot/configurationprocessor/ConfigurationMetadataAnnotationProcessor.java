@@ -20,14 +20,15 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Duration;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -57,6 +58,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @author Phillip Webb
  * @author Kris De Volder
  * @author Jonas Keßler
+ * @author Scott Frederick
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.AUTO_CONFIGURATION_ANNOTATION,
@@ -213,10 +215,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (annotation != null) {
 				String prefix = getPrefix(annotation);
 				if (element instanceof TypeElement typeElement) {
-					processAnnotatedTypeElement(prefix, typeElement, new Stack<>());
+					processAnnotatedTypeElement(prefix, typeElement, new ArrayDeque<>());
 				}
 				else if (element instanceof ExecutableElement executableElement) {
-					processExecutableElement(prefix, executableElement, new Stack<>());
+					processExecutableElement(prefix, executableElement, new ArrayDeque<>());
 				}
 			}
 		}
@@ -225,13 +227,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void processAnnotatedTypeElement(String prefix, TypeElement element, Stack<TypeElement> seen) {
+	private void processAnnotatedTypeElement(String prefix, TypeElement element, Deque<TypeElement> seen) {
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
 		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
 		processTypeElement(prefix, element, null, seen);
 	}
 
-	private void processExecutableElement(String prefix, ExecutableElement element, Stack<TypeElement> seen) {
+	private void processExecutableElement(String prefix, ExecutableElement element, Deque<TypeElement> seen) {
 		if ((!element.getModifiers().contains(Modifier.PRIVATE))
 				&& (TypeKind.VOID != element.getReturnType().getKind())) {
 			Element returns = this.processingEnv.getTypeUtils().asElement(element.getReturnType());
@@ -254,7 +256,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processTypeElement(String prefix, TypeElement element, ExecutableElement source,
-			Stack<TypeElement> seen) {
+			Deque<TypeElement> seen) {
 		if (!seen.contains(element)) {
 			seen.push(element);
 			new PropertyDescriptorResolver(this.metadataEnv).resolve(element, source).forEach((descriptor) -> {
@@ -322,16 +324,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private String getPrefix(AnnotationMirror annotation) {
-		Map<String, Object> elementValues = this.metadataEnv.getAnnotationElementValues(annotation);
-		Object prefix = elementValues.get("prefix");
-		if (prefix != null && !"".equals(prefix)) {
-			return (String) prefix;
+		String prefix = this.metadataEnv.getAnnotationElementStringValue(annotation, "prefix");
+		if (prefix != null) {
+			return prefix;
 		}
-		Object value = elementValues.get("value");
-		if (value != null && !"".equals(value)) {
-			return (String) value;
-		}
-		return null;
+		return this.metadataEnv.getAnnotationElementStringValue(annotation, "value");
 	}
 
 	protected ConfigurationMetadata writeMetadata() throws Exception {

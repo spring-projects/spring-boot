@@ -49,4 +49,8 @@ include::howto/testing.adoc[]
 
 include::howto/build.adoc[]
 
+include::howto/aot.adoc[]
+
 include::howto/traditional-deployment.adoc[]
+
+include::howto/docker-compose.adoc[]

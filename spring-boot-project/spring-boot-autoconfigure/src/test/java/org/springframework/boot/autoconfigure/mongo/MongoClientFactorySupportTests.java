@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Mark Paluch
  * @author Artsiom Yudovin
  * @author Scott Frederick
- * @author Mortiz Halbritter
+ * @author Moritz Halbritter
  */
 abstract class MongoClientFactorySupportTests<T> {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,21 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
-import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.boot.web.servlet.server.Session.Cookie;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -98,7 +97,6 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void customizeSessionProperties() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.timeout", "123");
@@ -106,23 +104,21 @@ class ServletWebServerFactoryCustomizerTests {
 		map.put("server.servlet.session.cookie.name", "testname");
 		map.put("server.servlet.session.cookie.domain", "testdomain");
 		map.put("server.servlet.session.cookie.path", "/testpath");
-		map.put("server.servlet.session.cookie.comment", "testcomment");
 		map.put("server.servlet.session.cookie.http-only", "true");
 		map.put("server.servlet.session.cookie.secure", "true");
 		map.put("server.servlet.session.cookie.max-age", "60");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
-		then(factory).should().setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getTimeout()).hasSeconds(123);
-		Cookie cookie = sessionCaptor.getValue().getCookie();
-		assertThat(cookie.getName()).isEqualTo("testname");
-		assertThat(cookie.getDomain()).isEqualTo("testdomain");
-		assertThat(cookie.getPath()).isEqualTo("/testpath");
-		assertThat(cookie.getComment()).isEqualTo("testcomment");
-		assertThat(cookie.getHttpOnly()).isTrue();
-		assertThat(cookie.getMaxAge()).hasSeconds(60);
+		then(factory).should().setSession(assertArg((session) -> {
+			assertThat(session.getTimeout()).hasSeconds(123);
+			Cookie cookie = session.getCookie();
+			assertThat(cookie.getName()).isEqualTo("testname");
+			assertThat(cookie.getDomain()).isEqualTo("testdomain");
+			assertThat(cookie.getPath()).isEqualTo("/testpath");
+			assertThat(cookie.getHttpOnly()).isTrue();
+			assertThat(cookie.getMaxAge()).hasSeconds(60);
+		}));
 	}
 
 	@Test
@@ -158,9 +154,8 @@ class ServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
-		then(factory).should().setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("mydirectory"));
+		then(factory).should()
+			.setSession(assertArg((session) -> assertThat(session.getStoreDir()).isEqualTo(new File("mydirectory"))));
 	}
 
 	@Test
@@ -170,9 +165,7 @@ class ServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
-		then(factory).should().setShutdown(shutdownCaptor.capture());
-		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
+		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.GRACEFUL)));
 	}
 
 	private void bindProperties(Map<String, String> map) {

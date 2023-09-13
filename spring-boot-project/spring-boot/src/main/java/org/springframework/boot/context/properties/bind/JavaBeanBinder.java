@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -110,21 +111,17 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	/**
-	 * The bean being bound.
-	 *
-	 * @param <T> the bean type
+	 * The properties of a bean that may be bound.
 	 */
-	static class Bean<T> {
+	static class BeanProperties {
 
-		private static Bean<?> cached;
+		private final Map<String, BeanProperty> properties = new LinkedHashMap<>();
 
 		private final ResolvableType type;
 
 		private final Class<?> resolvedType;
 
-		private final Map<String, BeanProperty> properties = new LinkedHashMap<>();
-
-		Bean(ResolvableType type, Class<?> resolvedType) {
+		BeanProperties(ResolvableType type, Class<?> resolvedType) {
 			this.type = type;
 			this.resolvedType = resolvedType;
 			addProperties(resolvedType);
@@ -202,8 +199,37 @@ class JavaBeanBinder implements DataObjectBinder {
 			}
 		}
 
-		Map<String, BeanProperty> getProperties() {
+		protected final ResolvableType getType() {
+			return this.type;
+		}
+
+		protected final Class<?> getResolvedType() {
+			return this.resolvedType;
+		}
+
+		final Map<String, BeanProperty> getProperties() {
 			return this.properties;
+		}
+
+		static BeanProperties of(Bindable<?> bindable) {
+			ResolvableType type = bindable.getType();
+			Class<?> resolvedType = type.resolve(Object.class);
+			return new BeanProperties(type, resolvedType);
+		}
+
+	}
+
+	/**
+	 * The bean being bound.
+	 *
+	 * @param <T> the bean type
+	 */
+	static class Bean<T> extends BeanProperties {
+
+		private static Bean<?> cached;
+
+		Bean(ResolvableType type, Class<?> resolvedType) {
+			super(type, resolvedType);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -214,7 +240,7 @@ class JavaBeanBinder implements DataObjectBinder {
 					instance = target.getValue().get();
 				}
 				if (instance == null) {
-					instance = (T) BeanUtils.instantiateClass(this.resolvedType);
+					instance = (T) BeanUtils.instantiateClass(getResolvedType());
 				}
 				return instance;
 			});
@@ -255,10 +281,10 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		private boolean isOfType(ResolvableType type, Class<?> resolvedType) {
-			if (this.type.hasGenerics() || type.hasGenerics()) {
-				return this.type.equals(type);
+			if (getType().hasGenerics() || type.hasGenerics()) {
+				return getType().equals(type);
 			}
-			return this.resolvedType != null && this.resolvedType.equals(resolvedType);
+			return getResolvedType() != null && getResolvedType().equals(resolvedType);
 		}
 
 	}
@@ -357,9 +383,18 @@ class JavaBeanBinder implements DataObjectBinder {
 					return this.getter.invoke(instance.get());
 				}
 				catch (Exception ex) {
+					if (isUninitializedKotlinProperty(ex)) {
+						return null;
+					}
 					throw new IllegalStateException("Unable to get value for property " + this.name, ex);
 				}
 			};
+		}
+
+		private boolean isUninitializedKotlinProperty(Exception ex) {
+			return (ex instanceof InvocationTargetException invocationTargetException)
+					&& "kotlin.UninitializedPropertyAccessException"
+						.equals(invocationTargetException.getTargetException().getClass().getName());
 		}
 
 		boolean isSettable() {
@@ -374,6 +409,14 @@ class JavaBeanBinder implements DataObjectBinder {
 			catch (Exception ex) {
 				throw new IllegalStateException("Unable to set value for property " + this.name, ex);
 			}
+		}
+
+		Method getGetter() {
+			return this.getter;
+		}
+
+		Method getSetter() {
+			return this.setter;
 		}
 
 	}

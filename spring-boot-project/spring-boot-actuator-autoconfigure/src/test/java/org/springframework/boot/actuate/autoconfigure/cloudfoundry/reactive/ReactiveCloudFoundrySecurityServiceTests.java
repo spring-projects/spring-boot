@@ -51,13 +51,11 @@ class ReactiveCloudFoundrySecurityServiceTests {
 
 	private MockWebServer server;
 
-	private WebClient.Builder builder;
-
 	@BeforeEach
 	void setup() {
 		this.server = new MockWebServer();
-		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
-		this.securityService = new ReactiveCloudFoundrySecurityService(this.builder, CLOUD_CONTROLLER, false);
+		WebClient.Builder builder = WebClient.builder().baseUrl(this.server.url("/").toString());
+		this.securityService = new ReactiveCloudFoundrySecurityService(builder, CLOUD_CONTROLLER, false);
 	}
 
 	@AfterEach
@@ -183,7 +181,7 @@ class ReactiveCloudFoundrySecurityServiceTests {
 			response.setHeader("Content-Type", "application/json");
 		});
 		StepVerifier.create(this.securityService.fetchTokenKeys())
-			.consumeNextWith((tokenKeys) -> assertThat(tokenKeys).hasSize(0))
+			.consumeNextWith((tokenKeys) -> assertThat(tokenKeys).isEmpty())
 			.expectComplete()
 			.verify();
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo("/my-cloud-controller.com/info"));

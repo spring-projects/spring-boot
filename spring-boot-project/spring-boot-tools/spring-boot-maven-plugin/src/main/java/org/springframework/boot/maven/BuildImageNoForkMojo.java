@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * {@link BuildImageMojo implementation} that does not fork the lifecycle to make sure
- * that {@code package} ran. This goal should be used when configuring a mojo
- * {@code execution} in your build. To invoke the goal on the command-line, use
- * {@link BuildImageForkMojo} instead.
+ * Package an application into an OCI image using a buildpack, but without forking the
+ * lifecycle. This goal should be used when configuring a goal {@code execution} in your
+ * build. To invoke the goal on the command-line, use {@code build-image} instead.
  *
  * @author Stephane Nicoll
  * @since 3.0.0

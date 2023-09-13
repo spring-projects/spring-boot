@@ -60,7 +60,7 @@ class ShutdownEndpointTests {
 				Thread.currentThread().setContextClassLoader(previousTccl);
 			}
 			assertThat(result.getMessage()).startsWith("Shutting down");
-			assertThat(((ConfigurableApplicationContext) context).isActive()).isTrue();
+			assertThat(context.isActive()).isTrue();
 			assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
 			assertThat(config.threadContextClassLoader).isEqualTo(getClass().getClassLoader());
 		});

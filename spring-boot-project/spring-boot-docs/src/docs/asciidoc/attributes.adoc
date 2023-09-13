@@ -90,6 +90,7 @@
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/
+:spring-pulsar-docs: https://docs.spring.io/spring-pulsar/docs/{spring-pulsar-version}/reference/html/
 :spring-restdocs: https://spring.io/projects/spring-restdocs
 :spring-security: https://spring.io/projects/spring-security
 :spring-security-docs: https://docs.spring.io/spring-security/reference/{spring-security-version}
@@ -102,7 +103,7 @@
 :dynatrace-help: https://www.dynatrace.com/support/help
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/{hibernate-version}/userguide/html_single/Hibernate_User_Guide.html
-:java-api: https://docs.oracle.com/javase/17/docs/api
+:java-api: https://docs.oracle.com/en/java/javase/17/docs/api
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/

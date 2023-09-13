@@ -24,8 +24,8 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import jakarta.servlet.ServletContainerInitializer;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 import org.springframework.util.ClassUtils;
 
@@ -63,7 +63,6 @@ class JasperInitializer extends AbstractLifeCycle {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	protected void doStart() throws Exception {
 		if (this.initializer == null) {
 			return;
@@ -84,24 +83,15 @@ class JasperInitializer extends AbstractLifeCycle {
 		try {
 			Thread.currentThread().setContextClassLoader(this.context.getClassLoader());
 			try {
-				setExtendedListenerTypes(true);
+				this.context.getContext().setExtendedListenerTypes(true);
 				this.initializer.onStartup(null, this.context.getServletContext());
 			}
 			finally {
-				setExtendedListenerTypes(false);
+				this.context.getContext().setExtendedListenerTypes(false);
 			}
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(classLoader);
-		}
-	}
-
-	private void setExtendedListenerTypes(boolean extended) {
-		try {
-			this.context.getServletContext().setExtendedListenerTypes(extended);
-		}
-		catch (NoSuchMethodError ex) {
-			// Not available on Jetty 8
 		}
 	}
 

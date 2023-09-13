@@ -17,11 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring OTLP metrics
@@ -55,6 +57,11 @@ public class OtlpProperties extends StepRegistryProperties {
 	 */
 	private Map<String, String> headers;
 
+	/**
+	 * Time unit for exported metrics.
+	 */
+	private TimeUnit baseTimeUnit = TimeUnit.MILLISECONDS;
+
 	public String getUrl() {
 		return this.url;
 	}
@@ -71,10 +78,13 @@ public class OtlpProperties extends StepRegistryProperties {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(replacement = "management.opentelemetry.resource-attributes", since = "3.2.0")
 	public Map<String, String> getResourceAttributes() {
 		return this.resourceAttributes;
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setResourceAttributes(Map<String, String> resourceAttributes) {
 		this.resourceAttributes = resourceAttributes;
 	}
@@ -85,6 +95,14 @@ public class OtlpProperties extends StepRegistryProperties {
 
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+
+	public TimeUnit getBaseTimeUnit() {
+		return this.baseTimeUnit;
+	}
+
+	public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
+		this.baseTimeUnit = baseTimeUnit;
 	}
 
 }

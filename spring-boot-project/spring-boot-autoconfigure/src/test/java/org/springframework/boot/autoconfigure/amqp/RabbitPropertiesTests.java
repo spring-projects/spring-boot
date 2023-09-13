@@ -22,8 +22,10 @@ import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link RabbitProperties}.
@@ -31,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Rafael Carvalho
  */
 class RabbitPropertiesTests {
 
@@ -319,6 +322,7 @@ class RabbitPropertiesTests {
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", simple.isMissingQueuesFatal());
 		assertThat(container).hasFieldOrPropertyWithValue("deBatchingEnabled", simple.isDeBatchingEnabled());
 		assertThat(container).hasFieldOrPropertyWithValue("consumerBatchEnabled", simple.isConsumerBatchEnabled());
+		assertThat(container).hasFieldOrPropertyWithValue("forceStop", simple.isForceStop());
 	}
 
 	@Test
@@ -329,6 +333,7 @@ class RabbitPropertiesTests {
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", direct.isMissingQueuesFatal());
 		assertThat(container).hasFieldOrPropertyWithValue("deBatchingEnabled", direct.isDeBatchingEnabled());
+		assertThat(container).hasFieldOrPropertyWithValue("forceStop", direct.isForceStop());
 	}
 
 	@Test
@@ -336,6 +341,15 @@ class RabbitPropertiesTests {
 		this.properties.setAddresses("user@rabbit1.example.com:1234/alpha");
 		assertThat(this.properties.determineUsername()).isEqualTo("user");
 		assertThat(this.properties.determinePassword()).isEqualTo("guest");
+	}
+
+	@Test
+	void hostPropertyMustBeSingleHost() {
+		this.properties.setHost("my-rmq-host.net,my-rmq-host-2.net");
+		assertThat(this.properties.getHost()).isEqualTo("my-rmq-host.net,my-rmq-host-2.net");
+		assertThatThrownBy(this.properties::determineAddresses)
+			.isInstanceOf(InvalidConfigurationPropertyValueException.class)
+			.hasMessageContaining("spring.rabbitmq.host");
 	}
 
 }

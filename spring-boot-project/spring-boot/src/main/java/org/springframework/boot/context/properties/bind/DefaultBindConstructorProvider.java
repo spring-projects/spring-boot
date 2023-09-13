@@ -102,7 +102,6 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			boolean hasAutowiredConstructor = isAutowiredPresent(type);
 			Constructor<?>[] candidates = getCandidateConstructors(type);
 			MergedAnnotations[] candidateAnnotations = getAnnotations(candidates);
-			boolean kotlinType = isKotlinType(type);
 			boolean deducedBindConstructor = false;
 			boolean immutableType = type.isRecord();
 			Constructor<?> bind = getConstructorBindingAnnotated(type, candidates, candidateAnnotations);
@@ -110,7 +109,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				bind = deduceBindConstructor(type, candidates);
 				deducedBindConstructor = bind != null;
 			}
-			if (bind == null && !hasAutowiredConstructor && kotlinType) {
+			if (bind == null && !hasAutowiredConstructor && isKotlinType(type)) {
 				bind = deduceKotlinBindConstructor(type);
 				deducedBindConstructor = bind != null;
 			}
@@ -136,7 +135,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				return new Constructor<?>[0];
 			}
 			return Arrays.stream(type.getDeclaredConstructors())
-				.filter((constructor) -> isNonSynthetic(constructor, type))
+				.filter(Constructors::isNonSynthetic)
 				.toArray(Constructor[]::new);
 		}
 
@@ -149,7 +148,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			}
 		}
 
-		private static boolean isNonSynthetic(Constructor<?> constructor, Class<?> type) {
+		private static boolean isNonSynthetic(Constructor<?> constructor) {
 			return !constructor.isSynthetic();
 		}
 

@@ -75,6 +75,7 @@ import static org.mockito.Mockito.times;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Rafael Ceccone
+ * @author Moritz Halbritter
  */
 @ExtendWith(MockitoExtension.class)
 class DockerApiTests {
@@ -419,7 +420,17 @@ class DockerApiTests {
 		void tagTagsImage() throws Exception {
 			ImageReference sourceReference = ImageReference.of("localhost:5000/ubuntu");
 			ImageReference targetReference = ImageReference.of("localhost:5000/ubuntu:tagged");
-			URI tagURI = new URI(IMAGES_URL + "/localhost:5000/ubuntu/tag?repo=localhost%3A5000%2Fubuntu%3Atagged");
+			URI tagURI = new URI(IMAGES_URL + "/localhost:5000/ubuntu/tag?repo=localhost%3A5000%2Fubuntu&tag=tagged");
+			given(http().post(tagURI)).willReturn(emptyResponse());
+			this.api.tag(sourceReference, targetReference);
+			then(http()).should().post(tagURI);
+		}
+
+		@Test
+		void tagRenamesImage() throws Exception {
+			ImageReference sourceReference = ImageReference.of("localhost:5000/ubuntu");
+			ImageReference targetReference = ImageReference.of("localhost:5000/ubuntu-2");
+			URI tagURI = new URI(IMAGES_URL + "/localhost:5000/ubuntu/tag?repo=localhost%3A5000%2Fubuntu-2");
 			given(http().post(tagURI)).willReturn(emptyResponse());
 			this.api.tag(sourceReference, targetReference);
 			then(http()).should().post(tagURI);

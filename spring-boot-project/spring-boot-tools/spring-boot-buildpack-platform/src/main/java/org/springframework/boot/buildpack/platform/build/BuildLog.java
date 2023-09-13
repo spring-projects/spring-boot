@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,14 @@ public interface BuildLog {
 	 * @param buildCacheVolume the name of the build cache volume in use
 	 */
 	void executingLifecycle(BuildRequest request, LifecycleVersion version, VolumeName buildCacheVolume);
+
+	/**
+	 * Log that the lifecycle is executing.
+	 * @param request the build request
+	 * @param version the lifecycle version
+	 * @param buildCache the build cache in use
+	 */
+	void executingLifecycle(BuildRequest request, LifecycleVersion version, Cache buildCache);
 
 	/**
 	 * Log that a specific phase is running.

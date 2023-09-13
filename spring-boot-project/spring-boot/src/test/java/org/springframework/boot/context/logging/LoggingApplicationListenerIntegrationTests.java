@@ -30,7 +30,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationListener;
@@ -69,7 +69,7 @@ class LoggingApplicationListenerIntegrationTests {
 			assertThat(service.logFile).hasToString(logFile);
 		}
 		finally {
-			System.clearProperty(LoggingSystemProperties.LOG_FILE);
+			System.clearProperty(LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName());
 		}
 	}
 

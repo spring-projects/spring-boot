@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,18 +31,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.boot.docker.compose.readiness.ServiceReadinessChecks;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -54,6 +57,7 @@ import static org.mockito.Mockito.never;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class DockerComposeLifecycleManagerTests {
 
@@ -103,32 +107,74 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
-	void startupWhenEnabledFalseDoesNotStart() {
+	void startWhenEnabledFalseDoesNotStart() {
 		this.properties.setEnabled(false);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		assertThat(listener.getEvent()).isNull();
 		then(this.dockerCompose).should(never()).hasDefinedServices();
 	}
 
 	@Test
-	void startupWhenInTestDoesNotStart() {
-		given(this.skipCheck.shouldSkip(any(), any(), any())).willReturn(true);
+	void startWhenAotProcessingDoesNotStart() {
+		withSystemProperty("spring.aot.processing", "true", () -> {
+			EventCapturingListener listener = new EventCapturingListener();
+			this.eventListeners.add(listener);
+			setUpRunningServices();
+			this.lifecycleManager.start();
+			assertThat(listener.getEvent()).isNull();
+			then(this.dockerCompose).should(never()).hasDefinedServices();
+		});
+	}
+
+	@Test
+	void startWhenUsingAotArtifactsDoesNotStart() {
+		withSystemProperty(AotDetector.AOT_ENABLED, "true", () -> {
+			EventCapturingListener listener = new EventCapturingListener();
+			this.eventListeners.add(listener);
+			setUpRunningServices();
+			this.lifecycleManager.start();
+			assertThat(listener.getEvent()).isNull();
+			then(this.dockerCompose).should(never()).hasDefinedServices();
+		});
+	}
+
+	@Test
+	void startWhenComposeFileNotFoundThrowsException() {
+		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(new File("."),
+				this.applicationContext, null, this.shutdownHandlers, this.properties, this.eventListeners,
+				this.skipCheck, this.serviceReadinessChecks);
+		assertThatIllegalStateException().isThrownBy(manager::start)
+			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
+	}
+
+	@Test
+	void startWhenComposeFileNotFoundAndWorkingDirectoryNullThrowsException() {
+		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(null, this.applicationContext, null,
+				this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
+				this.serviceReadinessChecks);
+		assertThatIllegalStateException().isThrownBy(manager::start)
+			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
+	}
+
+	@Test
+	void startWhenInTestDoesNotStart() {
+		given(this.skipCheck.shouldSkip(any(), any())).willReturn(true);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		assertThat(listener.getEvent()).isNull();
 		then(this.dockerCompose).should(never()).hasDefinedServices();
 	}
 
 	@Test
-	void startupWhenHasNoDefinedServicesDoesNothing() {
+	void startWhenHasNoDefinedServicesDoesNothing() {
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		this.lifecycleManager.startup();
+		this.lifecycleManager.start();
 		assertThat(listener.getEvent()).isNull();
 		then(this.dockerCompose).should().hasDefinedServices();
 		then(this.dockerCompose).should(never()).up(any());
@@ -138,27 +184,27 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
-	void startupWhenLifecycleStartAndStopAndHasNoRunningServicesDoesStartupAndShutdown() {
+	void startWhenLifecycleStartAndStopAndHasNoRunningServicesDoesUpAndStop() {
 		this.properties.setLifecycleManagement(LifecycleManagement.START_AND_STOP);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		this.lifecycleManager.startup();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		then(this.dockerCompose).should().up(any());
 		then(this.dockerCompose).should(never()).start(any());
-		then(this.dockerCompose).should().down(any());
-		then(this.dockerCompose).should(never()).stop(any());
+		then(this.dockerCompose).should().stop(any());
+		then(this.dockerCompose).should(never()).down(any());
 	}
 
 	@Test
-	void startupWhenLifecycleStartAndStopAndHasRunningServicesDoesNoStartupOrShutdown() {
+	void startWhenLifecycleStartAndStopAndHasRunningServicesDoesNothing() {
 		this.properties.setLifecycleManagement(LifecycleManagement.START_AND_STOP);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		then(this.dockerCompose).should(never()).up(any());
@@ -168,12 +214,12 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
-	void startupWhenLifecycleNoneDoesNoStartupOrShutdown() {
+	void startWhenLifecycleNoneDoesNothing() {
 		this.properties.setLifecycleManagement(LifecycleManagement.NONE);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		then(this.dockerCompose).should(never()).up(any());
@@ -183,12 +229,12 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
-	void startupWhenLifecycleStartOnlyDoesStartupAndNoShutdown() {
+	void startWhenLifecycleStartOnlyDoesOnlyStart() {
 		this.properties.setLifecycleManagement(LifecycleManagement.START_ONLY);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		this.lifecycleManager.startup();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		then(this.dockerCompose).should().up(any());
@@ -199,103 +245,162 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
-	void startupWhenStartupCommandStartDoesStartupUsingStartAndShutdown() {
+	void startWhenStartCommandStartDoesStartAndStop() {
 		this.properties.setLifecycleManagement(LifecycleManagement.START_AND_STOP);
-		this.properties.getStartup().setCommand(StartupCommand.START);
+		this.properties.getStart().setCommand(StartCommand.START);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		this.lifecycleManager.startup();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		then(this.dockerCompose).should(never()).up(any());
 		then(this.dockerCompose).should().start(any());
-		then(this.dockerCompose).should().down(any());
-		then(this.dockerCompose).should(never()).stop(any());
+		then(this.dockerCompose).should().stop(any());
+		then(this.dockerCompose).should(never()).down(any());
 	}
 
 	@Test
-	void startupWhenShutdownCommandStopDoesStartupAndShutdownUsingStop() {
+	void startWhenStopCommandDownDoesStartAndDown() {
 		this.properties.setLifecycleManagement(LifecycleManagement.START_AND_STOP);
-		this.properties.getShutdown().setCommand(ShutdownCommand.STOP);
+		this.properties.getStop().setCommand(StopCommand.DOWN);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		this.lifecycleManager.startup();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		then(this.dockerCompose).should().up(any());
 		then(this.dockerCompose).should(never()).start(any());
-		then(this.dockerCompose).should(never()).down(any());
-		then(this.dockerCompose).should().stop(any());
+		then(this.dockerCompose).should(never()).stop(any());
+		then(this.dockerCompose).should().down(any());
 	}
 
 	@Test
-	void startupWhenHasShutdownTimeoutUsesDuration() {
+	void startWhenHasStopTimeoutUsesDuration() {
 		this.properties.setLifecycleManagement(LifecycleManagement.START_AND_STOP);
 		Duration timeout = Duration.ofDays(1);
-		this.properties.getShutdown().setTimeout(timeout);
+		this.properties.getStop().setTimeout(timeout);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		this.lifecycleManager.startup();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should().down(timeout);
+		then(this.dockerCompose).should().stop(timeout);
 	}
 
 	@Test
-	void startupWhenHasIgnoreLabelIgnoresService() {
+	void startWhenHasIgnoreLabelIgnoresService() {
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices(Map.of("org.springframework.boot.ignore", "true"));
-		this.lifecycleManager.startup();
+		setUpRunningServices(true, Map.of("org.springframework.boot.ignore", "true"));
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
 		assertThat(listener.getEvent().getRunningServices()).isEmpty();
 	}
 
 	@Test
-	void startupWaitsUntilReady() {
+	void startWaitsUntilReady() {
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
 		then(this.serviceReadinessChecks).should().waitUntilReady(this.runningServices);
 	}
 
 	@Test
-	void startupGetsDockerComposeWithActiveProfiles() {
+	void startWhenWaitNeverDoesNotWaitUntilReady() {
+		this.properties.getReadiness().setWait(Wait.NEVER);
+		EventCapturingListener listener = new EventCapturingListener();
+		this.eventListeners.add(listener);
+		setUpRunningServices();
+		this.lifecycleManager.start();
+		this.shutdownHandlers.run();
+		then(this.serviceReadinessChecks).should(never()).waitUntilReady(this.runningServices);
+	}
+
+	@Test
+	void startWhenWaitOnlyIfStartedAndNotStartedDoesNotWaitUntilReady() {
+		this.properties.getReadiness().setWait(Wait.ONLY_IF_STARTED);
+		this.properties.setLifecycleManagement(LifecycleManagement.NONE);
+		EventCapturingListener listener = new EventCapturingListener();
+		this.eventListeners.add(listener);
+		setUpRunningServices();
+		this.lifecycleManager.start();
+		this.shutdownHandlers.run();
+		then(this.serviceReadinessChecks).should(never()).waitUntilReady(this.runningServices);
+	}
+
+	@Test
+	void startWhenWaitOnlyIfStartedAndStartedWaitsUntilReady() {
+		this.properties.getReadiness().setWait(Wait.ONLY_IF_STARTED);
+		EventCapturingListener listener = new EventCapturingListener();
+		this.eventListeners.add(listener);
+		setUpRunningServices(false);
+		this.lifecycleManager.start();
+		this.shutdownHandlers.run();
+		then(this.serviceReadinessChecks).should().waitUntilReady(this.runningServices);
+	}
+
+	@Test
+	void startGetsDockerComposeWithActiveProfiles() {
 		this.properties.getProfiles().setActive(Set.of("my-profile"));
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		assertThat(this.activeProfiles).containsExactly("my-profile");
 	}
 
 	@Test
-	void startupPublishesEvent() {
+	void startPublishesEvent() {
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
-		setupRunningServices();
-		this.lifecycleManager.startup();
+		setUpRunningServices();
+		this.lifecycleManager.start();
 		DockerComposeServicesReadyEvent event = listener.getEvent();
 		assertThat(event).isNotNull();
 		assertThat(event.getSource()).isEqualTo(this.applicationContext);
 		assertThat(event.getRunningServices()).isEqualTo(this.runningServices);
 	}
 
-	private void setupRunningServices() {
-		setupRunningServices(Collections.emptyMap());
+	private void setUpRunningServices() {
+		setUpRunningServices(true);
 	}
 
-	private void setupRunningServices(Map<String, String> labels) {
+	private void setUpRunningServices(boolean started) {
+		setUpRunningServices(started, Collections.emptyMap());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setUpRunningServices(boolean started, Map<String, String> labels) {
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		given(this.dockerCompose.hasRunningServices()).willReturn(true);
 		RunningService runningService = mock(RunningService.class);
 		given(runningService.labels()).willReturn(labels);
 		this.runningServices = List.of(runningService);
-		given(this.dockerCompose.getRunningServices()).willReturn(this.runningServices);
+		if (started) {
+			given(this.dockerCompose.getRunningServices()).willReturn(this.runningServices);
+		}
+		else {
+			given(this.dockerCompose.getRunningServices()).willReturn(Collections.emptyList(), this.runningServices);
+		}
+	}
+
+	private void withSystemProperty(String key, String value, Runnable action) {
+		String previous = System.getProperty(key);
+		try {
+			System.setProperty(key, value);
+			action.run();
+		}
+		finally {
+			if (previous == null) {
+				System.clearProperty(key);
+			}
+			else {
+				System.setProperty(key, previous);
+			}
+		}
 	}
 
 	/**

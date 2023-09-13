@@ -40,28 +40,26 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee10.webapp.ClassMatcher;
+import org.eclipse.jetty.ee10.webapp.Configuration;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
-import org.eclipse.jetty.webapp.AbstractConfiguration;
-import org.eclipse.jetty.webapp.ClassMatcher;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -86,13 +84,22 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Henri Kerola
+ * @author Moritz Halbritter
  */
-@Servlet5ClassPathOverrides
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
 	@Override
 	protected JettyServletWebServerFactory getFactory() {
-		return new JettyServletWebServerFactory(0);
+		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
+		factory.addServerCustomizers((server) -> {
+			for (Connector connector : server.getConnectors()) {
+				if (connector instanceof ServerConnector serverConnector) {
+					// TODO Set the shutdown idle timeout in main code?
+					serverConnector.setShutdownIdleTimeout(10000);
+				}
+			}
+		});
+		return factory;
 	}
 
 	@Override
@@ -142,8 +149,15 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 
 	@Test
 	@Override
-	@Disabled("Jetty 11 does not support User-Agent-based compression")
+	@Disabled("Jetty 12 does not support User-Agent-based compression")
 	protected void noCompressionForUserAgent() {
+	}
+
+	@Test
+	@Override
+	@Disabled("Jetty 12 does not support SSL session tracking")
+	protected void sslSessionTracking() {
+
 	}
 
 	@Test
@@ -232,10 +246,10 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void stopCalledWithoutStart() {
+	void destroyCalledWithoutStart() {
 		JettyServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
-		this.webServer.stop();
+		this.webServer.destroy();
 		Server server = ((JettyWebServer) this.webServer).getServer();
 		assertThat(server.isStopped()).isTrue();
 	}
@@ -383,11 +397,9 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setServerCustomizers(Collections.singletonList((server) -> {
 			Handler handler = server.getHandler();
-			HandlerWrapper wrapper = new HandlerWrapper();
+			Handler.Wrapper wrapper = new Handler.Wrapper();
 			wrapper.setHandler(handler);
-			HandlerCollection collection = new HandlerCollection();
-			collection.addHandler(wrapper);
-			server.setHandler(collection);
+			server.setHandler(wrapper);
 		}));
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
@@ -505,7 +517,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	@Test
 	void errorHandlerCanBeOverridden() {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.addConfigurations(new AbstractConfiguration() {
+		factory.addConfigurations(new AbstractConfiguration(new AbstractConfiguration.Builder()) {
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
@@ -518,6 +530,22 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		assertThat(context.getErrorHandler()).isInstanceOf(CustomErrorHandler.class);
 	}
 
+	@Test
+	void shouldApplyMaxConnections() {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).isNotNull();
+		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((JettyWebServer) this.webServer).getStartedLogMessage();
+	}
+
 	private WebAppContext findWebAppContext(JettyWebServer webServer) {
 		return findWebAppContext(webServer.getServer().getHandler());
 	}
@@ -526,7 +554,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		if (handler instanceof WebAppContext webAppContext) {
 			return webAppContext;
 		}
-		if (handler instanceof HandlerWrapper wrapper) {
+		if (handler instanceof Handler.Wrapper wrapper) {
 			return findWebAppContext(wrapper.getHandler());
 		}
 		throw new IllegalStateException("No WebAppContext found");

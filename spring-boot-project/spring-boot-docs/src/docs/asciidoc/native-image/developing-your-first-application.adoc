@@ -32,8 +32,8 @@ This means you can just type a single command and quickly get a sensible image i
 The resulting image doesn't contain a JVM, instead the native image is compiled statically.
 This leads to smaller images.
 
-NOTE: The builder used for the images is `paketobuildpacks/builder:tiny`.
-It has small footprint and reduced attack surface, but you can also use `paketobuildpacks/builder:base` or `paketobuildpacks/builder:full` to have more tools available in the image if required.
+NOTE: The builder used for the images is `paketobuildpacks/builder-jammy-tiny:latest`.
+It has small footprint and reduced attack surface, but you can also use `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-full:latest` to have more tools available in the image if required.
 
 
 

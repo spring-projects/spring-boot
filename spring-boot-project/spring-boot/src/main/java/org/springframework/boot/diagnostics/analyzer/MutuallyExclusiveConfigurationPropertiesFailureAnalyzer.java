@@ -99,7 +99,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 		configuredDescriptions.forEach(message::append);
 	}
 
-	private <S> Set<String> sortedStrings(Collection<String> input) {
+	private Set<String> sortedStrings(Collection<String> input) {
 		return sortedStrings(input, Function.identity());
 	}
 

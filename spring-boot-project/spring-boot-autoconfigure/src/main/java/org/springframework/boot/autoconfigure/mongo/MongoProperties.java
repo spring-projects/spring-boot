@@ -69,12 +69,12 @@ public class MongoProperties {
 	private List<String> additionalHosts;
 
 	/**
-	 * Mongo database URI. Overrides host, port, username, password, and database.
+	 * Mongo database URI. Overrides host, port, username, and password.
 	 */
 	private String uri;
 
 	/**
-	 * Database name.
+	 * Database name. Overrides database in URI.
 	 */
 	private String database;
 

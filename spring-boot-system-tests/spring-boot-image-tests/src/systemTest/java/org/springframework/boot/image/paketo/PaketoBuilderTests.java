@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Scott Frederick
  */
 @ExtendWith({ GradleBuildInjectionExtension.class, GradleBuildExtension.class })
-@EnabledForJreRange(max = JRE.JAVA_18)
+@EnabledForJreRange(max = JRE.JAVA_20)
 class PaketoBuilderTests {
 
 	GradleBuild gradleBuild;
@@ -295,6 +295,7 @@ class PaketoBuilderTests {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_17)
 	void nativeApp() throws Exception {
 		this.gradleBuild.expectDeprecationMessages("uses or overrides a deprecated API");
 		writeMainClass();
@@ -312,8 +313,10 @@ class PaketoBuilderTests {
 					.contains("paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 							"paketo-buildpacks/executable-jar", "paketo-buildpacks/spring-boot",
 							"paketo-buildpacks/native-image");
-				metadata.processOfType("web").containsExactly("/workspace/example.ExampleApplication");
-				metadata.processOfType("native-image").containsExactly("/workspace/example.ExampleApplication");
+				metadata.processOfType("web")
+					.satisfiesExactly((command) -> assertThat(command).endsWith("/example.ExampleApplication"));
+				metadata.processOfType("native-image")
+					.satisfiesExactly((command) -> assertThat(command).endsWith("/example.ExampleApplication"));
 			});
 			assertImageHasDependenciesSbomLayer(imageReference, config, "native-image");
 		}

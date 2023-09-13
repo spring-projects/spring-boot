@@ -37,6 +37,7 @@ import static org.mockito.Mockito.spy;
  * @author Stephane Nicoll
  * @author Filip Hrisafov
  */
+@SuppressWarnings("removal")
 class TaskExecutorBuilderTests {
 
 	private final TaskExecutorBuilder builder = new TaskExecutorBuilder();

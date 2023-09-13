@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -32,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -190,8 +188,7 @@ public class KafkaAutoConfiguration {
 
 	private void applyKafkaConnectionDetailsForConsumer(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
-		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(connectionDetails.getConsumerBootstrapNodes()));
+		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getConsumerBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		}
@@ -199,8 +196,7 @@ public class KafkaAutoConfiguration {
 
 	private void applyKafkaConnectionDetailsForProducer(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
-		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(connectionDetails.getProducerBootstrapNodes()));
+		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getProducerBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		}
@@ -208,15 +204,10 @@ public class KafkaAutoConfiguration {
 
 	private void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
-		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(connectionDetails.getAdminBootstrapNodes()));
+		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getAdminBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		}
-	}
-
-	private List<String> nodesToStringList(List<Node> nodes) {
-		return nodes.stream().map((node) -> node.host() + ":" + node.port()).toList();
 	}
 
 	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {

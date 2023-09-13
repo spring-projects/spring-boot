@@ -19,7 +19,9 @@ package org.springframework.boot.docker.compose.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -39,13 +41,13 @@ import org.springframework.core.log.LogMessage;
  */
 class DockerCli {
 
-	private final Log logger = LogFactory.getLog(DockerCli.class);
+	private static final Map<File, DockerCommands> dockerCommandsCache = new HashMap<>();
+
+	private static final Log logger = LogFactory.getLog(DockerCli.class);
 
 	private final ProcessRunner processRunner;
 
-	private final List<String> dockerCommand;
-
-	private final List<String> dockerComposeCommand;
+	private final DockerCommands dockerCommands;
 
 	private final DockerComposeFile composeFile;
 
@@ -59,54 +61,10 @@ class DockerCli {
 	 */
 	DockerCli(File workingDirectory, DockerComposeFile composeFile, Set<String> activeProfiles) {
 		this.processRunner = new ProcessRunner(workingDirectory);
-		this.dockerCommand = getDockerCommand(this.processRunner);
-		this.dockerComposeCommand = getDockerComposeCommand(this.processRunner);
+		this.dockerCommands = dockerCommandsCache.computeIfAbsent(workingDirectory,
+				(key) -> new DockerCommands(this.processRunner));
 		this.composeFile = composeFile;
 		this.activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
-	}
-
-	private List<String> getDockerCommand(ProcessRunner processRunner) {
-		try {
-			String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
-			this.logger.trace(LogMessage.format("Using docker %s", version));
-			return List.of("docker");
-		}
-		catch (ProcessStartException ex) {
-			throw new DockerProcessStartException("Unable to start docker process. Is docker correctly installed?", ex);
-		}
-		catch (ProcessExitException ex) {
-			if (ex.getStdErr().contains("docker daemon is not running")
-					|| ex.getStdErr().contains("Cannot connect to the Docker daemon")) {
-				throw new DockerNotRunningException(ex.getStdErr(), ex);
-			}
-			throw ex;
-
-		}
-	}
-
-	private List<String> getDockerComposeCommand(ProcessRunner processRunner) {
-		try {
-			DockerCliComposeVersionResponse response = DockerJson.deserialize(
-					processRunner.run("docker", "compose", "version", "--format", "json"),
-					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker compose $s", response.version()));
-			return List.of("docker", "compose");
-		}
-		catch (ProcessExitException ex) {
-			// Ignore and try docker-compose
-		}
-		try {
-			DockerCliComposeVersionResponse response = DockerJson.deserialize(
-					processRunner.run("docker-compose", "version", "--format", "json"),
-					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker-compose $s", response.version()));
-			return List.of("docker-compose");
-		}
-		catch (ProcessStartException ex) {
-			throw new DockerProcessStartException(
-					"Unable to start 'docker-compose' process or use 'docker compose'. Is docker correctly installed?",
-					ex);
-		}
 	}
 
 	/**
@@ -127,14 +85,14 @@ class DockerCli {
 		if (logLevel == null || logLevel == LogLevel.OFF) {
 			return null;
 		}
-		return (line) -> logLevel.log(this.logger, line);
+		return (line) -> logLevel.log(logger, line);
 	}
 
-	private <R> List<String> createCommand(Type type) {
+	private List<String> createCommand(Type type) {
 		return switch (type) {
-			case DOCKER -> new ArrayList<>(this.dockerCommand);
+			case DOCKER -> new ArrayList<>(this.dockerCommands.get(type));
 			case DOCKER_COMPOSE -> {
-				List<String> result = new ArrayList<>(this.dockerComposeCommand);
+				List<String> result = new ArrayList<>(this.dockerCommands.get(type));
 				if (this.composeFile != null) {
 					result.add("--file");
 					result.add(this.composeFile.toString());
@@ -156,6 +114,73 @@ class DockerCli {
 	 */
 	DockerComposeFile getDockerComposeFile() {
 		return this.composeFile;
+	}
+
+	/**
+	 * Holds details of the actual CLI commands to invoke.
+	 */
+	private static class DockerCommands {
+
+		private final List<String> dockerCommand;
+
+		private final List<String> dockerComposeCommand;
+
+		DockerCommands(ProcessRunner processRunner) {
+			this.dockerCommand = getDockerCommand(processRunner);
+			this.dockerComposeCommand = getDockerComposeCommand(processRunner);
+		}
+
+		private List<String> getDockerCommand(ProcessRunner processRunner) {
+			try {
+				String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
+				logger.trace(LogMessage.format("Using docker %s", version));
+				return List.of("docker");
+			}
+			catch (ProcessStartException ex) {
+				throw new DockerProcessStartException("Unable to start docker process. Is docker correctly installed?",
+						ex);
+			}
+			catch (ProcessExitException ex) {
+				if (ex.getStdErr().contains("docker daemon is not running")
+						|| ex.getStdErr().contains("Cannot connect to the Docker daemon")) {
+					throw new DockerNotRunningException(ex.getStdErr(), ex);
+				}
+				throw ex;
+			}
+		}
+
+		private List<String> getDockerComposeCommand(ProcessRunner processRunner) {
+			try {
+				DockerCliComposeVersionResponse response = DockerJson.deserialize(
+						processRunner.run("docker", "compose", "version", "--format", "json"),
+						DockerCliComposeVersionResponse.class);
+				logger.trace(LogMessage.format("Using docker compose %s", response.version()));
+				return List.of("docker", "compose");
+			}
+			catch (ProcessExitException ex) {
+				// Ignore and try docker-compose
+			}
+			try {
+				DockerCliComposeVersionResponse response = DockerJson.deserialize(
+						processRunner.run("docker-compose", "version", "--format", "json"),
+						DockerCliComposeVersionResponse.class);
+				logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
+				return List.of("docker-compose");
+			}
+			catch (ProcessStartException ex) {
+				throw new DockerProcessStartException(
+						"Unable to start 'docker-compose' process or use 'docker compose'. Is docker correctly installed?",
+						ex);
+			}
+		}
+
+		List<String> get(Type type) {
+			return switch (type) {
+				case DOCKER -> this.dockerCommand;
+				case DOCKER_COMPOSE -> this.dockerComposeCommand;
+			};
+		}
+
 	}
 
 }

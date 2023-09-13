@@ -380,14 +380,6 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	void overrideLabelFilterWithDeprecatedLabelsProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.liquibase.labels:test, production")
-			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabelFilter()).isEqualTo("test, production")));
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
 	void testOverrideParameters() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
@@ -404,7 +396,7 @@ class LiquibaseAutoConfigurationTests {
 	void rollbackFile(@TempDir Path temp) throws IOException {
 		File file = Files.createTempFile(temp, "rollback-file", "sql").toFile();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.liquibase.rollbackFile:" + file.getAbsolutePath())
+			.withPropertyValues("spring.liquibase.rollback-file:" + file.getAbsolutePath())
 			.run((context) -> {
 				SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 				File actualFile = (File) ReflectionTestUtils.getField(liquibase, "rollbackFile");

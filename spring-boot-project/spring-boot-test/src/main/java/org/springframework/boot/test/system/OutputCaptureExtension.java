@@ -57,6 +57,30 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  *
  * }
  * </pre>
+ * <p>
+ * To ensure that their output can be captured, Java Util Logging (JUL) and Log4j2 require
+ * additional configuration.
+ * <p>
+ * To reliably capture output from Java Util Logging, reset its configuration after each
+ * test:
+ *
+ * <pre class="code">
+ * &#064;AfterEach
+ * void reset() throws Exception {
+ *     LogManager.getLogManager().readConfiguration();
+ * }
+ * </pre>
+ * <p>
+ * To reliably capture output from Log4j2, set the <code>follow</code> attribute of the
+ * console appender to <code>true</code>:
+ *
+ * <pre class="code">
+ * &lt;Appenders&gt;
+ *     &lt;Console name="Console" target="SYSTEM_OUT" follow="true"&gt;
+ *         ...
+ *     &lt;/Console&gt;
+*  &lt;/Appenders&gt;
+ * </pre>
  *
  * @author Madhura Bhave
  * @author Phillip Webb

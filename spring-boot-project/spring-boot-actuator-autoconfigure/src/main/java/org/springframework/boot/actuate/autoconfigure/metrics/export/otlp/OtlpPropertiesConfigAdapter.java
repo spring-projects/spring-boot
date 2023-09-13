@@ -16,26 +16,45 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
+import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Adapter to convert {@link OtlpProperties} to an {@link OtlpConfig}.
  *
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<OtlpProperties> implements OtlpConfig {
 
+	/**
+	 * Default value for application name if {@code spring.application.name} is not set.
+	 */
+	private static final String DEFAULT_APPLICATION_NAME = "application";
+
+	private final OpenTelemetryProperties openTelemetryProperties;
+
 	private final OtlpConnectionDetails connectionDetails;
 
-	OtlpPropertiesConfigAdapter(OtlpProperties properties, OtlpConnectionDetails connectionDetails) {
+	private final Environment environment;
+
+	OtlpPropertiesConfigAdapter(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
+			OtlpConnectionDetails connectionDetails, Environment environment) {
 		super(properties);
 		this.connectionDetails = connectionDetails;
+		this.openTelemetryProperties = openTelemetryProperties;
+		this.environment = environment;
 	}
 
 	@Override
@@ -54,13 +73,28 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public Map<String, String> resourceAttributes() {
-		return get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes);
+		Map<String, String> result;
+		if (!CollectionUtils.isEmpty(this.openTelemetryProperties.getResourceAttributes())) {
+			result = new HashMap<>(this.openTelemetryProperties.getResourceAttributes());
+		}
+		else {
+			result = new HashMap<>(get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
+		}
+		result.computeIfAbsent("service.name",
+				(ignore) -> this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME));
+		return Collections.unmodifiableMap(result);
 	}
 
 	@Override
 	public Map<String, String> headers() {
 		return get(OtlpProperties::getHeaders, OtlpConfig.super::headers);
+	}
+
+	@Override
+	public TimeUnit baseTimeUnit() {
+		return get(OtlpProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
 	}
 
 }

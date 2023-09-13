@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ import org.springframework.data.cassandra.core.CassandraTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
  * Integration test for {@link DataCassandraTest @DataCassandraTest}.
@@ -84,6 +86,11 @@ class DataCassandraTestIntegrationTests {
 		this.exampleRepository.deleteAll();
 	}
 
+	@Test
+	void serviceConnectionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
+	}
+
 	@TestConfiguration(proxyBeanMethods = false)
 	static class KeyspaceTestConfiguration {
 
@@ -91,7 +98,7 @@ class DataCassandraTestIntegrationTests {
 		CqlSession cqlSession(CqlSessionBuilder cqlSessionBuilder) {
 			try (CqlSession session = cqlSessionBuilder.build()) {
 				session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
-						+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
+						+ " WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
 			}
 			return cqlSessionBuilder.withKeyspace("boot_test").build();
 		}

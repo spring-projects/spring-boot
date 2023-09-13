@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PrometheusMetricsExportAutoConfiguration}.
@@ -123,6 +124,15 @@ class PrometheusMetricsExportAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
 				.hasSingleBean(ExemplarSampler.class)
 				.hasSingleBean(PrometheusMeterRegistry.class));
+	}
+
+	@Test
+	void allowsCustomExemplarSamplerToBeUsed() {
+		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
+			.withBean("customExemplarSampler", ExemplarSampler.class, () -> mock(ExemplarSampler.class))
+			.run((context) -> assertThat(context).hasSingleBean(ExemplarSampler.class)
+				.getBean(ExemplarSampler.class)
+				.isSameAs(context.getBean("customExemplarSampler")));
 	}
 
 	@Test

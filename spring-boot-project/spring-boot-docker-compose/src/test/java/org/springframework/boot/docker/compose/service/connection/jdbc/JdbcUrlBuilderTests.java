@@ -47,7 +47,14 @@ class JdbcUrlBuilderTests {
 	}
 
 	@Test
-	void buildBuildsUrl() {
+	void buildBuildsUrlForService() {
+		RunningService service = mockService(456);
+		String url = this.builder.build(service);
+		assertThat(url).isEqualTo("jdbc:mydb://myhost:456");
+	}
+
+	@Test
+	void buildBuildsUrlForServiceAndDatabase() {
 		RunningService service = mockService(456);
 		String url = this.builder.build(service, "mydb");
 		assertThat(url).isEqualTo("jdbc:mydb://myhost:456/mydb");
@@ -64,12 +71,6 @@ class JdbcUrlBuilderTests {
 	void buildWhenServiceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(null, "mydb"))
 			.withMessage("Service must not be null");
-	}
-
-	@Test
-	void buildWhenDatabaseIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(mockService(456), null))
-			.withMessage("Database must not be null");
 	}
 
 	private RunningService mockService(int mappedPort) {

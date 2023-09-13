@@ -19,7 +19,6 @@ package org.springframework.boot.web.client;
 import java.io.File;
 
 import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -28,7 +27,6 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ClientHttpRequestFactories} when OkHttp 3 is the predominant HTTP
@@ -37,7 +35,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  */
 @ClassPathOverrides("com.squareup.okhttp3:okhttp:3.14.9")
-@ClassPathExclusions("httpclient5-*.jar")
+@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+@Deprecated(since = "3.2.0")
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesOkHttp3Tests
 		extends AbstractClientHttpRequestFactoriesTests<OkHttp3ClientHttpRequestFactory> {
 
@@ -51,12 +51,6 @@ class ClientHttpRequestFactoriesOkHttp3Tests
 			.startsWith("okhttp-3.");
 	}
 
-	@Test
-	void getFailsWhenBufferRequestBodyIsEnabled() {
-		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactories
-			.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
-	}
-
 	@Override
 	protected long connectTimeout(OkHttp3ClientHttpRequestFactory requestFactory) {
 		return ((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client")).connectTimeoutMillis();
@@ -65,11 +59,6 @@ class ClientHttpRequestFactoriesOkHttp3Tests
 	@Override
 	protected long readTimeout(OkHttp3ClientHttpRequestFactory requestFactory) {
 		return ((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client")).readTimeoutMillis();
-	}
-
-	@Override
-	@Disabled("OkHostnameVerifier fails because the JSK doesn't have a type 2 SubjectAltName")
-	void connectWithSslBundle() throws Exception {
 	}
 
 }

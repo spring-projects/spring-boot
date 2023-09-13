@@ -69,6 +69,7 @@ import org.springframework.data.couchbase.CouchbaseClientFactory;
 import org.springframework.data.couchbase.cache.CouchbaseCache;
 import org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration;
 import org.springframework.data.couchbase.cache.CouchbaseCacheManager;
+import org.springframework.data.redis.cache.FixedDurationTtlFunction;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -273,7 +274,10 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				RedisCacheManager cacheManager = getCacheManager(context, RedisCacheManager.class);
 				assertThat(cacheManager.getCacheNames()).isEmpty();
 				RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
-				assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(15));
+				assertThat(redisCacheConfiguration).extracting(RedisCacheConfiguration::getTtlFunction)
+					.isInstanceOf(FixedDurationTtlFunction.class)
+					.extracting("duration")
+					.isEqualTo(java.time.Duration.ofSeconds(15));
 				assertThat(redisCacheConfiguration.getAllowCacheNullValues()).isFalse();
 				assertThat(redisCacheConfiguration.getKeyPrefixFor("MyCache")).isEqualTo("prefixMyCache::");
 				assertThat(redisCacheConfiguration.usePrefix()).isTrue();
@@ -289,7 +293,10 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				RedisCacheManager cacheManager = getCacheManager(context, RedisCacheManager.class);
 				assertThat(cacheManager.getCacheNames()).isEmpty();
 				RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
-				assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(30));
+				assertThat(redisCacheConfiguration).extracting(RedisCacheConfiguration::getTtlFunction)
+					.isInstanceOf(FixedDurationTtlFunction.class)
+					.extracting("duration")
+					.isEqualTo(java.time.Duration.ofSeconds(30));
 				assertThat(redisCacheConfiguration.getKeyPrefixFor("")).isEqualTo("bar::");
 			});
 	}
@@ -301,7 +308,10 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 			.run((context) -> {
 				RedisCacheManager cacheManager = getCacheManager(context, RedisCacheManager.class);
 				RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
-				assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(10));
+				assertThat(redisCacheConfiguration).extracting(RedisCacheConfiguration::getTtlFunction)
+					.isInstanceOf(FixedDurationTtlFunction.class)
+					.extracting("duration")
+					.isEqualTo(java.time.Duration.ofSeconds(10));
 			});
 	}
 
@@ -321,7 +331,10 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				RedisCacheManager cacheManager = getCacheManager(context, RedisCacheManager.class);
 				assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 				RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
-				assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofMinutes(0));
+				assertThat(redisCacheConfiguration).extracting(RedisCacheConfiguration::getTtlFunction)
+					.isInstanceOf(FixedDurationTtlFunction.class)
+					.extracting("duration")
+					.isEqualTo(java.time.Duration.ofSeconds(0));
 				assertThat(redisCacheConfiguration.getAllowCacheNullValues()).isTrue();
 				assertThat(redisCacheConfiguration.getKeyPrefixFor("test")).isEqualTo("test::");
 				assertThat(redisCacheConfiguration.usePrefix()).isTrue();
@@ -770,7 +783,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	private RedisCacheConfiguration getDefaultRedisCacheConfiguration(RedisCacheManager cacheManager) {
-		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
+		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfiguration");
 	}
 
 	@Configuration(proxyBeanMethods = false)

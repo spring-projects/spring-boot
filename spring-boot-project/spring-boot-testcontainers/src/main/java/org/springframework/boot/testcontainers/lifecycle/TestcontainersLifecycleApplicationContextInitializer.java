@@ -16,8 +16,13 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 import org.testcontainers.lifecycle.Startable;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -31,9 +36,18 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class TestcontainersLifecycleApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+	private static final Set<ConfigurableApplicationContext> applied = Collections.newSetFromMap(new WeakHashMap<>());
+
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.getBeanFactory().addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor());
+		synchronized (applied) {
+			if (!applied.add(applicationContext)) {
+				return;
+			}
+		}
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+		applicationContext.addBeanFactoryPostProcessor(new TestcontainersLifecycleBeanFactoryPostProcessor());
+		beanFactory.addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor(beanFactory));
 	}
 
 }

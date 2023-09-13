@@ -34,7 +34,7 @@ public class OtlpProperties {
 	/**
 	 * URL to the OTel collector's HTTP API.
 	 */
-	private String endpoint = "http://localhost:4318/v1/traces";
+	private String endpoint;
 
 	/**
 	 * Call timeout for the OTel Collector to process an exported batch of data. This
@@ -45,7 +45,7 @@ public class OtlpProperties {
 	private Duration timeout = Duration.ofSeconds(10);
 
 	/**
-	 * The method used to compress the payload.
+	 * Method used to compress the payload.
 	 */
 	private Compression compression = Compression.NONE;
 

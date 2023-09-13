@@ -44,14 +44,15 @@ public class ArchitecturePlugin implements Plugin<Project> {
 
 	private void registerTasks(Project project) {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-		List<TaskProvider<PackageTangleCheck>> packageTangleChecks = new ArrayList<>();
+		List<TaskProvider<ArchitectureCheck>> packageTangleChecks = new ArrayList<>();
 		for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
-			TaskProvider<PackageTangleCheck> checkPackageTangles = project.getTasks()
-				.register("checkForPackageTangles" + StringUtils.capitalize(sourceSet.getName()),
-						PackageTangleCheck.class, (task) -> {
+			TaskProvider<ArchitectureCheck> checkPackageTangles = project.getTasks()
+				.register("checkArchitecture" + StringUtils.capitalize(sourceSet.getName()), ArchitectureCheck.class,
+						(task) -> {
 							task.setClasses(sourceSet.getOutput().getClassesDirs());
-							task.setDescription("Checks the classes of the " + sourceSet.getName()
-									+ " source set for package tangles.");
+							task.getResourcesDirectory().set(sourceSet.getOutput().getResourcesDir());
+							task.setDescription("Checks the architecture of the classes of the " + sourceSet.getName()
+									+ " source set.");
 							task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 						});
 			packageTangleChecks.add(checkPackageTangles);

@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.testcontainers.containers.Container;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
@@ -34,13 +35,13 @@ import org.springframework.util.ObjectUtils;
  * {@link ConnectionDetails} from a {@link ContainerConnectionSource}.
  *
  * @param <D> the connection details type
- * @param <C> the generic container type
+ * @param <C> the container type
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 3.1.0
  */
-public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDetails, C extends Container<?>>
+public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, D extends ConnectionDetails>
 		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D> {
 
 	/**
@@ -78,9 +79,9 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 		}
 		try {
 			Class<?>[] generics = resolveGenerics();
-			Class<?> connectionDetailsType = generics[0];
-			Class<?> containerType = generics[1];
-			if (source.accepts(this.connectionName, connectionDetailsType, containerType)) {
+			Class<?> containerType = generics[0];
+			Class<?> connectionDetailsType = generics[1];
+			if (source.accepts(this.connectionName, containerType, connectionDetailsType)) {
 				return getContainerConnectionDetails(source);
 			}
 		}
@@ -108,25 +109,46 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<C> source);
 
 	/**
-	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
+	 * Base class for {@link ConnectionDetails} results that are backed by a
 	 * {@link ContainerConnectionSource}.
+	 *
+	 * @param <C> the container type
 	 */
-	protected static class ContainerConnectionDetails implements ConnectionDetails, OriginProvider {
+	protected static class ContainerConnectionDetails<C extends Container<?>>
+			implements ConnectionDetails, OriginProvider, InitializingBean {
 
-		private final Origin origin;
+		private final ContainerConnectionSource<C> source;
+
+		private volatile C container;
 
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ContainerConnectionSource}
 		 */
-		protected ContainerConnectionDetails(ContainerConnectionSource<?> source) {
+		protected ContainerConnectionDetails(ContainerConnectionSource<C> source) {
 			Assert.notNull(source, "Source must not be null");
-			this.origin = source.getOrigin();
+			this.source = source;
+		}
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			this.container = this.source.getContainerSupplier().get();
+		}
+
+		/**
+		 * Return the container that back this connection details instance. This method
+		 * can only be called once the connection details bean has been initialized.
+		 * @return the container instance
+		 */
+		protected final C getContainer() {
+			Assert.state(this.container != null,
+					"Container cannot be obtained before the connection details bean has been initialized");
+			return this.container;
 		}
 
 		@Override
 		public Origin getOrigin() {
-			return this.origin;
+			return this.source.getOrigin();
 		}
 
 	}

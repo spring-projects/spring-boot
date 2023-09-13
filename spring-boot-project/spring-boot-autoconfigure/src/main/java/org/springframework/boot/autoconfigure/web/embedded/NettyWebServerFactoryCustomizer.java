@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 
 import io.netty.channel.ChannelOption;
-import reactor.netty.http.server.HttpRequestDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -64,6 +63,11 @@ public class NettyWebServerFactoryCustomizer
 		map.from(nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		map.from(nettyProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
+		if (this.serverProperties.getHttp2() != null && this.serverProperties.getHttp2().isEnabled()) {
+			map.from(this.serverProperties.getMaxHttpRequestHeaderSize())
+				.whenNonNull()
+				.to((size) -> customizeHttp2MaxHeaderSize(factory, size.toBytes()));
+		}
 		customizeRequestDecoder(factory, map);
 	}
 
@@ -87,7 +91,6 @@ public class NettyWebServerFactoryCustomizer
 				.to((maxHttpRequestHeader) -> httpRequestDecoderSpec
 					.maxHeaderSize((int) maxHttpRequestHeader.toBytes()));
 			ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-			maxChunkSize(propertyMapper, httpRequestDecoderSpec, nettyProperties);
 			propertyMapper.from(nettyProperties.getMaxInitialLineLength())
 				.whenNonNull()
 				.to((maxInitialLineLength) -> httpRequestDecoderSpec
@@ -106,20 +109,17 @@ public class NettyWebServerFactoryCustomizer
 		}));
 	}
 
-	@SuppressWarnings({ "deprecation", "removal" })
-	private void maxChunkSize(PropertyMapper propertyMapper, HttpRequestDecoderSpec httpRequestDecoderSpec,
-			ServerProperties.Netty nettyProperties) {
-		propertyMapper.from(nettyProperties.getMaxChunkSize())
-			.whenNonNull()
-			.to((maxChunkSize) -> httpRequestDecoderSpec.maxChunkSize((int) maxChunkSize.toBytes()));
-	}
-
 	private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
 		factory.addServerCustomizers((httpServer) -> httpServer.idleTimeout(idleTimeout));
 	}
 
 	private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
 		factory.addServerCustomizers((httpServer) -> httpServer.maxKeepAliveRequests(maxKeepAliveRequests));
+	}
+
+	private void customizeHttp2MaxHeaderSize(NettyReactiveWebServerFactory factory, long size) {
+		factory.addServerCustomizers(
+				((httpServer) -> httpServer.http2Settings((settings) -> settings.maxHeaderListSize(size))));
 	}
 
 }

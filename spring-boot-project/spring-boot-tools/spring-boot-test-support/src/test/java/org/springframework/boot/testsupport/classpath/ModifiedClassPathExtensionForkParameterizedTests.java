@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ class ModifiedClassPathExtensionForkParameterizedTests {
 	private static final List<String> arguments = new ArrayList<>();
 
 	@ParameterizedTest
-	@CsvSource({ "one", "two", "three" })
+	@ValueSource(strings = { "one", "two", "three" })
 	void testIsInvokedOnceForEachArgument(String argument) {
 		if (argument.equals("one")) {
 			assertThat(arguments).isEmpty();

@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: 'rabbitmq:3.11'
+    image: '{imageName}'
     environment:
       - 'RABBITMQ_DEFAULT_USER=myuser'
       - 'RABBITMQ_DEFAULT_PASS=secret'

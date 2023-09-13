@@ -35,6 +35,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.config.EnableElasticsearchAuditing;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,12 +46,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
 class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
+		.withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
 
@@ -79,6 +82,12 @@ class ElasticsearchRepositoriesAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(CityElasticsearchDbRepository.class));
 	}
 
+	@Test
+	void testAuditingConfiguration() {
+		this.contextRunner.withUserConfiguration(AuditingConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ElasticsearchTemplate.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class TestConfiguration {
@@ -95,6 +104,14 @@ class ElasticsearchRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
 	@EnableElasticsearchRepositories(basePackageClasses = CityElasticsearchDbRepository.class)
 	static class CustomizedConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
+	@EnableElasticsearchRepositories
+	@EnableElasticsearchAuditing
+	static class AuditingConfiguration {
 
 	}
 

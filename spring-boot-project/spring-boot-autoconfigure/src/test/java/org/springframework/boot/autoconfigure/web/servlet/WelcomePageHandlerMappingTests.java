@@ -22,6 +22,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,8 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +56,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link WelcomePageHandlerMapping}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
+@ExtendWith(OutputCaptureExtension.class)
 class WelcomePageHandlerMappingTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
@@ -115,7 +120,6 @@ class WelcomePageHandlerMappingTests {
 				.perform(get("/").header(HttpHeaders.ACCEPT, ""))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("index.html")));
-
 	}
 
 	@Test
@@ -162,6 +166,17 @@ class WelcomePageHandlerMappingTests {
 					.andExpect(status().isOk())
 					.andExpect(forwardedUrl("index.html"));
 			});
+	}
+
+	@Test
+	void logsInvalidAcceptHeader(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TemplateConfiguration.class).run((context) -> {
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+			mockMvc.perform(get("/").accept("*/*q=0.8"))
+				.andExpect(status().isOk())
+				.andExpect(content().string("index template"));
+		});
+		assertThat(output).contains("Received invalid Accept header. Assuming all media types are accepted");
 	}
 
 	@Configuration(proxyBeanMethods = false)

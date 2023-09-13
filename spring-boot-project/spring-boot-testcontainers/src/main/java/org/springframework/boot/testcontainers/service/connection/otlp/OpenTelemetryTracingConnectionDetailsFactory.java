@@ -33,7 +33,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  */
 class OpenTelemetryTracingConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<OtlpTracingConnectionDetails, Container<?>> {
+		extends ContainerConnectionDetailsFactory<Container<?>, OtlpTracingConnectionDetails> {
 
 	OpenTelemetryTracingConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
@@ -46,20 +46,16 @@ class OpenTelemetryTracingConnectionDetailsFactory
 		return new OpenTelemetryTracingConnectionDetails(source);
 	}
 
-	private static final class OpenTelemetryTracingConnectionDetails extends ContainerConnectionDetails
+	private static final class OpenTelemetryTracingConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements OtlpTracingConnectionDetails {
-
-		private final String endpoint;
 
 		private OpenTelemetryTracingConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
-			this.endpoint = "http://" + source.getContainer().getHost() + ":"
-					+ source.getContainer().getMappedPort(4318) + "/v1/traces";
 		}
 
 		@Override
 		public String getEndpoint() {
-			return this.endpoint;
+			return "http://" + getContainer().getHost() + ":" + getContainer().getMappedPort(4318) + "/v1/traces";
 		}
 
 	}

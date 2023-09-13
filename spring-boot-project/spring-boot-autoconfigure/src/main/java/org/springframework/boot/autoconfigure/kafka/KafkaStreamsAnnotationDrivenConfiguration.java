@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -30,7 +29,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails.Node;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -87,15 +85,10 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
-		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(connectionDetails.getStreamsBootstrapNodes()));
+		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getStreamsBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		}
-	}
-
-	private List<String> nodesToStringList(List<Node> nodes) {
-		return nodes.stream().map((node) -> node.host() + ":" + node.port()).toList();
 	}
 
 	// Separate class required to avoid BeanCurrentlyInCreationException

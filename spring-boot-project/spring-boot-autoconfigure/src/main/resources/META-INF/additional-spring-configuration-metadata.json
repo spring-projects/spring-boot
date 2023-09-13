@@ -116,12 +116,26 @@
       }
     },
     {
+      "name": "server.max-http-header-size",
+      "deprecation": {
+        "replacement": "server.max-http-request-header-size",
+        "level": "error"
+      }
+    },
+    {
       "name": "server.max-http-post-size",
       "type": "java.lang.Integer",
       "description": "Maximum size in bytes of the HTTP post content.",
       "defaultValue": 0,
       "deprecation": {
         "reason": "Use dedicated property for each container.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.netty.max-chunk-size",
+      "deprecation": {
+        "reason": "Deprecated for removal in Reactor Netty.",
         "level": "error"
       }
     },
@@ -210,7 +224,10 @@
     },
     {
       "name": "server.servlet.session.cookie.comment",
-      "description": "Comment for the cookie."
+      "description": "Comment for the cookie.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "server.servlet.session.cookie.domain",
@@ -1105,6 +1122,14 @@
       "defaultValue": true
     },
     {
+      "name": "spring.data.redis.ssl",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.data.redis.ssl.enabled",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.rest.detection-strategy",
       "defaultValue": "default"
     },
@@ -1560,167 +1585,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.jta.bitronix.properties.allow-multiple-lrc",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.asynchronous2-pc",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.background-recovery-interval",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.background-recovery-interval-seconds",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.current-node-only-recovery",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.debug-zero-resource-transaction",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.default-transaction-timeout",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.disable-jmx",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.exception-analyzer",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.filter-log-status",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.force-batching-enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.forced-write-enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.graceful-shutdown-interval",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.jndi-user-transaction-name",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.journal",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.log-part1-filename",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.log-part2-filename",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.max-log-size-in-mb",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.resource-configuration-filename",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.server-id",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.skip-corrupted-logs",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.properties.warn-about-zero-resource-transaction",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.jta.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JTA support.",
@@ -2036,6 +1900,13 @@
       }
     },
     {
+      "name": "spring.liquibase.labels",
+      "deprecation": {
+        "replacement": "spring.liquibase.label-filter",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.mail.test-connection",
       "description": "Whether to test that the mail server is available on startup.",
       "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
@@ -2098,6 +1969,13 @@
       "defaultValue": false
     },
     {
+      "name": "spring.mvc.ignore-default-model-on-redirect",
+      "deprecation": {
+        "reason": "Deprecated for removal in Spring MVC.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.mvc.locale",
       "type": "java.util.Locale",
       "deprecation": {
@@ -2124,6 +2002,18 @@
     {
       "name": "spring.neo4j.uri",
       "defaultValue": "bolt://localhost:7687"
+    },
+    {
+      "name": "spring.pulsar.function.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable function support.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.producer.cache.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable caching in the PulsarProducerFactory.",
+      "defaultValue": true
     },
     {
       "name": "spring.quartz.jdbc.comment-prefix",
@@ -2816,6 +2706,12 @@
     {
       "name": "spring.sql.init.mode",
       "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.threads.virtual.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use virtual threads.",
+      "defaultValue": false
     },
     {
       "name": "spring.thymeleaf.prefix",

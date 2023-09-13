@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
+import org.springframework.core.annotation.AliasFor;
 
 /**
  * Identifies a type as being a Cloud Foundry specific extension for an
@@ -43,6 +44,7 @@ public @interface EndpointCloudFoundryExtension {
 	 * The class of the endpoint to provide a Cloud Foundry specific extension for.
 	 * @return the class of the endpoint to extend
 	 */
+	@AliasFor(annotation = EndpointExtension.class, attribute = "endpoint")
 	Class<?> endpoint();
 
 }

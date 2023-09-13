@@ -39,7 +39,7 @@ class JsonMarshallerTests {
 	void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(), InputStream.class.getName(),
-				"sourceMethod", "desc", "x", new ItemDeprecation("Deprecation comment", "b.c.d")));
+				"sourceMethod", "desc", "x", new ItemDeprecation("Deprecation comment", "b.c.d", "1.2.3")));
 		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null, null, null));
 		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123, null));
 		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true, null));
@@ -59,7 +59,7 @@ class JsonMarshallerTests {
 			.fromSource(InputStream.class)
 			.withDescription("desc")
 			.withDefaultValue("x")
-			.withDeprecation("Deprecation comment", "b.c.d"));
+			.withDeprecation("Deprecation comment", "b.c.d", "1.2.3"));
 		assertThat(read).has(Metadata.withProperty("b.c.d"));
 		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123));
 		assertThat(read).has(Metadata.withProperty("d").withDefaultValue(true));
@@ -96,10 +96,10 @@ class JsonMarshallerTests {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null));
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null,
-				new ItemDeprecation(null, null, "warning")));
+				new ItemDeprecation(null, null, null, "warning")));
 		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null, null, null, null, null));
 		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null, null, null, null,
-				new ItemDeprecation(null, null, "warning")));
+				new ItemDeprecation(null, null, null, "warning")));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);

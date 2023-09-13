@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -28,7 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Johannes Graf
  */
-class StackdriverPropertiesConfigAdapterTests {
+class StackdriverPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<StackdriverProperties, StackdriverPropertiesConfigAdapter> {
+
+	StackdriverPropertiesConfigAdapterTests() {
+		super(StackdriverPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesProjectIdIsSetAdapterProjectIdReturnsIt() {
@@ -60,6 +67,20 @@ class StackdriverPropertiesConfigAdapterTests {
 		StackdriverProperties properties = new StackdriverProperties();
 		properties.setUseSemanticMetricTypes(true);
 		assertThat(new StackdriverPropertiesConfigAdapter(properties).useSemanticMetricTypes()).isTrue();
+	}
+
+	@Test
+	void whenPropertiesMetricTypePrefixIsSetAdapterMetricTypePrefixReturnsIt() {
+		StackdriverProperties properties = new StackdriverProperties();
+		properties.setMetricTypePrefix("external.googleapis.com/prometheus");
+		assertThat(new StackdriverPropertiesConfigAdapter(properties).metricTypePrefix())
+			.isEqualTo("external.googleapis.com/prometheus");
+	}
+
+	@Test
+	@Override
+	protected void adapterOverridesAllConfigMethods() {
+		adapterOverridesAllConfigMethodsExcept("credentials");
 	}
 
 }

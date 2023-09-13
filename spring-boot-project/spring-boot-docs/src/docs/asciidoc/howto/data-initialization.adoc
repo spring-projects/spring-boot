@@ -38,11 +38,17 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 [[howto.data-initialization.using-basic-sql-scripts]]
 === Initialize a Database Using Basic SQL Scripts
-Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize it (DML scripts).
-It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
-In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
+Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize its data (DML scripts).
+
+By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
+The locations of these schema and data scripts can customized using configprop:spring.sql.init.schema-locations[] and configprop:spring.sql.init.data-locations[] respectively.
+The `optional:` prefix means that the application will start when the files do not exist.
+To have the application fail to start when the files are absent, remove the `optional:` prefix.
+
+In addition, Spring Boot processes the `optional:classpath*:schema-$\{platform}.sql` and `optional:classpath*:data-$\{platform}.sql` files (if present), where `$\{platform}` is the value of configprop:spring.sql.init.platform[].
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
+
 By default, SQL database initialization is only performed when using an embedded in-memory database.
 To always initialize an SQL database, irrespective of its type, set configprop:spring.sql.init.mode[] to `always`.
 Similarly, to disable initialization, set configprop:spring.sql.init.mode[] to `never`.
@@ -211,6 +217,7 @@ Spring Boot will automatically detect beans of the following types that depends 
 - `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
 - `DSLContext` (jOOQ)
 - `EntityManagerFactory` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- `JdbcClient`
 - `JdbcOperations`
 - `NamedParameterJdbcOperations`
 

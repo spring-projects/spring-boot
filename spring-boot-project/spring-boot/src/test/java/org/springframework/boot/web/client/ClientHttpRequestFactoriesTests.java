@@ -27,6 +27,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
@@ -69,10 +70,19 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0")
+	@SuppressWarnings("removal")
 	void getOfOkHttpFactoryReturnsOkHttpFactory() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(OkHttp3ClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void getOfJdkFactoryReturnsJdkFactory() {
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(JdkClientHttpRequestFactory.class,
+				ClientHttpRequestFactorySettings.DEFAULTS);
+		assertThat(requestFactory).isInstanceOf(JdkClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -101,14 +111,6 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
-	void getOfUnknownTypeWithBodyBufferingCreatesFactoryAndConfiguresBodyBuffering() {
-		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(TestClientHttpRequestFactory.class,
-				ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true));
-		assertThat(requestFactory).isInstanceOf(TestClientHttpRequestFactory.class);
-		assertThat(((TestClientHttpRequestFactory) requestFactory).bufferRequestBody).isTrue();
-	}
-
-	@Test
 	void getOfUnconfigurableTypeWithConnectTimeoutThrows() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
@@ -125,14 +127,6 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
-	void getOfUnconfigurableTypeWithBodyBufferingThrows() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
-					ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)))
-			.withMessageContaining("suitable setBufferRequestBody method");
-	}
-
-	@Test
 	void getOfTypeWithDeprecatedConnectTimeoutThrowsWithConnectTimeout() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
@@ -146,14 +140,6 @@ class ClientHttpRequestFactoriesTests {
 			.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
 					ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(60))))
 			.withMessageContaining("setReadTimeout method marked as deprecated");
-	}
-
-	@Test
-	void getOfTypeWithDeprecatedBufferRequestBodyThrowsWithBufferRequestBody() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
-					ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(false)))
-			.withMessageContaining("setBufferRequestBody method marked as deprecated");
 	}
 
 	@Test
@@ -176,24 +162,11 @@ class ClientHttpRequestFactoriesTests {
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
 
-	@Test
-	void bufferRequestBodyCanBeConfiguredOnAWrappedRequestFactory() {
-		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
-		BufferingClientHttpRequestFactory result = ClientHttpRequestFactories.get(
-				() -> new BufferingClientHttpRequestFactory(requestFactory),
-				ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(false));
-		assertThat(result).extracting("requestFactory").isSameAs(requestFactory);
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", false);
-	}
-
 	public static class TestClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		private int connectTimeout;
 
 		private int readTimeout;
-
-		private boolean bufferRequestBody;
 
 		@Override
 		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
@@ -206,10 +179,6 @@ class ClientHttpRequestFactoriesTests {
 
 		public void setReadTimeout(int timeout) {
 			this.readTimeout = timeout;
-		}
-
-		public void setBufferRequestBody(boolean bufferRequestBody) {
-			this.bufferRequestBody = bufferRequestBody;
 		}
 
 	}

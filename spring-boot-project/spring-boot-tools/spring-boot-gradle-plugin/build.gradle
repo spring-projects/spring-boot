@@ -23,6 +23,11 @@ configurations {
 				if (dependency.requested.group.startsWith("com.fasterxml.jackson")) {
 					dependency.useVersion("2.14.2")
 				}
+				// Downgrade Spring Framework as Gradle cannot cope with 6.1.0-M1's
+				// multi-version jar files with bytecode in META-INF/versions/21
+				if (dependency.requested.group.equals("org.springframework")) {
+					dependency.useVersion("6.0.10")
+				}
 			}
 		}
 	}
@@ -70,7 +75,7 @@ gradlePlugin {
 }
 
 task preparePluginValidationClasses(type: Copy) {
-	destinationDir = file("$buildDir/classes/java/pluginValidation")
+	destinationDir = layout.buildDirectory.dir("classes/java/pluginValidation").get().asFile
 	from(sourceSets.main.output.classesDirs) {
 		exclude "**/CreateBootStartScripts.class"
 	}
@@ -148,5 +153,5 @@ artifacts {
 }
 
 toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(18)
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
 }

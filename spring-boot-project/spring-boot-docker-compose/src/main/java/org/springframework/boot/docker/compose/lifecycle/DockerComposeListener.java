@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * {@link ApplicationListener} used to setup a {@link DockerComposeLifecycleManager}.
+ * {@link ApplicationListener} used to set up a {@link DockerComposeLifecycleManager}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -41,7 +41,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 	}
 
 	DockerComposeListener(SpringApplicationShutdownHandlers shutdownHandlers) {
-		this.shutdownHandlers = SpringApplication.getShutdownHandlers();
+		this.shutdownHandlers = shutdownHandlers;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		Binder binder = Binder.get(applicationContext.getEnvironment());
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
 		Set<ApplicationListener<?>> eventListeners = event.getSpringApplication().getListeners();
-		createDockerComposeLifecycleManager(applicationContext, binder, properties, eventListeners).startup();
+		createDockerComposeLifecycleManager(applicationContext, binder, properties, eventListeners).start();
 	}
 
 	protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(

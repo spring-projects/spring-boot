@@ -16,38 +16,28 @@
 
 package org.springframework.boot.context.properties;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.AssertProvider;
+import org.assertj.core.error.BasicErrorMessageFactory;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.generate.GenerationContext;
-import org.springframework.aot.hint.ExecutableHint;
-import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.AotServices;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor.ConfigurationPropertiesReflectionHintsContribution;
+import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConfigurationPropertiesBeanFactoryInitializationAotProcessor}.
@@ -55,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  * @author Sebastien Deleuze
+ * @author Andy Wilkinson
  */
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
@@ -68,222 +59,76 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	@Test
 	void processNoMatchesReturnsNullContribution() {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerBeanDefinition("test", new RootBeanDefinition(String.class));
-		assertThat(this.processor.processAheadOfTime(beanFactory)).isNull();
+		assertThat(process(String.class)).isNull();
 	}
 
 	@Test
-	void processManuallyRegisteredSingleton() {
+	void manuallyRegisteredSingletonBindsAsJavaBean() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("test", new SampleProperties());
-		RuntimeHints runtimeHints = process(beanFactory);
-		assertThat(runtimeHints.reflection().getTypeHint(SampleProperties.class))
-			.satisfies(javaBeanBinding(SampleProperties.class));
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(beanFactory);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN).hasType(SampleProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(SampleProperties.class));
 	}
 
 	@Test
-	void processJavaBeanConfigurationProperties() {
-		RuntimeHints runtimeHints = process(SampleProperties.class);
-		assertThat(runtimeHints.reflection().getTypeHint(SampleProperties.class))
-			.satisfies(javaBeanBinding(SampleProperties.class));
+	void javaBeanConfigurationPropertiesBindAsJavaBean() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(EnableJavaBeanProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN).hasType(JavaBeanProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(JavaBeanProperties.class));
 	}
 
 	@Test
-	void processJavaBeanConfigurationPropertiesWithSeveralConstructors() throws NoSuchMethodException {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithSeveralConstructors.class);
-		assertThat(runtimeHints.reflection().getTypeHint(SamplePropertiesWithSeveralConstructors.class))
-			.satisfies(javaBeanBinding(SamplePropertiesWithSeveralConstructors.class,
-					SamplePropertiesWithSeveralConstructors.class.getDeclaredConstructor()));
+	void constructorBindingConfigurationPropertiesBindAsValueObject() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnableConstructorBindingProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.VALUE_OBJECT)
+			.hasType(ConstructorBindingProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(ConstructorBindingProperties.class));
 	}
 
 	@Test
-	void processJavaBeanConfigurationPropertiesWithMapOfPojo() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithMap.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithMap.class));
-		assertThat(typeHints).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(typeHints).hasSize(2);
+	void possibleConstructorBindingPropertiesDefinedThroughBeanMethodBindAsJavaBean() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				PossibleConstructorBindingPropertiesBeanMethodConfiguration.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN)
+			.hasType(PossibleConstructorBindingProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(PossibleConstructorBindingProperties.class));
 	}
 
 	@Test
-	void processJavaBeanConfigurationPropertiesWithListOfPojo() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithList.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithList.class));
-		assertThat(typeHints).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(typeHints).hasSize(2);
+	void possibleConstructorBindingPropertiesDefinedThroughEnabledAnnotationBindAsValueObject() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnablePossibleConstructorBindingProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.VALUE_OBJECT)
+			.hasType(PossibleConstructorBindingProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(PossibleConstructorBindingProperties.class));
 	}
 
-	@Test
-	void processJavaBeanConfigurationPropertiesWitArrayOfPojo() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithArray.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithArray.class));
-		assertThat(typeHints).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(typeHints).hasSize(2);
+	private Stream<TypeHint> typeHints(ConfigurationPropertiesReflectionHintsContribution contribution) {
+		TestGenerationContext generationContext = new TestGenerationContext();
+		contribution.applyTo(generationContext, null);
+		return generationContext.getRuntimeHints().reflection().typeHints();
 	}
 
-	@Test
-	void processJavaBeanConfigurationPropertiesWithListOfJavaType() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithSimpleList.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithSimpleList.class));
-		assertThat(typeHints).hasSize(1);
-	}
-
-	@Test
-	void processValueObjectConfigurationProperties() {
-		RuntimeHints runtimeHints = process(SampleImmutableProperties.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(valueObjectBinding(SampleImmutableProperties.class,
-				SampleImmutableProperties.class.getDeclaredConstructors()[0]));
-		assertThat(typeHints).hasSize(1);
-	}
-
-	@Test
-	void processValueObjectConfigurationPropertiesWithSpecificConstructor() throws NoSuchMethodException {
-		RuntimeHints runtimeHints = process(SampleImmutablePropertiesWithSeveralConstructors.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithSeveralConstructors.class,
-				SampleImmutablePropertiesWithSeveralConstructors.class.getDeclaredConstructor(String.class)));
-		assertThat(typeHints).hasSize(1);
-	}
-
-	@Test
-	void processValueObjectConfigurationPropertiesWithSeveralLayersOfPojo() {
-		RuntimeHints runtimeHints = process(SampleImmutablePropertiesWithList.class);
-		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
-		assertThat(typeHints).anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithList.class,
-				SampleImmutablePropertiesWithList.class.getDeclaredConstructors()[0]));
-		assertThat(typeHints).anySatisfy(valueObjectBinding(Person.class, Person.class.getDeclaredConstructors()[0]));
-		assertThat(typeHints).anySatisfy(valueObjectBinding(Address.class, Address.class.getDeclaredConstructors()[0]));
-		assertThat(typeHints).hasSize(3);
-	}
-
-	@Test
-	void processConfigurationPropertiesWithNestedTypeNotUsedIsIgnored() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithNested.class);
-		assertThat(runtimeHints.reflection().getTypeHint(SamplePropertiesWithNested.class))
-			.satisfies(javaBeanBinding(SamplePropertiesWithNested.class));
-	}
-
-	@Test
-	void processConfigurationPropertiesWithNestedExternalType() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithExternalNested.class);
-		assertThat(runtimeHints.reflection().typeHints())
-			.anySatisfy(javaBeanBinding(SamplePropertiesWithExternalNested.class))
-			.anySatisfy(javaBeanBinding(SampleType.class))
-			.anySatisfy(javaBeanBinding(SampleType.Nested.class))
-			.hasSize(3);
-	}
-
-	@Test
-	void processConfigurationPropertiesWithRecursiveType() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithRecursive.class);
-		assertThat(runtimeHints.reflection().typeHints())
-			.anySatisfy(javaBeanBinding(SamplePropertiesWithRecursive.class))
-			.anySatisfy(javaBeanBinding(Recursive.class))
-			.hasSize(2);
-	}
-
-	@Test
-	void processValueObjectConfigurationPropertiesWithRecursiveType() {
-		RuntimeHints runtimeHints = process(SampleImmutablePropertiesWithRecursive.class);
-		assertThat(runtimeHints.reflection().typeHints())
-			.anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithRecursive.class,
-					SampleImmutablePropertiesWithRecursive.class.getDeclaredConstructors()[0]))
-			.anySatisfy(
-					valueObjectBinding(ImmutableRecursive.class, ImmutableRecursive.class.getDeclaredConstructors()[0]))
-			.hasSize(2);
-	}
-
-	@Test
-	void processConfigurationPropertiesWithWellKnownTypes() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithWellKnownTypes.class);
-		assertThat(runtimeHints.reflection().typeHints())
-			.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class))
-			.hasSize(1);
-	}
-
-	@Test
-	void processConfigurationPropertiesWithCrossReference() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithCrossReference.class);
-		assertThat(runtimeHints.reflection().typeHints())
-			.anySatisfy(javaBeanBinding(SamplePropertiesWithCrossReference.class))
-			.anySatisfy(javaBeanBinding(CrossReferenceA.class))
-			.anySatisfy(javaBeanBinding(CrossReferenceB.class))
-			.hasSize(3);
-	}
-
-	@Test
-	void processConfigurationPropertiesWithUnresolvedGeneric() {
-		RuntimeHints runtimeHints = process(SamplePropertiesWithGeneric.class);
-		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(SamplePropertiesWithGeneric.class))
-			.anySatisfy(javaBeanBinding(GenericObject.class));
-	}
-
-	@Test
-	void processConfigurationPropertiesWithNestedGenerics() {
-		RuntimeHints runtimeHints = process(NestedGenerics.class);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.class)).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.Nested.class)).accepts(runtimeHints);
-	}
-
-	@Test
-	void processConfigurationPropertiesWithMultipleNestedClasses() {
-		RuntimeHints runtimeHints = process(TripleNested.class);
-		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.class)).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.class)).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.Nested.class))
-			.accepts(runtimeHints);
-	}
-
-	private Consumer<TypeHint> javaBeanBinding(Class<?> type) {
-		return javaBeanBinding(type, type.getDeclaredConstructors()[0]);
-	}
-
-	private Consumer<TypeHint> javaBeanBinding(Class<?> type, Constructor<?> constructor) {
-		return (entry) -> {
-			assertThat(entry.getType()).isEqualTo(TypeReference.of(type));
-			assertThat(entry.constructors()).singleElement().satisfies(match(constructor));
-			assertThat(entry.getMemberCategories()).isEmpty();
-			assertThat(entry.methods()).allMatch((t) -> t.getName().startsWith("set") || t.getName().startsWith("get")
-					|| t.getName().startsWith("is"));
-		};
-	}
-
-	private Consumer<TypeHint> valueObjectBinding(Class<?> type, Constructor<?> constructor) {
-		return (entry) -> {
-			assertThat(entry.getType()).isEqualTo(TypeReference.of(type));
-			assertThat(entry.constructors()).singleElement().satisfies(match(constructor));
-			assertThat(entry.getMemberCategories()).isEmpty();
-			assertThat(entry.methods()).isEmpty();
-		};
-	}
-
-	private Consumer<ExecutableHint> match(Constructor<?> constructor) {
-		return (executableHint) -> {
-			assertThat(executableHint.getName()).isEqualTo("<init>");
-			assertThat(Arrays.stream(constructor.getParameterTypes()).map(TypeReference::of).toList())
-				.isEqualTo(executableHint.getParameterTypes());
-		};
-	}
-
-	private RuntimeHints process(Class<?>... types) {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		for (Class<?> type : types) {
-			beanFactory.registerBeanDefinition(type.getName(), new RootBeanDefinition(type));
+	private ConfigurationPropertiesReflectionHintsContribution process(Class<?> config) {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(config)) {
+			return process(context.getBeanFactory());
 		}
-		return process(beanFactory);
 	}
 
-	private RuntimeHints process(ConfigurableListableBeanFactory beanFactory) {
-		BeanFactoryInitializationAotContribution contribution = this.processor.processAheadOfTime(beanFactory);
-		assertThat(contribution).isNotNull();
-		GenerationContext generationContext = new TestGenerationContext();
-		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
-		return generationContext.getRuntimeHints();
+	private ConfigurationPropertiesReflectionHintsContribution process(ConfigurableListableBeanFactory beanFactory) {
+		return this.processor.processAheadOfTime(beanFactory);
+	}
+
+	private BindableAssertProvider singleBindable(ConfigurationPropertiesReflectionHintsContribution contribution) {
+		assertThat(contribution.getBindables()).hasSize(1);
+		return new BindableAssertProvider(contribution.getBindables().iterator().next());
 	}
 
 	@ConfigurationProperties("test")
@@ -291,373 +136,117 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	}
 
-	@ConfigurationProperties("test")
-	public static class SamplePropertiesWithSeveralConstructors {
-
-		SamplePropertiesWithSeveralConstructors() {
-		}
-
-		SamplePropertiesWithSeveralConstructors(String ignored) {
-		}
+	@EnableConfigurationProperties(JavaBeanProperties.class)
+	static class EnableJavaBeanProperties {
 
 	}
 
-	@ConfigurationProperties("test")
-	public static class SamplePropertiesWithMap {
+	@ConfigurationProperties("java-bean")
+	static class JavaBeanProperties {
 
-		public Map<String, Address> getAddresses() {
-			return Collections.emptyMap();
+		private String value;
+
+		String getValue() {
+			return this.value;
 		}
 
-	}
-
-	@ConfigurationProperties("test")
-	public static class SamplePropertiesWithList {
-
-		public List<Address> getAllAddresses() {
-			return Collections.emptyList();
-		}
-
-	}
-
-	@ConfigurationProperties("test")
-	public static class SamplePropertiesWithSimpleList {
-
-		public List<String> getNames() {
-			return Collections.emptyList();
-		}
-
-	}
-
-	@ConfigurationProperties("test")
-	public static class SamplePropertiesWithArray {
-
-		public Address[] getAllAddresses() {
-			return new Address[0];
-		}
-
-	}
-
-	@ConfigurationProperties
-	public static class SampleImmutableProperties {
-
-		@SuppressWarnings("unused")
-		private final String name;
-
-		SampleImmutableProperties(String name) {
-			this.name = name;
-		}
-
-	}
-
-	@ConfigurationProperties
-	public static class SampleImmutablePropertiesWithSeveralConstructors {
-
-		@SuppressWarnings("unused")
-		private final String name;
-
-		@ConstructorBinding
-		SampleImmutablePropertiesWithSeveralConstructors(String name) {
-			this.name = name;
-		}
-
-		SampleImmutablePropertiesWithSeveralConstructors() {
-			this("test");
-		}
-
-	}
-
-	@ConfigurationProperties
-	public static class SampleImmutablePropertiesWithList {
-
-		@SuppressWarnings("unused")
-		private final List<Person> family;
-
-		SampleImmutablePropertiesWithList(List<Person> family) {
-			this.family = family;
-		}
-
-	}
-
-	@ConfigurationProperties("nested")
-	public static class SamplePropertiesWithNested {
-
-		static class OneLevelDown {
-
-		}
-
-	}
-
-	@ConfigurationProperties("nested")
-	public static class SamplePropertiesWithExternalNested {
-
-		private String name;
-
-		@NestedConfigurationProperty
-		private SampleType sampleType;
-
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public SampleType getSampleType() {
-			return this.sampleType;
-		}
-
-		public void setSampleType(SampleType sampleType) {
-			this.sampleType = sampleType;
-		}
-
-	}
-
-	@ConfigurationProperties("recursive")
-	public static class SamplePropertiesWithRecursive {
-
-		@NestedConfigurationProperty
-		private Recursive recursive;
-
-		public Recursive getRecursive() {
-			return this.recursive;
-		}
-
-		public void setRecursive(Recursive recursive) {
-			this.recursive = recursive;
-		}
-
-	}
-
-	@ConfigurationProperties
-	public static class SampleImmutablePropertiesWithRecursive {
-
-		@NestedConfigurationProperty
-		private final ImmutableRecursive recursive;
-
-		SampleImmutablePropertiesWithRecursive(ImmutableRecursive recursive) {
-			this.recursive = recursive;
-		}
-
-	}
-
-	@ConfigurationProperties("wellKnownTypes")
-	public static class SamplePropertiesWithWellKnownTypes implements ApplicationContextAware, EnvironmentAware {
-
-		private ApplicationContext applicationContext;
-
-		private Environment environment;
-
-		public ApplicationContext getApplicationContext() {
-			return this.applicationContext;
-		}
-
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
-
-		public Environment getEnvironment() {
-			return this.environment;
-		}
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = environment;
-		}
-
-	}
-
-	public static class SampleType {
-
-		private final Nested nested = new Nested();
-
-		public Nested getNested() {
-			return this.nested;
-		}
-
-		static class Nested {
-
-		}
-
-	}
-
-	public static class Address {
-
-	}
-
-	public static class Person {
-
-		@SuppressWarnings("unused")
-		private final String firstName;
-
-		@SuppressWarnings("unused")
-		private final String lastName;
-
-		@NestedConfigurationProperty
-		private final Address address;
-
-		Person(String firstName, String lastName, Address address) {
-			this.firstName = firstName;
-			this.lastName = lastName;
-			this.address = address;
-		}
-
-	}
-
-	public static class Recursive {
-
-		private Recursive recursive;
-
-		public Recursive getRecursive() {
-			return this.recursive;
-		}
-
-		public void setRecursive(Recursive recursive) {
-			this.recursive = recursive;
-		}
-
-	}
-
-	public static class ImmutableRecursive {
-
-		@SuppressWarnings("unused")
-		private final ImmutableRecursive recursive;
-
-		ImmutableRecursive(ImmutableRecursive recursive) {
-			this.recursive = recursive;
-		}
-
-	}
-
-	@ConfigurationProperties("crossreference")
-	public static class SamplePropertiesWithCrossReference {
-
-		@NestedConfigurationProperty
-		private CrossReferenceA crossReferenceA;
-
-		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
-			this.crossReferenceA = crossReferenceA;
-		}
-
-		public CrossReferenceA getCrossReferenceA() {
-			return this.crossReferenceA;
-		}
-
-	}
-
-	public static class CrossReferenceA {
-
-		@NestedConfigurationProperty
-		private CrossReferenceB crossReferenceB;
-
-		public void setCrossReferenceB(CrossReferenceB crossReferenceB) {
-			this.crossReferenceB = crossReferenceB;
-		}
-
-		public CrossReferenceB getCrossReferenceB() {
-			return this.crossReferenceB;
-		}
-
-	}
-
-	public static class CrossReferenceB {
-
-		private CrossReferenceA crossReferenceA;
-
-		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
-			this.crossReferenceA = crossReferenceA;
-		}
-
-		public CrossReferenceA getCrossReferenceA() {
-			return this.crossReferenceA;
-		}
-
-	}
-
-	@ConfigurationProperties(prefix = "generic")
-	public static class SamplePropertiesWithGeneric {
-
-		@NestedConfigurationProperty
-		private GenericObject<?> generic;
-
-		public GenericObject<?> getGeneric() {
-			return this.generic;
-		}
-
-	}
-
-	public static final class GenericObject<T> {
-
-		private final T value;
-
-		GenericObject(T value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
-		public T getValue() {
+	}
+
+	@EnableConfigurationProperties(ConstructorBindingProperties.class)
+	static class EnableConstructorBindingProperties {
+
+	}
+
+	@ConfigurationProperties("constructor-binding")
+	static class ConstructorBindingProperties {
+
+		private final String value;
+
+		ConstructorBindingProperties(String value) {
+			this.value = value;
+		}
+
+		String getValue() {
 			return this.value;
 		}
 
 	}
 
-	@ConfigurationProperties(prefix = "nested-generics")
-	public static class NestedGenerics {
+	@Configuration(proxyBeanMethods = false)
+	static class PossibleConstructorBindingPropertiesBeanMethodConfiguration {
 
-		private final Map<String, List<Nested>> nested = new HashMap<>();
-
-		public Map<String, List<Nested>> getNested() {
-			return this.nested;
-		}
-
-		public static class Nested {
-
-			private String field;
-
-			public String getField() {
-				return this.field;
-			}
-
-			public void setField(String field) {
-				this.field = field;
-			}
-
+		@Bean
+		@ConfigurationProperties(prefix = "bean-method")
+		PossibleConstructorBindingProperties possibleConstructorBindingProperties() {
+			return new PossibleConstructorBindingProperties("alpha");
 		}
 
 	}
 
-	@ConfigurationProperties(prefix = "triple-nested")
-	public static class TripleNested {
+	@EnableConfigurationProperties(PossibleConstructorBindingProperties.class)
+	static class EnablePossibleConstructorBindingProperties {
 
-		private final DoubleNested doubleNested = new DoubleNested();
+	}
 
-		public DoubleNested getDoubleNested() {
-			return this.doubleNested;
+	@ConfigurationProperties("possible-constructor-binding")
+	static class PossibleConstructorBindingProperties {
+
+		private String value;
+
+		PossibleConstructorBindingProperties(String arg) {
+
 		}
 
-		public static class DoubleNested {
+		String getValue() {
+			return this.value;
+		}
 
-			private final Nested nested = new Nested();
+		void setValue(String value) {
+			this.value = value;
+		}
 
-			public Nested getNested() {
-				return this.nested;
+	}
+
+	static class BindableAssertProvider implements AssertProvider<BindableAssert> {
+
+		private final Bindable<?> bindable;
+
+		BindableAssertProvider(Bindable<?> bindable) {
+			this.bindable = bindable;
+		}
+
+		@Override
+		public BindableAssert assertThat() {
+			return new BindableAssert(this.bindable);
+		}
+
+	}
+
+	static class BindableAssert extends AbstractAssert<BindableAssert, Bindable<?>> {
+
+		BindableAssert(Bindable<?> bindable) {
+			super(bindable, BindableAssert.class);
+		}
+
+		BindableAssert hasBindMethod(BindMethod bindMethod) {
+			if (this.actual.getBindMethod() != bindMethod) {
+				throwAssertionError(
+						new BasicErrorMessageFactory("Expected %s to have bind method %s but bind method was %s",
+								this.actual, bindMethod, this.actual.getBindMethod()));
 			}
+			return this;
+		}
 
-			public static class Nested {
-
-				private String field;
-
-				public String getField() {
-					return this.field;
-				}
-
-				public void setField(String field) {
-					this.field = field;
-				}
-
+		BindableAssert hasType(Class<?> type) {
+			if (!type.equals(this.actual.getType().resolve())) {
+				throwAssertionError(new BasicErrorMessageFactory("Expected %s to have type %s but type was %s",
+						this.actual, type, this.actual.getType().resolve()));
 			}
-
+			return this;
 		}
 
 	}
