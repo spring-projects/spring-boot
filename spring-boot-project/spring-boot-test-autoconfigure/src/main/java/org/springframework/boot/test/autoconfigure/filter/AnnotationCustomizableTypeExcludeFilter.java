@@ -18,6 +18,8 @@ package org.springframework.boot.test.autoconfigure.filter;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -135,11 +137,11 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 		int result = 0;
 		result = prime * result + Boolean.hashCode(hasAnnotation());
 		for (FilterType filterType : FilterType.values()) {
-			result = prime * result + ObjectUtils.nullSafeHashCode(getFilters(filterType));
+			result = prime * result + Arrays.hashCode(getFilters(filterType));
 		}
 		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
-		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
-		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
+		result = prime * result + Objects.hashCode(getDefaultIncludes());
+		result = prime * result + Objects.hashCode(getComponentIncludes());
 		return result;
 	}
 
