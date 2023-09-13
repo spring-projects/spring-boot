@@ -62,6 +62,7 @@ public enum JavaVersion {
 
 	/**
 	 * Java 21.
+	 * @since 2.7.16
 	 */
 	TWENTY_ONE("21", SortedSet.class, "getFirst");
 
