@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.util.unit.DataSize;
  * @author Josh Long
  * @author Toshiaki Maki
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.servlet.multipart", ignoreUnknownFields = false)
@@ -78,6 +79,12 @@ public class MultipartProperties {
 	 * access.
 	 */
 	private boolean resolveLazily = false;
+
+	/**
+	 * Whether to resolve the multipart request strictly comply with the Servlet
+	 * specification, only to be used for "multipart/form-data" requests.
+	 */
+	private boolean strictServletCompliance = false;
 
 	public boolean getEnabled() {
 		return this.enabled;
@@ -125,6 +132,14 @@ public class MultipartProperties {
 
 	public void setResolveLazily(boolean resolveLazily) {
 		this.resolveLazily = resolveLazily;
+	}
+
+	public boolean isStrictServletCompliance() {
+		return this.strictServletCompliance;
+	}
+
+	public void setStrictServletCompliance(boolean strictServletCompliance) {
+		this.strictServletCompliance = strictServletCompliance;
 	}
 
 	/**

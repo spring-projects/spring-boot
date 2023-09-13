@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Toshiaki Maki
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @AutoConfiguration
@@ -72,6 +73,7 @@ public class MultipartAutoConfiguration {
 	public StandardServletMultipartResolver multipartResolver() {
 		StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
 		multipartResolver.setResolveLazily(this.multipartProperties.isResolveLazily());
+		multipartResolver.setStrictServletCompliance(this.multipartProperties.isStrictServletCompliance());
 		return multipartResolver;
 	}
 
