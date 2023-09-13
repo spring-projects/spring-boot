@@ -81,8 +81,8 @@ public class MultipartProperties {
 	private boolean resolveLazily = false;
 
 	/**
-	 * Whether to resolve the multipart request strictly comply with the Servlet specification,
-	 * only kicking in for "multipart/form-data" requests.
+	 * Whether to resolve the multipart request strictly comply with the Servlet
+	 * specification, only to be used for "multipart/form-data" requests.
 	 */
 	private boolean strictServletCompliance = false;
 

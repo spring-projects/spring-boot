@@ -182,7 +182,7 @@ class MultipartAutoConfigurationTests {
 		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
 		this.context.refresh();
 		StandardServletMultipartResolver multipartResolver = this.context
-				.getBean(StandardServletMultipartResolver.class);
+			.getBean(StandardServletMultipartResolver.class);
 		assertThat(multipartResolver).hasFieldOrPropertyWithValue("strictServletCompliance", true);
 	}
 
