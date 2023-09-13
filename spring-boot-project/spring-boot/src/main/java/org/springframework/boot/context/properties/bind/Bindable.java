@@ -156,13 +156,7 @@ public final class Bindable<T> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.bindRestrictions);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.bindMethod);
-		return result;
+		return ObjectUtils.nullSafeHash(this.type, this.annotations, this.bindRestrictions, this.bindMethod);
 	}
 
 	@Override
