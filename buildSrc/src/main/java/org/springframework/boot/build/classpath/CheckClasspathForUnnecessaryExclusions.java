@@ -38,6 +38,8 @@ import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
@@ -61,6 +63,8 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 
 	private final ConfigurationContainer configurations;
 
+	private Configuration classpath;
+
 	@Inject
 	public CheckClasspathForUnnecessaryExclusions(DependencyHandler dependencyHandler,
 			ConfigurationContainer configurations) {
@@ -72,9 +76,15 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 	}
 
 	public void setClasspath(Configuration classpath) {
+		this.classpath = classpath;
 		this.exclusionsByDependencyId.clear();
 		this.dependencyById.clear();
 		classpath.getAllDependencies().all(this::processDependency);
+	}
+
+	@Classpath
+	public FileCollection getClasspath() {
+		return this.classpath;
 	}
 
 	private void processDependency(Dependency dependency) {
