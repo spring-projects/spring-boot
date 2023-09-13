@@ -153,7 +153,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Test
 	void testLiquibasePlusValidation() {
 		contextRunner()
-			.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+			.withPropertyValues("spring.liquibase.change-log:classpath:db/changelog/db.changelog-city.yaml",
 					"spring.jpa.hibernate.ddl-auto:validate")
 			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 			.run((context) -> assertThat(context).hasNotFailed());

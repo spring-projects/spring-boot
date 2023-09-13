@@ -541,8 +541,7 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
 			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 				.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
-			Object executor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
-			assertThat(executor).as("rabbitListenerContainerFactory.taskExecutor")
+			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
 				.isInstanceOf(VirtualThreadTaskExecutor.class);
 		});
 	}
