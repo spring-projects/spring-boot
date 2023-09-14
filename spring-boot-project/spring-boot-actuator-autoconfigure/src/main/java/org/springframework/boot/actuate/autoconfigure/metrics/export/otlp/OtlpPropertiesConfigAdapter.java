@@ -45,11 +45,14 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	private final OpenTelemetryProperties openTelemetryProperties;
 
+	private final OtlpConnectionDetails connectionDetails;
+
 	private final Environment environment;
 
 	OtlpPropertiesConfigAdapter(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
-			Environment environment) {
+			OtlpConnectionDetails connectionDetails, Environment environment) {
 		super(properties);
+		this.connectionDetails = connectionDetails;
 		this.openTelemetryProperties = openTelemetryProperties;
 		this.environment = environment;
 	}
@@ -61,7 +64,7 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	@Override
 	public String url() {
-		return get(OtlpProperties::getUrl, OtlpConfig.super::url);
+		return get((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
 	}
 
 	@Override

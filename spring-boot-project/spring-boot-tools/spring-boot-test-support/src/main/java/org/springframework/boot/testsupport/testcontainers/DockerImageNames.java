@@ -51,6 +51,8 @@ public final class DockerImageNames {
 
 	private static final String ORACLE_XE_VERSION = "18.4.0-slim";
 
+	private static final String OPENTELEMETRY_VERSION = "0.75.0";
+
 	private static final String PULSAR_VERSION = "3.1.0";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
@@ -154,6 +156,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName oracleXe() {
 		return DockerImageName.parse("gvenzl/oracle-xe").withTag(ORACLE_XE_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running the Oracle database.
+	 * @return a docker image name for running the Oracle database
+	 */
+	public static DockerImageName opentelemetry() {
+		return DockerImageName.parse("otel/opentelemetry-collector-contrib").withTag(OPENTELEMETRY_VERSION);
 	}
 
 	/**

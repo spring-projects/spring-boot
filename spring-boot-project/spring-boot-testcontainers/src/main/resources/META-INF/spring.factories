@@ -19,6 +19,8 @@ org.springframework.boot.testcontainers.service.connection.kafka.KafkaContainerC
 org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryTracingConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.pulsar.PulsarContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
