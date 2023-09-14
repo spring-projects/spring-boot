@@ -22,6 +22,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 import okhttp3.HttpUrl;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConfigurations.ConnectionDetails.PropertiesOtlpTracingConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -111,15 +112,14 @@ class OtlpAutoConfigurationTests {
 	@Test
 	void definesPropertiesBasedConnectionDetailsByDefault() {
 		this.contextRunner.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
-			.run((context) -> assertThat(context)
-				.hasSingleBean(OtlpAutoConfiguration.PropertiesOtlpTracingConnectionDetails.class));
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesOtlpTracingConnectionDetails.class));
 	}
 
 	@Test
 	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(OtlpTracingConnectionDetails.class)
-				.doesNotHaveBean(OtlpAutoConfiguration.PropertiesOtlpTracingConnectionDetails.class);
+				.doesNotHaveBean(PropertiesOtlpTracingConnectionDetails.class);
 			OtlpHttpSpanExporter otlpHttpSpanExporter = context.getBean(OtlpHttpSpanExporter.class);
 			assertThat(otlpHttpSpanExporter).extracting("delegate.httpSender.url")
 				.isEqualTo(HttpUrl.get("http://localhost:12345/v1/traces"));

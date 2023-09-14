@@ -45,12 +45,12 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	private final OpenTelemetryProperties openTelemetryProperties;
 
-	private final OtlpConnectionDetails connectionDetails;
+	private final OtlpMetricsConnectionDetails connectionDetails;
 
 	private final Environment environment;
 
 	OtlpPropertiesConfigAdapter(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
-			OtlpConnectionDetails connectionDetails, Environment environment) {
+			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
 		super(properties);
 		this.connectionDetails = connectionDetails;
 		this.openTelemetryProperties = openTelemetryProperties;

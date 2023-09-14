@@ -18,7 +18,6 @@ package org.springframework.boot.docker.compose.service.connection.otlp;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpConnectionDetails;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
@@ -26,25 +25,20 @@ import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OpenTelemetryDockerComposeConnectionDetailsFactory}.
+ * Integration tests for
+ * {@link OpenTelemetryTracingDockerComposeConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  */
-public class OpenTelemetryDockerComposeConnectionDetailsFactoryIntegrationTests
+public class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
-	OpenTelemetryDockerComposeConnectionDetailsFactoryIntegrationTests() {
+	OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests() {
 		super("otlp-compose.yaml", DockerImageNames.opentelemetry());
 	}
 
 	@Test
 	void runCreatesConnectionDetails() {
-		OtlpConnectionDetails connectionDetails = run(OtlpConnectionDetails.class);
-		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/metrics");
-	}
-
-	@Test
-	void runCreatesTracingConnectionDetails() {
 		OtlpTracingConnectionDetails connectionDetails = run(OtlpTracingConnectionDetails.class);
 		assertThat(connectionDetails.getEndpoint()).startsWith("http://").endsWith("/v1/traces");
 	}

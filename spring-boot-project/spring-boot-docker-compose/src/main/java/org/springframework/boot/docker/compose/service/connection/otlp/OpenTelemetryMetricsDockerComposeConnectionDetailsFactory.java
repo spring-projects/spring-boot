@@ -16,40 +16,40 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create {@link OtlpConnectionDetails}
- * for a {@code otlp} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create
+ * {@link OtlpMetricsConnectionDetails} for a {@code OTLP} service.
  *
  * @author Eddú Meléndez
  */
-class OpenTelemetryDockerComposeConnectionDetailsFactory
-		extends DockerComposeConnectionDetailsFactory<OtlpConnectionDetails> {
+class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
+		extends DockerComposeConnectionDetailsFactory<OtlpMetricsConnectionDetails> {
 
 	private static final int OTLP_PORT = 4318;
 
-	OpenTelemetryDockerComposeConnectionDetailsFactory() {
+	OpenTelemetryMetricsDockerComposeConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
 	@Override
-	protected OtlpConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new OpenTelemetryContainerConnectionDetails(source.getRunningService());
+	protected OtlpMetricsConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new OpenTelemetryContainerMetricsConnectionDetails(source.getRunningService());
 	}
 
-	private static final class OpenTelemetryContainerConnectionDetails extends DockerComposeConnectionDetails
-			implements OtlpConnectionDetails {
+	private static final class OpenTelemetryContainerMetricsConnectionDetails extends DockerComposeConnectionDetails
+			implements OtlpMetricsConnectionDetails {
 
 		private final String host;
 
 		private final int port;
 
-		private OpenTelemetryContainerConnectionDetails(RunningService source) {
+		private OpenTelemetryContainerMetricsConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.port = source.ports().get(OTLP_PORT);
@@ -57,7 +57,7 @@ class OpenTelemetryDockerComposeConnectionDetailsFactory
 
 		@Override
 		public String getUrl() {
-			return "http://" + this.host + ":" + this.port + "/v1/metrics";
+			return "http://%s:%d/v1/metrics".formatted(this.host, this.port);
 		}
 
 	}

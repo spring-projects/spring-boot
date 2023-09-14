@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class OtlpTracingContainerConnectionDetailsFactoryIntegrationTests {
+class OpenTelemetryTracingConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection

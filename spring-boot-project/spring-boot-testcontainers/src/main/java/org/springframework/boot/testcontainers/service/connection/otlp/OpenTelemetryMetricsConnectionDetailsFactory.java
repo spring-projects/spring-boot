@@ -19,41 +19,43 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} to create {@link OtlpConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
+ * {@link ContainerConnectionDetailsFactory} to create
+ * {@link OtlpMetricsConnectionDetails} from a
+ * {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
  * the {@code "otel/opentelemetry-collector-contrib"} image.
  *
  * @author Eddú Meléndez
  */
-class OpenTelemetryConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Container<?>, OtlpConnectionDetails> {
+class OpenTelemetryMetricsConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<Container<?>, OtlpMetricsConnectionDetails> {
 
-	OpenTelemetryConnectionDetailsFactory() {
+	OpenTelemetryMetricsConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
 	@Override
-	protected OtlpConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
-		return new OpenTelemetryContainerConnectionDetails(source);
+	protected OtlpMetricsConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<Container<?>> source) {
+		return new OpenTelemetryContainerMetricsConnectionDetails(source);
 	}
 
-	private static final class OpenTelemetryContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
-			implements OtlpConnectionDetails {
+	private static final class OpenTelemetryContainerMetricsConnectionDetails
+			extends ContainerConnectionDetails<Container<?>> implements OtlpMetricsConnectionDetails {
 
-		private OpenTelemetryContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		private OpenTelemetryContainerMetricsConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
 		@Override
 		public String getUrl() {
-			return "http://" + getContainer().getHost() + ":" + getContainer().getMappedPort(4318) + "/v1/metrics";
+			return "http://%s:%d/v1/metrics".formatted(getContainer().getHost(), getContainer().getMappedPort(4318));
 		}
 
 	}

@@ -24,7 +24,7 @@ import io.micrometer.registry.otlp.AggregationTemporality;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -45,14 +45,14 @@ class OtlpPropertiesConfigAdapterTests {
 
 	private MockEnvironment environment;
 
-	private OtlpConnectionDetails connectionDetails;
+	private OtlpMetricsConnectionDetails connectionDetails;
 
 	@BeforeEach
 	void setUp() {
 		this.properties = new OtlpProperties();
 		this.openTelemetryProperties = new OpenTelemetryProperties();
 		this.environment = new MockEnvironment();
-		this.connectionDetails = new PropertiesOtlpConnectionDetails(this.properties);
+		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties);
 	}
 
 	@Test

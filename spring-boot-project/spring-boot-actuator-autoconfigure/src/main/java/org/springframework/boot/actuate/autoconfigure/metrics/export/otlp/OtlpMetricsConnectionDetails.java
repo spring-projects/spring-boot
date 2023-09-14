@@ -22,10 +22,14 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * Details required to establish a connection to a OpenTelemetry Collector service.
  *
  * @author Eddú Meléndez
- * @since 3.1.0
+ * @since 3.2.0
  */
-public interface OtlpConnectionDetails extends ConnectionDetails {
+public interface OtlpMetricsConnectionDetails extends ConnectionDetails {
 
+	/**
+	 * Address to where metrics will be published.
+	 * @return the address to where metrics will be published
+	 */
 	String getUrl();
 
 }

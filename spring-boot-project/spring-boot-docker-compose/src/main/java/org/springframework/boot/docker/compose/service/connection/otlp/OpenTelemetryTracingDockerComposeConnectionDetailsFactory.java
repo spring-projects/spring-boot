@@ -23,7 +23,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link OtlpTracingConnectionDetails} for a {@code otlp} service.
+ * {@link OtlpTracingConnectionDetails} for a {@code OTLP} service.
  *
  * @author Eddú Meléndez
  */
@@ -57,7 +57,7 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 		@Override
 		public String getEndpoint() {
-			return "http://" + this.host + ":" + this.port + "/v1/traces";
+			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
 		}
 
 	}

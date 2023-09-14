@@ -48,7 +48,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.matchesPattern;
 
 /**
- * Tests for {@link OpenTelemetryConnectionDetailsFactory}.
+ * Tests for {@link OpenTelemetryMetricsConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
@@ -57,7 +57,7 @@ import static org.hamcrest.Matchers.matchesPattern;
 @TestPropertySource(properties = { "management.otlp.metrics.export.resource-attributes.service.name=test",
 		"management.otlp.metrics.export.step=1s" })
 @Testcontainers(disabledWithoutDocker = true)
-class OtlpContainerConnectionDetailsFactoryIntegrationTests {
+class OpenTelemetryMetricsConnectionDetailsFactoryIntegrationTests {
 
 	private static final String OPENMETRICS_001 = "application/openmetrics-text; version=0.0.1; charset=utf-8";
 
