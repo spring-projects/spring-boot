@@ -19,7 +19,6 @@ package org.springframework.boot.docker.compose.service.connection.postgres;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled
 class PostgresEnvironmentTests {
 
 	@Test
@@ -61,13 +59,13 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
-	void getDatabaseWhenNoPostgresDbOrPostgressUser() {
+	void getDatabaseWhenNoPostgresDbOrPostgresUser() {
 		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRES_PASSWORD", "secret"));
-		assertThat(environment.getDatabase()).isEqualTo("postgress");
+		assertThat(environment.getDatabase()).isEqualTo("postgres");
 	}
 
 	@Test
-	void getDatabaseWhenNoPostgresDbAndPostgressUser() {
+	void getDatabaseWhenNoPostgresDbAndPostgresUser() {
 		PostgresEnvironment environment = new PostgresEnvironment(
 				Map.of("POSTGRES_USER", "me", "POSTGRES_PASSWORD", "secret"));
 		assertThat(environment.getDatabase()).isEqualTo("me");
