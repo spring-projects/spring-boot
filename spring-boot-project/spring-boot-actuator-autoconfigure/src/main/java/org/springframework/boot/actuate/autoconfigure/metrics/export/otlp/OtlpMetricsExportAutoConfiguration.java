@@ -50,17 +50,48 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties({ OtlpProperties.class, OpenTelemetryProperties.class })
 public class OtlpMetricsExportAutoConfiguration {
 
+	private final OtlpProperties properties;
+
+	OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
+		this.properties = properties;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(OtlpMetricsConnectionDetails.class)
+	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails() {
+		return new PropertiesOtlpMetricsConnectionDetails(this.properties);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	OtlpConfig otlpConfig(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
-			Environment environment) {
-		return new OtlpPropertiesConfigAdapter(properties, openTelemetryProperties, environment);
+	OtlpConfig otlpConfig(OpenTelemetryProperties openTelemetryProperties,
+			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
+		return new OtlpPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
+				environment);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
 		return new OtlpMeterRegistry(otlpConfig, clock);
+	}
+
+	/**
+	 * Adapts {@link OtlpProperties} to {@link OtlpMetricsConnectionDetails}.
+	 */
+	static class PropertiesOtlpMetricsConnectionDetails implements OtlpMetricsConnectionDetails {
+
+		private final OtlpProperties properties;
+
+		PropertiesOtlpMetricsConnectionDetails(OtlpProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUrl() {
+			return this.properties.getUrl();
+		}
+
 	}
 
 }

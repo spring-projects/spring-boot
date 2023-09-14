@@ -19,8 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+import okhttp3.HttpUrl;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConfigurations.ConnectionDetails.PropertiesOtlpTracingConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
+ * @author Eddú Meléndez
  */
 class OtlpAutoConfigurationTests {
 
@@ -106,6 +109,23 @@ class OtlpAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(OtlpHttpSpanExporter.class));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesOtlpTracingConnectionDetails.class));
+	}
+
+	@Test
+	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(OtlpTracingConnectionDetails.class)
+				.doesNotHaveBean(PropertiesOtlpTracingConnectionDetails.class);
+			OtlpHttpSpanExporter otlpHttpSpanExporter = context.getBean(OtlpHttpSpanExporter.class);
+			assertThat(otlpHttpSpanExporter).extracting("delegate.httpSender.url")
+				.isEqualTo(HttpUrl.get("http://localhost:12345/v1/traces"));
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomHttpExporterConfiguration {
 
@@ -122,6 +142,16 @@ class OtlpAutoConfigurationTests {
 		@Bean
 		OtlpGrpcSpanExporter customOtlpGrpcSpanExporter() {
 			return OtlpGrpcSpanExporter.builder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		OtlpTracingConnectionDetails otlpTracingConnectionDetails() {
+			return () -> "http://localhost:12345/v1/traces";
 		}
 
 	}

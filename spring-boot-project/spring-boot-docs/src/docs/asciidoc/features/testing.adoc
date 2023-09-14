@@ -992,6 +992,12 @@ The following service connection factories are provided in the `spring-boot-test
 | `Neo4jConnectionDetails`
 | Containers of type `Neo4jContainer`
 
+| `OtlpMetricsConnectionDetails`
+| Containers named "otel/opentelemetry-collector-contrib"
+
+| `OtlpTracingConnectionDetails`
+| Containers named "otel/opentelemetry-collector-contrib"
+
 | `PulsarConnectionDetails`
 | Containers of type `PulsarContainer`
 

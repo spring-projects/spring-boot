@@ -76,6 +76,12 @@ The following service connections are currently supported:
 | `MongoConnectionDetails`
 | Containers named "mongo"
 
+| `OtlpMetricsConnectionDetails`
+| Containers named "otel/opentelemetry-collector-contrib"
+
+| `OtlpTracingConnectionDetails`
+| Containers named "otel/opentelemetry-collector-contrib"
+
 | `PulsarConnectionDetails`
 | Containers named "apachepulsar/pulsar"
 

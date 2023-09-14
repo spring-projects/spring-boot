@@ -21,6 +21,7 @@ import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -83,6 +84,23 @@ class OtlpMetricsExportAutoConfigurationTests {
 				.hasBean("customRegistry"));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesOtlpMetricsConnectionDetails.class));
+	}
+
+	@Test
+	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class, ConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpMetricsConnectionDetails.class)
+					.doesNotHaveBean(PropertiesOtlpMetricsConnectionDetails.class);
+				OtlpConfig config = context.getBean(OtlpConfig.class);
+				assertThat(config.url()).isEqualTo("http://localhost:12345/v1/metrics");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
@@ -111,6 +129,16 @@ class OtlpMetricsExportAutoConfigurationTests {
 		@Bean
 		OtlpMeterRegistry customRegistry(OtlpConfig config, Clock clock) {
 			return new OtlpMeterRegistry(config, clock);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		OtlpMetricsConnectionDetails otlpConnectionDetails() {
+			return () -> "http://localhost:12345/v1/metrics";
 		}
 
 	}
