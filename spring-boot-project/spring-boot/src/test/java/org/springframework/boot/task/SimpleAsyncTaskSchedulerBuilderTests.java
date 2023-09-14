@@ -16,7 +16,6 @@
 
 package org.springframework.boot.task;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Set;
 
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -59,11 +57,7 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void virtualThreadsShouldApply() {
 		SimpleAsyncTaskScheduler scheduler = this.builder.virtualThreads(true).build();
-		Field field = ReflectionUtils.findField(SimpleAsyncTaskScheduler.class, "virtualThreadDelegate");
-		assertThat(field).as("SimpleAsyncTaskScheduler.virtualThreadDelegate").isNotNull();
-		field.setAccessible(true);
-		Object virtualThreadDelegate = ReflectionUtils.getField(field, scheduler);
-		assertThat(virtualThreadDelegate).as("SimpleAsyncTaskScheduler.virtualThreadDelegate").isNotNull();
+		assertThat(scheduler).extracting("virtualThreadDelegate").isNotNull();
 	}
 
 	@Test
