@@ -42,6 +42,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.pulsar.annotation.PulsarBootstrapConfiguration;
 import org.springframework.pulsar.annotation.PulsarListenerAnnotationBeanPostProcessor;
 import org.springframework.pulsar.annotation.PulsarReaderAnnotationBeanPostProcessor;
+import org.springframework.pulsar.cache.provider.caffeine.CaffeineCacheProvider;
 import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
 import org.springframework.pulsar.config.PulsarListenerContainerFactory;
@@ -174,8 +175,7 @@ class PulsarAutoConfigurationTests {
 					assertThat(context).getBean(CachingPulsarProducerFactory.class)
 						.extracting("producerCache")
 						.extracting(Object::getClass)
-						.extracting(Class::getName)
-						.isEqualTo("org.springframework.pulsar.core.CaffeineCacheProvider");
+						.isEqualTo(CaffeineCacheProvider.class);
 					assertThat(context).getBean(CachingPulsarProducerFactory.class)
 						.extracting("producerCache.cache")
 						.extracting(Object::getClass)
