@@ -151,9 +151,8 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		task.getArtifactId().set(project.provider(() -> project.getName()));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Configuration createAotProcessingClasspath(Project project, String taskName, SourceSet inputSourceSet) {
-		ProviderFactory providers = project.getProviders();
 		Configuration base = project.getConfigurations()
 			.getByName(inputSourceSet.getRuntimeClasspathConfigurationName());
 		Configuration aotClasspath = project.getConfigurations().create(taskName + "Classpath", (classpath) -> {
@@ -162,10 +161,11 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			classpath.setDescription("Classpath of the " + taskName + " task.");
 			removeDevelopmentOnly(base.getExtendsFrom()).forEach(classpath::extendsFrom);
 			classpath.attributes((attributes) -> {
+				ProviderFactory providers = project.getProviders();
 				AttributeContainer baseAttributes = base.getAttributes();
-				for (Attribute<?> attribute : baseAttributes.keySet()) {
-					Attribute<Object> attr = (Attribute<Object>) attribute;
-					attributes.attributeProvider(attr, providers.provider(() -> baseAttributes.getAttribute(attr)));
+				for (Attribute attribute : baseAttributes.keySet()) {
+					attributes.attributeProvider(attribute,
+							providers.provider(() -> baseAttributes.getAttribute(attribute)));
 				}
 			});
 		});
