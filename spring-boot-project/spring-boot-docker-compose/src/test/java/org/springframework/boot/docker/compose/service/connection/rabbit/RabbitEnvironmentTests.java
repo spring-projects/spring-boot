@@ -19,7 +19,6 @@ package org.springframework.boot.docker.compose.service.connection.rabbit;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled
 class RabbitEnvironmentTests {
 
 	@Test
