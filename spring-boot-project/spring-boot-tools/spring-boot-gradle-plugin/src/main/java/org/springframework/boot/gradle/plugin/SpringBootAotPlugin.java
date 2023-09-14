@@ -35,6 +35,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -150,7 +151,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		task.getArtifactId().set(project.provider(() -> project.getName()));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Configuration createAotProcessingClasspath(Project project, String taskName, SourceSet inputSourceSet) {
 		Configuration base = project.getConfigurations()
 			.getByName(inputSourceSet.getRuntimeClasspathConfigurationName());
@@ -160,9 +161,11 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			classpath.setDescription("Classpath of the " + taskName + " task.");
 			removeDevelopmentOnly(base.getExtendsFrom()).forEach(classpath::extendsFrom);
 			classpath.attributes((attributes) -> {
+				ProviderFactory providers = project.getProviders();
 				AttributeContainer baseAttributes = base.getAttributes();
-				for (Attribute<?> attribute : baseAttributes.keySet()) {
-					attributes.attribute((Attribute<Object>) attribute, baseAttributes.getAttribute(attribute));
+				for (Attribute attribute : baseAttributes.keySet()) {
+					attributes.attributeProvider(attribute,
+							providers.provider(() -> baseAttributes.getAttribute(attribute)));
 				}
 			});
 		});
