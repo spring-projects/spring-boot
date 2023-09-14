@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -49,7 +50,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -161,9 +161,9 @@ class TaskSchedulingAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
 				SimpleAsyncTaskSchedulerBuilder builder = context.getBean(SimpleAsyncTaskSchedulerBuilder.class);
-				Set<SimpleAsyncTaskSchedulerCustomizer> customizers = (Set<SimpleAsyncTaskSchedulerCustomizer>) ReflectionTestUtils
-					.getField(builder, "customizers");
-				assertThat(customizers).as("SimpleAsyncTaskSchedulerBuilder.customizers").contains(customizer);
+				assertThat(builder).extracting("customizers")
+					.asInstanceOf(InstanceOfAssertFactories.collection(SimpleAsyncTaskSchedulerCustomizer.class))
+					.containsExactly(customizer);
 			});
 	}
 
