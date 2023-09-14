@@ -1,0 +1,11 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'org.springframework.boot.aot'
+	id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
