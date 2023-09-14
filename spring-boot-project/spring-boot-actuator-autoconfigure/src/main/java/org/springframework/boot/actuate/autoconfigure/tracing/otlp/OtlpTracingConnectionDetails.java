@@ -30,6 +30,6 @@ public interface OtlpTracingConnectionDetails extends ConnectionDetails {
 	 * Address to where metrics will be published.
 	 * @return the address to where metrics will be published
 	 */
-	String getEndpoint();
+	String getUrl();
 
 }

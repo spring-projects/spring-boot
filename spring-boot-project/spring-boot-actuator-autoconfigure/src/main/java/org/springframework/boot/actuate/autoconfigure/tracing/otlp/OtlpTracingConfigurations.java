@@ -60,7 +60,7 @@ final class OtlpTracingConfigurations {
 			}
 
 			@Override
-			public String getEndpoint() {
+			public String getUrl() {
 				return this.properties.getEndpoint();
 			}
 
@@ -79,7 +79,7 @@ final class OtlpTracingConfigurations {
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
-				.setEndpoint(connectionDetails.getEndpoint())
+				.setEndpoint(connectionDetails.getUrl())
 				.setTimeout(properties.getTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase());
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {

@@ -56,7 +56,7 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getEndpoint() {
+		public String getUrl() {
 			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
 		}
 

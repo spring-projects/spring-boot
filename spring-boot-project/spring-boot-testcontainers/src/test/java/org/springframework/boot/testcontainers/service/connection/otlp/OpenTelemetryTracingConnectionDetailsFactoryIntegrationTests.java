@@ -51,7 +51,7 @@ class OpenTelemetryTracingConnectionDetailsFactoryIntegrationTests {
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
-		assertThat(this.connectionDetails.getEndpoint())
+		assertThat(this.connectionDetails.getUrl())
 			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4318) + "/v1/traces");
 	}
 

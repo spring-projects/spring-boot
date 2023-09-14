@@ -54,7 +54,7 @@ class OpenTelemetryTracingConnectionDetailsFactory
 		}
 
 		@Override
-		public String getEndpoint() {
+		public String getUrl() {
 			return "http://%s:%d/v1/traces".formatted(getContainer().getHost(), getContainer().getMappedPort(4318));
 		}
 

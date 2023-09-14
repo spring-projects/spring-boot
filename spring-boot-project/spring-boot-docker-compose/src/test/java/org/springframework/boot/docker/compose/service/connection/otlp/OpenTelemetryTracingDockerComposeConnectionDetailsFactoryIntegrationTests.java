@@ -40,7 +40,7 @@ public class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegratio
 	@Test
 	void runCreatesConnectionDetails() {
 		OtlpTracingConnectionDetails connectionDetails = run(OtlpTracingConnectionDetails.class);
-		assertThat(connectionDetails.getEndpoint()).startsWith("http://").endsWith("/v1/traces");
+		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/traces");
 	}
 
 }
