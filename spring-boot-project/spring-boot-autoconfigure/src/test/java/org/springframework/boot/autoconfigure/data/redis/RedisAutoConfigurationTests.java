@@ -31,6 +31,8 @@ import io.lettuce.core.resource.DefaultClientResources;
 import io.lettuce.core.tracing.Tracing;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
@@ -38,8 +40,10 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
@@ -580,6 +584,25 @@ class RedisAutoConfigurationTests {
 				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 				assertThat(cf.isUseSsl()).isFalse();
 			});
+	}
+
+	@Test
+	void shouldUsePlatformThreadsByDefault() {
+		this.contextRunner.run((context) -> {
+			LettuceConnectionFactory factory = context.getBean(LettuceConnectionFactory.class);
+			assertThat(factory).extracting("executor").isNull();
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldUseVirtualThreadsIfEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			LettuceConnectionFactory factory = context.getBean(LettuceConnectionFactory.class);
+			SimpleAsyncTaskExecutor executor = (SimpleAsyncTaskExecutor) ReflectionTestUtils.getField(factory,
+					"executor");
+			SimpleAsyncTaskExecutorAssert.assertThat(executor).usesVirtualThreads();
+		});
 	}
 
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(
