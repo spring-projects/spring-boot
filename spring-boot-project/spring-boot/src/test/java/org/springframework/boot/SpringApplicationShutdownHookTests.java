@@ -51,6 +51,7 @@ class SpringApplicationShutdownHookTests {
 	@Test
 	void shutdownHookIsNotAddedUntilContextIsRegistered() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		shutdownHook.enableShutdowHookAddition();
 		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isFalse();
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		shutdownHook.registerApplicationContext(context);
@@ -60,7 +61,20 @@ class SpringApplicationShutdownHookTests {
 	@Test
 	void shutdownHookIsNotAddedUntilHandlerIsRegistered() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		shutdownHook.enableShutdowHookAddition();
 		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isFalse();
+		shutdownHook.getHandlers().add(() -> {
+		});
+		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isTrue();
+	}
+
+	@Test
+	void shutdownHookIsNotAddedUntilAdditionIsEnabled() {
+		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		shutdownHook.getHandlers().add(() -> {
+		});
+		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isFalse();
+		shutdownHook.enableShutdowHookAddition();
 		shutdownHook.getHandlers().add(() -> {
 		});
 		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isTrue();
