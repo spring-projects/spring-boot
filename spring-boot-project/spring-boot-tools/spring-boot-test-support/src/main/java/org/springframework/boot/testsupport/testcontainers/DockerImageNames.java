@@ -96,7 +96,8 @@ public final class DockerImageNames {
 
 	/**
 	 * Return a {@link DockerImageName} suitable for running RabbitMQ.
-	 * @return a docker image name for running redis
+	 * @return a docker image name for running RabbitMQ
+	 * @since 2.7.15
 	 */
 	public static DockerImageName rabbit() {
 		return DockerImageName.parse("rabbitmq").withTag(RABBIT_VERSION);
