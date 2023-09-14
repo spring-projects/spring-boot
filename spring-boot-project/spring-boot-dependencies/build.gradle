@@ -1584,6 +1584,8 @@ bom {
 		group("org.springframework.pulsar") {
 			modules = [
 				"spring-pulsar",
+				"spring-pulsar-cache-provider",
+				"spring-pulsar-cache-provider-caffeine",
 				"spring-pulsar-reactive"
 			]
 		}
