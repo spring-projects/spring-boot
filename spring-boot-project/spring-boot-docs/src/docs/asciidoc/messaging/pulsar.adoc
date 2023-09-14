@@ -2,7 +2,7 @@
 == Apache Pulsar Support
 https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configuration of the {spring-pulsar-docs}[Spring for Apache Pulsar] project.
 
-Spring Boot will auto-configure and register the classic (imperative) Spring Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
+Spring Boot will auto-configure and register the classic (imperative) Spring for Apache Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
 It will do the same for the reactive components when `org.springframework.pulsar:spring-pulsar-reactive` is on the classpath.
 
 There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive` "`Starters`" for conveniently collecting the dependencies for imperative and reactive use, respectively.
@@ -26,7 +26,7 @@ If you need more control over the configuration, consider registering one or mor
 
 [[messaging.pulsar.connecting.auth]]
 ==== Authentication
-To connect to a Pulsar cluster that requires authentication, you need to specify which authentication plugin to use by setting the `authPluginClassName` and any parameters required by the plugin.
+To connect to a Pulsar cluster that requires authentication, you need to specify which authentication plugin to use by setting the `pluginClassName` and any parameters required by the plugin.
 You can set the parameters as a map of parameter names to parameter values.
 The following example shows how to configure the `AuthenticationOAuth2` plugin.
 
@@ -52,7 +52,12 @@ For example, if you want to configure the issuer url for the `AuthenticationOAut
 If you use other forms, such as `issuerurl` or `issuer-url`, the setting will not be applied to the plugin.
 ====
 
-For complete details on the client and authentication see the Spring Pulsar {spring-pulsar-docs}#pulsar-client[reference documentation].
+[[messaging.pulsar.connecting.ssl]]
+==== SSL
+By default, Pulsar clients communicate with Pulsar services in plain text.
+You can follow {spring-pulsar-docs}#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
+
+For complete details on the client and authentication see the Spring for Apache Pulsar {spring-pulsar-docs}#pulsar-client[reference documentation].
 
 
 
@@ -67,7 +72,7 @@ Therefore, follow the previous section to configure the `PulsarClient` used by t
 
 [[messaging.pulsar.admin]]
 === Connecting to Pulsar Administration
-Spring Pulsar's `PulsarAdministration` client is also auto-configured.
+Spring for Apache Pulsar's `PulsarAdministration` client is also auto-configured.
 
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
 This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[] property to a different value in the form `(http|https)://<host>:<port>`.
