@@ -1,0 +1,8 @@
+services:
+  neo4j:
+    image: '{imageName}'
+    ports:
+      - '7687'
+    environment:
+      - 'NEO4J_AUTH=neo4j/secret'
+

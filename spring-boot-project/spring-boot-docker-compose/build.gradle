@@ -18,6 +18,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("io.r2dbc:r2dbc-spi")
 	optional("org.mongodb:mongodb-driver-core")
+	optional("org.neo4j.driver:neo4j-java-driver")
 	optional("org.springframework.data:spring-data-r2dbc")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

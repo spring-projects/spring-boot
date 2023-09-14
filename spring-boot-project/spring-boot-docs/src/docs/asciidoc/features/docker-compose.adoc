@@ -76,6 +76,9 @@ The following service connections are currently supported:
 | `MongoConnectionDetails`
 | Containers named "mongo"
 
+| `Neo4jConnectionDetails`
+| Containers named "neo4j"
+
 | `OtlpMetricsConnectionDetails`
 | Containers named "otel/opentelemetry-collector-contrib"
 
