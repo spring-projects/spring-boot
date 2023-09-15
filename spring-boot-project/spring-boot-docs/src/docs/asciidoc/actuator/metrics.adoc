@@ -870,7 +870,7 @@ See the {spring-batch-docs}monitoring-and-metrics.html[Spring Batch reference do
 [[actuator.metrics.supported.spring-graphql]]
 ==== Spring GraphQL Metrics
 
-See the {spring-graphql-docs}[Spring GraphQL reference documentation].
+See the {spring-graphql-docs}/observability.html[Spring GraphQL reference documentation].
 
 
 
@@ -951,7 +951,7 @@ Auto-configuration enables the instrumentation of all available RabbitMQ connect
 
 [[actuator.metrics.supported.spring-integration]]
 ==== Spring Integration Metrics
-Spring Integration automatically provides {spring-integration-docs}system-management.html#micrometer-integration[Micrometer support] whenever a `MeterRegistry` bean is available.
+Spring Integration automatically provides {spring-integration-docs}metrics.html#micrometer-integration[Micrometer support] whenever a `MeterRegistry` bean is available.
 Metrics are published under the `spring.integration.` meter name.
 
 

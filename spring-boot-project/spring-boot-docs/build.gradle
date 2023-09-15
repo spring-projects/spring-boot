@@ -313,9 +313,9 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
-		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
-		if (securityVersion.endsWith("-SNAPSHOT")) {
-			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
+		def toAntoraVersion = version -> {
+			def formatted = version.split("\\.").take(2).join('.')
+			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
 		}
 		attributes  "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
 					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
@@ -323,7 +323,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
 					"native-build-tools-version": nativeBuildToolsVersion,
 					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
-					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
+					"spring-batch-version": toAntoraVersion(versionConstraints["org.springframework.batch:spring-batch-core"]),
 					"spring-boot-version": project.version,
 					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
 					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
@@ -334,13 +334,13 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
 					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
-					"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
-					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
+					"spring-framework-version": toAntoraVersion(versionConstraints["org.springframework:spring-core"]),
+					"spring-graphql-version": toAntoraVersion(versionConstraints["org.springframework.graphql:spring-graphql"]),
+					"spring-integration-version": toAntoraVersion(versionConstraints["org.springframework.integration:spring-integration-core"]),
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-pulsar-version": versionConstraints["org.springframework.pulsar:spring-pulsar"],
-					"spring-security-version": securityVersion,
-					"spring-authorization-server-version": versionConstraints["org.springframework.security:spring-security-oauth2-authorization-server"],
+					"spring-security-version": toAntoraVersion(versionConstraints["org.springframework.security:spring-security-core"]),
+					"spring-authorization-server-version": toAntoraVersion(versionConstraints["org.springframework.security:spring-security-oauth2-authorization-server"]),
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
 					"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
 					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
