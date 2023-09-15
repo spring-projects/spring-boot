@@ -49,10 +49,7 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	private final Set<SimpleAsyncTaskSchedulerCustomizer> customizers;
 
 	public SimpleAsyncTaskSchedulerBuilder() {
-		this.threadNamePrefix = null;
-		this.customizers = null;
-		this.concurrencyLimit = null;
-		this.virtualThreads = null;
+		this(null, null, null, null);
 	}
 
 	private SimpleAsyncTaskSchedulerBuilder(String threadNamePrefix, Integer concurrencyLimit, Boolean virtualThreads,
@@ -94,11 +91,10 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	}
 
 	/**
-	 * Set the {@link SimpleAsyncTaskSchedulerCustomizer
-	 * threadPoolTaskSchedulerCustomizers} that should be applied to the
-	 * {@link SimpleAsyncTaskScheduler}. Customizers are applied in the order that they
-	 * were added after builder configuration has been applied. Setting this value will
-	 * replace any previously configured customizers.
+	 * Set the {@link SimpleAsyncTaskSchedulerCustomizer customizers} that should be
+	 * applied to the {@link SimpleAsyncTaskScheduler}. Customizers are applied in the
+	 * order that they were added after builder configuration has been applied. Setting
+	 * this value will replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
 	 * @see #additionalCustomizers(SimpleAsyncTaskSchedulerCustomizer...)
@@ -109,14 +105,13 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	}
 
 	/**
-	 * Set the {@link SimpleAsyncTaskSchedulerCustomizer
-	 * threadPoolTaskSchedulerCustomizers} that should be applied to the
-	 * {@link SimpleAsyncTaskScheduler}. Customizers are applied in the order that they
-	 * were added after builder configuration has been applied. Setting this value will
-	 * replace any previously configured customizers.
+	 * Set the {@link SimpleAsyncTaskSchedulerCustomizer customizers} that should be
+	 * applied to the {@link SimpleAsyncTaskScheduler}. Customizers are applied in the
+	 * order that they were added after builder configuration has been applied. Setting
+	 * this value will replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
-	 * @see #additionalCustomizers(SimpleAsyncTaskSchedulerCustomizer...)
+	 * @see #additionalCustomizers(Iterable)
 	 */
 	public SimpleAsyncTaskSchedulerBuilder customizers(
 			Iterable<? extends SimpleAsyncTaskSchedulerCustomizer> customizers) {
@@ -126,10 +121,9 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	}
 
 	/**
-	 * Add {@link SimpleAsyncTaskSchedulerCustomizer threadPoolTaskSchedulerCustomizers}
-	 * that should be applied to the {@link SimpleAsyncTaskScheduler}. Customizers are
-	 * applied in the order that they were added after builder configuration has been
-	 * applied.
+	 * Add {@link SimpleAsyncTaskSchedulerCustomizer customizers} that should be applied
+	 * to the {@link SimpleAsyncTaskScheduler}. Customizers are applied in the order that
+	 * they were added after builder configuration has been applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
 	 * @see #customizers(SimpleAsyncTaskSchedulerCustomizer...)
@@ -140,13 +134,12 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	}
 
 	/**
-	 * Add {@link SimpleAsyncTaskSchedulerCustomizer threadPoolTaskSchedulerCustomizers}
-	 * that should be applied to the {@link SimpleAsyncTaskScheduler}. Customizers are
-	 * applied in the order that they were added after builder configuration has been
-	 * applied.
+	 * Add {@link SimpleAsyncTaskSchedulerCustomizer customizers} that should be applied
+	 * to the {@link SimpleAsyncTaskScheduler}. Customizers are applied in the order that
+	 * they were added after builder configuration has been applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
-	 * @see #customizers(SimpleAsyncTaskSchedulerCustomizer...)
+	 * @see #customizers(Iterable)
 	 */
 	public SimpleAsyncTaskSchedulerBuilder additionalCustomizers(
 			Iterable<? extends SimpleAsyncTaskSchedulerCustomizer> customizers) {

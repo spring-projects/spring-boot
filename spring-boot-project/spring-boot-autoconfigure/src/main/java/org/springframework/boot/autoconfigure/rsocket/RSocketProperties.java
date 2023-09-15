@@ -130,7 +130,7 @@ public class RSocketProperties {
 		public static class Spec {
 
 			/**
-			 * Sub-protocol to use in websocket handshake signature.
+			 * Sub-protocols to use in websocket handshake signature.
 			 */
 			private String protocols;
 
