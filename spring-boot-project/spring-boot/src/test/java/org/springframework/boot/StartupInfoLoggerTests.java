@@ -16,11 +16,10 @@
 
 package org.springframework.boot;
 
-import java.time.Duration;
-
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.SpringApplication.Startup;
 import org.springframework.boot.system.ApplicationPid;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,11 +71,59 @@ class StartupInfoLoggerTests {
 	@Test
 	void startedFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
-		Duration timeTakenToStartup = Duration.ofMillis(10);
-		new StartupInfoLogger(getClass()).logStarted(this.log, timeTakenToStartup);
+		new StartupInfoLogger(getClass()).logStarted(this.log, new TestStartup(1345L, "Started"));
 		then(this.log).should()
 			.info(assertArg((message) -> assertThat(message.toString()).matches("Started " + getClass().getSimpleName()
-					+ " in \\d+\\.\\d{1,3} seconds \\(process running for \\d+\\.\\d{1,3}\\)")));
+					+ " in \\d+\\.\\d{1,3} seconds \\(process running for 1.345\\)")));
+	}
+
+	@Test
+	void startedWithoutUptimeFormat() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass()).logStarted(this.log, new TestStartup(null, "Started"));
+		then(this.log).should()
+			.info(assertArg((message) -> assertThat(message.toString())
+				.matches("Started " + getClass().getSimpleName() + " in \\d+\\.\\d{1,3} seconds")));
+	}
+
+	@Test
+	void restoredFormat() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass()).logStarted(this.log, new TestStartup(null, "Restored"));
+		then(this.log).should()
+			.info(assertArg((message) -> assertThat(message.toString())
+				.matches("Restored " + getClass().getSimpleName() + " in \\d+\\.\\d{1,3} seconds")));
+	}
+
+	static class TestStartup extends Startup {
+
+		private final long startTime = System.currentTimeMillis();
+
+		private final Long uptime;
+
+		private final String action;
+
+		TestStartup(Long uptime, String action) {
+			this.uptime = uptime;
+			this.action = action;
+			started();
+		}
+
+		@Override
+		long startTime() {
+			return this.startTime;
+		}
+
+		@Override
+		Long processUptime() {
+			return this.uptime;
+		}
+
+		@Override
+		String action() {
+			return this.action;
+		}
+
 	}
 
 }

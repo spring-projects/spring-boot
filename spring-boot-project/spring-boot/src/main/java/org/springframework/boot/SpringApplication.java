@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.StackWalker.StackFrame;
+import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.crac.management.CRaCMXBean;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
@@ -301,10 +303,10 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		Startup startup = Startup.create();
 		if (this.registerShutdownHook) {
 			SpringApplication.shutdownHook.enableShutdowHookAddition();
 		}
-		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -319,11 +321,11 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			Duration timeTakenToStartup = Duration.ofNanos(System.nanoTime() - startTime);
+			startup.started();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakenToStartup);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), startup);
 			}
-			listeners.started(context, timeTakenToStartup);
+			listeners.started(context, startup.timeTakenToStarted());
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -335,8 +337,7 @@ public class SpringApplication {
 		}
 		try {
 			if (context.isRunning()) {
-				Duration timeTakenToReady = Duration.ofNanos(System.nanoTime() - startTime);
-				listeners.ready(context, timeTakenToReady);
+				listeners.ready(context, startup.ready());
 			}
 		}
 		catch (Throwable ex) {
@@ -1653,6 +1654,99 @@ public class SpringApplication {
 					break;
 				}
 			}
+		}
+
+	}
+
+	abstract static class Startup {
+
+		private Duration timeTakenToStarted;
+
+		abstract long startTime();
+
+		abstract Long processUptime();
+
+		abstract String action();
+
+		final Duration started() {
+			long now = System.currentTimeMillis();
+			this.timeTakenToStarted = Duration.ofMillis(now - startTime());
+			return this.timeTakenToStarted;
+		}
+
+		private Duration ready() {
+			long now = System.currentTimeMillis();
+			return Duration.ofMillis(now - startTime());
+		}
+
+		Duration timeTakenToStarted() {
+			return this.timeTakenToStarted;
+		}
+
+		static Startup create() {
+			if (ClassUtils.isPresent("jdk.crac.management.CRaCMXBean", Startup.class.getClassLoader())) {
+				return new CracStartup();
+			}
+			return new StandardStartup();
+		}
+
+	}
+
+	private static class CracStartup extends Startup {
+
+		private final StandardStartup fallback = new StandardStartup();
+
+		@Override
+		Long processUptime() {
+			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
+			return (uptime >= 0) ? uptime : this.fallback.processUptime();
+		}
+
+		@Override
+		String action() {
+			if (restoreTime() >= 0) {
+				return "Restored";
+			}
+			return this.fallback.action();
+		}
+
+		private long restoreTime() {
+			return CRaCMXBean.getCRaCMXBean().getRestoreTime();
+		}
+
+		@Override
+		long startTime() {
+			long restoreTime = restoreTime();
+			if (restoreTime >= 0) {
+				return restoreTime;
+			}
+			return this.fallback.startTime();
+		}
+
+	}
+
+	private static class StandardStartup extends Startup {
+
+		private final Long startTime = System.currentTimeMillis();
+
+		@Override
+		long startTime() {
+			return this.startTime;
+		}
+
+		@Override
+		Long processUptime() {
+			try {
+				return ManagementFactory.getRuntimeMXBean().getUptime();
+			}
+			catch (Throwable ex) {
+				return null;
+			}
+		}
+
+		@Override
+		String action() {
+			return "Started";
 		}
 
 	}
