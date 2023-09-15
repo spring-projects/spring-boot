@@ -22,7 +22,6 @@ import org.testcontainers.containers.GenericContainer;
  * A {@link GenericContainer} for ActiveMQ.
  *
  * @author Stephane Nicoll
- * @since 3.1.0
  */
 public class ActiveMQContainer extends GenericContainer<ActiveMQContainer> {
 

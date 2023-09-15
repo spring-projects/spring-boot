@@ -24,7 +24,6 @@ import org.testcontainers.utility.DockerImageName;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Moritz Halbritter
- * @since 2.3.6
  */
 public final class DockerImageNames {
 
@@ -198,7 +197,6 @@ public final class DockerImageNames {
 	/**
 	 * Return a {@link DockerImageName} suitable for running a Docker registry.
 	 * @return a docker image name for running a registry
-	 * @since 2.4.0
 	 */
 	public static DockerImageName registry() {
 		return DockerImageName.parse("registry").withTag(REGISTRY_VERSION);
@@ -207,7 +205,6 @@ public final class DockerImageNames {
 	/**
 	 * Return a {@link DockerImageName} suitable for running Zipkin.
 	 * @return a docker image name for running Zipkin
-	 * @since 3.1.0
 	 */
 	public static DockerImageName zipkin() {
 		return DockerImageName.parse("openzipkin/zipkin").withTag(ZIPKIN_VERSION);
