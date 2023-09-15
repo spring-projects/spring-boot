@@ -22,7 +22,6 @@ import org.testcontainers.utility.DockerImageName;
  * Create {@link DockerImageName} instances for services used in integration tests.
  *
  * @author Stephane Nicoll
- * @since 2.3.6
  */
 public final class DockerImageNames {
 
@@ -114,7 +113,6 @@ public final class DockerImageNames {
 	/**
 	 * Return a {@link DockerImageName} suitable for running a Docker registry.
 	 * @return a docker image name for running a registry
-	 * @since 2.4.0
 	 */
 	public static DockerImageName registry() {
 		return DockerImageName.parse("registry").withTag(REGISTRY_VERSION);

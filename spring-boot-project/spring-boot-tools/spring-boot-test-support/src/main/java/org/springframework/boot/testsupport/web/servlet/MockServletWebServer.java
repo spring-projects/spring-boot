@@ -46,7 +46,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 2.0.0
  */
 public abstract class MockServletWebServer {
 
