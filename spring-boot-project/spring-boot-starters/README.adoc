@@ -184,6 +184,15 @@ do as they were designed before this was clarified.
 | https://www.optaplanner.org/[OptaPlanner]
 | https://github.com/kiegroup/optaplanner/tree/master/optaplanner-spring-integration/optaplanner-spring-boot-starter
 
+| https://www.oracle.com/cloud/[Oracle Cloud Infrastructure (OCI)]
+| https://github.com/oracle/spring-cloud-oci/tree/main/spring-cloud-oci-starters
+
+| https://spring.coherence.community/3.0.0/refdocs/reference/html/spring-boot.html[Oracle Coherence]
+| https://github.com/coherence-community/coherence-spring/tree/main/coherence-spring-boot-starter
+
+| https://www.oracle.com/database/[Oracle Database]
+| https://github.com/oracle/microservices-datadriven/tree/main/spring/oracle-spring-boot-starters
+
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
