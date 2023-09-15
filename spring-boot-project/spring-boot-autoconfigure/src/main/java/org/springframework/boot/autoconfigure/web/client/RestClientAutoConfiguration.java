@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.web.client;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestClientCustomizer;
@@ -44,7 +47,7 @@ import org.springframework.web.client.RestClient;
  * @author Moritz Halbritter
  * @since 3.2.0
  */
-@AutoConfiguration(after = HttpMessageConvertersAutoConfiguration.class)
+@AutoConfiguration(after = { HttpMessageConvertersAutoConfiguration.class, SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestClientAutoConfiguration {
@@ -55,6 +58,13 @@ public class RestClientAutoConfiguration {
 	HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
 			ObjectProvider<HttpMessageConverters> messageConverters) {
 		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(RestClientSsl.class)
+	@ConditionalOnBean(SslBundles.class)
+	AutoConfiguredRestClientSsl restClientSsl(SslBundles sslBundles) {
+		return new AutoConfiguredRestClientSsl(sslBundles);
 	}
 
 	@Bean

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -57,6 +58,12 @@ class RestClientAutoConfigurationTests {
 			assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
 			assertThat(context).hasSingleBean(RestClient.Builder.class);
 		});
+	}
+
+	@Test
+	void shouldSupplyRestClientSslIfSslBundlesIsThere() {
+		this.contextRunner.withBean(SslBundles.class, () -> mock(SslBundles.class))
+			.run((context) -> assertThat(context).hasSingleBean(RestClientSsl.class));
 	}
 
 	@Test

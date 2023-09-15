@@ -32,7 +32,7 @@ import org.springframework.web.client.RestClient;
  * Typically used as follows: <pre class="code">
  * &#064;Bean
  * public MyBean myBean(RestClient.Builder restClientBuilder, RestClientSsl ssl) {
- *     RestClient restClientrestClient= restClientBuilder.apply(ssl.forBundle("mybundle")).build();
+ *     RestClient restClientrestClient= restClientBuilder.apply(ssl.fromBundle("mybundle")).build();
  *     return new MyBean(webClient);
  * }
  * </pre> NOTE: Apply SSL configuration will replace any previously
