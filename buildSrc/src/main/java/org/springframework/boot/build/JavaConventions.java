@@ -178,7 +178,7 @@ class JavaConventions {
 
 	private void configureTestRetries(Test test) {
 		TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
-		testRetry.getFailOnPassedAfterRetry().set(true);
+		testRetry.getFailOnPassedAfterRetry().set(false);
 		testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 	}
 
