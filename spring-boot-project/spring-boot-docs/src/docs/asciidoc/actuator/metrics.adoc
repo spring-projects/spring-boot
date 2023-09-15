@@ -739,6 +739,13 @@ Auto-configuration enables the instrumentation of all available `ThreadPoolTaskE
 Metrics are tagged by the name of the executor, which is derived from the bean name.
 
 
+[[actuator.metrics.supported.jms]]
+==== JMS Metrics
+Auto-configuration enables the instrumentation of all available `JmsTemplate` beans.
+`JmsMessagingTemplate` instances built with instrumented `JmsTemplate` beans will also record observations.
+See the {spring-framework-docs}/integration/observability.html#observability.jms.publish[Spring Framework reference documentation for more information on produced observations].
+
+
 
 [[actuator.metrics.supported.spring-mvc]]
 ==== Spring MVC Metrics
