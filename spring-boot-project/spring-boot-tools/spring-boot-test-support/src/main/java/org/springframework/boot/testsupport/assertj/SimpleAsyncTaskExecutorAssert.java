@@ -28,7 +28,6 @@ import org.springframework.util.ReflectionUtils;
  * AssertJ {@link Assert} for {@link SimpleAsyncTaskExecutor}.
  *
  * @author Moritz Halbritter
- * @since 3.2.0
  */
 public final class SimpleAsyncTaskExecutorAssert
 		extends AbstractAssert<SimpleAsyncTaskExecutorAssert, SimpleAsyncTaskExecutor> {

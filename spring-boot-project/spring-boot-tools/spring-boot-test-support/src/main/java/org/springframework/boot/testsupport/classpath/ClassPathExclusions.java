@@ -31,7 +31,6 @@ import org.springframework.core.annotation.AliasFor;
  * Annotation used to exclude entries from the classpath.
  *
  * @author Andy Wilkinson
- * @since 1.5.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -57,7 +56,6 @@ public @interface ClassPathExclusions {
 	 * For example, to exclude Hibernate Validator from the classpath,
 	 * {@code "hibernate-validator-*.jar"} can be used.
 	 * @return the exclusion patterns
-	 * @since 3.2.0
 	 */
 	@AliasFor("value")
 	String[] files() default {};
@@ -65,7 +63,6 @@ public @interface ClassPathExclusions {
 	/**
 	 * One or more packages that should be excluded from the classpath.
 	 * @return the excluded packages
-	 * @since 3.2.0
 	 */
 	String[] packages() default {};
 
