@@ -22,8 +22,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -50,17 +50,17 @@ import org.springframework.util.ResourceUtils;
  */
 final class PrivateKeyParser {
 
-	private static final String PKCS1_HEADER = "-+BEGIN\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
+	private static final String PKCS1_RSA_HEADER = "-+BEGIN\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
-	private static final String PKCS1_FOOTER = "-+END\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+";
+	private static final String PKCS1_RSA_FOOTER = "-+END\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+";
 
 	private static final String PKCS8_HEADER = "-+BEGIN\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
 	private static final String PKCS8_FOOTER = "-+END\\s+PRIVATE\\s+KEY[^-]*-+";
 
-	private static final String EC_HEADER = "-+BEGIN\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
+	private static final String SEC1_EC_HEADER = "-+BEGIN\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
-	private static final String EC_FOOTER = "-+END\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+";
+	private static final String SEC1_EC_FOOTER = "-+END\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+";
 
 	private static final String BASE64_TEXT = "([a-z0-9+/=\\r\\n]+)";
 
@@ -68,9 +68,11 @@ final class PrivateKeyParser {
 
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, PrivateKeyParser::createKeySpecForPkcs1, "RSA"));
-		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, PrivateKeyParser::createKeySpecForEc, "EC"));
-		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, PKCS8EncodedKeySpec::new, "RSA", "EC", "DSA", "Ed25519"));
+		parsers
+			.add(new PemParser(PKCS1_RSA_HEADER, PKCS1_RSA_FOOTER, PrivateKeyParser::createKeySpecForPkcs1Rsa, "RSA"));
+		parsers.add(new PemParser(SEC1_EC_HEADER, SEC1_EC_FOOTER, PrivateKeyParser::createKeySpecForSec1Ec, "EC"));
+		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, PKCS8EncodedKeySpec::new, "RSA", "RSASSA-PSS", "EC",
+				"DSA", "EdDSA", "XDH"));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -92,11 +94,11 @@ final class PrivateKeyParser {
 	private PrivateKeyParser() {
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForPkcs1(byte[] bytes) {
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes) {
 		return createKeySpecForAlgorithm(bytes, RSA_ALGORITHM, null);
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForEc(byte[] bytes) {
+	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
@@ -204,21 +206,16 @@ final class PrivateKeyParser {
 		}
 
 		private PrivateKey parse(byte[] bytes) {
-			try {
-				PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes);
-				for (String algorithm : this.algorithms) {
+			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes);
+			for (String algorithm : this.algorithms) {
+				try {
 					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-					try {
-						return keyFactory.generatePrivate(keySpec);
-					}
-					catch (InvalidKeySpecException ex) {
-					}
+					return keyFactory.generatePrivate(keySpec);
 				}
-				return null;
+				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+				}
 			}
-			catch (GeneralSecurityException ex) {
-				throw new IllegalArgumentException("Unexpected key format", ex);
-			}
+			return null;
 		}
 
 	}
@@ -306,7 +303,7 @@ final class PrivateKeyParser {
 
 		private final long tagType;
 
-		private ByteBuffer contents;
+		private final ByteBuffer contents;
 
 		private DerElement(ByteBuffer bytes) {
 			byte b = bytes.get();
