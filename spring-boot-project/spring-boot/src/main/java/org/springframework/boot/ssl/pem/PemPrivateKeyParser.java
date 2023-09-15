@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -52,9 +53,9 @@ import org.springframework.util.Assert;
  */
 final class PemPrivateKeyParser {
 
-	private static final String PKCS1_HEADER = "-+BEGIN\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
+	private static final String PKCS1_RSA_HEADER = "-+BEGIN\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
-	private static final String PKCS1_FOOTER = "-+END\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+";
+	private static final String PKCS1_RSA_FOOTER = "-+END\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+";
 
 	private static final String PKCS8_HEADER = "-+BEGIN\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
@@ -64,9 +65,9 @@ final class PemPrivateKeyParser {
 
 	private static final String PKCS8_ENCRYPTED_FOOTER = "-+END\\s+ENCRYPTED\\s+PRIVATE\\s+KEY[^-]*-+";
 
-	private static final String EC_HEADER = "-+BEGIN\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
+	private static final String SEC1_EC_HEADER = "-+BEGIN\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
-	private static final String EC_FOOTER = "-+END\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+";
+	private static final String SEC1_EC_FOOTER = "-+END\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+";
 
 	private static final String BASE64_TEXT = "([a-z0-9+/=\\r\\n]+)";
 
@@ -75,12 +76,13 @@ final class PemPrivateKeyParser {
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, PemPrivateKeyParser::createKeySpecForPkcs1, "RSA"));
-		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, PemPrivateKeyParser::createKeySpecForEc, "EC"));
-		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, PemPrivateKeyParser::createKeySpecForPkcs8, "RSA", "EC",
-				"DSA", "Ed25519"));
+		parsers.add(new PemParser(PKCS1_RSA_HEADER, PKCS1_RSA_FOOTER, PemPrivateKeyParser::createKeySpecForPkcs1Rsa,
+				"RSA"));
+		parsers.add(new PemParser(SEC1_EC_HEADER, SEC1_EC_FOOTER, PemPrivateKeyParser::createKeySpecForSec1Ec, "EC"));
+		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, PemPrivateKeyParser::createKeySpecForPkcs8, "RSA",
+				"RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
 		parsers.add(new PemParser(PKCS8_ENCRYPTED_HEADER, PKCS8_ENCRYPTED_FOOTER,
-				PemPrivateKeyParser::createKeySpecForPkcs8Encrypted, "RSA", "EC", "DSA", "Ed25519"));
+				PemPrivateKeyParser::createKeySpecForPkcs8Encrypted, "RSA", "RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -102,11 +104,11 @@ final class PemPrivateKeyParser {
 	private PemPrivateKeyParser() {
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForPkcs1(byte[] bytes, String password) {
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes, String password) {
 		return createKeySpecForAlgorithm(bytes, RSA_ALGORITHM, null);
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForEc(byte[] bytes, String password) {
+	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes, String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
@@ -228,21 +230,16 @@ final class PemPrivateKeyParser {
 		}
 
 		private PrivateKey parse(byte[] bytes, String password) {
-			try {
-				PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
-				for (String algorithm : this.algorithms) {
+			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
+			for (String algorithm : this.algorithms) {
+				try {
 					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-					try {
-						return keyFactory.generatePrivate(keySpec);
-					}
-					catch (InvalidKeySpecException ex) {
-					}
+					return keyFactory.generatePrivate(keySpec);
 				}
-				return null;
+				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+				}
 			}
-			catch (GeneralSecurityException ex) {
-				throw new IllegalArgumentException("Unexpected key format", ex);
-			}
+			return null;
 		}
 
 	}
@@ -330,7 +327,7 @@ final class PemPrivateKeyParser {
 
 		private final long tagType;
 
-		private ByteBuffer contents;
+		private final ByteBuffer contents;
 
 		private DerElement(ByteBuffer bytes) {
 			byte b = bytes.get();
