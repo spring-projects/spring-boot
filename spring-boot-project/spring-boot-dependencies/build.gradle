@@ -1852,7 +1852,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.7.10") {
+	library("Spring Security", "5.7.11-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			versionRange "[6.0.0-M1,)"
