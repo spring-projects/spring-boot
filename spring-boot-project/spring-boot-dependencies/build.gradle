@@ -1876,7 +1876,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "3.1.6") {
+	library("Spring WS", "3.1.7-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			versionRange "[4.0.0-M1,)"
