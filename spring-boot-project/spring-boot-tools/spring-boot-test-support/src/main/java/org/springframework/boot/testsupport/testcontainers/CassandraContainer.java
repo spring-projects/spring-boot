@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.time.Duration;
  * heavily contended environments such as CI.
  *
  * @author Andy Wilkinson
- * @since 2.4.10
  */
 public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
 

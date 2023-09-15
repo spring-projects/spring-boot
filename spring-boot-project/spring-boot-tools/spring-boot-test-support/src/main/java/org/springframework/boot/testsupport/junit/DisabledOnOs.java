@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * architecture check.
  *
  * @author Moritz Halbritter
- * @since 2.5.11
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
