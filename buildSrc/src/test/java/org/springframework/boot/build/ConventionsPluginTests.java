@@ -187,7 +187,7 @@ class ConventionsPluginTests {
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
 			.contains("maxRetries: 3")
-			.contains("failOnPassedAfterRetry: true");
+			.contains("failOnPassedAfterRetry: false");
 	}
 
 	@Test
@@ -209,7 +209,7 @@ class ConventionsPluginTests {
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
 			.contains("maxRetries: 0")
-			.contains("failOnPassedAfterRetry: true");
+			.contains("failOnPassedAfterRetry: false");
 	}
 
 	private BuildResult runGradle(String... args) {
