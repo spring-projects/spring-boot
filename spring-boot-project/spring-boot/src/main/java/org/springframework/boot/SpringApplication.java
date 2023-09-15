@@ -296,6 +296,9 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		if (this.registerShutdownHook) {
+			SpringApplication.shutdownHook.enableShutdowHookAddition();
+		}
 		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;

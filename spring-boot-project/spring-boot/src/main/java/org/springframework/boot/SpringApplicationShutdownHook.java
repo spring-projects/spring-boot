@@ -62,10 +62,16 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	private final AtomicBoolean shutdownHookAdded = new AtomicBoolean();
 
+	private volatile boolean shutdownHookAdditionEnabled = false;
+
 	private boolean inProgress;
 
 	SpringApplicationShutdownHandlers getHandlers() {
 		return this.handlers;
+	}
+
+	void enableShutdowHookAddition() {
+		this.shutdownHookAdditionEnabled = true;
 	}
 
 	void registerApplicationContext(ConfigurableApplicationContext context) {
@@ -78,7 +84,7 @@ class SpringApplicationShutdownHook implements Runnable {
 	}
 
 	private void addRuntimeShutdownHookIfNecessary() {
-		if (this.shutdownHookAdded.compareAndSet(false, true)) {
+		if (this.shutdownHookAdditionEnabled && this.shutdownHookAdded.compareAndSet(false, true)) {
 			addRuntimeShutdownHook();
 		}
 	}
