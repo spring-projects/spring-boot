@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
 import brave.context.slf4j.MDCScopeDecorator;
+import brave.handler.SpanHandler;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
@@ -40,6 +41,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Brave propagation configurations. They are imported by {@link BraveAutoConfiguration}.
@@ -118,6 +120,27 @@ class BravePropagationConfigurations {
 					builder.add(BaggagePropagationConfig.SingleBaggageField.remote(BaggageField.create(fieldName)));
 				}
 			};
+		}
+
+		@Bean
+		@Order(1)
+		BaggagePropagationCustomizer localFieldsBaggagePropagationCustomizer() {
+			return (builder) -> {
+				List<String> localFields = this.tracingProperties.getBaggage().getLocalFields();
+				for (String localFieldName : localFields) {
+					builder.add(BaggagePropagationConfig.SingleBaggageField.local(BaggageField.create(localFieldName)));
+				}
+			};
+		}
+
+		@Bean
+		@Order(2)
+		SpanHandler baggageTagSpanHandler() {
+			List<String> tagFields = this.tracingProperties.getBaggage().getTagFields();
+			if (CollectionUtils.isEmpty(tagFields)) {
+				return SpanHandler.NOOP;
+			}
+			return new BaggageTagSpanHandler(tagFields.stream().map(BaggageField::create).toList());
 		}
 
 		@Bean

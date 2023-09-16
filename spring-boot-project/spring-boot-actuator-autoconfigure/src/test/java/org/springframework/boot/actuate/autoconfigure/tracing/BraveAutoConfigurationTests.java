@@ -26,6 +26,7 @@ import brave.Span;
 import brave.SpanCustomizer;
 import brave.Tracer;
 import brave.Tracing;
+import brave.baggage.BaggageField;
 import brave.baggage.BaggagePropagation;
 import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.handler.SpanHandler;
@@ -342,6 +343,22 @@ class BraveAutoConfigurationTests {
 				.asInstanceOf(InstanceOfAssertFactories.LIST)
 				.containsExactly(components.reporter1, components.reporter3, components.reporter2);
 		});
+	}
+
+	@Test
+	void shouldCreateTagHandler() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.tag-fields=country-code,bp")
+			.run((context) -> assertThat(context.getBean(BaggageTagSpanHandler.class)).extracting("fieldsToTag")
+				.asInstanceOf(InstanceOfAssertFactories.list(BaggageField.class))
+				.extracting(BaggageField::name)
+				.containsExactlyInAnyOrder("country-code", "bp"));
+	}
+
+	@Test
+	void noopOnNoTagFields() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.tag-fields=")
+			.run((context) -> assertThat(context.getBean("baggageTagSpanHandler", SpanHandler.class))
+				.isSameAs(SpanHandler.NOOP));
 	}
 
 	@Test

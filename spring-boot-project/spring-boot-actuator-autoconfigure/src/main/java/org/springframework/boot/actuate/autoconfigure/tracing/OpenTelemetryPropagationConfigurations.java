@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
@@ -73,8 +72,9 @@ class OpenTelemetryPropagationConfigurations {
 		@ConditionalOnEnabledTracing
 		TextMapPropagator textMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
 			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
+			List<String> tagFields = this.tracingProperties.getBaggage().getTagFields();
 			BaggageTextMapPropagator baggagePropagator = new BaggageTextMapPropagator(remoteFields,
-					new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList()));
+					new OtelBaggageManager(otelCurrentTraceContext, remoteFields, tagFields));
 			return CompositeTextMapPropagator.create(this.tracingProperties.getPropagation(), baggagePropagator);
 		}
 

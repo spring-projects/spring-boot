@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.ResourceAttributes;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -270,6 +271,22 @@ class OpenTelemetryAutoConfigurationTests {
 			List<TextMapPropagator> injectors = getInjectors(propagator);
 			assertThat(injectors).hasExactlyElementsOfTypes(W3CTraceContextPropagator.class);
 		});
+	}
+
+	@Test
+	void shouldConfigureRemoteAndTaggedFields() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.baggage.remote-fields=r1",
+					"management.tracing.baggage.tag-fields=t1")
+			.run((context) -> {
+				CompositeTextMapPropagator propagator = context.getBean(CompositeTextMapPropagator.class);
+				assertThat(propagator).extracting("baggagePropagator.baggageManager.remoteFields")
+					.asInstanceOf(InstanceOfAssertFactories.list(String.class))
+					.containsExactly("r1");
+				assertThat(propagator).extracting("baggagePropagator.baggageManager.tagFields")
+					.asInstanceOf(InstanceOfAssertFactories.list(String.class))
+					.containsExactly("t1");
+			});
 	}
 
 	@Test
