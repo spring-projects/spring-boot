@@ -55,11 +55,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	private final Set<SimpleAsyncTaskExecutorCustomizer> customizers;
 
 	public SimpleAsyncTaskExecutorBuilder() {
-		this.virtualThreads = null;
-		this.threadNamePrefix = null;
-		this.concurrencyLimit = null;
-		this.taskDecorator = null;
-		this.customizers = null;
+		this(null, null, null, null, null);
 	}
 
 	private SimpleAsyncTaskExecutorBuilder(Boolean virtualThreads, String threadNamePrefix, Integer concurrencyLimit,
@@ -112,7 +108,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	}
 
 	/**
-	 * Set the {@link SimpleAsyncTaskExecutorCustomizer TaskExecutorCustomizers} that
+	 * Set the {@link SimpleAsyncTaskExecutorCustomizer customizers} that
 	 * should be applied to the {@link SimpleAsyncTaskExecutor}. Customizers are applied
 	 * in the order that they were added after builder configuration has been applied.
 	 * Setting this value will replace any previously configured customizers.
@@ -126,13 +122,13 @@ public class SimpleAsyncTaskExecutorBuilder {
 	}
 
 	/**
-	 * Set the {@link SimpleAsyncTaskExecutorCustomizer TaskExecutorCustomizers} that
+	 * Set the {@link SimpleAsyncTaskExecutorCustomizer customizers} that
 	 * should be applied to the {@link SimpleAsyncTaskExecutor}. Customizers are applied
 	 * in the order that they were added after builder configuration has been applied.
 	 * Setting this value will replace any previously configured customizers.
 	 * @param customizers the customizers to set
 	 * @return a new builder instance
-	 * @see #additionalCustomizers(SimpleAsyncTaskExecutorCustomizer...)
+	 * @see #additionalCustomizers(Iterable) 
 	 */
 	public SimpleAsyncTaskExecutorBuilder customizers(
 			Iterable<? extends SimpleAsyncTaskExecutorCustomizer> customizers) {
@@ -142,7 +138,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	}
 
 	/**
-	 * Add {@link SimpleAsyncTaskExecutorCustomizer TaskExecutorCustomizers} that should
+	 * Add {@link SimpleAsyncTaskExecutorCustomizer customizers} that should
 	 * be applied to the {@link SimpleAsyncTaskExecutor}. Customizers are applied in the
 	 * order that they were added after builder configuration has been applied.
 	 * @param customizers the customizers to add
@@ -155,12 +151,12 @@ public class SimpleAsyncTaskExecutorBuilder {
 	}
 
 	/**
-	 * Add {@link SimpleAsyncTaskExecutorCustomizer TaskExecutorCustomizers} that should
+	 * Add {@link SimpleAsyncTaskExecutorCustomizer customizers} that should
 	 * be applied to the {@link SimpleAsyncTaskExecutor}. Customizers are applied in the
 	 * order that they were added after builder configuration has been applied.
 	 * @param customizers the customizers to add
 	 * @return a new builder instance
-	 * @see #customizers(SimpleAsyncTaskExecutorCustomizer...)
+	 * @see #customizers(Iterable) 
 	 */
 	public SimpleAsyncTaskExecutorBuilder additionalCustomizers(
 			Iterable<? extends SimpleAsyncTaskExecutorCustomizer> customizers) {
