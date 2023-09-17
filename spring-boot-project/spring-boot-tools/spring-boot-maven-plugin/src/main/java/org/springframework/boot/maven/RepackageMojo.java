@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -222,21 +221,9 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	private FileTime parseOutputTimestamp() {
-		// Maven ignores a single-character timestamp as it is "useful to override a full
-		// value during pom inheritance"
-		if (this.outputTimestamp == null || this.outputTimestamp.length() < 2) {
-			return null;
-		}
-		return FileTime.from(getOutputTimestampEpochSeconds(), TimeUnit.SECONDS);
-	}
-
-	private long getOutputTimestampEpochSeconds() {
-		try {
-			return Long.parseLong(this.outputTimestamp);
-		}
-		catch (NumberFormatException ex) {
-			return OffsetDateTime.parse(this.outputTimestamp).toInstant().getEpochSecond();
-		}
+		return MavenBuildOutputTimestamp.parseBuildOutputTimestamp(this.outputTimestamp)
+			.map(instant -> FileTime.from(instant.getEpochSecond(), TimeUnit.SECONDS))
+			.orElse(null);
 	}
 
 	private Repackager getRepackager(File source) {
