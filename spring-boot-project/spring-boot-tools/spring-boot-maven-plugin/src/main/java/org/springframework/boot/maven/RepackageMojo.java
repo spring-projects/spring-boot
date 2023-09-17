@@ -222,9 +222,12 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	private FileTime parseOutputTimestamp() {
-		// Maven ignores a single-character timestamp as it is "useful to override a full
-		// value during pom inheritance"
-		if (this.outputTimestamp == null || this.outputTimestamp.length() < 2) {
+		// Maven ignores a single-character non-digit timestamp as it is
+		// "useful to override a full value during pom inheritance"
+		if (this.outputTimestamp == null || this.outputTimestamp.isEmpty()) {
+			return null;
+		}
+		if (this.outputTimestamp.length() == 1 && !Character.isDigit(this.outputTimestamp.charAt(0))) {
 			return null;
 		}
 		return FileTime.from(getOutputTimestampEpochSeconds(), TimeUnit.SECONDS);
