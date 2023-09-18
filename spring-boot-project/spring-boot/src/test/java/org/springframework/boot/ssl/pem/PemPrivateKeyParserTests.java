@@ -207,44 +207,69 @@ class PemPrivateKeyParserTests {
 		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("test-banner.txt")));
 	}
 
-	@Test
-	void parsePkcs8EncryptedRsaKeyFile() throws Exception {
-		// created with:
-		// openssl genpkey -aes-256-cbc -algorithm RSA \
-		// -pkeyopt rsa_keygen_bits:4096 -out key-rsa-encrypted.key
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-rsa-encrypted.pem"), "test");
+	@ParameterizedTest
+	// @formatter:off
+	@CsvSource({
+			"dsa-aes-128-cbc.key,				DSA",
+			"rsa-aes-256-cbc.key,				RSA",
+			"prime256v1-aes-256-cbc.key,		EC",
+			"ed25519-aes-256-cbc.key,			EdDSA",
+			"x448-aes-256-cbc.key,				XDH"
+	})
+		// @formatter:on
+	void shouldParseEncryptedPkcs8(String file, String algorithm) throws IOException {
+		// Created with:
+		// openssl pkcs8 -topk8 -in <input file> -out <output file> -v2 <algorithm>
+		// -passout pass:test
+		// where <algorithm> is aes128 or aes256
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file),
+				"test");
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
-		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
+		assertThat(privateKey.getAlgorithm()).isEqualTo(algorithm);
 	}
 
 	@Test
-	void parsePkcs8EncryptedEcKeyFile() throws Exception {
-		// created with:
-		// openssl genpkey -aes-256-cbc -algorithm EC \
-		// -pkeyopt ec_paramgen_curve:prime256v1 -out key-ec-encrypted.key
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-ec-encrypted.pem"), "test");
-		assertThat(privateKey).isNotNull();
-		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
-		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
-	}
-
-	@Test
-	void failParsingPkcs1EncryptedKeyFile() throws Exception {
-		// created with:
-		// openssl genrsa -aes-256-cbc -out key-rsa-encrypted.pem
+	void shouldNotParseEncryptedPkcs8NotUsingAes() {
+		// Created with:
+		// openssl pkcs8 -topk8 -in rsa.key -out rsa-des-ede3-cbc.key -v2 des3 -passout
+		// pass:test
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser.parse(read("ssl/pkcs1/key-rsa-encrypted.pem"), "test"))
+			.isThrownBy(() -> PemPrivateKeyParser
+				.parse(read("org/springframework/boot/web/server/pkcs8/rsa-des-ede3-cbc.key"), "test"))
+			.isInstanceOf(IllegalStateException.class)
+			.withMessageContaining("Error decrypting private key");
+	}
+
+	@Test
+	void shouldNotParseEncryptedPkcs8NotUsingPbkdf2() {
+		// Created with:
+		// openssl pkcs8 -topk8 -in rsa.key -out rsa-des-ede3-cbc.key -scrypt -passout
+		// pass:test
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser
+				.parse(read("org/springframework/boot/web/server/pkcs8/rsa-scrypt.key"), "test"))
+			.withMessageContaining("Error decrypting private key");
+	}
+
+	@Test
+	void shouldNotParseEncryptedSec1() {
+		// created with:
+		// openssl ecparam -genkey -name prime256v1 | openssl ec -aes-128-cbc -out
+		// prime256v1-aes-128-cbc.key
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser
+				.parse(read("org/springframework/boot/web/server/sec1/prime256v1-aes-128-cbc.key"), "test"))
 			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@Test
-	void failParsingEcEncryptedKeyFile() throws Exception {
+	void shouldNotParseEncryptedPkcs1() throws Exception {
 		// created with:
-		// openssl ecparam -genkey -name prime256v1 | openssl ec -aes-128-cbc -out
-		// key-ec-prime256v1-encrypted.pem
+		// openssl genrsa -aes-256-cbc -out rsa-aes-256-cbc.key
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser.parse(read("ssl/ec/key-ec-prime256v1-encrypted.pem"), "test"))
+			.isThrownBy(() -> PemPrivateKeyParser
+				.parse(read("org/springframework/boot/web/server/pkcs1/rsa-aes-256-cbc.key"), "test"))
 			.withMessageContaining("Unrecognized private key format");
 	}
 
