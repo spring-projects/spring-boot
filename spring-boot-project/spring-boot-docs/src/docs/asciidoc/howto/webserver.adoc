@@ -195,6 +195,26 @@ The following example shows setting SSL properties using a Java KeyStore file:
 	    key-password: "another-secret"
 ----
 
+Using configuration such as the preceding example means the application no longer supports a plain HTTP connector at port 8080.
+Spring Boot does not support the configuration of both an HTTP connector and an HTTPS connector through `application.properties`.
+If you want to have both, you need to configure one of them programmatically.
+We recommend using `application.properties` to configure HTTPS, as the HTTP connector is the easier of the two to configure programmatically.
+
+
+
+[[howto.webserver.configure-ssl.pem-files]]
+==== Using PEM-encoded files
+You can use PEM-encoded files instead of Java KeyStore files.
+You should use PKCS#8 key files wherever possible.
+PEM-encoded PKCS#8 key files start with a `-----BEGIN PRIVATE KEY-----` or `-----BEGIN ENCRYPTED PRIVATE KEY-----` header.
+
+If you have files in other formats, e.g., PKCS#1 (`-----BEGIN RSA PRIVATE KEY-----`) or SEC 1 (`-----BEGIN EC PRIVATE KEY-----`), you can convert them to PKCS#8 using OpenSSL:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+openssl pkcs8 -topk8 -nocrypt -in <input file> -out <output file>
+----
+
 The following example shows setting SSL properties using PEM-encoded certificate and private key files:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -208,11 +228,6 @@ The following example shows setting SSL properties using PEM-encoded certificate
 ----
 
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
-
-Using configuration such as the preceding example means the application no longer supports a plain HTTP connector at port 8080.
-Spring Boot does not support the configuration of both an HTTP connector and an HTTPS connector through `application.properties`.
-If you want to have both, you need to configure one of them programmatically.
-We recommend using `application.properties` to configure HTTPS, as the HTTP connector is the easier of the two to configure programmatically.
 
 
 
