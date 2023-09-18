@@ -65,7 +65,7 @@
 				<fileset dir="${lib.dir}/runtime" />
 				<globmapper from="*" to="BOOT-INF/lib/*"/>
 			</mappedresources>
-			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${ant-spring-boot.version}.jar" />
+			<zipfileset src="${lib.dir}/loader/spring-boot-loader-classic-jar-${ant-spring-boot.version}.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.springframework.boot.loader.launch.JarLauncher" />
 				<attribute name="Start-Class" value="${start-class}" />

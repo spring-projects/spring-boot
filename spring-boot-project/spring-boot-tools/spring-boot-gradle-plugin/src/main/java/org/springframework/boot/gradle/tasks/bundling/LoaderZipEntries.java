@@ -54,7 +54,7 @@ class LoaderZipEntries {
 	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenEntries written = new WrittenEntries();
 		try (ZipInputStream loaderJar = new ZipInputStream(
-				getClass().getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
+				getClass().getResourceAsStream("/META-INF/loader/spring-boot-loader-classic.jar"))) {
 			java.util.zip.ZipEntry entry = loaderJar.getNextEntry();
 			while (entry != null) {
 				if (entry.isDirectory() && !entry.getName().equals("META-INF/")) {

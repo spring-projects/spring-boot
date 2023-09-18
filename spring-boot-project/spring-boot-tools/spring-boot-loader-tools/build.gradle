@@ -36,7 +36,7 @@ dependencies {
 
 	compileOnly("ch.qos.logback:logback-classic")
 
-	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-classic"))
 
 	jarmode(project(":spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"))
 
@@ -57,7 +57,7 @@ task reproducibleLoaderJar(type: Jar) {
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
-	archiveFileName = "spring-boot-loader.jar"
+	archiveFileName = "spring-boot-loader-classic.jar"
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 
@@ -78,6 +78,6 @@ sourceSets {
 
 compileJava {
 	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
-		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']	
-	}	
+		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']
+	}
 }

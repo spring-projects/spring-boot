@@ -51,7 +51,7 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  */
 public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
-	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
+	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader-classic.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
 
