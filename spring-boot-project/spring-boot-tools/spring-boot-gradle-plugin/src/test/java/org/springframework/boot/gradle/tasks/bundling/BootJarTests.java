@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	BootJarTests() {
-		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/",
+		super(BootJar.class, "org.springframework.boot.loader.launch.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/",
 				"BOOT-INF/");
 	}
 

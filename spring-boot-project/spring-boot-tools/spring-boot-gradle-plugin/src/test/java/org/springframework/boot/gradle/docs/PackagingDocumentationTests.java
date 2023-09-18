@@ -166,7 +166,7 @@ class PackagingDocumentationTests {
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Main-Class"))
-				.isEqualTo("org.springframework.boot.loader.PropertiesLauncher");
+				.isEqualTo("org.springframework.boot.loader.launch.PropertiesLauncher");
 		}
 	}
 

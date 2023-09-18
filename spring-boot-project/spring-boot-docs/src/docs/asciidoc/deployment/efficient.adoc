@@ -13,7 +13,7 @@ One way to run an unpacked archive is by starting the appropriate launcher, as f
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ jar -xf myapp.jar
-	$ java org.springframework.boot.loader.JarLauncher
+	$ java org.springframework.boot.loader.launch.JarLauncher
 ----
 
 This is actually slightly faster on startup (depending on the size of the jar) than running from an unexploded archive.

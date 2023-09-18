@@ -105,7 +105,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -121,7 +121,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -133,7 +133,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -684,7 +684,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 	protected boolean hasPackagedLauncherClasses() throws IOException {
 		return hasPackagedEntry("org/springframework/boot/")
-				&& hasPackagedEntry("org/springframework/boot/loader/JarLauncher.class");
+				&& hasPackagedEntry("org/springframework/boot/loader/launch/JarLauncher.class");
 	}
 
 	private boolean hasPackagedEntry(String name) throws IOException {

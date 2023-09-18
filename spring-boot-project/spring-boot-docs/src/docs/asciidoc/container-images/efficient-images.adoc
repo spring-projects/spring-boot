@@ -28,8 +28,8 @@ The following shows an example of a `layers.idx` file:
 	  - BOOT-INF/lib/library1.jar
 	  - BOOT-INF/lib/library2.jar
 	- "spring-boot-loader":
-	  - org/springframework/boot/loader/JarLauncher.class
-	  - org/springframework/boot/loader/jar/JarEntry.class
+	  - org/springframework/boot/loader/launch/JarLauncher.class
+	  - ... <other classes>
 	- "snapshot-dependencies":
 	  - BOOT-INF/lib/library3-SNAPSHOT.jar
 	- "application":

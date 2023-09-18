@@ -57,10 +57,10 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("WEB-INF/lib/spring-core")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl")
 				.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-6")
-				.hasEntryWithName("org/springframework/boot/loader/WarLauncher.class")
+				.hasEntryWithName("org/springframework/boot/loader/launch/WarLauncher.class")
 				.hasEntryWithName("WEB-INF/classes/org/test/SampleApplication.class")
 				.hasEntryWithName("index.html")
-				.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.WarLauncher")
+				.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.launch.WarLauncher")
 					.hasStartClass("org.test.SampleApplication")
 					.hasAttribute("Not-Used", "Foo")));
 	}

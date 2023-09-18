@@ -61,9 +61,9 @@ class BootArchiveSupport {
 
 	static {
 		Set<String> defaultLauncherClasses = new HashSet<>();
-		defaultLauncherClasses.add("org.springframework.boot.loader.JarLauncher");
-		defaultLauncherClasses.add("org.springframework.boot.loader.PropertiesLauncher");
-		defaultLauncherClasses.add("org.springframework.boot.loader.WarLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.launch.JarLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.launch.PropertiesLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.launch.WarLauncher");
 		DEFAULT_LAUNCHER_CLASSES = Collections.unmodifiableSet(defaultLauncherClasses);
 	}
 

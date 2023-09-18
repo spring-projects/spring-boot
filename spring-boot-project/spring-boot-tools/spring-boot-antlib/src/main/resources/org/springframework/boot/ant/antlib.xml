@@ -61,7 +61,7 @@
 				<zipfileset src="${destdir}/dependency/spring-boot-loader.jar" />
 				<manifest>
 					<attribute name="Main-Class"
-						value="org.springframework.boot.loader.JarLauncher" />
+						value="org.springframework.boot.loader.launch.JarLauncher" />
 					<attribute name="Start-Class" value="${start-class}" />
 					<attribute name="Spring-Boot-Classes" value="BOOT-INF/classes/" />
 					<attribute name="Spring-Boot-Lib" value="BOOT-INF/lib/" />

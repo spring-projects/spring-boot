@@ -57,7 +57,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(launchScript(repackaged)).isEmpty();
 			assertThat(jar(repackaged)).manifest((manifest) -> {
-				manifest.hasMainClass("org.springframework.boot.loader.JarLauncher");
+				manifest.hasMainClass("org.springframework.boot.loader.launch.JarLauncher");
 				manifest.hasStartClass("some.random.Main");
 				manifest.hasAttribute("Not-Used", "Foo");
 			})
@@ -66,7 +66,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-6")
 				.hasEntryWithName("BOOT-INF/classes/org/test/SampleApplication.class")
-				.hasEntryWithName("org/springframework/boot/loader/JarLauncher.class");
+				.hasEntryWithName("org/springframework/boot/loader/launch/JarLauncher.class");
 			assertThat(buildLog(project))
 				.contains("Replacing main artifact " + repackaged + " with repackaged archive,")
 				.contains("The original artifact has been renamed to " + original)
@@ -273,9 +273,9 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			.goals("package", "-Dspring-boot.repackage.layout=ZIP")
 			.execute((project) -> {
 				File main = new File(project, "target/jar-with-layout-property-0.0.1.BUILD-SNAPSHOT.jar");
-				assertThat(jar(main))
-					.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.PropertiesLauncher")
-						.hasStartClass("org.test.SampleApplication"));
+				assertThat(jar(main)).manifest(
+						(manifest) -> manifest.hasMainClass("org.springframework.boot.loader.launch.PropertiesLauncher")
+							.hasStartClass("org.test.SampleApplication"));
 				assertThat(buildLog(project)).contains("Layout: ZIP");
 			});
 	}
@@ -284,9 +284,9 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenALayoutIsConfiguredTheSpecifiedLayoutIsUsed(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-with-zip-layout").execute((project) -> {
 			File main = new File(project, "target/jar-with-zip-layout-0.0.1.BUILD-SNAPSHOT.jar");
-			assertThat(jar(main))
-				.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.PropertiesLauncher")
-					.hasStartClass("org.test.SampleApplication"));
+			assertThat(jar(main)).manifest(
+					(manifest) -> manifest.hasMainClass("org.springframework.boot.loader.launch.PropertiesLauncher")
+						.hasStartClass("org.test.SampleApplication"));
 			assertThat(buildLog(project)).contains("Layout: ZIP");
 		});
 	}

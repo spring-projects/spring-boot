@@ -12,7 +12,7 @@ tasks.named<BootWar>("bootWar") {
 // tag::properties-launcher[]
 tasks.named<BootWar>("bootWar") {
 	manifest {
-		attributes("Main-Class" to "org.springframework.boot.loader.PropertiesLauncher")
+		attributes("Main-Class" to "org.springframework.boot.loader.launch.PropertiesLauncher")
 	}
 }
 // end::properties-launcher[]

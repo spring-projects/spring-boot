@@ -22,7 +22,7 @@ The following example shows a typical `MANIFEST.MF` for an executable jar file:
 
 [indent=0]
 ----
-	Main-Class: org.springframework.boot.loader.JarLauncher
+	Main-Class: org.springframework.boot.loader.launch.JarLauncher
 	Start-Class: com.mycompany.project.MyApplication
 ----
 

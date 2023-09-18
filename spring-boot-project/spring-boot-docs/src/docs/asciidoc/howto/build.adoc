@@ -290,7 +290,7 @@ The following example shows how to build an executable archive with Ant:
 			</mappedresources>
 			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
 			<manifest>
-				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
+				<attribute name="Main-Class" value="org.springframework.boot.loader.launch.JarLauncher" />
 				<attribute name="Start-Class" value="${start-class}" />
 			</manifest>
 		</jar>

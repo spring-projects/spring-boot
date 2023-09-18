@@ -48,7 +48,7 @@ import org.gradle.work.DisableCachingByDefault;
 @DisableCachingByDefault(because = "Not worth caching")
 public abstract class BootWar extends War implements BootArchive {
 
-	private static final String LAUNCHER = "org.springframework.boot.loader.WarLauncher";
+	private static final String LAUNCHER = "org.springframework.boot.loader.launch.WarLauncher";
 
 	private static final String CLASSES_DIRECTORY = "WEB-INF/classes/";
 

@@ -79,7 +79,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		repackager.repackage(NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -220,7 +220,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 
 	private boolean hasLauncherClasses(File file) throws IOException {
 		return hasEntry(file, "org/springframework/boot/")
-				&& hasEntry(file, "org/springframework/boot/loader/JarLauncher.class");
+				&& hasEntry(file, "org/springframework/boot/loader/launch/JarLauncher.class");
 	}
 
 	private boolean hasEntry(File file, String name) throws IOException {
