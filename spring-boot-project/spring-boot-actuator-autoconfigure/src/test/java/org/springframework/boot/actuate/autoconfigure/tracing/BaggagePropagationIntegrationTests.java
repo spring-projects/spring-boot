@@ -227,6 +227,16 @@ class BaggagePropagationIntegrationTests {
 							"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
 							"management.tracing.baggage.correlation.fields=country-code,bp");
 			}
+		},
+
+		BRAVE_LOCAL_FIELDS {
+			@Override
+			public ApplicationContextRunner get() {
+				return new ApplicationContextRunner()
+					.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
+					.withPropertyValues("management.tracing.baggage.local-fields=country-code,bp",
+							"management.tracing.baggage.correlation.fields=country-code,bp");
+			}
 		}
 
 	}

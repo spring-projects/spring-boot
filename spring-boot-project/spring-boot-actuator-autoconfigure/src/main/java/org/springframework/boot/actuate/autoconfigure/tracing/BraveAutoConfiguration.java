@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import brave.CurrentSpanCustomizer;
@@ -246,16 +245,25 @@ public class BraveAutoConfiguration {
 		}
 
 		@Bean
-		@Order(0)
+		@Order(1)
 		BaggagePropagationCustomizer localFieldsBaggagePropagationCustomizer() {
 			return (builder) -> {
-				final List<String> localFields = new ArrayList<>(
-						this.tracingProperties.getBaggage().getCorrelation().getFields());
-				localFields.removeAll(this.tracingProperties.getBaggage().getRemoteFields());
+				final List<String> localFields = this.tracingProperties.getBaggage().getLocalFields();
 				for (final String localFieldName : localFields) {
 					builder.add(BaggagePropagationConfig.SingleBaggageField.local(BaggageField.create(localFieldName)));
 				}
 			};
+		}
+
+		@Bean
+		@Order(2)
+		SpanHandler baggageTagSpanHandler() {
+			final List<String> tagFields = this.tracingProperties.getBaggage().getTagFields();
+
+			if (tagFields.isEmpty()) {
+				return SpanHandler.NOOP; // Brave ignores these
+			}
+			return new BaggageTagSpanHandler(tagFields.stream().map(BaggageField::create).toArray(BaggageField[]::new));
 		}
 
 		@Bean
