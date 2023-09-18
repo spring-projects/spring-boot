@@ -24,27 +24,32 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * {@link InflaterInputStream} that supports the writing of an extra "dummy" byte (which
- * is required with JDK 6) and returns accurate available() results.
+ * is required when using an {@link Inflater} with {@code nowrap}) and returns accurate
+ * available() results.
  *
  * @author Phillip Webb
  */
-class ZipInflaterInputStream extends InflaterInputStream {
+abstract class ZipInflaterInputStream extends InflaterInputStream {
 
 	private int available;
 
 	private boolean extraBytesWritten;
 
-	ZipInflaterInputStream(InputStream inputStream, int size) {
-		super(inputStream, new Inflater(true), getInflaterBufferSize(size));
+	ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
+		super(inputStream, inflater, getInflaterBufferSize(size));
 		this.available = size;
+	}
+
+	private static int getInflaterBufferSize(long size) {
+		size += 2; // inflater likes some space
+		size = (size > 65536) ? 8192 : size;
+		size = (size <= 0) ? 4096 : size;
+		return (int) size;
 	}
 
 	@Override
 	public int available() throws IOException {
-		if (this.available < 0) {
-			return super.available();
-		}
-		return this.available;
+		return (this.available >= 0) ? this.available : super.available();
 	}
 
 	@Override
@@ -54,12 +59,6 @@ class ZipInflaterInputStream extends InflaterInputStream {
 			this.available -= result;
 		}
 		return result;
-	}
-
-	@Override
-	public void close() throws IOException {
-		super.close();
-		this.inf.end();
 	}
 
 	@Override
@@ -76,13 +75,6 @@ class ZipInflaterInputStream extends InflaterInputStream {
 			this.extraBytesWritten = true;
 			this.inf.setInput(this.buf, 0, this.len);
 		}
-	}
-
-	private static int getInflaterBufferSize(long size) {
-		size += 2; // inflater likes some space
-		size = (size > 65536) ? 8192 : size;
-		size = (size <= 0) ? 4096 : size;
-		return (int) size;
 	}
 
 }

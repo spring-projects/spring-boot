@@ -256,7 +256,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.getMainClass().set("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/launch/LaunchedClassLoader.class"))
+				.isNotNull();
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
 		}
 		// gh-16698
@@ -275,7 +276,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			.getAttributes()
 			.put("Main-Class", "org.springframework.boot.loader.launch.PropertiesLauncher");
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/launch/LaunchedClassLoader.class"))
+				.isNotNull();
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
 		}
 	}

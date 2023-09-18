@@ -15,6 +15,7 @@
  */
 
 /**
- * Support for loading and manipulating JAR/WAR files.
+ * Alternative {@link java.util.jar.JarFile} implementation with support for nested jars.
+ * @see org.springframework.boot.loader.jar.NestedJarFile
  */
 package org.springframework.boot.loader.jar;

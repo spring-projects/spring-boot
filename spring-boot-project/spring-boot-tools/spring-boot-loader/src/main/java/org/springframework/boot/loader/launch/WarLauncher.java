@@ -17,18 +17,40 @@
 package org.springframework.boot.loader.launch;
 
 /**
- * Repackaged {@link org.springframework.boot.loader.WarLauncher}.
+ * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
+ * Supports dependencies in {@code WEB-INF/lib} as well as {@code WEB-INF/lib-provided},
+ * classes are loaded from {@code WEB-INF/classes}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 3.2.0
  */
-public final class WarLauncher {
+public class WarLauncher extends ExecutableArchiveLauncher {
 
-	private WarLauncher() {
+	public WarLauncher() throws Exception {
+	}
+
+	protected WarLauncher(Archive archive) throws Exception {
+		super(archive);
+	}
+
+	@Override
+	public boolean isIncludedOnClassPath(Archive.Entry entry) {
+		String name = entry.name();
+		if (entry.isDirectory()) {
+			return name.equals("WEB-INF/classes/");
+		}
+		return name.startsWith("WEB-INF/lib/") || name.startsWith("WEB-INF/lib-provided/");
+	}
+
+	@Override
+	protected String getEntryPathPrefix() {
+		return "WEB-INF/";
 	}
 
 	public static void main(String[] args) throws Exception {
-		org.springframework.boot.loader.WarLauncher.main(args);
+		new WarLauncher().launch(args);
 	}
 
 }

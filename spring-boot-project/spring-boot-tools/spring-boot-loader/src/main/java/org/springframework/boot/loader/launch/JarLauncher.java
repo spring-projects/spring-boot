@@ -17,18 +17,41 @@
 package org.springframework.boot.loader.launch;
 
 /**
- * Repackaged {@link org.springframework.boot.loader.JarLauncher}.
+ * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
+ * included inside a {@code /BOOT-INF/lib} directory and that application classes are
+ * included inside a {@code /BOOT-INF/classes} directory.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 3.2.0
  */
-public final class JarLauncher {
+public class JarLauncher extends ExecutableArchiveLauncher {
 
-	private JarLauncher() {
+	public JarLauncher() throws Exception {
+	}
+
+	protected JarLauncher(Archive archive) throws Exception {
+		super(archive);
+	}
+
+	@Override
+	protected boolean isIncludedOnClassPath(Archive.Entry entry) {
+		String name = entry.name();
+		if (entry.isDirectory()) {
+			return name.equals("BOOT-INF/classes/");
+		}
+		return name.startsWith("BOOT-INF/lib/");
+	}
+
+	@Override
+	protected String getEntryPathPrefix() {
+		return "BOOT-INF/";
 	}
 
 	public static void main(String[] args) throws Exception {
-		org.springframework.boot.loader.JarLauncher.main(args);
+		new JarLauncher().launch(args);
 	}
 
 }
