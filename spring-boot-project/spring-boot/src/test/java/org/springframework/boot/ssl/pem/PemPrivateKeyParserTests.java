@@ -22,8 +22,6 @@ import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -129,7 +127,6 @@ class PemPrivateKeyParserTests {
 			.hasMessageContaining("Unrecognized private key format");
 	}
 
-	@EnabledForJreRange(min = JRE.JAVA_17, disabledReason = "EdDSA is only supported since Java 17")
 	@ParameterizedTest
 	// @formatter:off
 	@ValueSource(strings = {
@@ -144,7 +141,6 @@ class PemPrivateKeyParserTests {
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EdDSA");
 	}
 
-	@EnabledForJreRange(min = JRE.JAVA_17, disabledReason = "XDH is only supported since Java 17")
 	@ParameterizedTest
 	// @formatter:off
 	@ValueSource(strings = {
