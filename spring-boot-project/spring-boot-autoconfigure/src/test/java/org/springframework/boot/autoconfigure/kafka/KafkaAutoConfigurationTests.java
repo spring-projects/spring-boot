@@ -107,6 +107,7 @@ import static org.mockito.Mockito.never;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class KafkaAutoConfigurationTests {
 
@@ -166,6 +167,25 @@ class KafkaAutoConfigurationTests {
 				assertThat(configs).containsEntry("baz", "qux");
 				assertThat(configs).containsEntry("foo.bar.baz", "qux.fiz.buz");
 				assertThat(configs).containsEntry("fiz.buz", "fix.fox");
+			});
+	}
+
+	@Test
+	void consumerPropertiesWithApplicationNameAndWithoutGroupId() {
+		this.contextRunner.withPropertyValues("spring.application.name=foo").run((context) -> {
+			DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
+			Map<String, Object> configs = consumerFactory.getConfigurationProperties();
+			assertThat(configs).containsEntry(ConsumerConfig.GROUP_ID_CONFIG, "foo");
+		});
+	}
+
+	@Test
+	void consumerPropertiesWithBothApplicationNameAndGroupId() {
+		this.contextRunner.withPropertyValues("spring.kafka.consumer.group-id=bar", "spring.application.name=foo")
+			.run((context) -> {
+				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
+				Map<String, Object> configs = consumerFactory.getConfigurationProperties();
+				assertThat(configs).containsEntry(ConsumerConfig.GROUP_ID_CONFIG, "bar");
 			});
 	}
 

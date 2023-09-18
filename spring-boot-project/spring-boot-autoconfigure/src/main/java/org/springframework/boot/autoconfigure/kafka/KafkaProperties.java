@@ -276,7 +276,7 @@ public class KafkaProperties {
 
 		/**
 		 * Unique string that identifies the consumer group to which this consumer
-		 * belongs.
+		 * belongs, default to "spring.application.name" if present.
 		 */
 		private String groupId;
 

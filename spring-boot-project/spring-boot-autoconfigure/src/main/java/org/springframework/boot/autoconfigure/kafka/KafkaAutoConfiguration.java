@@ -37,6 +37,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -64,6 +65,7 @@ import org.springframework.retry.backoff.SleepingBackOffPolicy;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -106,9 +108,16 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
-	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(KafkaConnectionDetails connectionDetails,
+	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(Environment environment,
+			KafkaConnectionDetails connectionDetails,
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
 		Map<String, Object> properties = this.properties.buildConsumerProperties();
+		if (!properties.containsKey(ConsumerConfig.GROUP_ID_CONFIG)) {
+			String applicationName = environment.getProperty("spring.application.name");
+			if (applicationName != null) {
+				properties.put(ConsumerConfig.GROUP_ID_CONFIG, applicationName);
+			}
+		}
 		applyKafkaConnectionDetailsForConsumer(properties, connectionDetails);
 		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(properties);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
