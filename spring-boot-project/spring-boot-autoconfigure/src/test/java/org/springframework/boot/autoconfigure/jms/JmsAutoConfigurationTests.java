@@ -143,7 +143,7 @@ class JmsAutoConfigurationTests {
 	void testJmsListenerContainerFactoryWithCustomSettings() {
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
 			.withPropertyValues("spring.jms.listener.autoStartup=false", "spring.jms.listener.acknowledgeMode=client",
-					"spring.jms.listener.concurrency=2", "spring.jms.listener.receiveTimeout=2s",
+					"spring.jms.listener.minConcurrency=2", "spring.jms.listener.receiveTimeout=2s",
 					"spring.jms.listener.maxConcurrency=10")
 			.run(this::testJmsListenerContainerFactoryWithCustomSettings);
 	}

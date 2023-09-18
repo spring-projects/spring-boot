@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jms;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for JMS.
@@ -148,7 +149,7 @@ public class JmsProperties {
 		/**
 		 * Minimum number of concurrent consumers.
 		 */
-		private Integer concurrency;
+		private Integer minConcurrency;
 
 		/**
 		 * Maximum number of concurrent consumers.
@@ -178,12 +179,23 @@ public class JmsProperties {
 			this.acknowledgeMode = acknowledgeMode;
 		}
 
+		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public Integer getConcurrency() {
-			return this.concurrency;
+			return this.minConcurrency;
 		}
 
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public void setConcurrency(Integer concurrency) {
-			this.concurrency = concurrency;
+			this.minConcurrency = concurrency;
+		}
+
+		public Integer getMinConcurrency() {
+			return this.minConcurrency;
+		}
+
+		public void setMinConcurrency(Integer minConcurrency) {
+			this.minConcurrency = minConcurrency;
 		}
 
 		public Integer getMaxConcurrency() {
@@ -195,11 +207,11 @@ public class JmsProperties {
 		}
 
 		public String formatConcurrency() {
-			if (this.concurrency == null) {
+			if (this.minConcurrency == null) {
 				return (this.maxConcurrency != null) ? "1-" + this.maxConcurrency : null;
 			}
-			return ((this.maxConcurrency != null) ? this.concurrency + "-" + this.maxConcurrency
-					: String.valueOf(this.concurrency));
+			return ((this.maxConcurrency != null) ? this.minConcurrency + "-" + this.maxConcurrency
+					: String.valueOf(this.minConcurrency));
 		}
 
 		public Duration getReceiveTimeout() {
