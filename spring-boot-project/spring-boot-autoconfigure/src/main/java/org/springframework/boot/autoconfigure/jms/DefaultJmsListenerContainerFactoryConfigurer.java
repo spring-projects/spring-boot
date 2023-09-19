@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  * @since 1.3.3
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer {
@@ -101,11 +102,15 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
+		JmsProperties.Listener listener = this.jmsProperties.getListener();
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}
-		else {
+		else if (listener.getSessionTransacted() == null) {
 			factory.setSessionTransacted(true);
+		}
+		if (listener.getSessionTransacted() != null) {
+			factory.setSessionTransacted(listener.getSessionTransacted());
 		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
@@ -116,7 +121,6 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		if (this.exceptionListener != null) {
 			factory.setExceptionListener(this.exceptionListener);
 		}
-		JmsProperties.Listener listener = this.jmsProperties.getListener();
 		factory.setAutoStartup(listener.isAutoStartup());
 		factory.setSessionAcknowledgeMode(listener.getSession().getAcknowledgeMode().getMode());
 		String concurrency = listener.formatConcurrency();

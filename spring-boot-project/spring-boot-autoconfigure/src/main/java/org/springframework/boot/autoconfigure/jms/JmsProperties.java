@@ -142,6 +142,11 @@ public class JmsProperties {
 		private boolean autoStartup = true;
 
 		/**
+		 * Whether the container should use transacted JMS sessions.
+		 */
+		private Boolean sessionTransacted;
+
+		/**
 		 * Minimum number of concurrent consumers. When max-concurrency is not specified
 		 * the minimum will also be used as the maximum.
 		 */
@@ -178,6 +183,14 @@ public class JmsProperties {
 		@Deprecated(since = "3.2.0", forRemoval = true)
 		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 			this.session.setAcknowledgeMode(acknowledgeMode);
+		}
+
+		public Boolean getSessionTransacted() {
+			return this.sessionTransacted;
+		}
+
+		public void setSessionTransacted(Boolean sessionTransacted) {
+			this.sessionTransacted = sessionTransacted;
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
