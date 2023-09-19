@@ -1580,7 +1580,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Pulsar", "1.0.0-SNAPSHOT") {
+	library("Spring Pulsar", "1.0.0-M2") {
 		group("org.springframework.pulsar") {
 			modules = [
 				"spring-pulsar",
