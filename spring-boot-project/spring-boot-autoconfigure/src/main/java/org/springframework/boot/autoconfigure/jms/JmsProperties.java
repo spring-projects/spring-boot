@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.jms")
@@ -147,6 +148,11 @@ public class JmsProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
+		 * Whether the container should use transacted JMS sessions.
+		 */
+		private Boolean sessionTransacted;
+
+		/**
 		 * Minimum number of concurrent consumers. When max-concurrency is not specified
 		 * the minimum will also be used as the maximum.
 		 */
@@ -178,6 +184,14 @@ public class JmsProperties {
 
 		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 			this.acknowledgeMode = acknowledgeMode;
+		}
+
+		public Boolean getSessionTransacted() {
+			return this.sessionTransacted;
+		}
+
+		public void setSessionTransacted(Boolean sessionTransacted) {
+			this.sessionTransacted = sessionTransacted;
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
