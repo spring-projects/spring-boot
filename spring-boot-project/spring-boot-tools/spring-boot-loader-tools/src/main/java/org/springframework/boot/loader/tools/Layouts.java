@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Common {@link Layout}s.
+ * Common {@link Layout layouts}.
  *
  * @author Phillip Webb
  * @author Dave Syer

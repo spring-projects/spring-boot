@@ -107,6 +107,16 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void classicLoader() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+			.isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
+		try (JarFile jarFile = new JarFile(jar)) {
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
+		}
+	}
+
+	@TestTemplate
 	void upToDateWhenBuiltTwice() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);

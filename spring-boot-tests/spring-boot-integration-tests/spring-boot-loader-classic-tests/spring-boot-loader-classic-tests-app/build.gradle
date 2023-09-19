@@ -16,3 +16,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.webjars:jquery:3.5.0")
 }
+
+bootJar {
+	loaderImplementation = org.springframework.boot.loader.tools.LoaderImplementation.CLASSIC
+}

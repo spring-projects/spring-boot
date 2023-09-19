@@ -42,6 +42,8 @@ import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 
+import org.springframework.boot.loader.tools.LoaderImplementation;
+
 /**
  * Support class for implementations of {@link BootArchive}.
  *
@@ -116,12 +118,13 @@ class BootArchiveSupport {
 		return (version != null) ? version : "unknown";
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies) {
-		return createCopyAction(jar, resolvedDependencies, null, null);
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
+			LoaderImplementation loaderImplementation) {
+		return createCopyAction(jar, resolvedDependencies, loaderImplementation, null, null);
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies, LayerResolver layerResolver,
-			String layerToolsLocation) {
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
+			LoaderImplementation loaderImplementation, LayerResolver layerResolver, String layerToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
@@ -136,7 +139,7 @@ class BootArchiveSupport {
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirMode, fileMode,
 				includeDefaultLoader, layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec,
-				compressionResolver, encoding, resolvedDependencies, layerResolver);
+				compressionResolver, encoding, resolvedDependencies, layerResolver, loaderImplementation);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 

@@ -65,6 +65,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -273,6 +274,17 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.getManifest()
 			.getAttributes()
 			.put("Main-Class", "org.springframework.boot.loader.launch.PropertiesLauncher");
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
+		}
+	}
+
+	@Test
+	void loaderIsWrittenToTheRootOfTheJarWhenUsingClassicLoader() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.getLoaderImplementation().set(LoaderImplementation.CLASSIC);
+		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
