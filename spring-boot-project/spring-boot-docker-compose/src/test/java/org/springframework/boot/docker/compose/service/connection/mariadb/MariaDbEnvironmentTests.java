@@ -30,25 +30,26 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jinseong Hwang
  */
 class MariaDbEnvironmentTests {
 
 	@Test
-	void createWhenHasMariadbRandomRootPasswordThrowsException() {
+	void createWhenHasMariaDbRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true")))
 			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported");
 	}
 
 	@Test
-	void createWhenHasMysqlRandomRootPasswordThrowsException() {
+	void createWhenHasMySqlRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true")))
 			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 	}
 
 	@Test
-	void createWhenHasMariadbRootPasswordHashThrowsException() {
+	void createWhenHasMariaDbRootPasswordHashThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_ROOT_PASSWORD_HASH", "0FF")))
 			.withMessage("MARIADB_ROOT_PASSWORD_HASH is not supported");
@@ -67,7 +68,7 @@ class MariaDbEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasMariadbUser() {
+	void getUsernameWhenHasMariaDbUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_USER", "myself", "MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
@@ -81,84 +82,84 @@ class MariaDbEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasMariadbUserAndMySqlUser() {
+	void getUsernameWhenHasMariaDbUserAndMySqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_USER", "myself", "MYSQL_USER", "me",
 				"MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasNoMariadbUserOrMySqlUser() {
+	void getUsernameWhenHasNoMariaDbUserOrMySqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("root");
 	}
 
 	@Test
-	void getPasswordWhenHasMariadbPassword() {
+	void getPasswordWhenHasMariaDbPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasMysqlPassword() {
+	void getPasswordWhenHasMySqlPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MYSQL_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasMysqlRootPassword() {
+	void getPasswordWhenHasMySqlRootPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MYSQL_ROOT_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasMariadbPasswordAndMysqlPassword() {
+	void getPasswordWhenHasMariaDbPasswordAndMySqlPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MYSQL_PASSWORD", "donttell", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasMariadbPasswordAndMysqlRootPassword() {
+	void getPasswordWhenHasMariaDbPasswordAndMySqlRootPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MYSQL_ROOT_PASSWORD", "donttell", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasNoPasswordAndMariadbAllowEmptyPassword() {
+	void getPasswordWhenHasNoPasswordAndMariaDbAllowEmptyPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test
-	void getPasswordWhenHasNoPasswordAndMysqlAllowEmptyPassword() {
+	void getPasswordWhenHasNoPasswordAndMySqlAllowEmptyPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MYSQL_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test
-	void getDatabaseWhenHasMariadbDatabase() {
+	void getDatabaseWhenHasMariaDbDatabase() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
 	@Test
-	void getDatabaseWhenHasMysqlDatabase() {
+	void getDatabaseWhenHasMySqlDatabase() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
 	@Test
-	void getDatabaseWhenHasMariadbAndMysqlDatabase() {
+	void getDatabaseWhenHasMariaDbAndMySqlDatabase() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db", "MYSQL_DATABASE", "otherdb"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
