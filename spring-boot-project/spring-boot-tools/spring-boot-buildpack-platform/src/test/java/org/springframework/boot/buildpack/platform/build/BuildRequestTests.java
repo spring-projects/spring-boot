@@ -234,6 +234,22 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void withBuildWorkspaceVolumeAddsWorkspace() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withWorkspace = request.withBuildWorkspace(Cache.volume("build-workspace"));
+		assertThat(request.getBuildWorkspace()).isNull();
+		assertThat(withWorkspace.getBuildWorkspace()).isEqualTo(Cache.volume("build-workspace"));
+	}
+
+	@Test
+	void withBuildWorkspaceBindAddsWorkspace() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withWorkspace = request.withBuildWorkspace(Cache.bind("/tmp/build-workspace"));
+		assertThat(request.getBuildWorkspace()).isNull();
+		assertThat(withWorkspace.getBuildWorkspace()).isEqualTo(Cache.bind("/tmp/build-workspace"));
+	}
+
+	@Test
 	void withBuildVolumeCacheAddsCache() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		BuildRequest withCache = request.withBuildCache(Cache.volume("build-volume"));

@@ -24,6 +24,11 @@
 						<configuration>
 							<image>
 								<builder>projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2</builder>
+								<buildWorkspace>
+									<volume>
+										<name>cache-${test-build-id}.work</name>
+									</volume>
+								</buildWorkspace>
 								<buildCache>
 									<volume>
 										<name>cache-${test-build-id}.build</name>

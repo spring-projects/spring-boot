@@ -27,8 +27,8 @@
   "HostConfig": {
     "Binds": [
       "/var/run/docker.sock:/var/run/docker.sock",
-      "pack-layers-aaaaaaaaaa:/layers",
-      "pack-app-aaaaaaaaaa:/workspace",
+      "work-volume-layers:/layers",
+      "work-volume-app:/workspace",
       "build-volume:/cache",
       "launch-volume:/launch-cache"
     ],

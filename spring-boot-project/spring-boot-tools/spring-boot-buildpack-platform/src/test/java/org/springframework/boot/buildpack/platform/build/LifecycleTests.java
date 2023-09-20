@@ -211,7 +211,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withBuildCache(Cache.volume("build-volume"))
+		BuildRequest request = getTestRequest().withBuildWorkspace(Cache.volume("work-volume"))
+			.withBuildCache(Cache.volume("build-volume"))
 			.withLaunchCache(Cache.volume("launch-volume"));
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-volumes.json"));
@@ -223,7 +224,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withBuildCache(Cache.bind("/tmp/build-cache"))
+		BuildRequest request = getTestRequest().withBuildWorkspace(Cache.bind("/tmp/work"))
+			.withBuildCache(Cache.bind("/tmp/build-cache"))
 			.withLaunchCache(Cache.bind("/tmp/launch-cache"));
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-bind-mounts.json"));

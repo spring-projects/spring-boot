@@ -171,6 +171,14 @@ class ImageTests {
 	}
 
 	@Test
+	void getBuildRequestWhenHasBuildWorkspaceVolumeUsesWorkspace() {
+		Image image = new Image();
+		image.buildWorkspace = CacheInfo.fromVolume(new VolumeCacheInfo("build-work-vol"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuildWorkspace()).isEqualTo(Cache.volume("build-work-vol"));
+	}
+
+	@Test
 	void getBuildRequestWhenHasBuildCacheVolumeUsesCache() {
 		Image image = new Image();
 		image.buildCache = CacheInfo.fromVolume(new VolumeCacheInfo("build-cache-vol"));
@@ -184,6 +192,14 @@ class ImageTests {
 		image.launchCache = CacheInfo.fromVolume(new VolumeCacheInfo("launch-cache-vol"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getLaunchCache()).isEqualTo(Cache.volume("launch-cache-vol"));
+	}
+
+	@Test
+	void getBuildRequestWhenHasBuildWorkspaceBindUsesWorkspace() {
+		Image image = new Image();
+		image.buildWorkspace = CacheInfo.fromBind(new BindCacheInfo("build-work-dir"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuildWorkspace()).isEqualTo(Cache.bind("build-work-dir"));
 	}
 
 	@Test

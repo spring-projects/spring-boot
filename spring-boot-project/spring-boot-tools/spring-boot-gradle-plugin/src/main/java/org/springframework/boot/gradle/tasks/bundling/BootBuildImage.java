@@ -69,6 +69,8 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private final String projectName;
 
+	private final CacheSpec buildWorkspace;
+
 	private final CacheSpec buildCache;
 
 	private final CacheSpec launchCache;
@@ -91,6 +93,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		getCleanCache().convention(false);
 		getVerboseLogging().convention(false);
 		getPublish().convention(false);
+		this.buildWorkspace = getProject().getObjects().newInstance(CacheSpec.class);
 		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
@@ -221,6 +224,25 @@ public abstract class BootBuildImage extends DefaultTask {
 	@Optional
 	@Option(option = "network", description = "Connect detect and build containers to network")
 	public abstract Property<String> getNetwork();
+
+	/**
+	 * Returns the build temporary workspace that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getBuildWorkspace() {
+		return this.buildWorkspace;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the build temporary workspace using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void buildWorkspace(Action<CacheSpec> action) {
+		action.execute(this.buildWorkspace);
+	}
 
 	/**
 	 * Returns the build cache that will be used when building the image.
@@ -400,6 +422,9 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeCaches(BuildRequest request) {
+		if (this.buildWorkspace.asCache() != null) {
+			request = request.withBuildWorkspace((this.buildWorkspace.asCache()));
+		}
 		if (this.buildCache.asCache() != null) {
 			request = request.withBuildCache(this.buildCache.asCache());
 		}

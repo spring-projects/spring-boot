@@ -343,7 +343,8 @@ class PackagingDocumentationTests {
 	void bootBuildImageWithBindCaches() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-bind-caches")
 			.build("bootBuildImageCaches");
-		assertThat(result.getOutput()).containsPattern("buildCache=/tmp/cache-gradle-[\\d]+.build")
+		assertThat(result.getOutput()).containsPattern("buildWorkspace=/tmp/cache-gradle-[\\d]+.work")
+			.containsPattern("buildCache=/tmp/cache-gradle-[\\d]+.build")
 			.containsPattern("launchCache=/tmp/cache-gradle-[\\d]+.launch");
 	}
 
