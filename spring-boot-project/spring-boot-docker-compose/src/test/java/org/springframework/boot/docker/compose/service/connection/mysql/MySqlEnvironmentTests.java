@@ -30,11 +30,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jinseong Hwang
  */
 class MySqlEnvironmentTests {
 
 	@Test
-	void createWhenHasMysqlRandomRootPasswordThrowsException() {
+	void createWhenHasMySqlRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MySqlEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true")))
 			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported");
@@ -66,27 +67,27 @@ class MySqlEnvironmentTests {
 	}
 
 	@Test
-	void getPasswordWhenHasMysqlPassword() {
+	void getPasswordWhenHasMySqlPassword() {
 		MySqlEnvironment environment = new MySqlEnvironment(Map.of("MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasMysqlRootPassword() {
+	void getPasswordWhenHasMySqlRootPassword() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_ROOT_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasNoPasswordAndMysqlAllowEmptyPassword() {
+	void getPasswordWhenHasNoPasswordAndMySqlAllowEmptyPassword() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_ALLOW_EMPTY_PASSWORD", "true", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test
-	void getDatabaseWhenHasMysqlDatabase() {
+	void getDatabaseWhenHasMySqlDatabase() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_ALLOW_EMPTY_PASSWORD", "true", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
