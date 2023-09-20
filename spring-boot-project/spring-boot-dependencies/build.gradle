@@ -812,7 +812,7 @@ bom {
 			]
 		}
 	}
-	library("Lombok", "1.18.28") {
+	library("Lombok", "1.18.30") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
