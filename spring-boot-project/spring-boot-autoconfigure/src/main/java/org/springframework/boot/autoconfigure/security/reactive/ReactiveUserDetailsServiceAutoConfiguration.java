@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -57,11 +58,12 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class, after = RSocketMessagingAutoConfiguration.class)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
+@ConditionalOnMissingClass({ "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
+		"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
 @ConditionalOnMissingBean(
 		value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class,
 				ReactiveAuthenticationManagerResolver.class },
-		type = { "org.springframework.security.oauth2.jwt.ReactiveJwtDecoder",
-				"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
+		type = { "org.springframework.security.oauth2.jwt.ReactiveJwtDecoder" })
 @Conditional(ReactiveUserDetailsServiceAutoConfiguration.ReactiveUserDetailsServiceCondition.class)
 @EnableConfigurationProperties(SecurityProperties.class)
 public class ReactiveUserDetailsServiceAutoConfiguration {

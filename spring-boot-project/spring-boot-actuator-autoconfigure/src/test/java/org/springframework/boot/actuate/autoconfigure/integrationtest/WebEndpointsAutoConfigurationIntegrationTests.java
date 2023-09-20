@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfigurati
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +60,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
+	@ClassPathExclusions({ "spring-security-oauth2-client-*.jar", "spring-security-oauth2-resource-server-*.jar" })
 	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));

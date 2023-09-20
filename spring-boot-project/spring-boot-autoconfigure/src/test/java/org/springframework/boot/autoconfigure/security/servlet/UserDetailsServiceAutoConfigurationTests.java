@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -64,7 +66,7 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void testDefaultUsernamePassword(CapturedOutput output) {
-		this.contextRunner.run((context) -> {
+		this.contextRunner.with(noOtherFormsOfAuthenticationOnTheClasspath()).run((context) -> {
 			UserDetailsService manager = context.getBean(UserDetailsService.class);
 			assertThat(output).contains("Using generated security password:");
 			assertThat(manager.loadUserByUsername("user")).isNotNull();
@@ -126,11 +128,13 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run(((context) -> {
-			InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
-			String password = userDetailsService.loadUserByUsername("user").getPassword();
-			assertThat(password).startsWith("{noop}");
-		}));
+		this.contextRunner.with(noOtherFormsOfAuthenticationOnTheClasspath())
+			.withUserConfiguration(TestSecurityConfiguration.class)
+			.run(((context) -> {
+				InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
+				String password = userDetailsService.loadUserByUsername("user").getPassword();
+				assertThat(password).startsWith("{noop}");
+			}));
 	}
 
 	@Test
@@ -150,20 +154,39 @@ class UserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Test
-	void userDetailsServiceWhenClientRegistrationRepositoryBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestConfigWithClientRegistrationRepository.class)
+	void userDetailsServiceWhenClientRegistrationRepositoryPresent() {
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(OpaqueTokenIntrospector.class, RelyingPartyRegistrationRepository.class))
 			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
 	@Test
-	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryBeanPresent() {
+	void userDetailsServiceWhenOpaqueTokenIntrospectorPresent() {
 		this.contextRunner
-			.withBean(RelyingPartyRegistrationRepository.class, () -> mock(RelyingPartyRegistrationRepository.class))
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class,
+					RelyingPartyRegistrationRepository.class))
 			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
+	@Test
+	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryPresent() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class))
+			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
+	}
+
+	private Function<ApplicationContextRunner, ApplicationContextRunner> noOtherFormsOfAuthenticationOnTheClasspath() {
+		return (contextRunner) -> contextRunner
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class,
+					RelyingPartyRegistrationRepository.class));
+	}
+
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
-		this.contextRunner.withUserConfiguration(configClass)
+		this.contextRunner.with(noOtherFormsOfAuthenticationOnTheClasspath())
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class,
+					RelyingPartyRegistrationRepository.class))
+			.withUserConfiguration(configClass)
 			.withPropertyValues("spring.security.user.password=" + providedPassword)
 			.run(((context) -> {
 				InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);

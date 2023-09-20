@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,9 +44,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a Spring Security in-memory
  * {@link AuthenticationManager}. Adds an {@link InMemoryUserDetailsManager} with a
- * default user and generated password. This can be disabled by providing a bean of type
- * {@link AuthenticationManager}, {@link AuthenticationProvider} or
- * {@link UserDetailsService}.
+ * default user and generated password.
  *
  * @author Dave Syer
  * @author Rob Winch
@@ -54,14 +53,12 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration
 @ConditionalOnClass(AuthenticationManager.class)
+@ConditionalOnMissingClass({ "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
+		"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
+		"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository" })
 @ConditionalOnBean(ObjectPostProcessor.class)
-@ConditionalOnMissingBean(
-		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
-				AuthenticationManagerResolver.class },
-		type = { "org.springframework.security.oauth2.jwt.JwtDecoder",
-				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
-				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
-				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository" })
+@ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
+		AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";

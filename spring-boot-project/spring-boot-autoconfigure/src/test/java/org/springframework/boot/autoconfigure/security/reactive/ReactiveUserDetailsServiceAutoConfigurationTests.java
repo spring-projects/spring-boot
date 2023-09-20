@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfig
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +40,7 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 
@@ -58,15 +60,21 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void configuresADefaultUser() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run((context) -> {
-			ReactiveUserDetailsService userDetailsService = context.getBean(ReactiveUserDetailsService.class);
-			assertThat(userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))).isNotNull();
-		});
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(ClientRegistrationRepository.class, ReactiveOpaqueTokenIntrospector.class))
+			.withUserConfiguration(TestSecurityConfiguration.class)
+			.run((context) -> {
+				ReactiveUserDetailsService userDetailsService = context.getBean(ReactiveUserDetailsService.class);
+				assertThat(userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))).isNotNull();
+			});
 	}
 
 	@Test
 	void userDetailsServiceWhenRSocketConfigured() {
 		new ApplicationContextRunner()
+			.withClassLoader(
+					new FilteredClassLoader(ClientRegistrationRepository.class, ReactiveOpaqueTokenIntrospector.class))
 			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
 					RSocketMessagingAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class))
 			.withUserConfiguration(TestRSocketSecurityConfiguration.class)
@@ -109,20 +117,21 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Test
-	void doesNotConfigureDefaultUserIfResourceServerWithOpaqueIsUsed() {
-		this.contextRunner.withUserConfiguration(ReactiveOpaqueTokenIntrospectorConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ReactiveOpaqueTokenIntrospector.class);
-			assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
-		});
+	void doesNotConfigureDefaultUserIfResourceServerIsPresent() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class));
 	}
 
 	@Test
 	void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run(((context) -> {
-			MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
-			String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30)).getPassword();
-			assertThat(password).startsWith("{noop}");
-		}));
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(ClientRegistrationRepository.class, ReactiveOpaqueTokenIntrospector.class))
+			.withUserConfiguration(TestSecurityConfiguration.class)
+			.run(((context) -> {
+				MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
+				String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30)).getPassword();
+				assertThat(password).startsWith("{noop}");
+			}));
 	}
 
 	@Test
@@ -142,7 +151,10 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	}
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
-		this.contextRunner.withUserConfiguration(configClass)
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(ClientRegistrationRepository.class, ReactiveOpaqueTokenIntrospector.class))
+			.withUserConfiguration(configClass)
 			.withPropertyValues("spring.security.user.password=" + providedPassword)
 			.run(((context) -> {
 				MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);

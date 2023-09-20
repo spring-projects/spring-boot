@@ -50,7 +50,6 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -61,6 +60,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -84,15 +85,16 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-				ReactiveUserDetailsServiceAutoConfiguration.class, WebFluxAutoConfiguration.class,
-				JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
-				WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-				InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-				ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class));
+		.withConfiguration(
+				AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class, WebFluxAutoConfiguration.class,
+						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+						PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
+						WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+						InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+						ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class))
+		.withUserConfiguration(UserDetailsServiceConfiguration.class);
 
 	private static final String BASE_PATH = "/cloudfoundryapplication";
 
@@ -354,6 +356,17 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		@Bean
 		WebClientCustomizer webClientCustomizer() {
 			return mock(WebClientCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDetailsServiceConfiguration {
+
+		@Bean
+		MapReactiveUserDetailsService userDetailsService() {
+			return new MapReactiveUserDetailsService(
+					User.withUsername("alice").password("secret").roles("admin").build());
 		}
 
 	}

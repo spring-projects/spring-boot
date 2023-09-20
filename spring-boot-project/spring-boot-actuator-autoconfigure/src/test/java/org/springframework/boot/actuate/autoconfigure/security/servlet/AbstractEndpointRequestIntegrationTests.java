@@ -37,7 +37,6 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -45,6 +44,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -100,8 +101,8 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		return createContextRunner().withPropertyValues("management.endpoints.web.exposure.include=*")
 			.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, SecurityAutoConfiguration.class,
-					UserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					ManagementContextAutoConfiguration.class));
 
 	}
 
@@ -188,6 +189,12 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class SecurityConfiguration {
+
+		@Bean
+		InMemoryUserDetailsManager userDetailsManager() {
+			return new InMemoryUserDetailsManager(
+					User.withUsername("user").password("{noop}password").roles("admin").build());
+		}
 
 		@Bean
 		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -59,8 +60,11 @@ class OAuth2AuthorizationServerAutoConfigurationTests {
 	}
 
 	@Test
+	@ClassPathExclusions({ "spring-security-oauth2-client-*.jar", "spring-security-oauth2-resource-server-*.jar",
+			"spring-security-saml2-service-provider-*.jar" })
 	void autoConfigurationDoesNotCauseUserDetailsServiceToBackOff() {
-		this.contextRunner.run((context) -> assertThat(context).hasBean("inMemoryUserDetailsManager"));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(UserDetailsServiceAutoConfiguration.class)
+			.hasBean("inMemoryUserDetailsManager"));
 	}
 
 	@Test
