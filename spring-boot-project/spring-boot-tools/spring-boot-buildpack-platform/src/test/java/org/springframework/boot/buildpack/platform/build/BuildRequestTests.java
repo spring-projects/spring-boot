@@ -333,6 +333,13 @@ class BuildRequestTests {
 		assertThat(withAppDir.getApplicationDirectory()).isEqualTo("/application");
 	}
 
+	@Test
+	void withSecurityOptionsSetsSecurityOptions() throws Exception {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withAppDir = request.withSecurityOptions(List.of("label=user:USER", "label=role:ROLE"));
+		assertThat(withAppDir.getSecurityOptions()).containsExactly("label=user:USER", "label=role:ROLE");
+	}
+
 	private void hasExpectedJarContent(TarArchive archive) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

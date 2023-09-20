@@ -79,6 +79,8 @@ public class Image {
 
 	String applicationDirectory;
 
+	List<String> securityOptions;
+
 	/**
 	 * The name of the created image.
 	 * @return the image name
@@ -259,6 +261,9 @@ public class Image {
 		}
 		if (StringUtils.hasText(this.applicationDirectory)) {
 			request = request.withApplicationDirectory(this.applicationDirectory);
+		}
+		if (this.securityOptions != null) {
+			request = request.withSecurityOptions(this.securityOptions);
 		}
 		return request;
 	}

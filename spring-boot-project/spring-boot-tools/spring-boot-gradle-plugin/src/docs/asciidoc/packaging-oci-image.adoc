@@ -223,6 +223,11 @@ The value must be a string in the ISO 8601 instant format, or `now` to use the c
 Application contents will also be in this location in the generated image.
 | `/workspace`
 
+| `securityOptions`
+| `--securityOptions`
+| https://docs.docker.com/engine/reference/run/#security-configuration[Security options] that will be applied to the builder container, provided as an array of string values
+| `["label=disable"]`
+
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.

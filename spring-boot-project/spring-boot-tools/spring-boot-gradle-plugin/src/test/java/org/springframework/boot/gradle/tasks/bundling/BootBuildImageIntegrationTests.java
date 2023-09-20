@@ -369,6 +369,19 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	void buildsImageWithEmptySecurityOptions() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
+		removeImages(projectName);
+	}
+
+	@TestTemplate
 	void failsWithInvalidCreatedDate() throws IOException {
 		writeMainClass();
 		writeLongNameResource();

@@ -303,6 +303,15 @@ public abstract class BootBuildImage extends DefaultTask {
 	public abstract Property<String> getApplicationDirectory();
 
 	/**
+	 * Returns the security options that will be applied to the builder container.
+	 * @return the security options
+	 */
+	@Input
+	@Optional
+	@Option(option = "securityOptions", description = "Security options that will be applied to the builder container")
+	public abstract ListProperty<String> getSecurityOptions();
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -349,6 +358,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		request = request.withNetwork(getNetwork().getOrNull());
 		request = customizeCreatedDate(request);
 		request = customizeApplicationDirectory(request);
+		request = customizeSecurityOptions(request);
 		return request;
 	}
 
@@ -446,6 +456,14 @@ public abstract class BootBuildImage extends DefaultTask {
 		String applicationDirectory = getApplicationDirectory().getOrNull();
 		if (applicationDirectory != null) {
 			return request.withApplicationDirectory(applicationDirectory);
+		}
+		return request;
+	}
+
+	private BuildRequest customizeSecurityOptions(BuildRequest request) {
+		List<String> securityOptions = getSecurityOptions().getOrNull();
+		if (securityOptions != null) {
+			return request.withSecurityOptions(securityOptions);
 		}
 		return request;
 	}

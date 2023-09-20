@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import org.apache.maven.artifact.Artifact;
@@ -232,6 +233,22 @@ class ImageTests {
 		image.applicationDirectory = "/application";
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getApplicationDirectory()).isEqualTo("/application");
+	}
+
+	@Test
+	void getBuildRequestWhenHasSecurityOptionsUsesSecurityOptions() {
+		Image image = new Image();
+		image.securityOptions = List.of("label=user:USER", "label=role:ROLE");
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getSecurityOptions()).containsExactly("label=user:USER", "label=role:ROLE");
+	}
+
+	@Test
+	void getBuildRequestWhenHasEmptySecurityOptionsUsesSecurityOptions() {
+		Image image = new Image();
+		image.securityOptions = Collections.emptyList();
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getSecurityOptions()).isEmpty();
 	}
 
 	private Artifact createArtifact() {

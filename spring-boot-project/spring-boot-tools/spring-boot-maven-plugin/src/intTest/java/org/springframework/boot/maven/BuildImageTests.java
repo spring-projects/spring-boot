@@ -481,6 +481,21 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenBuildImageIsInvokedWithEmptySecurityOptions(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
+		mavenBuild.project("build-image-security-opts")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-security-opts:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-security-opts", "0.0.1.BUILD-SNAPSHOT");
+			});
+	}
+
+	@TestTemplate
 	void failsWhenBuildImageIsInvokedOnMultiModuleProjectWithBuildImageGoal(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-multi-module")
 			.goals("spring-boot:build-image")

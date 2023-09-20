@@ -20,6 +20,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -58,6 +59,8 @@ class Lifecycle implements Closeable {
 
 	private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
 
+	private static final List<String> DEFAULT_SECURITY_OPTIONS = List.of("label=disable");
+
 	private final BuildLog log;
 
 	private final DockerApi docker;
@@ -81,6 +84,8 @@ class Lifecycle implements Closeable {
 	private final Cache launchCache;
 
 	private final String applicationDirectory;
+
+	private final List<String> securityOptions;
 
 	private boolean executed;
 
@@ -108,6 +113,7 @@ class Lifecycle implements Closeable {
 		this.buildCache = getBuildCache(request);
 		this.launchCache = getLaunchCache(request);
 		this.applicationDirectory = getApplicationDirectory(request);
+		this.securityOptions = getSecurityOptions(request);
 	}
 
 	private Cache getBuildCache(BuildRequest request) {
@@ -126,6 +132,13 @@ class Lifecycle implements Closeable {
 
 	private String getApplicationDirectory(BuildRequest request) {
 		return (request.getApplicationDirectory() != null) ? request.getApplicationDirectory() : Directory.APPLICATION;
+	}
+
+	private List<String> getSecurityOptions(BuildRequest request) {
+		if (request.getSecurityOptions() != null) {
+			return request.getSecurityOptions();
+		}
+		return (Platform.isWindows()) ? Collections.emptyList() : DEFAULT_SECURITY_OPTIONS;
 	}
 
 	private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {
@@ -240,8 +253,8 @@ class Lifecycle implements Closeable {
 		else {
 			phase.withBinding(Binding.from(DOMAIN_SOCKET_PATH, DOMAIN_SOCKET_PATH));
 		}
-		if (!Platform.isWindows()) {
-			phase.withSecurityOption("label=disable");
+		if (this.securityOptions != null) {
+			this.securityOptions.forEach(phase::withSecurityOption);
 		}
 	}
 
