@@ -30,10 +30,13 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ResolvedDockerHost}.
@@ -52,6 +55,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("/var/run/docker.sock");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -62,6 +66,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("//./pipe/docker_engine");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -73,6 +78,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("/var/run/docker.sock");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -85,6 +91,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -97,6 +104,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -108,6 +116,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("http://docker.example.com");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -119,6 +128,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("https://docker.example.com");
 		assertThat(dockerHost.isSecure()).isTrue();
 		assertThat(dockerHost.getCertificatePath()).isEqualTo("/cert-path");
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -130,6 +140,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("tcp://192.168.99.100:2376");
 		assertThat(dockerHost.isSecure()).isTrue();
 		assertThat(dockerHost.getCertificatePath()).isEqualTo("/cert-path");
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -143,6 +154,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -156,6 +168,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -170,6 +183,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("tcp://192.168.99.100:2376");
 		assertThat(dockerHost.isSecure()).isTrue();
 		assertThat(dockerHost.getCertificatePath()).isEqualTo("/cert-path");
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -180,6 +194,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("/home/user/.docker/docker.sock");
 		assertThat(dockerHost.isSecure()).isTrue();
 		assertThat(dockerHost.getCertificatePath()).isNotNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -189,6 +204,7 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("/home/user/.docker/docker.sock");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
 	}
 
 	@Test
@@ -200,6 +216,26 @@ class ResolvedDockerHostTests {
 		assertThat(dockerHost.getAddress()).isEqualTo("/home/user/.docker/docker.sock");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isNull();
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = { 0, 123 })
+	void resolveWithSockedTimeout(int socketTimeout) {
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
+				DockerHostConfiguration.forAddress("tcp://1.2.3.4").withSocketTimeout(socketTimeout));
+		assertThat(dockerHost.getAddress()).isEqualTo("tcp://1.2.3.4");
+		assertThat(dockerHost.isSecure()).isFalse();
+		assertThat(dockerHost.getCertificatePath()).isNull();
+		assertThat(dockerHost.getSocketTimeout()).isEqualTo(socketTimeout);
+	}
+
+	@Test
+	void doNotResolveWithNegativeSockedTimeout() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ResolvedDockerHost.from(this.environment::get,
+					DockerHostConfiguration.forAddress("tcp://1.2.3.4").withSocketTimeout(-123)))
+			.withMessageContaining("Configured socketTimeout cannot be negative");
 	}
 
 	private String pathToResource(String resource) throws URISyntaxException {

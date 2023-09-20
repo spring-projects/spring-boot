@@ -30,14 +30,17 @@ public class DockerHost {
 
 	private final String certificatePath;
 
+	private final Integer socketTimeout;
+
 	public DockerHost(String address) {
-		this(address, false, null);
+		this(address, false, null, null);
 	}
 
-	public DockerHost(String address, boolean secure, String certificatePath) {
+	public DockerHost(String address, boolean secure, String certificatePath, Integer socketTimeout) {
 		this.address = address;
 		this.secure = secure;
 		this.certificatePath = certificatePath;
+		this.socketTimeout = socketTimeout;
 	}
 
 	public String getAddress() {
@@ -50,6 +53,10 @@ public class DockerHost {
 
 	public String getCertificatePath() {
 		return this.certificatePath;
+	}
+
+	public Integer getSocketTimeout() {
+		return this.socketTimeout;
 	}
 
 }

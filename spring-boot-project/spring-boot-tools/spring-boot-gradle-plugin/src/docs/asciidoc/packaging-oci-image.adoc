@@ -51,6 +51,9 @@ The following table summarizes the available properties:
 | `host`
 | URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
+| `socketTimeout`
+| When we use HTTP(S) connection to Docker daemon, we might want to specify socket-timeout property in milliseconds (default is 3 minutes, defined by Apache HTTP client).
+
 | `tlsVerify`
 | Enable secure HTTPS protocol when set to `true` (optional)
 

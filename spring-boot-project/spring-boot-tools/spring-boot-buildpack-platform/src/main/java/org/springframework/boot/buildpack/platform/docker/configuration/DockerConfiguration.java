@@ -69,10 +69,23 @@ public final class DockerConfiguration {
 				this.builderAuthentication, this.publishAuthentication, this.bindHostToBuilder);
 	}
 
+	public DockerConfiguration withHost(String address, boolean secure, String certificatePath, Integer socketTimeout) {
+		Assert.notNull(address, "Address must not be null");
+		return new DockerConfiguration(
+				DockerHostConfiguration.forAddress(address, secure, certificatePath).withSocketTimeout(socketTimeout),
+				this.builderAuthentication, this.publishAuthentication, this.bindHostToBuilder);
+	}
+
 	public DockerConfiguration withContext(String context) {
 		Assert.notNull(context, "Context must not be null");
 		return new DockerConfiguration(DockerHostConfiguration.forContext(context), this.builderAuthentication,
 				this.publishAuthentication, this.bindHostToBuilder);
+	}
+
+	public DockerConfiguration withContext(String context, Integer socketTimeout) {
+		Assert.notNull(context, "Context must not be null");
+		return new DockerConfiguration(DockerHostConfiguration.forContext(context).withSocketTimeout(socketTimeout),
+				this.builderAuthentication, this.publishAuthentication, this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withBindHostToBuilder(boolean bindHostToBuilder) {
@@ -123,11 +136,15 @@ public final class DockerConfiguration {
 
 		private final String certificatePath;
 
-		public DockerHostConfiguration(String address, String context, boolean secure, String certificatePath) {
+		private final Integer socketTimeout;
+
+		public DockerHostConfiguration(String address, String context, boolean secure, String certificatePath,
+				Integer socketTimeout) {
 			this.address = address;
 			this.context = context;
 			this.secure = secure;
 			this.certificatePath = certificatePath;
+			this.socketTimeout = socketTimeout;
 		}
 
 		public String getAddress() {
@@ -146,16 +163,25 @@ public final class DockerConfiguration {
 			return this.certificatePath;
 		}
 
+		public Integer getSocketTimeout() {
+			return this.socketTimeout;
+		}
+
 		public static DockerHostConfiguration forAddress(String address) {
-			return new DockerHostConfiguration(address, null, false, null);
+			return new DockerHostConfiguration(address, null, false, null, null);
 		}
 
 		public static DockerHostConfiguration forAddress(String address, boolean secure, String certificatePath) {
-			return new DockerHostConfiguration(address, null, secure, certificatePath);
+			return new DockerHostConfiguration(address, null, secure, certificatePath, null);
 		}
 
 		static DockerHostConfiguration forContext(String context) {
-			return new DockerHostConfiguration(null, context, false, null);
+			return new DockerHostConfiguration(null, context, false, null, null);
+		}
+
+		public DockerHostConfiguration withSocketTimeout(Integer socketTimeout) {
+			return new DockerHostConfiguration(this.address, this.context, this.secure, this.certificatePath,
+					socketTimeout);
 		}
 
 	}

@@ -29,6 +29,8 @@ public class Docker {
 
 	private String host;
 
+	private Integer socketTimeout;
+
 	private String context;
 
 	private boolean tlsVerify;
@@ -51,6 +53,14 @@ public class Docker {
 
 	void setHost(String host) {
 		this.host = host;
+	}
+
+	public Integer getSocketTimeout() {
+		return this.socketTimeout;
+	}
+
+	void setSocketTimeout(Integer socketTimeout) {
+		this.socketTimeout = socketTimeout;
 	}
 
 	/**
@@ -157,10 +167,10 @@ public class Docker {
 					"Invalid Docker configuration, either context or host can be provided but not both");
 		}
 		if (this.context != null) {
-			return dockerConfiguration.withContext(this.context);
+			return dockerConfiguration.withContext(this.context, this.socketTimeout);
 		}
 		if (this.host != null) {
-			return dockerConfiguration.withHost(this.host, this.tlsVerify, this.certPath);
+			return dockerConfiguration.withHost(this.host, this.tlsVerify, this.certPath, this.socketTimeout);
 		}
 		return dockerConfiguration;
 	}

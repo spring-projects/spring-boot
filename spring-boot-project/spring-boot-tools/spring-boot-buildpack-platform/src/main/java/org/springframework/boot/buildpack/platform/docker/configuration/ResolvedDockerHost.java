@@ -51,8 +51,8 @@ public class ResolvedDockerHost extends DockerHost {
 		super(address);
 	}
 
-	ResolvedDockerHost(String address, boolean secure, String certificatePath) {
-		super(address, secure, certificatePath);
+	ResolvedDockerHost(String address, boolean secure, String certificatePath, Integer socketTimeout) {
+		super(address, secure, certificatePath, socketTimeout);
 	}
 
 	@Override
@@ -82,25 +82,45 @@ public class ResolvedDockerHost extends DockerHost {
 		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(environment);
 		if (environment.get(DOCKER_CONTEXT) != null) {
 			DockerContext context = config.forContext(environment.get(DOCKER_CONTEXT));
-			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
+			Integer socketTimeout = getAndCheckSocketTimeout(dockerHost);
+			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath(),
+					socketTimeout);
 		}
 		if (dockerHost != null && dockerHost.getContext() != null) {
 			DockerContext context = config.forContext(dockerHost.getContext());
-			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
+			Integer socketTimeout = getAndCheckSocketTimeout(dockerHost);
+			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath(),
+					socketTimeout);
 		}
 		if (environment.get(DOCKER_HOST) != null) {
+			Integer socketTimeout = getAndCheckSocketTimeout(dockerHost);
 			return new ResolvedDockerHost(environment.get(DOCKER_HOST), isTrue(environment.get(DOCKER_TLS_VERIFY)),
-					environment.get(DOCKER_CERT_PATH));
+					environment.get(DOCKER_CERT_PATH), socketTimeout);
 		}
 		if (dockerHost != null && dockerHost.getAddress() != null) {
+			Integer socketTimeout = getAndCheckSocketTimeout(dockerHost);
 			return new ResolvedDockerHost(dockerHost.getAddress(), dockerHost.isSecure(),
-					dockerHost.getCertificatePath());
+					dockerHost.getCertificatePath(), socketTimeout);
 		}
 		if (config.getContext().getDockerHost() != null) {
 			DockerContext context = config.getContext();
-			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
+			Integer socketTimeout = getAndCheckSocketTimeout(dockerHost);
+			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath(),
+					socketTimeout);
 		}
 		return new ResolvedDockerHost(Platform.isWindows() ? WINDOWS_NAMED_PIPE_PATH : DOMAIN_SOCKET_PATH);
+	}
+
+	private static Integer getAndCheckSocketTimeout(DockerHostConfiguration dockerHost) {
+		if (dockerHost == null || dockerHost.getSocketTimeout() == null) {
+			return null;
+		}
+		else if (dockerHost.getSocketTimeout() < 0) {
+			throw new IllegalArgumentException("Configured socketTimeout cannot be negative");
+		}
+		else {
+			return dockerHost.getSocketTimeout();
+		}
 	}
 
 	private static boolean isTrue(String value) {

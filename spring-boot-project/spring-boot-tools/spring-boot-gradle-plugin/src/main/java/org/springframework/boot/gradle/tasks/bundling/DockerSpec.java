@@ -72,6 +72,10 @@ public abstract class DockerSpec {
 
 	@Input
 	@Optional
+	public abstract Property<Integer> getSocketTimeout();
+
+	@Input
+	@Optional
 	public abstract Property<Boolean> getBindHostToBuilder();
 
 	/**
@@ -134,11 +138,12 @@ public abstract class DockerSpec {
 			throw new GradleException(
 					"Invalid Docker configuration, either context or host can be provided but not both");
 		}
+		Integer socketTimeout = getSocketTimeout().getOrNull();
 		if (context != null) {
-			return dockerConfiguration.withContext(context);
+			return dockerConfiguration.withContext(context, socketTimeout);
 		}
 		if (host != null) {
-			return dockerConfiguration.withHost(host, getTlsVerify().get(), getCertPath().getOrNull());
+			return dockerConfiguration.withHost(host, getTlsVerify().get(), getCertPath().getOrNull(), socketTimeout);
 		}
 		return dockerConfiguration;
 	}

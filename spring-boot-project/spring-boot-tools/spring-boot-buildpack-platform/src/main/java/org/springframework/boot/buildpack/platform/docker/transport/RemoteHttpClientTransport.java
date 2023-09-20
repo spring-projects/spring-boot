@@ -23,11 +23,12 @@ import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.socket.LayeredConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.Timeout;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
@@ -65,16 +66,32 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 
 	private static RemoteHttpClientTransport create(DockerHost host, SslContextFactory sslContextFactory,
 			HttpHost tcpHost) {
-		HttpClientBuilder builder = HttpClients.custom();
+		SocketConfig defaultSocketConfig = createSocketConfigOrNull(host);
+		PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder
+			.create()
+			.setDefaultSocketConfig(defaultSocketConfig);
+
 		if (host.isSecure()) {
-			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-				.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory))
-				.build();
-			builder.setConnectionManager(connectionManager);
+			connectionManagerBuilder.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory));
 		}
+
+		HttpClientBuilder builder = HttpClients.custom().setConnectionManager(connectionManagerBuilder.build());
+
 		String scheme = host.isSecure() ? "https" : "http";
 		HttpHost httpHost = new HttpHost(scheme, tcpHost.getHostName(), tcpHost.getPort());
 		return new RemoteHttpClientTransport(builder.build(), httpHost);
+	}
+
+	private static SocketConfig createSocketConfigOrNull(DockerHost dockerHost) {
+		// See https://github.com/docker-java/docker-java/pull/1590#issuecomment-870581289
+		if (dockerHost.getSocketTimeout() == null) {
+			return null;
+		}
+		else {
+			return SocketConfig.copy(SocketConfig.DEFAULT)
+				.setSoTimeout(Timeout.ofSeconds(dockerHost.getSocketTimeout()))
+				.build();
+		}
 	}
 
 	private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(DockerHost host,
