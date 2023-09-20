@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.jms")
@@ -215,6 +216,16 @@ public class JmsProperties {
 	public static class Template {
 
 		/**
+		 * Acknowledgement mode used when creating JMS sessions to send a message.
+		 */
+		private AcknowledgeMode acknowledgeMode;
+
+		/**
+		 * Whether to use transacted JMS sessions.
+		 */
+		private Boolean sessionTransacted;
+
+		/**
 		 * Default destination to use on send and receive operations that do not have a
 		 * destination parameter.
 		 */
@@ -253,6 +264,22 @@ public class JmsProperties {
 		 * Timeout to use for receive calls.
 		 */
 		private Duration receiveTimeout;
+
+		public AcknowledgeMode getAcknowledgeMode() {
+			return this.acknowledgeMode;
+		}
+
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
+		}
+
+		public Boolean getSessionTransacted() {
+			return this.sessionTransacted;
+		}
+
+		public void setSessionTransacted(Boolean sessionTransacted) {
+			this.sessionTransacted = sessionTransacted;
+		}
 
 		public String getDefaultDestination() {
 			return this.defaultDestination;
