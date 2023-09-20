@@ -295,7 +295,7 @@ public class Saml2RelyingPartyProperties {
 			/**
 			 * Whether to sign authentication requests.
 			 */
-			private boolean signRequest = true;
+			private Boolean signRequest;
 
 			public String getUrl() {
 				return this.url;
@@ -317,7 +317,11 @@ public class Saml2RelyingPartyProperties {
 				return this.signRequest;
 			}
 
-			public void setSignRequest(boolean signRequest) {
+			public Boolean getSignRequest() {
+				return this.signRequest;
+			}
+
+			public void setSignRequest(Boolean signRequest) {
 				this.signRequest = signRequest;
 			}
 
