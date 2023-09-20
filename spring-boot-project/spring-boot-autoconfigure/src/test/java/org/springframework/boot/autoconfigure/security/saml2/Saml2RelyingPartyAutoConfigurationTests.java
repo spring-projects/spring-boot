@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.saml2;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -253,7 +252,26 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		testMultipleProviders("https://idp2.example.com/idp/shibboleth", "https://idp2.example.com/idp/shibboleth");
 	}
 
-	private void testMultipleProviders(String specifiedEntityId, String expected) throws IOException, Exception {
+	@Test
+	void signRequestShouldApplyIfMetadataUriIsSet() throws Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl,
+					PREFIX + ".foo.assertingparty.singlesignon.sign-request=true",
+					PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:org/springframework/boot/autoconfigure/security/saml2/rsa.key",
+					PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:org/springframework/boot/autoconfigure/security/saml2/rsa.crt")
+				.run((context) -> {
+					RelyingPartyRegistrationRepository repository = context
+						.getBean(RelyingPartyRegistrationRepository.class);
+					RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+					assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isTrue();
+				});
+		}
+	}
+
+	private void testMultipleProviders(String specifiedEntityId, String expected) throws Exception {
 		try (MockWebServer server = new MockWebServer()) {
 			server.start();
 			String metadataUrl = server.url("").toString();

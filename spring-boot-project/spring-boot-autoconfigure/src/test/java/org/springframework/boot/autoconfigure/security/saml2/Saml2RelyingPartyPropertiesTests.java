@@ -67,7 +67,7 @@ class Saml2RelyingPartyPropertiesTests {
 			.get("simplesamlphp")
 			.getAssertingparty()
 			.getSinglesignon()
-			.isSignRequest()).isFalse();
+			.getSignRequest()).isFalse();
 	}
 
 	@Test
@@ -93,13 +93,13 @@ class Saml2RelyingPartyPropertiesTests {
 	}
 
 	@Test
-	void customizeSsoSignRequestsIsTrueByDefault() {
+	void customizeSsoSignRequestsIsNullByDefault() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
 		assertThat(this.properties.getRegistration()
 			.get("simplesamlphp")
 			.getAssertingparty()
 			.getSinglesignon()
-			.isSignRequest()).isTrue();
+			.getSignRequest()).isNull();
 	}
 
 	private void bind(String name, String value) {
