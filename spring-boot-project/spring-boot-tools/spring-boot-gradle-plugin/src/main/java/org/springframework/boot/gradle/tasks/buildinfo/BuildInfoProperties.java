@@ -28,6 +28,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
+import org.gradle.util.GradleVersion;
 
 /**
  * The properties that are written into the {@code build-info.properties} file.
@@ -37,6 +38,8 @@ import org.gradle.api.tasks.Optional;
  */
 @SuppressWarnings("serial")
 public class BuildInfoProperties implements Serializable {
+
+	private static final GradleVersion GRADLE_7_4 = GradleVersion.version("7.4");
 
 	private transient Instant creationTime = Instant.now();
 
@@ -74,7 +77,10 @@ public class BuildInfoProperties implements Serializable {
 
 	@SuppressWarnings("deprecation")
 	private Provider<String> forUseAtConfigurationTime(Provider<String> provider) {
-		return provider.forUseAtConfigurationTime();
+		if (GradleVersion.current().compareTo(GRADLE_7_4) < 0) {
+			return provider.forUseAtConfigurationTime();
+		}
+		return provider;
 	}
 
 	/**
