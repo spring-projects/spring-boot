@@ -91,10 +91,10 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		AssertingPartyProperties assertingParty = new AssertingPartyProperties(properties, id);
 		boolean usingMetadata = StringUtils.hasText(assertingParty.getMetadataUri());
 		Builder builder = (!usingMetadata) ? RelyingPartyRegistration.withRegistrationId(id)
-				: createBuilderUsingMetadata(id, assertingParty).registrationId(id);
+				: createBuilderUsingMetadata(assertingParty).registrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
-		builder.assertingPartyDetails(mapAssertingParty(properties, id, usingMetadata));
+		builder.assertingPartyDetails(mapAssertingParty(properties, id));
 		builder.signingX509Credentials((credentials) -> properties.getSigning()
 			.getCredentials()
 			.stream()
@@ -120,8 +120,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return registration;
 	}
 
-	private RelyingPartyRegistration.Builder createBuilderUsingMetadata(String id,
-			AssertingPartyProperties properties) {
+	private RelyingPartyRegistration.Builder createBuilderUsingMetadata(AssertingPartyProperties properties) {
 		String requiredEntityId = properties.getEntityId();
 		Collection<Builder> candidates = RelyingPartyRegistrations
 			.collectionFromMetadataLocation(properties.getMetadataUri());
@@ -139,17 +138,14 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return result[0];
 	}
 
-	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(Registration registration, String id,
-			boolean usingMetadata) {
+	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(Registration registration, String id) {
 		return (details) -> {
 			AssertingPartyProperties assertingParty = new AssertingPartyProperties(registration, id);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(assertingParty::getEntityId).to(details::entityId);
 			map.from(assertingParty::getSingleSignonBinding).to(details::singleSignOnServiceBinding);
 			map.from(assertingParty::getSingleSignonUrl).to(details::singleSignOnServiceLocation);
-			map.from(assertingParty::getSingleSignonSignRequest)
-				.when((ignored) -> !usingMetadata)
-				.to(details::wantAuthnRequestsSigned);
+			map.from(assertingParty::getSingleSignonSignRequest).to(details::wantAuthnRequestsSigned);
 			map.from(assertingParty.getSinglelogoutUrl()).to(details::singleLogoutServiceLocation);
 			map.from(assertingParty.getSinglelogoutResponseUrl()).to(details::singleLogoutServiceResponseLocation);
 			map.from(assertingParty.getSinglelogoutBinding()).to(details::singleLogoutServiceBinding);
