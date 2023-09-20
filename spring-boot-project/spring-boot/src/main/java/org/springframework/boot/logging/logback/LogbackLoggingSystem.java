@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.slf4j.helpers.SubstituteLoggerFactory;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
@@ -384,7 +385,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	private LoggerContext getLoggerContext() {
-		ILoggerFactory factory = LoggerFactory.getILoggerFactory();
+		ILoggerFactory factory = getLoggerFactory();
 		Assert.isInstanceOf(LoggerContext.class, factory,
 				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
@@ -394,6 +395,21 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 								+ "prefer-application-packages in WEB-INF/weblogic.xml",
 						factory.getClass(), getLocation(factory)));
 		return (LoggerContext) factory;
+	}
+
+	private ILoggerFactory getLoggerFactory() {
+		ILoggerFactory factory = LoggerFactory.getILoggerFactory();
+		while (factory instanceof SubstituteLoggerFactory) {
+			try {
+				Thread.sleep(50);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Interrupted while waiting for non-subtitute logger factory", ex);
+			}
+			factory = LoggerFactory.getILoggerFactory();
+		}
+		return factory;
 	}
 
 	private Object getLocation(ILoggerFactory factory) {
