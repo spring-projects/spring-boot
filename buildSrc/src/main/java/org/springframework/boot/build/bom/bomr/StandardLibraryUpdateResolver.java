@@ -51,16 +51,8 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 	StandardLibraryUpdateResolver(VersionResolver versionResolver,
 			List<BiPredicate<Library, DependencyVersion>> predicates) {
 		this.versionResolver = versionResolver;
-		BiPredicate<Library, DependencyVersion> predicate = null;
-		for (BiPredicate<Library, DependencyVersion> p : predicates) {
-			if (predicate == null) {
-				predicate = p;
-			}
-			else {
-				predicate = predicate.and(p);
-			}
-		}
-		this.predicate = predicate;
+		this.predicate = (library, dependencyVersion) -> predicates.stream()
+			.allMatch((predicate) -> predicate.test(library, dependencyVersion));
 	}
 
 	@Override
