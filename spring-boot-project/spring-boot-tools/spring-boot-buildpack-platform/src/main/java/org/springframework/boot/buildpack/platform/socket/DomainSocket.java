@@ -74,7 +74,7 @@ public abstract class DomainSocket extends AbstractSocket {
 			return new FileDescriptor(handle, this::close);
 		}
 		catch (RuntimeException ex) {
-			this.close(handle);
+			close(handle);
 			throw ex;
 		}
 	}
