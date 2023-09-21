@@ -34,5 +34,6 @@ bootJar {
 }
 
 bootBuildImage {
+	builder = "paketobuildpacks/builder-jammy-base:latest"
 	environment = ['BP_NATIVE_IMAGE': 'true']
 }
