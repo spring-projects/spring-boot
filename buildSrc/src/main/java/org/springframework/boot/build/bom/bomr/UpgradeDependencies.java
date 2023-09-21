@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
@@ -227,40 +228,35 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
-		BiPredicate<Library, DependencyVersion> compilesWithUpgradePolicy = (library,
-				candidate) -> this.bom.getUpgrade().getPolicy().test(candidate, library.getVersion().getVersion());
-		BiPredicate<Library, DependencyVersion> isAnUpgrade = (library,
-				candidate) -> library.getVersion().getVersion().isUpgrade(candidate, this.movingToSnapshots);
-		BiPredicate<Library, DependencyVersion> isPermitted = (library, candidate) -> {
-			for (ProhibitedVersion prohibitedVersion : library.getProhibitedVersions()) {
-				String candidateString = candidate.toString();
-				if (prohibitedVersion.getRange() != null
-						&& prohibitedVersion.getRange().containsVersion(new DefaultArtifactVersion(candidateString))) {
-					return false;
-				}
-				for (String startsWith : prohibitedVersion.getStartsWith()) {
-					if (candidateString.startsWith(startsWith)) {
-						return false;
-					}
-				}
-				for (String endsWith : prohibitedVersion.getEndsWith()) {
-					if (candidateString.endsWith(endsWith)) {
-						return false;
-					}
-				}
-				for (String contains : prohibitedVersion.getContains()) {
-					if (candidateString.contains(contains)) {
-						return false;
-					}
-				}
-			}
-			return true;
-		};
 		List<BiPredicate<Library, DependencyVersion>> updatePredicates = new ArrayList<>();
-		updatePredicates.add(compilesWithUpgradePolicy);
-		updatePredicates.add(isAnUpgrade);
-		updatePredicates.add(isPermitted);
+		updatePredicates.add(this::compilesWithUpgradePolicy);
+		updatePredicates.add(this::isAnUpgrade);
+		updatePredicates.add(this::isNotProhibited);
 		return updatePredicates;
+	}
+
+	private boolean compilesWithUpgradePolicy(Library library, DependencyVersion candidate) {
+		return this.bom.getUpgrade().getPolicy().test(candidate, library.getVersion().getVersion());
+	}
+
+	private boolean isAnUpgrade(Library library, DependencyVersion candidate) {
+		return library.getVersion().getVersion().isUpgrade(candidate, this.movingToSnapshots);
+	}
+
+	private boolean isNotProhibited(Library library, DependencyVersion candidate) {
+		return !library.getProhibitedVersions()
+			.stream()
+			.anyMatch((prohibited) -> isProhibited(prohibited, candidate.toString()));
+	}
+
+	private boolean isProhibited(ProhibitedVersion prohibited, String candidate) {
+		boolean result = false;
+		VersionRange range = prohibited.getRange();
+		result = result || (range != null && range.containsVersion(new DefaultArtifactVersion(candidate)));
+		result = result || prohibited.getStartsWith().stream().anyMatch(candidate::startsWith);
+		result = result || prohibited.getStartsWith().stream().anyMatch(candidate::endsWith);
+		result = result || prohibited.getStartsWith().stream().anyMatch(candidate::contains);
+		return result;
 	}
 
 	private List<Library> matchingLibraries() {

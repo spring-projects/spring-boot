@@ -226,10 +226,12 @@ public class BraveAutoConfiguration {
 		@SuppressWarnings("deprecation")
 		private Factory createThrowAwayFactory() {
 			return new Factory() {
+
 				@Override
 				public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
 					return null;
 				}
+
 			};
 		}
 
