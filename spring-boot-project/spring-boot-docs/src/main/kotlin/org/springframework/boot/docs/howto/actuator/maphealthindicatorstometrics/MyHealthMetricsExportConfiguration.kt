@@ -33,17 +33,12 @@ class MyHealthMetricsExportConfiguration(registry: MeterRegistry, healthEndpoint
 	}
 
 	private fun getStatusCode(health: HealthEndpoint): Int {
-		val status = health.health().status
-		if (Status.UP == status) {
-			return 3
-		}
-		if (Status.OUT_OF_SERVICE == status) {
-			return 2
-		}
-		if (Status.DOWN == status) {
-			return 1
-		}
-		return 0
+    	return when (health.health().status) {
+        	Status.UP -> 3
+        	Status.OUT_OF_SERVICE -> 2
+        	Status.DOWN -> 1
+        	else -> 0
+    	}
 	}
 
 }
