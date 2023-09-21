@@ -30,5 +30,6 @@ war {
 }
 
 bootBuildImage {
+	builder = "paketobuildpacks/builder-jammy-base:latest"
 	archiveFile = war.archiveFile
 }
