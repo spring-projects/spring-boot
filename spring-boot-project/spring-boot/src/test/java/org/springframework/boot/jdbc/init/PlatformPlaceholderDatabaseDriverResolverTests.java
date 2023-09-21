@@ -72,7 +72,7 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 	@Test
 	void resolveAllWithDataSourceWhenValueDoesNotContainPlaceholderShouldNotInteractWithDataSource() {
 		DataSource dataSource = mock(DataSource.class);
-		new PlatformPlaceholderDatabaseDriverResolver().resolveAll(mock(DataSource.class), "schema.sql");
+		new PlatformPlaceholderDatabaseDriverResolver().resolveAll(dataSource, "schema.sql");
 		then(dataSource).shouldHaveNoInteractions();
 	}
 
