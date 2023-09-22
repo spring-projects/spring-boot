@@ -4,14 +4,3 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version}'
 }
-
-if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
-	sourceCompatibility = '1.8'
-	targetCompatibility = '1.8'
-}
-else {
-	java {
-		sourceCompatibility = '1.8'
-		targetCompatibility = '1.8'
-	}
-}
