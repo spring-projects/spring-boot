@@ -12,10 +12,6 @@ case "$JDK_VERSION" in
 		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=17"
 		 ISSUE_TITLE="Upgrade Java 17 version in CI image and .sdkmanrc"
 	;;
-	java20)
-		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=20"
-		 ISSUE_TITLE="Upgrade Java 20 version in CI image"
-	;;
 	java21)
 		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=21"
 		 ISSUE_TITLE="Upgrade Java 21 version in CI image"
