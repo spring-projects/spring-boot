@@ -84,9 +84,8 @@ class LoaderIntegrationTests {
 	static Stream<JavaRuntime> javaRuntimes() {
 		List<JavaRuntime> javaRuntimes = new ArrayList<>();
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
-		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY));
+		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_ONE));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
-		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_ONE));
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 
@@ -115,13 +114,6 @@ class LoaderIntegrationTests {
 		@Override
 		public String toString() {
 			return this.name;
-		}
-
-		static JavaRuntime openJdkEarlyAccess(JavaVersion version) {
-			String imageVersion = version.toString();
-			DockerImageName image = DockerImageName.parse("openjdk:%s-ea-jdk".formatted(imageVersion));
-			return new JavaRuntime("OpenJDK Early Access " + imageVersion, version,
-					() -> new GenericContainer<>(image));
 		}
 
 		static JavaRuntime openJdk(JavaVersion version) {
