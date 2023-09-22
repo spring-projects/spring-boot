@@ -167,6 +167,7 @@ class ExtractCommandTests {
 			}
 		});
 		given(this.context.getArchiveFile()).willReturn(this.jarFile);
+		given(this.context.getWorkingDir()).willReturn(this.extract);
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
 			.withMessageContaining("Entry 'e/../../e.jar' would be written");
