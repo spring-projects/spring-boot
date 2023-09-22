@@ -96,6 +96,11 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	@Parameter(property = "spring-boot.aot.compilerArguments")
 	private String compilerArguments;
 
+	/**
+	 * Return Maven execution session.
+	 * @return session
+	 * @since 3.0.10
+	 */
 	protected final MavenSession getSession() {
 		return this.session;
 	}
