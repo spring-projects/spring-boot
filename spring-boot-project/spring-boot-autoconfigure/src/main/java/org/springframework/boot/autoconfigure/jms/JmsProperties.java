@@ -146,7 +146,8 @@ public class JmsProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Minimum number of concurrent consumers.
+		 * Minimum number of concurrent consumers. When max-concurrency is not specified
+		 * the minimum will also be used as the maximum.
 		 */
 		private Integer concurrency;
 
