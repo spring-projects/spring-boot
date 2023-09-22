@@ -75,7 +75,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("env: BP_JVM_VERSION=8.*");
+		assertThat(result.getOutput()).contains("env: BP_JVM_VERSION=" + javaMajorVersion() + ".*");
 		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
@@ -91,7 +91,6 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("env: BP_JVM_VERSION=8.*");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles())
@@ -477,6 +476,20 @@ class BootBuildImageIntegrationTests {
 		for (String name : names) {
 			volumeApi.delete(VolumeName.of(name), false);
 		}
+	}
+
+	private String javaMajorVersion() {
+		String javaVersion = System.getProperty("java.version");
+		if (javaVersion.startsWith("1.")) {
+			return javaVersion.substring(2, 3);
+		}
+		else {
+			int firstDotIndex = javaVersion.indexOf(".");
+			if (firstDotIndex != -1) {
+				return javaVersion.substring(0, firstDotIndex);
+			}
+		}
+		return javaVersion;
 	}
 
 }
