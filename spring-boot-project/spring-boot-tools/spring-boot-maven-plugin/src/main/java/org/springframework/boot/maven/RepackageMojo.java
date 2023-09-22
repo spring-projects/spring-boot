@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
@@ -220,10 +219,13 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
-	private FileTime parseOutputTimestamp() {
-		return MavenBuildOutputTimestamp.parseBuildOutputTimestamp(this.outputTimestamp)
-			.map(instant -> FileTime.from(instant.getEpochSecond(), TimeUnit.SECONDS))
-			.orElse(null);
+	private FileTime parseOutputTimestamp() throws MojoExecutionException {
+		try {
+			return new MavenBuildOutputTimestamp(this.outputTimestamp).toFileTime();
+		}
+		catch (IllegalArgumentException ex) {
+			throw new MojoExecutionException("Invalid value for parameter 'outputTimestamp'", ex);
+		}
 	}
 
 	private Repackager getRepackager(File source) {
