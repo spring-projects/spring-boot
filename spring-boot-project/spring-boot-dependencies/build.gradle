@@ -1113,6 +1113,9 @@ bom {
 				"kafka-metadata",
 				"kafka-raft",
 				"kafka-server-common",
+				"kafka-server-common" {
+					classifier = "test"
+				},
 				"kafka-shell",
 				"kafka-storage",
 				"kafka-storage-api",
