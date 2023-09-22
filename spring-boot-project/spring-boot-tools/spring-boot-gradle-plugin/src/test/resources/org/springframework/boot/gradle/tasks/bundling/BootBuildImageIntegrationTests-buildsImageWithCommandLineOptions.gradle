@@ -2,8 +2,3 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version}'
 }
-
-java {
-	sourceCompatibility = '1.8'
-	targetCompatibility = '1.8'
-}
