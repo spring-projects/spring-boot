@@ -147,7 +147,8 @@ public class JmsProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Minimum number of concurrent consumers.
+		 * Minimum number of concurrent consumers. When max-concurrency is not specified
+		 * the minimum will also be used as the maximum.
 		 */
 		private Integer minConcurrency;
 
@@ -210,8 +211,8 @@ public class JmsProperties {
 			if (this.minConcurrency == null) {
 				return (this.maxConcurrency != null) ? "1-" + this.maxConcurrency : null;
 			}
-			return ((this.maxConcurrency != null) ? this.minConcurrency + "-" + this.maxConcurrency
-					: String.valueOf(this.minConcurrency));
+			return this.minConcurrency + "-"
+					+ ((this.maxConcurrency != null) ? this.maxConcurrency : this.minConcurrency);
 		}
 
 		public Duration getReceiveTimeout() {
