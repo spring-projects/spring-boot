@@ -149,11 +149,12 @@ public class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(name = "pulsarListenerContainerFactory")
 	ConcurrentPulsarListenerContainerFactory<Object> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver) {
+			TopicResolver topicResolver, ObjectProvider<PulsarContainerPropertiesCustomizer> customizersProvider) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
+		customizersProvider.orderedStream().forEach((customizer) -> customizer.customize(containerProperties));
 		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
 	}
 
@@ -178,10 +179,12 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(PulsarReaderFactory<?> pulsarReaderFactory,
-			SchemaResolver schemaResolver) {
+			SchemaResolver schemaResolver,
+			ObjectProvider<PulsarReaderContainerPropertiesCustomizer> customizersProvider) {
 		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
 		readerContainerProperties.setSchemaResolver(schemaResolver);
 		this.propertiesMapper.customizeReaderContainerProperties(readerContainerProperties);
+		customizersProvider.orderedStream().forEach((customizer) -> customizer.customize(readerContainerProperties));
 		return new DefaultPulsarReaderContainerFactory<>(pulsarReaderFactory, readerContainerProperties);
 	}
 

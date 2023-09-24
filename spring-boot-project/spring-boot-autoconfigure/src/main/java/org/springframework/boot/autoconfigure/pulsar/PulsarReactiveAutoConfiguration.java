@@ -156,12 +156,23 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(name = "reactivePulsarListenerContainerFactory")
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ReactivePulsarConsumerFactory<Object> reactivePulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver) {
+			TopicResolver topicResolver,
+			ObjectProvider<ReactivePulsarContainerPropertiesCustomizer<?>> customizersProvider) {
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
-		this.propertiesMapper.customizeContainerProperties(containerProperties);
+		List<ReactivePulsarContainerPropertiesCustomizer<?>> customizers = new ArrayList<>();
+		customizers.add(this.propertiesMapper::customizeContainerProperties);
+		customizers.addAll(customizersProvider.orderedStream().toList());
+		applyContainerPropertiesCustomizers(customizers, containerProperties);
 		return new DefaultReactivePulsarListenerContainerFactory<>(reactivePulsarConsumerFactory, containerProperties);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyContainerPropertiesCustomizers(List<ReactivePulsarContainerPropertiesCustomizer<?>> customizers,
+			ReactivePulsarContainerProperties<?> containerProperties) {
+		LambdaSafe.callbacks(ReactivePulsarContainerPropertiesCustomizer.class, customizers, containerProperties)
+			.invoke((customizer) -> customizer.customize(containerProperties));
 	}
 
 	@Bean

@@ -25,8 +25,10 @@ import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.ProducerBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.ReaderBuilder;
+import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.apache.pulsar.common.schema.SchemaType;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,6 +49,7 @@ import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactor
 import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
 import org.springframework.pulsar.config.PulsarListenerContainerFactory;
 import org.springframework.pulsar.config.PulsarListenerEndpointRegistry;
+import org.springframework.pulsar.config.PulsarReaderContainerFactory;
 import org.springframework.pulsar.config.PulsarReaderEndpointRegistry;
 import org.springframework.pulsar.core.CachingPulsarProducerFactory;
 import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
@@ -65,6 +68,7 @@ import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
+import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -390,7 +394,7 @@ class PulsarAutoConfigurationTests {
 	}
 
 	@Nested
-	class ListenerTests {
+	class ListenerContainerTests {
 
 		private final ApplicationContextRunner contextRunner = PulsarAutoConfigurationTests.this.contextRunner;
 
@@ -464,6 +468,53 @@ class PulsarAutoConfigurationTests {
 					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", false));
 		}
 
+		@Test
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withPropertyValues("spring.pulsar.consumer.subscription.type=Shared")
+				.withUserConfiguration(ContainerPropertiesCustomizerConfig.class)
+				.run((context) -> {
+					ConcurrentPulsarListenerContainerFactory<?> containerFactory = context
+						.getBean(ConcurrentPulsarListenerContainerFactory.class);
+					// We use subscriptionType to prove user customizers come after base
+					// props customizer.
+					// We use subscriptionName to prove user customizers are applied in
+					// their order.
+					assertThat(containerFactory)
+						.extracting(ConcurrentPulsarListenerContainerFactory::getContainerProperties)
+						.satisfies((containerProps) -> {
+							assertThat(containerProps.getSubscriptionType()).isEqualTo(SubscriptionType.Failover);
+							assertThat(containerProps.getSubscriptionName()).isEqualTo("/customizer1/customizer2");
+						});
+				});
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ContainerPropertiesCustomizerConfig {
+
+			@Bean
+			@Order(200)
+			PulsarContainerPropertiesCustomizer customizerFoo() {
+				return (props) -> {
+					props.setSubscriptionType(SubscriptionType.Failover);
+					String name = "%s/customizer2"
+						.formatted((props.getSubscriptionName() != null) ? props.getSubscriptionName() : "");
+					props.setSubscriptionName(name);
+				};
+			}
+
+			@Bean
+			@Order(100)
+			PulsarContainerPropertiesCustomizer customizerBar() {
+				return (props) -> {
+					props.setSubscriptionType(SubscriptionType.Failover);
+					String name = "%s/customizer1"
+						.formatted((props.getSubscriptionName() != null) ? props.getSubscriptionName() : "");
+					props.setSubscriptionName(name);
+				};
+			}
+
+		}
+
 	}
 
 	@Nested
@@ -511,6 +562,90 @@ class PulsarAutoConfigurationTests {
 			@Order(100)
 			ReaderBuilderCustomizer<?> customizerBar() {
 				return (builder) -> builder.readerName("fromCustomizer1");
+			}
+
+		}
+
+	}
+
+	@Nested
+	class ReaderContainerTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarAutoConfigurationTests.this.contextRunner;
+
+		@Test
+		void whenHasUserDefinedReaderContainerFactoryBeanDoesNotAutoConfigureBean() {
+			PulsarReaderContainerFactory readerContainerFactory = mock(PulsarReaderContainerFactory.class);
+			this.contextRunner
+				.withBean("pulsarReaderContainerFactory", PulsarReaderContainerFactory.class,
+						() -> readerContainerFactory)
+				.run((context) -> assertThat(context).getBean(PulsarReaderContainerFactory.class)
+					.isSameAs(readerContainerFactory));
+		}
+
+		@Test
+		@SuppressWarnings("rawtypes")
+		void injectsExpectedBeans() {
+			PulsarReaderFactory<?> readerFactory = mock(PulsarReaderFactory.class);
+			SchemaResolver schemaResolver = mock(SchemaResolver.class);
+			this.contextRunner.withBean("pulsarReaderFactory", PulsarReaderFactory.class, () -> readerFactory)
+				.withBean("schemaResolver", SchemaResolver.class, () -> schemaResolver)
+				.run((context) -> assertThat(context).getBean(DefaultPulsarReaderContainerFactory.class)
+					.hasFieldOrPropertyWithValue("readerFactory", readerFactory)
+					.extracting(DefaultPulsarReaderContainerFactory::getContainerProperties)
+					.hasFieldOrPropertyWithValue("schemaResolver", schemaResolver));
+		}
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedReaderAnnotationBeanPostProcessorBeanDoesNotAutoConfigureBean() {
+			PulsarReaderAnnotationBeanPostProcessor<String> readerAnnotationBeanPostProcessor = mock(
+					PulsarReaderAnnotationBeanPostProcessor.class);
+			this.contextRunner
+				.withBean("org.springframework.pulsar.config.internalPulsarReaderAnnotationProcessor",
+						PulsarReaderAnnotationBeanPostProcessor.class, () -> readerAnnotationBeanPostProcessor)
+				.run((context) -> assertThat(context).getBean(PulsarReaderAnnotationBeanPostProcessor.class)
+					.isSameAs(readerAnnotationBeanPostProcessor));
+		}
+
+		@Test
+		void whenHasCustomProperties() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.reader.topics=fromPropsCustomizer");
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new)).run((context) -> {
+				DefaultPulsarReaderContainerFactory<?> factory = context
+					.getBean(DefaultPulsarReaderContainerFactory.class);
+				assertThat(factory.getContainerProperties().getTopics()).containsExactly("fromPropsCustomizer");
+			});
+		}
+
+		@Test
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withPropertyValues("spring.pulsar.reader.topics=fromPropsCustomizer")
+				.withUserConfiguration(ReaderContainerPropertiesCustomizerConfig.class)
+				.run((context) -> {
+					DefaultPulsarReaderContainerFactory<?> containerFactory = context
+						.getBean(DefaultPulsarReaderContainerFactory.class);
+					assertThat(containerFactory).extracting(DefaultPulsarReaderContainerFactory::getContainerProperties)
+						.extracting(PulsarReaderContainerProperties::getTopics,
+								InstanceOfAssertFactories.list(String.class))
+						.containsExactly("fromPropsCustomizer", "customizer1", "customizer2");
+				});
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReaderContainerPropertiesCustomizerConfig {
+
+			@Bean
+			@Order(200)
+			PulsarReaderContainerPropertiesCustomizer customizerFoo() {
+				return (props) -> props.getTopics().add("customizer2");
+			}
+
+			@Bean
+			@Order(100)
+			PulsarReaderContainerPropertiesCustomizer customizerBar() {
+				return (props) -> props.getTopics().add("customizer1");
 			}
 
 		}

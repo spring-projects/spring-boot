@@ -140,7 +140,8 @@ If you need more control over the consumer factory configuration, consider regis
 These customizers are applied to all consumers created by the factory, and therefore all `@PulsarListener` instances.
 You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@PulsarListener` annotation.
 
-
+The properties of the underlying listener container can also be customized by registering one or more `PulsarContainerPropertiesCustomizer` beans.
+These customizers are applied to all created listener containers.
 
 [[messaging.pulsar.receiving-reactive]]
 === Receiving a Message Reactively
@@ -156,7 +157,8 @@ If you need more control over the consumer factory configuration, consider regis
 These customizers are applied to all consumers created by the factory, and therefore all `@ReactivePulsarListener` instances.
 You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@ReactivePulsarListener` annotation.
 
-
+The properties of the underlying listener container can also be customized by registering one or more `ReactivePulsarContainerPropertiesCustomizer` beans.
+These customizers are applied to all created listener containers.
 
 [[messaging.pulsar.reading]]
 === Reading a Message
@@ -175,6 +177,8 @@ If you need more control over the reader factory configuration, consider registe
 These customizers are applied to all readers created by the factory, and therefore all `@PulsarReader` instances.
 You can also customize a single listener by setting the `readerCustomizer` attribute of the `@PulsarReader` annotation.
 
+The properties of the underlying reader container can also be customized by registering one or more `PulsarReaderContainerPropertiesCustomizer` beans.
+These customizers are applied to all created reader containers.
 
 
 [[messaging.pulsar.reading-reactive]]

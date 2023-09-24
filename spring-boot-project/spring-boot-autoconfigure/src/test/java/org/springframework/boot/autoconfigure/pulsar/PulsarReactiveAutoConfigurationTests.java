@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 import org.apache.pulsar.reactive.client.adapter.ProducerCacheProvider;
 import org.apache.pulsar.reactive.client.api.ReactiveMessageConsumerBuilder;
@@ -350,6 +351,53 @@ class PulsarReactiveAutoConfigurationTests {
 						.extracting(ReactivePulsarContainerProperties::getSchemaResolver)
 						.isSameAs(schemaResolver);
 				});
+		}
+
+		@Test
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withPropertyValues("spring.pulsar.consumer.subscription.type=Shared")
+				.withUserConfiguration(ReactiveContainerPropertiesCustomizerConfig.class)
+				.run((context) -> {
+					DefaultReactivePulsarListenerContainerFactory<?> containerFactory = context
+						.getBean(DefaultReactivePulsarListenerContainerFactory.class);
+					// Use subscriptionType to prove user customizers come after base
+					// props customizer.
+					// Use subscriptionName to prove user customizers are applied in
+					// their order.
+					assertThat(containerFactory)
+						.extracting(DefaultReactivePulsarListenerContainerFactory::getContainerProperties)
+						.satisfies((containerProps) -> {
+							assertThat(containerProps.getSubscriptionType()).isEqualTo(SubscriptionType.Failover);
+							assertThat(containerProps.getSubscriptionName()).isEqualTo("/customizer1/customizer2");
+						});
+				});
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReactiveContainerPropertiesCustomizerConfig {
+
+			@Bean
+			@Order(200)
+			ReactivePulsarContainerPropertiesCustomizer<?> customizerFoo() {
+				return (props) -> {
+					props.setSubscriptionType(SubscriptionType.Failover);
+					String name = "%s/customizer2"
+						.formatted((props.getSubscriptionName() != null) ? props.getSubscriptionName() : "");
+					props.setSubscriptionName(name);
+				};
+			}
+
+			@Bean
+			@Order(100)
+			ReactivePulsarContainerPropertiesCustomizer<?> customizerBar() {
+				return (props) -> {
+					props.setSubscriptionType(SubscriptionType.Failover);
+					String name = "%s/customizer1"
+						.formatted((props.getSubscriptionName() != null) ? props.getSubscriptionName() : "");
+					props.setSubscriptionName(name);
+				};
+			}
+
 		}
 
 	}
