@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class StandardConfigDataLocationResolverTests {
 
@@ -261,6 +262,26 @@ class StandardConfigDataLocationResolverTests {
 		List<StandardConfigDataResource> locations = this.resolver.resolveProfileSpecific(this.context, location,
 				profiles);
 		assertThat(locations).isEmpty();
+	}
+
+	@Test
+	void resolveWhenOptionalAndLoaderIsUnknownShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation.of("optional:some-unknown-loader:dummy.properties");
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
+	}
+
+	@Test
+	void resolveWhenOptionalAndLoaderIsUnknownAndExtensionIsUnknownShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation
+			.of("optional:some-unknown-loader:dummy.some-unknown-extension");
+		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
+	}
+
+	@Test
+	void resolveWhenOptionalAndExtensionIsUnknownShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation.of("optional:file:dummy.some-unknown-extension");
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
 	}
 
 	private String filePath(String... components) {
