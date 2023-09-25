@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration.EnableWebFluxSecurityConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,13 @@ class ReactiveSecurityAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 			.withUserConfiguration(WebFilterChainProxyConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
+	}
+
+	@Test
+	void backsOffWhenReactiveAuthenticationManagerNotPresent() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveSecurityAutoConfiguration.class)
+				.doesNotHaveBean(EnableWebFluxSecurityConfiguration.class));
 	}
 
 	@Test

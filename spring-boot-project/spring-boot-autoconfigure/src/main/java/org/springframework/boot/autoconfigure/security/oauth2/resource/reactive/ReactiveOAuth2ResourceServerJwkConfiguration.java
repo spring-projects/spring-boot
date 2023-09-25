@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -49,6 +50,7 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder.JwkSetUr
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -175,6 +177,13 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		private void customDecoder(OAuth2ResourceServerSpec server, ReactiveJwtDecoder decoder) {
 			server.jwt((jwt) -> jwt.jwtDecoder(decoder));
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnMissingBean(WebFilterChainProxy.class)
+		@EnableWebFluxSecurity
+		static class EnableWebFluxSecurityConfiguration {
+
 		}
 
 	}

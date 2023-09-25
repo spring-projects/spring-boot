@@ -740,7 +740,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.isEqualTo("aud");
 	}
 
-	@EnableWebFluxSecurity
 	static class TestConfig {
 
 		@Bean
@@ -782,6 +781,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	}
 
+	@EnableWebFluxSecurity
 	@Configuration(proxyBeanMethods = false)
 	static class SecurityWebFilterChainConfig {
 
