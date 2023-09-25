@@ -7,7 +7,7 @@ permissions:
 jobs:
   build:
     name: Build pull request
-    runs-on: ubuntu-latest
+    runs-on: ubuntu22-8-32
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
       - name: Set up JDK 8
