@@ -45,18 +45,7 @@ class ConfigurationProcessorIntegrationTests {
 		repository = ConfigurationMetadataRepositoryJsonBuilder.create(getResource().openStream()).build();
 	}
 
-	private static URL getResource() throws IOException {
-		ClassLoader classLoader = ConfigurationProcessorIntegrationTests.class.getClassLoader();
-		List<URL> urls = new ArrayList<>();
-		CollectionUtils.toIterator(classLoader.getResources("META-INF/spring-configuration-metadata.json"))
-			.forEachRemaining(urls::add);
-		for (URL url : urls) {
-			if (url.toString().contains("spring-boot-configuration-processor-tests")) {
-				return url;
-			}
-		}
-		throw new IllegalStateException("Unable to find correct configuration-metadata resource from " + urls);
-	}
+
 
 	@Test
 	void extractTypeFromAnnotatedGetter() {
@@ -64,5 +53,16 @@ class ConfigurationProcessorIntegrationTests {
 		assertThat(property).isNotNull();
 		assertThat(property.getType()).isEqualTo("java.lang.String");
 	}
-
+	private static URL getResource() throws IOException {
+		ClassLoader classLoader = ConfigurationProcessorIntegrationTests.class.getClassLoader();
+		List<URL> urls = new ArrayList<>();
+		CollectionUtils.toIterator(classLoader.getResources("META-INF/spring-configuration-metadata.json"))
+				.forEachRemaining(urls::add);
+		for (URL url : urls) {
+			if (url.toString().contains("spring-boot-configuration-processor-tests")) {
+				return url;
+			}
+		}
+		throw new IllegalStateException("Unable to find correct configuration-metadata resource from " + urls);
+	}
 }
