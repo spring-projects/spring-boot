@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  * @since 1.3.3
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer {
@@ -119,7 +120,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		JmsProperties.Listener listener = this.jmsProperties.getListener();
 		factory.setAutoStartup(listener.isAutoStartup());
 		if (listener.getAcknowledgeMode() != null) {
-			factory.setSessionAcknowledgeMode(listener.getAcknowledgeMode().getMode());
+			factory.setSessionAcknowledgeMode(JmsAcknowledgeModeMapper.map(listener.getAcknowledgeMode()));
 		}
 		String concurrency = listener.formatConcurrency();
 		if (concurrency != null) {

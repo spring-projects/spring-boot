@@ -91,7 +91,8 @@ public class JmsAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getAcknowledgeMode)
 				.whenNonNull()
-				.to((acknowledgeMode) -> template.setSessionAcknowledgeMode(acknowledgeMode.getMode()));
+				.to((acknowledgeMode) -> template
+					.setSessionAcknowledgeMode(JmsAcknowledgeModeMapper.map(acknowledgeMode)));
 			map.from(properties::getSessionTransacted).whenNonNull().to(template::setSessionTransacted);
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
 			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
