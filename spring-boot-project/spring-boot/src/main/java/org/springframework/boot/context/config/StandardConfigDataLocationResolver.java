@@ -228,6 +228,9 @@ public class StandardConfigDataLocationResolver
 				return Collections.singleton(reference);
 			}
 		}
+		if (configDataLocation.isOptional()) {
+			return Collections.emptySet();
+		}
 		throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
 				+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
 	}
