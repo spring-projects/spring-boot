@@ -171,12 +171,12 @@ public class JmsProperties {
 
 		@Deprecated(since = "3.2.0", forRemoval = true)
 		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.session.acknowledge-mode", since = "3.2.0")
-		public AcknowledgeMode getAcknowledgeMode() {
+		public String getAcknowledgeMode() {
 			return this.session.getAcknowledgeMode();
 		}
 
 		@Deprecated(since = "3.2.0", forRemoval = true)
-		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+		public void setAcknowledgeMode(String acknowledgeMode) {
 			this.session.setAcknowledgeMode(acknowledgeMode);
 		}
 
@@ -232,7 +232,7 @@ public class JmsProperties {
 			/**
 			 * Acknowledge mode of the listener container.
 			 */
-			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
+			private String acknowledgeMode = "auto";
 
 			/**
 			 * Whether the listener container should use transacted JMS sessions. Defaults
@@ -240,11 +240,11 @@ public class JmsProperties {
 			 */
 			private Boolean transacted;
 
-			public AcknowledgeMode getAcknowledgeMode() {
+			public String getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
-			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			public void setAcknowledgeMode(String acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 
@@ -376,18 +376,18 @@ public class JmsProperties {
 			/**
 			 * Acknowledge mode used when creating sessions.
 			 */
-			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
+			private String acknowledgeMode = "auto";
 
 			/**
 			 * Whether to use transacted sessions.
 			 */
 			private boolean transacted = false;
 
-			public AcknowledgeMode getAcknowledgeMode() {
+			public String getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
-			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			public void setAcknowledgeMode(String acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 
@@ -399,47 +399,6 @@ public class JmsProperties {
 				this.transacted = transacted;
 			}
 
-		}
-
-	}
-
-	/**
-	 * Translate the acknowledge modes defined on the {@link jakarta.jms.Session}.
-	 *
-	 * <p>
-	 * {@link jakarta.jms.Session#SESSION_TRANSACTED} is not defined as we take care of
-	 * this already through a call to {@code setSessionTransacted}.
-	 */
-	public enum AcknowledgeMode {
-
-		/**
-		 * Messages sent or received from the session are automatically acknowledged. This
-		 * is the simplest mode and enables once-only message delivery guarantee.
-		 */
-		AUTO(1),
-
-		/**
-		 * Messages are acknowledged once the message listener implementation has called
-		 * {@link jakarta.jms.Message#acknowledge()}. This mode gives the application
-		 * (rather than the JMS provider) complete control over message acknowledgement.
-		 */
-		CLIENT(2),
-
-		/**
-		 * Similar to auto acknowledgment except that said acknowledgment is lazy. As a
-		 * consequence, the messages might be delivered more than once. This mode enables
-		 * at-least-once message delivery guarantee.
-		 */
-		DUPS_OK(3);
-
-		private final int mode;
-
-		AcknowledgeMode(int mode) {
-			this.mode = mode;
-		}
-
-		public int getMode() {
-			return this.mode;
 		}
 
 	}

@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.jms.JmsProperties.AcknowledgeMode;
 import org.springframework.boot.autoconfigure.jms.JmsProperties.DeliveryMode;
 import org.springframework.boot.autoconfigure.jms.JmsProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -91,8 +90,8 @@ public class JmsAutoConfiguration {
 		private void mapTemplateProperties(Template properties, JmsTemplate template) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getSession()::getAcknowledgeMode)
-				.asInt(AcknowledgeMode::getMode)
-				.to(template::setSessionAcknowledgeMode);
+				.to((acknowledgeMode) -> template
+					.setSessionAcknowledgeMode(JmsAcknowledgeModeMapper.map(acknowledgeMode)));
 			map.from(properties.getSession()::isTransacted).to(template::setSessionTransacted);
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
 			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);

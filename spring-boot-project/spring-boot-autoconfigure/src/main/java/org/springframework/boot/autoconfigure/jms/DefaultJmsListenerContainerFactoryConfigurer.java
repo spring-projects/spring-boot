@@ -111,7 +111,9 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		map.from(this.destinationResolver).to(factory::setDestinationResolver);
 		map.from(this.messageConverter).to(factory::setMessageConverter);
 		map.from(this.exceptionListener).to(factory::setExceptionListener);
-		map.from(sessionProperties.getAcknowledgeMode()::getMode).to(factory::setSessionAcknowledgeMode);
+		map.from(sessionProperties.getAcknowledgeMode())
+			.as(JmsAcknowledgeModeMapper::map)
+			.to(factory::setSessionAcknowledgeMode);
 		if (this.transactionManager == null && sessionProperties.getTransacted() == null) {
 			factory.setSessionTransacted(true);
 		}
