@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import zipkin2.Callback;
@@ -42,19 +43,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 abstract class ZipkinHttpSenderTests {
 
-	protected Sender sut;
+	protected Sender sender;
 
-	abstract Sender createSut();
+	abstract Sender createSender();
 
 	@BeforeEach
-	void setUp() {
-		this.sut = createSut();
+	void beforeEach() throws Exception {
+		this.sender = createSender();
+	}
+
+	@AfterEach
+	void afterEach() throws IOException {
+		this.sender.close();
 	}
 
 	@Test
 	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.sut.close();
-		assertThatThrownBy(() -> this.sut.sendSpans(Collections.emptyList())).isInstanceOf(ClosedSenderException.class);
+		this.sender.close();
+		assertThatThrownBy(() -> this.sender.sendSpans(Collections.emptyList()))
+			.isInstanceOf(ClosedSenderException.class);
 	}
 
 	protected void makeRequest(List<byte[]> encodedSpans, boolean async) throws IOException {
@@ -68,8 +75,12 @@ abstract class ZipkinHttpSenderTests {
 	}
 
 	protected CallbackResult makeAsyncRequest(List<byte[]> encodedSpans) {
+		return makeAsyncRequest(this.sender, encodedSpans);
+	}
+
+	protected CallbackResult makeAsyncRequest(Sender sender, List<byte[]> encodedSpans) {
 		AtomicReference<CallbackResult> callbackResult = new AtomicReference<>();
-		this.sut.sendSpans(encodedSpans).enqueue(new Callback<>() {
+		sender.sendSpans(encodedSpans).enqueue(new Callback<>() {
 			@Override
 			public void onSuccess(Void value) {
 				callbackResult.set(new CallbackResult(true, null));
@@ -84,7 +95,11 @@ abstract class ZipkinHttpSenderTests {
 	}
 
 	protected void makeSyncRequest(List<byte[]> encodedSpans) throws IOException {
-		this.sut.sendSpans(encodedSpans).execute();
+		makeSyncRequest(this.sender, encodedSpans);
+	}
+
+	protected void makeSyncRequest(Sender sender, List<byte[]> encodedSpans) throws IOException {
+		sender.sendSpans(encodedSpans).execute();
 	}
 
 	protected byte[] toByteArray(String input) {

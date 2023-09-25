@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.time.Duration;
+
 import reactor.core.publisher.Mono;
 import zipkin2.Call;
 import zipkin2.Callback;
@@ -28,6 +30,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * An {@link HttpSender} which uses {@link WebClient} for HTTP communication.
  *
  * @author Stefan Bratanov
+ * @author Moritz Halbritter
  */
 class ZipkinWebClientSender extends HttpSender {
 
@@ -35,14 +38,17 @@ class ZipkinWebClientSender extends HttpSender {
 
 	private final WebClient webClient;
 
-	ZipkinWebClientSender(String endpoint, WebClient webClient) {
+	private final Duration timeout;
+
+	ZipkinWebClientSender(String endpoint, WebClient webClient, Duration timeout) {
 		this.endpoint = endpoint;
 		this.webClient = webClient;
+		this.timeout = timeout;
 	}
 
 	@Override
 	public HttpPostCall sendSpans(byte[] batchedEncodedSpans) {
-		return new WebClientHttpPostCall(this.endpoint, batchedEncodedSpans, this.webClient);
+		return new WebClientHttpPostCall(this.endpoint, batchedEncodedSpans, this.webClient, this.timeout);
 	}
 
 	private static class WebClientHttpPostCall extends HttpPostCall {
@@ -51,15 +57,18 @@ class ZipkinWebClientSender extends HttpSender {
 
 		private final WebClient webClient;
 
-		WebClientHttpPostCall(String endpoint, byte[] body, WebClient webClient) {
+		private final Duration timeout;
+
+		WebClientHttpPostCall(String endpoint, byte[] body, WebClient webClient, Duration timeout) {
 			super(body);
 			this.endpoint = endpoint;
 			this.webClient = webClient;
+			this.timeout = timeout;
 		}
 
 		@Override
 		public Call<Void> clone() {
-			return new WebClientHttpPostCall(this.endpoint, getUncompressedBody(), this.webClient);
+			return new WebClientHttpPostCall(this.endpoint, getUncompressedBody(), this.webClient, this.timeout);
 		}
 
 		@Override
@@ -79,7 +88,8 @@ class ZipkinWebClientSender extends HttpSender {
 				.headers(this::addDefaultHeaders)
 				.bodyValue(getBody())
 				.retrieve()
-				.toBodilessEntity();
+				.toBodilessEntity()
+				.timeout(this.timeout);
 		}
 
 		private void addDefaultHeaders(HttpHeaders headers) {

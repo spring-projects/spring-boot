@@ -119,7 +119,8 @@ class ZipkinConfigurations {
 				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			WebClient.Builder builder = WebClient.builder();
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return new ZipkinWebClientSender(connectionDetails.getSpanEndpoint(), builder.build());
+			return new ZipkinWebClientSender(connectionDetails.getSpanEndpoint(), builder.build(),
+					properties.getConnectTimeout().plus(properties.getReadTimeout()));
 		}
 
 	}
