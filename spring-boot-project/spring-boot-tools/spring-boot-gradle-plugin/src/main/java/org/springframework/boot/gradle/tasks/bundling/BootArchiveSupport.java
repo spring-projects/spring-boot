@@ -47,6 +47,7 @@ import org.gradle.api.tasks.util.PatternSet;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @see BootJar
  * @see BootWar
  */
@@ -124,6 +125,8 @@ class BootArchiveSupport {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
+		Integer dirMode = jar.getDirMode();
+		Integer fileMode = jar.getFileMode();
 		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
 		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
 		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
@@ -131,9 +134,9 @@ class BootArchiveSupport {
 		Spec<FileCopyDetails> librarySpec = this.librarySpec;
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
-		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, includeDefaultLoader,
-				layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver,
-				encoding, resolvedDependencies, layerResolver);
+		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirMode, fileMode,
+				includeDefaultLoader, layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec,
+				compressionResolver, encoding, resolvedDependencies, layerResolver);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 
