@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.compress.archivers.zip.UnixStat;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.file.FileTreeElement;
@@ -42,8 +41,14 @@ class LoaderZipEntries {
 
 	private final Long entryTime;
 
-	LoaderZipEntries(Long entryTime) {
+	private final int dirMode;
+
+	private final int fileMode;
+
+	LoaderZipEntries(Long entryTime, int dirMode, int fileMode) {
 		this.entryTime = entryTime;
+		this.dirMode = dirMode;
+		this.fileMode = fileMode;
 	}
 
 	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
@@ -67,13 +72,13 @@ class LoaderZipEntries {
 	}
 
 	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException {
-		prepareEntry(entry, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
+		prepareEntry(entry, this.dirMode);
 		out.putArchiveEntry(entry);
 		out.closeArchiveEntry();
 	}
 
 	private void writeClass(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
-		prepareEntry(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
+		prepareEntry(entry, this.fileMode);
 		out.putArchiveEntry(entry);
 		copy(in, out);
 		out.closeArchiveEntry();
