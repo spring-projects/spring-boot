@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
+import javax.sql.DataSource;
+
 import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariPoolMXBean;
@@ -71,10 +73,12 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	/**
 	 * Creates a new {@code HikariCheckpointRestoreLifecycle} that will allow the given
-	 * {@code dataSource} to participate in checkpoint-restore.
+	 * {@code dataSource} to participate in checkpoint-restore. The {@code dataSource} is
+	 * {@link DataSourceUnwrapper#unwrap unwrapped} to a {@link HikariDataSource}. If such
+	 * unwrapping is not possible, the lifecycle will have no effect.
 	 * @param dataSource the checkpoint-restore participant
 	 */
-	public HikariCheckpointRestoreLifecycle(HikariDataSource dataSource) {
+	public HikariCheckpointRestoreLifecycle(DataSource dataSource) {
 		this.dataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class, HikariDataSource.class);
 		this.hasOpenConnections = (pool) -> {
 			ThreadPoolExecutor closeConnectionExecutor = (ThreadPoolExecutor) ReflectionUtils
@@ -86,7 +90,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public void start() {
-		if (this.dataSource.isRunning()) {
+		if (this.dataSource == null || this.dataSource.isRunning()) {
 			return;
 		}
 		Assert.state(!this.dataSource.isClosed(), "DataSource has been closed and cannot be restarted");
@@ -98,7 +102,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public void stop() {
-		if (!this.dataSource.isRunning()) {
+		if (this.dataSource == null || !this.dataSource.isRunning()) {
 			return;
 		}
 		if (this.dataSource.isAllowPoolSuspension()) {
@@ -143,7 +147,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public boolean isRunning() {
-		return this.dataSource.isRunning();
+		return this.dataSource != null && this.dataSource.isRunning();
 	}
 
 }

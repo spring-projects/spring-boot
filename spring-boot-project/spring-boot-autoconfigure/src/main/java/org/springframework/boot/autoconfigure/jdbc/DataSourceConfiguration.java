@@ -126,7 +126,7 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnCheckpointRestore
-		HikariCheckpointRestoreLifecycle hikariCheckpointRestoreLifecycle(HikariDataSource hikariDataSource) {
+		HikariCheckpointRestoreLifecycle hikariCheckpointRestoreLifecycle(DataSource hikariDataSource) {
 			return new HikariCheckpointRestoreLifecycle(hikariDataSource);
 		}
 

@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc;
 
 import java.util.UUID;
 
+import javax.sql.DataSource;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HikariCheckpointRestoreLifecycle}.
@@ -80,6 +83,24 @@ class HikariCheckpointRestoreLifecycleTests {
 	void whenDataSourceIsClosedThenStartShouldThrow() {
 		this.dataSource.close();
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(this.lifecycle::start);
+	}
+
+	@Test
+	void startHasNoEffectWhenDataSourceIsNotAHikariDataSource() {
+		HikariCheckpointRestoreLifecycle nonHikariLifecycle = new HikariCheckpointRestoreLifecycle(
+				mock(DataSource.class));
+		assertThat(nonHikariLifecycle.isRunning()).isFalse();
+		nonHikariLifecycle.start();
+		assertThat(nonHikariLifecycle.isRunning()).isFalse();
+	}
+
+	@Test
+	void stopHasNoEffectWhenDataSourceIsNotAHikariDataSource() {
+		HikariCheckpointRestoreLifecycle nonHikariLifecycle = new HikariCheckpointRestoreLifecycle(
+				mock(DataSource.class));
+		assertThat(nonHikariLifecycle.isRunning()).isFalse();
+		nonHikariLifecycle.stop();
+		assertThat(nonHikariLifecycle.isRunning()).isFalse();
 	}
 
 }
