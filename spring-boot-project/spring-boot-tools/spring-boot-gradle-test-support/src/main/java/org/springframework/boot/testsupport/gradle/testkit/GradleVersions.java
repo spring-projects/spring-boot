@@ -44,6 +44,11 @@ public final class GradleVersions {
 		return allCompatible().get(0);
 	}
 
+	public static String maximumCompatible() {
+		List<String> versions = allCompatible();
+		return versions.get(versions.size() - 1);
+	}
+
 	private static boolean isJavaVersion(JavaVersion version) {
 		return JavaVersion.current().isCompatibleWith(version);
 	}

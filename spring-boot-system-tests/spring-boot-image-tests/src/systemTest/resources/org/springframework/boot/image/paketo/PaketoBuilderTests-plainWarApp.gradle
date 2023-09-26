@@ -32,5 +32,5 @@ war {
 bootBuildImage {
 	builder = "paketobuildpacks/builder-jammy-base:latest"
 	archiveFile = war.archiveFile
-	environment = ['BP_JVM_VERSION': project.targetCompatibility.getMajorVersion(), 'BP_TOMCAT_VERSION': '10.*']
+	environment = ['BP_JVM_VERSION': java.targetCompatibility.getMajorVersion(), 'BP_TOMCAT_VERSION': '10.*']
 }
