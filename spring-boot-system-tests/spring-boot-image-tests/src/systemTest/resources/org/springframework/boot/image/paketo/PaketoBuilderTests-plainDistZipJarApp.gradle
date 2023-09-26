@@ -38,5 +38,5 @@ application {
 
 bootBuildImage {
 	archiveFile = distZip.archiveFile
-	environment = ['BP_JVM_VERSION': project.targetCompatibility.getMajorVersion()]
+	environment = ['BP_JVM_VERSION': java.targetCompatibility.getMajorVersion()]
 }
