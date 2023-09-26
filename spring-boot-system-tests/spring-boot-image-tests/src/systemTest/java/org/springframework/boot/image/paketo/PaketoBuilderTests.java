@@ -46,6 +46,7 @@ import org.springframework.boot.image.assertions.ImageAssertions;
 import org.springframework.boot.image.junit.GradleBuildInjectionExtension;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,6 +73,7 @@ class PaketoBuilderTests {
 		this.gradleBuild.scriptPropertyFrom(new File("../../gradle.properties"), "nativeBuildToolsVersion");
 		this.gradleBuild.expectDeprecationMessages("BPL_SPRING_CLOUD_BINDINGS_ENABLED.*true.*Deprecated");
 		this.gradleBuild.expectDeprecationMessages("BOM table is deprecated");
+		this.gradleBuild.gradleVersion(GradleVersions.maximumCompatible());
 	}
 
 	@Test
@@ -298,6 +300,9 @@ class PaketoBuilderTests {
 	@EnabledForJreRange(max = JRE.JAVA_17)
 	void nativeApp() throws Exception {
 		this.gradleBuild.expectDeprecationMessages("uses or overrides a deprecated API");
+		// these deprecations are transitive from the Native Build Tools Gradle plugin
+		this.gradleBuild.expectDeprecationMessages("has been deprecated. This is scheduled to be removed in Gradle 9.0");
+		this.gradleBuild.expectDeprecationMessages("upgrading_version_8.html#deprecated_access_to_convention");
 		writeMainClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
