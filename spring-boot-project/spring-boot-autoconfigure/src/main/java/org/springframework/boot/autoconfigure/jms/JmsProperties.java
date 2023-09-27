@@ -142,12 +142,6 @@ public class JmsProperties {
 		private boolean autoStartup = true;
 
 		/**
-		 * Acknowledge mode of the container. By default, the listener is transacted with
-		 * automatic acknowledgment.
-		 */
-		private AcknowledgeMode acknowledgeMode;
-
-		/**
 		 * Minimum number of concurrent consumers. When max-concurrency is not specified
 		 * the minimum will also be used as the maximum.
 		 */
@@ -165,6 +159,8 @@ public class JmsProperties {
 		 */
 		private Duration receiveTimeout = Duration.ofSeconds(1);
 
+		private final Session session = new Session();
+
 		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
@@ -173,12 +169,15 @@ public class JmsProperties {
 			this.autoStartup = autoStartup;
 		}
 
+		@Deprecated(since = "3.2.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.session.acknowledge-mode", since = "3.2.0")
 		public AcknowledgeMode getAcknowledgeMode() {
-			return this.acknowledgeMode;
+			return this.session.getAcknowledgeMode();
 		}
 
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
-			this.acknowledgeMode = acknowledgeMode;
+			this.session.setAcknowledgeMode(acknowledgeMode);
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
@@ -222,6 +221,27 @@ public class JmsProperties {
 
 		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Session getSession() {
+			return this.session;
+		}
+
+		public static class Session {
+
+			/**
+			 * Acknowledge mode of the listener container.
+			 */
+			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
+
+			public AcknowledgeMode getAcknowledgeMode() {
+				return this.acknowledgeMode;
+			}
+
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+				this.acknowledgeMode = acknowledgeMode;
+			}
+
 		}
 
 	}

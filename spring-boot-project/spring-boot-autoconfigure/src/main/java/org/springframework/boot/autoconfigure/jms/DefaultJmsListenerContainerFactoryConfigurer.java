@@ -118,9 +118,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		}
 		JmsProperties.Listener listener = this.jmsProperties.getListener();
 		factory.setAutoStartup(listener.isAutoStartup());
-		if (listener.getAcknowledgeMode() != null) {
-			factory.setSessionAcknowledgeMode(listener.getAcknowledgeMode().getMode());
-		}
+		factory.setSessionAcknowledgeMode(listener.getSession().getAcknowledgeMode().getMode());
 		String concurrency = listener.formatConcurrency();
 		if (concurrency != null) {
 			factory.setConcurrency(concurrency);

@@ -1572,6 +1572,10 @@
       "defaultValue": "servlet"
     },
     {
+      "name": "spring.jms.listener.session.acknowledge-mode",
+      "defaultValue": "auto"
+    },
+    {
       "name": "spring.jms.template.session.acknowledge-mode",
       "defaultValue": "auto"
     },
