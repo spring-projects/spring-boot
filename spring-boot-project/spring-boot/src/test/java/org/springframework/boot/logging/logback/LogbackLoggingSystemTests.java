@@ -58,12 +58,14 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
@@ -91,6 +93,7 @@ import static org.mockito.Mockito.times;
  * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
+@ClassPathExclusions({ "log4j-core-*.jar", "log4j-api-*.jar" })
 class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(getClass().getClassLoader());
@@ -125,7 +128,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	@ClassPathOverrides("org.jboss.logging:jboss-logging:3.5.0.Final")
+	@ClassPathOverrides({ "org.jboss.logging:jboss-logging:3.5.0.Final", "org.apache.logging.log4j:log4j-core:2.19.0" })
 	void jbossLoggingRoutesThroughLog4j2ByDefault() {
 		System.getProperties().remove("org.jboss.logging.provider");
 		org.jboss.logging.Logger jbossLogger = org.jboss.logging.Logger.getLogger(getClass());
@@ -729,6 +732,15 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(file).content(StandardCharsets.UTF_8)
 			.doesNotContain("Some info message")
 			.contains("Some warn message");
+	}
+
+	@Test
+	void applyingSystemPropertiesDoesNotCauseUnwantedStatusWarnings(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("test", Map.of("logging.pattern.console", "[CONSOLE]%m")));
+		this.loggingSystem.initialize(this.initializationContext, "classpath:logback-nondefault.xml", null);
+		assertThat(output).doesNotContain("WARN");
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
