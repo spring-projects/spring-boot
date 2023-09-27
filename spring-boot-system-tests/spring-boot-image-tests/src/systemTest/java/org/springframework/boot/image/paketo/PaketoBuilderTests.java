@@ -302,7 +302,8 @@ class PaketoBuilderTests {
 		this.gradleBuild.expectDeprecationMessages("uses or overrides a deprecated API");
 		this.gradleBuild.expectDeprecationMessages("has been deprecated and marked for removal");
 		// these deprecations are transitive from the Native Build Tools Gradle plugin
-		this.gradleBuild.expectDeprecationMessages("has been deprecated. This is scheduled to be removed in Gradle 9.0");
+		this.gradleBuild
+			.expectDeprecationMessages("has been deprecated. This is scheduled to be removed in Gradle 9.0");
 		this.gradleBuild.expectDeprecationMessages("upgrading_version_8.html#deprecated_access_to_convention");
 		writeMainClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
