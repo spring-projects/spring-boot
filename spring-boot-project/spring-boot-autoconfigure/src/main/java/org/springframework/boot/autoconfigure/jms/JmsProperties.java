@@ -234,12 +234,26 @@ public class JmsProperties {
 			 */
 			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
 
+			/**
+			 * Whether the listener container should use transacted JMS sessions. Defaults
+			 * to false in the presence of a JtaTransactionManager and true otherwise.
+			 */
+			private Boolean transacted;
+
 			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
 			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
+			}
+
+			public Boolean getTransacted() {
+				return this.transacted;
+			}
+
+			public void setTransacted(Boolean transacted) {
+				this.transacted = transacted;
 			}
 
 		}
