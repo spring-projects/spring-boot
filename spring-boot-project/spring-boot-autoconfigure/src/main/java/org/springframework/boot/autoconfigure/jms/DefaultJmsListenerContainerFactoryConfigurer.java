@@ -21,6 +21,7 @@ import java.time.Duration;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 
+import org.springframework.boot.autoconfigure.jms.JmsProperties.Listener.Session;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
@@ -103,14 +104,16 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
 		JmsProperties.Listener listener = this.jmsProperties.getListener();
+		Session session = listener.getSession();
+		Boolean sessionTransacted = session.getTransacted();
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}
-		else if (listener.getSessionTransacted() == null) {
+		else if (sessionTransacted == null) {
 			factory.setSessionTransacted(true);
 		}
-		if (listener.getSessionTransacted() != null) {
-			factory.setSessionTransacted(listener.getSessionTransacted());
+		if (sessionTransacted != null) {
+			factory.setSessionTransacted(sessionTransacted);
 		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
@@ -122,7 +125,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 			factory.setExceptionListener(this.exceptionListener);
 		}
 		factory.setAutoStartup(listener.isAutoStartup());
-		factory.setSessionAcknowledgeMode(listener.getSession().getAcknowledgeMode().getMode());
+		factory.setSessionAcknowledgeMode(session.getAcknowledgeMode().getMode());
 		String concurrency = listener.formatConcurrency();
 		if (concurrency != null) {
 			factory.setConcurrency(concurrency);

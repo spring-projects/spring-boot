@@ -144,9 +144,9 @@ class JmsAutoConfigurationTests {
 	void testJmsListenerContainerFactoryWithCustomSettings() {
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
 			.withPropertyValues("spring.jms.listener.autoStartup=false",
-					"spring.jms.listener.session.acknowledgeMode=client", "spring.jms.listener.sessionTransacted=false",
-					"spring.jms.listener.minConcurrency=2", "spring.jms.listener.receiveTimeout=2s",
-					"spring.jms.listener.maxConcurrency=10")
+					"spring.jms.listener.session.acknowledgeMode=client",
+					"spring.jms.listener.session.transacted=false", "spring.jms.listener.minConcurrency=2",
+					"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10")
 			.run(this::testJmsListenerContainerFactoryWithCustomSettings);
 	}
 
@@ -185,7 +185,7 @@ class JmsAutoConfigurationTests {
 	@Test
 	void testDefaultContainerFactoryWithJtaTransactionManagerAndSessionTransactedEnabled() {
 		this.contextRunner.withUserConfiguration(TestConfiguration7.class, EnableJmsConfiguration.class)
-			.withPropertyValues("spring.jms.listener.sessionTransacted=true")
+			.withPropertyValues("spring.jms.listener.session.transacted=true")
 			.run((context) -> {
 				DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
 				assertThat(container.isSessionTransacted()).isTrue();
@@ -216,7 +216,7 @@ class JmsAutoConfigurationTests {
 	@Test
 	void testDefaultContainerFactoryNoTransactionManagerAndSessionTransactedDisabled() {
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
-			.withPropertyValues("spring.jms.listener.sessionTransacted=false")
+			.withPropertyValues("spring.jms.listener.session.transacted=false")
 			.run((context) -> {
 				DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
 				assertThat(container.isSessionTransacted()).isFalse();
