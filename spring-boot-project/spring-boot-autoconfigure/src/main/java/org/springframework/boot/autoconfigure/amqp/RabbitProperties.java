@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Configuration properties for Rabbit.
@@ -129,6 +130,11 @@ public class RabbitProperties {
 	 * Continuation timeout for RPC calls in channels. Set it to zero to wait forever.
 	 */
 	private Duration channelRpcTimeout = Duration.ofMinutes(10);
+
+	/**
+	 * Maximum size of the body of inbound (received) messages.
+	 */
+	private DataSize maxInboundMessageBodySize = DataSize.ofMegabytes(64);
 
 	/**
 	 * Cache configuration.
@@ -358,6 +364,14 @@ public class RabbitProperties {
 
 	public void setChannelRpcTimeout(Duration channelRpcTimeout) {
 		this.channelRpcTimeout = channelRpcTimeout;
+	}
+
+	public DataSize getMaxInboundMessageBodySize() {
+		return this.maxInboundMessageBodySize;
+	}
+
+	public void setMaxInboundMessageBodySize(DataSize maxInboundMessageBodySize) {
+		this.maxInboundMessageBodySize = maxInboundMessageBodySize;
 	}
 
 	public Cache getCache() {
