@@ -262,7 +262,7 @@ class LifecycleTests {
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest().withSecurityOptions(List.of("label=user:USER", "label=role:ROLE"));
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-security-opts.json"));
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-security-opts.json", true));
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
@@ -370,12 +370,16 @@ class LifecycleTests {
 	}
 
 	private IOConsumer<ContainerConfig> withExpectedConfig(String name) {
+		return withExpectedConfig(name, false);
+	}
+
+	private IOConsumer<ContainerConfig> withExpectedConfig(String name, boolean expectSecurityOptAlways) {
 		return (config) -> {
 			try {
 				InputStream in = getClass().getResourceAsStream(name);
 				String jsonString = FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
 				JSONObject json = new JSONObject(jsonString);
-				if (Platform.isWindows()) {
+				if (!expectSecurityOptAlways && Platform.isWindows()) {
 					JSONObject hostConfig = json.getJSONObject("HostConfig");
 					hostConfig.remove("SecurityOpt");
 				}
