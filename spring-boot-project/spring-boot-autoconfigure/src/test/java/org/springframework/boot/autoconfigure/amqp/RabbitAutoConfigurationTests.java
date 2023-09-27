@@ -150,6 +150,9 @@ class RabbitAutoConfigurationTests {
 			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 			assertThat(rabbitConnectionFactory.getUsername()).isEqualTo(properties.getUsername());
 			assertThat(rabbitConnectionFactory.getPassword()).isEqualTo(properties.getPassword());
+			com.rabbitmq.client.ConnectionFactory defaultCf = new com.rabbitmq.client.ConnectionFactory();
+			assertThat(rabbitConnectionFactory).hasFieldOrPropertyWithValue("maxInboundMessageBodySize",
+					ReflectionTestUtils.getField(defaultCf, "maxInboundMessageBodySize"));
 		});
 	}
 
@@ -160,7 +163,8 @@ class RabbitAutoConfigurationTests {
 			.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
 					"spring.rabbitmq.address-shuffle-mode=random", "spring.rabbitmq.username:alice",
 					"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
-					"spring.rabbitmq.connection-timeout:123", "spring.rabbitmq.channel-rpc-timeout:140")
+					"spring.rabbitmq.connection-timeout:123", "spring.rabbitmq.channel-rpc-timeout:140",
+					"spring.rabbitmq.max-inbound-message-body-size:128MB")
 			.run((context) -> {
 				CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 				assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
@@ -172,6 +176,7 @@ class RabbitAutoConfigurationTests {
 				assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
 				assertThat(rcf.getChannelRpcTimeout()).isEqualTo(140);
 				assertThat((List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
+				assertThat(rcf).hasFieldOrPropertyWithValue("maxInboundMessageBodySize", 1024 * 1024 * 128);
 			});
 	}
 
