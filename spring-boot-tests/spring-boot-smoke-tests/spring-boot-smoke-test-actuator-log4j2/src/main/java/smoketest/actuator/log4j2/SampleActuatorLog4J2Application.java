@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SampleActuatorLog4J2Application {
 
+	// Runs tests
 	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorLog4J2Application.class, args);
 	}

@@ -160,6 +160,11 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 			SpringApplicationAdminMXBeanRegistrar.this.applicationContext.close();
 		}
 
+		@override
+		public boolean isOnline(){
+			return true;
+		}
+
 	}
 
 }

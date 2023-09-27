@@ -55,4 +55,6 @@ public interface SpringApplicationAdminMXBean {
 	 */
 	void shutdown();
 
+	boolean isOnline();
+
 }
