@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Addre
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Configures {@link RabbitConnectionFactoryBean} with sensible defaults.
@@ -135,7 +136,8 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);
 		map.from(this.rabbitProperties.getMaxInboundMessageBodySize())
 			.whenNonNull()
-			.to((mimbs) -> factory.setMaxInboundMessageBodySize(Math.toIntExact(mimbs.toBytes())));
+			.asInt(DataSize::toBytes)
+			.to(factory::setMaxInboundMessageBodySize);
 	}
 
 }

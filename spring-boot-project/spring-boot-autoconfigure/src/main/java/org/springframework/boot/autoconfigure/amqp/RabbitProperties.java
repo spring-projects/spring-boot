@@ -132,9 +132,9 @@ public class RabbitProperties {
 	private Duration channelRpcTimeout = Duration.ofMinutes(10);
 
 	/**
-	 * Maximum body size of inbound (received) messages in bytes.
+	 * Maximum size of the body of inbound (received) messages.
 	 */
-	private DataSize maxInboundMessageBodySize;
+	private DataSize maxInboundMessageBodySize = DataSize.ofMegabytes(64);
 
 	/**
 	 * Cache configuration.

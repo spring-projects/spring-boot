@@ -150,9 +150,8 @@ class RabbitAutoConfigurationTests {
 			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 			assertThat(rabbitConnectionFactory.getUsername()).isEqualTo(properties.getUsername());
 			assertThat(rabbitConnectionFactory.getPassword()).isEqualTo(properties.getPassword());
-			com.rabbitmq.client.ConnectionFactory defaultCf = new com.rabbitmq.client.ConnectionFactory();
-			assertThat(rabbitConnectionFactory).hasFieldOrPropertyWithValue("maxInboundMessageBodySize",
-					ReflectionTestUtils.getField(defaultCf, "maxInboundMessageBodySize"));
+			assertThat(rabbitConnectionFactory).extracting("maxInboundMessageBodySize")
+				.isEqualTo((int) properties.getMaxInboundMessageBodySize().toBytes());
 		});
 	}
 
