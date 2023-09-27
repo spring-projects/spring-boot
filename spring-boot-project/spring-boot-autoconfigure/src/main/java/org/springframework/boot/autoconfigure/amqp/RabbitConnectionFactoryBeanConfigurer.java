@@ -135,7 +135,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);
 		map.from(this.rabbitProperties.getMaxInboundMessageBodySize())
 			.whenNonNull()
-			.to(mimbs -> factory.setMaxInboundMessageBodySize(Math.toIntExact(mimbs.toBytes())));
+			.to((mimbs) -> factory.setMaxInboundMessageBodySize(Math.toIntExact(mimbs.toBytes())));
 	}
 
 }
