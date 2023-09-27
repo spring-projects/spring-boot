@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.transaction.TransactionManagerCust
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.neo4j.aot.Neo4jManagedTypes;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jOperations;
@@ -71,12 +72,17 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Neo4jMappingContext neo4jMappingContext(ApplicationContext applicationContext,
-			Neo4jConversions neo4jConversions) throws ClassNotFoundException {
+	Neo4jManagedTypes neo4jManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
 		Set<Class<?>> initialEntityClasses = new EntityScanner(applicationContext).scan(Node.class,
 				RelationshipProperties.class);
+		return Neo4jManagedTypes.fromIterable(initialEntityClasses);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Neo4jMappingContext neo4jMappingContext(Neo4jManagedTypes managedTypes, Neo4jConversions neo4jConversions) {
 		Neo4jMappingContext context = new Neo4jMappingContext(neo4jConversions);
-		context.setInitialEntitySet(initialEntityClasses);
+		context.setManagedTypes(managedTypes);
 		return context;
 	}
 
