@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.jms")
@@ -267,6 +268,8 @@ public class JmsProperties {
 		 */
 		private Duration receiveTimeout;
 
+		private final Session session = new Session();
+
 		public String getDefaultDestination() {
 			return this.defaultDestination;
 		}
@@ -328,6 +331,40 @@ public class JmsProperties {
 
 		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Session getSession() {
+			return this.session;
+		}
+
+		public static class Session {
+
+			/**
+			 * Acknowledge mode used when creating sessions.
+			 */
+			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
+
+			/**
+			 * Whether to use transacted sessions.
+			 */
+			private boolean transacted = false;
+
+			public AcknowledgeMode getAcknowledgeMode() {
+				return this.acknowledgeMode;
+			}
+
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+				this.acknowledgeMode = acknowledgeMode;
+			}
+
+			public boolean isTransacted() {
+				return this.transacted;
+			}
+
+			public void setTransacted(boolean transacted) {
+				this.transacted = transacted;
+			}
+
 		}
 
 	}
