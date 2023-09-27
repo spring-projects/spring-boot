@@ -229,16 +229,6 @@ public class JmsProperties {
 	public static class Template {
 
 		/**
-		 * Acknowledgement mode used when creating JMS sessions to send a message.
-		 */
-		private AcknowledgeMode acknowledgeMode;
-
-		/**
-		 * Whether to use transacted JMS sessions.
-		 */
-		private Boolean sessionTransacted;
-
-		/**
 		 * Default destination to use on send and receive operations that do not have a
 		 * destination parameter.
 		 */
@@ -278,21 +268,7 @@ public class JmsProperties {
 		 */
 		private Duration receiveTimeout;
 
-		public AcknowledgeMode getAcknowledgeMode() {
-			return this.acknowledgeMode;
-		}
-
-		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
-			this.acknowledgeMode = acknowledgeMode;
-		}
-
-		public Boolean getSessionTransacted() {
-			return this.sessionTransacted;
-		}
-
-		public void setSessionTransacted(Boolean sessionTransacted) {
-			this.sessionTransacted = sessionTransacted;
-		}
+		private final Session session = new Session();
 
 		public String getDefaultDestination() {
 			return this.defaultDestination;
@@ -355,6 +331,40 @@ public class JmsProperties {
 
 		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Session getSession() {
+			return this.session;
+		}
+
+		public static class Session {
+
+			/**
+			 * Acknowledge mode used when creating sessions.
+			 */
+			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
+
+			/**
+			 * Whether to use transacted sessions.
+			 */
+			private boolean transacted = false;
+
+			public AcknowledgeMode getAcknowledgeMode() {
+				return this.acknowledgeMode;
+			}
+
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+				this.acknowledgeMode = acknowledgeMode;
+			}
+
+			public boolean isTransacted() {
+				return this.transacted;
+			}
+
+			public void setTransacted(boolean transacted) {
+				this.transacted = transacted;
+			}
+
 		}
 
 	}

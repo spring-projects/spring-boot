@@ -253,8 +253,8 @@ class JmsAutoConfigurationTests {
 	@Test
 	void testJmsTemplateFullCustomization() {
 		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
-			.withPropertyValues("spring.jms.template.acknowledge-mode=client",
-					"spring.jms.template.session-transacted=true", "spring.jms.template.default-destination=testQueue",
+			.withPropertyValues("spring.jms.template.session.acknowledge-mode=client",
+					"spring.jms.template.session.transacted=true", "spring.jms.template.default-destination=testQueue",
 					"spring.jms.template.delivery-delay=500", "spring.jms.template.delivery-mode=non-persistent",
 					"spring.jms.template.priority=6", "spring.jms.template.time-to-live=6000",
 					"spring.jms.template.receive-timeout=2000")
