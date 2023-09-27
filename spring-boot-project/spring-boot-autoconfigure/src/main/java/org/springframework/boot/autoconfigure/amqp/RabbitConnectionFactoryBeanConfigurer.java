@@ -133,6 +133,9 @@ public class RabbitConnectionFactoryBeanConfigurer {
 			.to(factory::setChannelRpcTimeout);
 		map.from(this.credentialsProvider).whenNonNull().to(factory::setCredentialsProvider);
 		map.from(this.credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);
+		map.from(this.rabbitProperties.getMaxInboundMessageBodySize())
+			.whenNonNull()
+			.to((mimbs) -> factory.setMaxInboundMessageBodySize(Math.toIntExact(mimbs.toBytes())));
 	}
 
 }
