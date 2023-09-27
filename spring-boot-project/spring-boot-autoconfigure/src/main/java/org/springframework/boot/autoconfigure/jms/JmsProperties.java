@@ -171,12 +171,12 @@ public class JmsProperties {
 
 		@Deprecated(since = "3.2.0", forRemoval = true)
 		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.session.acknowledge-mode", since = "3.2.0")
-		public String getAcknowledgeMode() {
+		public AcknowledgeMode getAcknowledgeMode() {
 			return this.session.getAcknowledgeMode();
 		}
 
 		@Deprecated(since = "3.2.0", forRemoval = true)
-		public void setAcknowledgeMode(String acknowledgeMode) {
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 			this.session.setAcknowledgeMode(acknowledgeMode);
 		}
 
@@ -232,7 +232,7 @@ public class JmsProperties {
 			/**
 			 * Acknowledge mode of the listener container.
 			 */
-			private String acknowledgeMode = "auto";
+			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
 
 			/**
 			 * Whether the listener container should use transacted JMS sessions. Defaults
@@ -240,11 +240,11 @@ public class JmsProperties {
 			 */
 			private Boolean transacted;
 
-			public String getAcknowledgeMode() {
+			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
-			public void setAcknowledgeMode(String acknowledgeMode) {
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 
@@ -376,18 +376,18 @@ public class JmsProperties {
 			/**
 			 * Acknowledge mode used when creating sessions.
 			 */
-			private String acknowledgeMode = "auto";
+			private AcknowledgeMode acknowledgeMode = AcknowledgeMode.AUTO;
 
 			/**
 			 * Whether to use transacted sessions.
 			 */
 			private boolean transacted = false;
 
-			public String getAcknowledgeMode() {
+			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
-			public void setAcknowledgeMode(String acknowledgeMode) {
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 

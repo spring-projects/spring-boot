@@ -24,14 +24,18 @@ import jakarta.jms.Session;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -158,6 +162,16 @@ class JmsAutoConfigurationTests {
 		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
 		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
 		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
+	}
+
+	@Test
+	void testJmsListenerContainerFactoryWithNonStandardAcknowledgeMode() {
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+			.withPropertyValues("spring.jms.listener.session.acknowledge-mode=9")
+			.run((context) -> {
+				DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
+				assertThat(container.getSessionAcknowledgeMode()).isEqualTo(9);
+			});
 	}
 
 	@Test
@@ -301,6 +315,16 @@ class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	void testJmsTemplateWithNonStandardAcknowledgeMode() {
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+			.withPropertyValues("spring.jms.template.session.acknowledge-mode=7")
+			.run((context) -> {
+				JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+				assertThat(jmsTemplate.getSessionAcknowledgeMode()).isEqualTo(7);
+			});
+	}
+
+	@Test
 	void testJmsMessagingTemplateUseConfiguredDefaultDestination() {
 		this.contextRunner.withPropertyValues("spring.jms.template.default-destination=testQueue").run((context) -> {
 			JmsMessagingTemplate messagingTemplate = context.getBean(JmsMessagingTemplate.class);
@@ -365,6 +389,17 @@ class JmsAutoConfigurationTests {
 			.run((context) -> assertThat(context)
 				.hasBean(JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 				.hasBean(JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME));
+	}
+
+	@Test
+	void runtimeHintsAreRegisteredForBindingOfAcknowledgeMode() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class);
+			TestGenerationContext generationContext = new TestGenerationContext();
+			new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
+			assertThat(RuntimeHintsPredicates.reflection().onMethod(AcknowledgeMode.class, "of").invoke())
+				.accepts(generationContext.getRuntimeHints());
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
