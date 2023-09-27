@@ -1589,6 +1589,10 @@
       }
     },
     {
+      "name": "spring.jmx.registration-policy",
+      "defaultValue": "fail-on-existing"
+    },
+    {
       "name": "spring.jpa.open-in-view",
       "defaultValue": true
     },
@@ -3002,10 +3006,6 @@
           "name": "any"
         }
       ]
-    },
-    {
-      "name": "spring.jmx.registration-policy",
-      "defaultValue": "fail-on-existing"
     },
     {
       "name": "spring.jmx.server",
