@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import com.rabbitmq.client.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
@@ -311,6 +312,13 @@ class RabbitPropertiesTests {
 	void determineSslReturnFlagPropertyWhenNoAddresses() {
 		this.properties.getSsl().setEnabled(true);
 		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
+	}
+
+	@Test
+	void propertiesUseConsistentDefaultValues() {
+		ConnectionFactory connectionFactory = new ConnectionFactory();
+		assertThat(connectionFactory).hasFieldOrPropertyWithValue("maxInboundMessageBodySize",
+				(int) this.properties.getMaxInboundMessageBodySize().toBytes());
 	}
 
 	@Test
