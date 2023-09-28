@@ -8,13 +8,13 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 
 
 [[messaging.jms.activemq]]
-=== ActiveMQ Support
-When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
+=== ActiveMQ "Classic" Support
+When https://activemq.apache.org/components/classic[ActiveMQ "Classic"] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
 
-NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ instance are provided, as is the Spring infrastructure to integrate with JMS.
+NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ "Classic" instance are provided, as is the Spring infrastructure to integrate with JMS.
 
-ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
-By default, ActiveMQ is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport], connecting by default to `tcp://localhost:61616`. The following example shows how to change the default broker URL:
+ActiveMQ "Classic" configuration is controlled by external configuration properties in `+spring.activemq.*+`.
+By default, ActiveMQ "Classic" is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport], connecting by default to `tcp://localhost:61616`. The following example shows how to change the default broker URL:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
@@ -49,7 +49,7 @@ If you'd rather use native pooling, you can do so by adding a dependency to `org
 TIP: See {spring-boot-autoconfigure-module-code}/jms/activemq/ActiveMQProperties.java[`ActiveMQProperties`] for more of the supported options.
 You can also register an arbitrary number of beans that implement `ActiveMQConnectionFactoryCustomizer` for more advanced customizations.
 
-By default, ActiveMQ creates a destination if it does not yet exist so that destinations are resolved against their provided names.
+By default, ActiveMQ "Classic" creates a destination if it does not yet exist so that destinations are resolved against their provided names.
 
 
 
@@ -102,7 +102,7 @@ If you'd rather use native pooling, you can do so by adding a dependency on `org
 
 See {spring-boot-autoconfigure-module-code}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
 
-No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the Artemis configuration or the names provided through configuration.
+No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the ActiveMQ Artemis configuration or the names provided through configuration.
 
 
 
