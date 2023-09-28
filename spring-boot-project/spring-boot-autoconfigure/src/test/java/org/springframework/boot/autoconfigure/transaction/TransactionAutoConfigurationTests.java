@@ -128,18 +128,6 @@ class TransactionAutoConfigurationTests {
 	}
 
 	@Test
-	void platformTransactionManagerCustomizers() {
-		this.contextRunner.withUserConfiguration(SeveralPlatformTransactionManagersConfiguration.class)
-			.run((context) -> {
-				TransactionManagerCustomizers customizers = context.getBean(TransactionManagerCustomizers.class);
-				assertThat(customizers).extracting("customizers")
-					.asList()
-					.singleElement()
-					.isInstanceOf(TransactionProperties.class);
-			});
-	}
-
-	@Test
 	void transactionNotManagedWithNoTransactionManager() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.run((context) -> assertThat(context.getBean(TransactionalService.class).isTransactionActive()).isFalse());

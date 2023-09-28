@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfigura
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -36,7 +37,8 @@ import org.springframework.context.annotation.Import;
  * @since 1.2.0
  */
 @AutoConfiguration(before = { XADataSourceAutoConfiguration.class, ActiveMQAutoConfiguration.class,
-		ArtemisAutoConfiguration.class, HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
+		ArtemisAutoConfiguration.class, HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class,
+		TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass(jakarta.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @Import(JndiJtaConfiguration.class)

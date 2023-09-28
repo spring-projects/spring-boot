@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
@@ -44,6 +45,7 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(TransactionAutoConfiguration.class,
+				TransactionManagerCustomizationAutoConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class))
 		.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:test-" + UUID.randomUUID());
 

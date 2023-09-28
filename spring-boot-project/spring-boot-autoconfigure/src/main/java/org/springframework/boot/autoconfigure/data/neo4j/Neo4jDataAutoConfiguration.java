@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -58,7 +59,8 @@ import org.springframework.transaction.TransactionManager;
  * @author Michael J. Simons
  * @since 1.4.0
  */
-@AutoConfiguration(before = TransactionAutoConfiguration.class, after = Neo4jAutoConfiguration.class)
+@AutoConfiguration(before = TransactionAutoConfiguration.class,
+		after = { Neo4jAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass({ Driver.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
 @EnableConfigurationProperties(Neo4jDataProperties.class)
 @ConditionalOnBean(Driver.class)

@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -82,7 +83,8 @@ abstract class AbstractJpaAutoConfigurationTests {
 					"spring.jta.log-dir=" + new File(new BuildOutput(getClass()).getRootLocation(), "transaction-logs"))
 			.withUserConfiguration(TestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					TransactionAutoConfiguration.class, SqlInitializationAutoConfiguration.class, autoConfiguredClass));
+					TransactionAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class,
+					SqlInitializationAutoConfiguration.class, autoConfiguredClass));
 	}
 
 	protected ApplicationContextRunner contextRunner() {

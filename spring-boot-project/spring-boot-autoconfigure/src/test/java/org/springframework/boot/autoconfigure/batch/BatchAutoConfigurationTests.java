@@ -61,6 +61,7 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportL
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.logging.LogLevel;
@@ -100,9 +101,9 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class, TransactionAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(BatchAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class,
+					TransactionAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class));
 
 	@Test
 	void testDefaultContext() {
