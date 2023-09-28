@@ -282,6 +282,13 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determineAddressesUsesIpv6HostAndPortPropertiesWhenNoAddressesSet() {
+		this.properties.setHost("[::1]");
+		this.properties.setPort(32863);
+		assertThat(this.properties.determineAddresses()).isEqualTo("[::1]:32863");
+	}
+
+	@Test
 	void determineSslUsingAmqpsReturnsStateOfFirstAddress() {
 		this.properties.setAddresses("amqps://root:password@otherhost,amqp://root:password2@otherhost2");
 		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
