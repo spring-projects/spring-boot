@@ -152,10 +152,10 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void oracleUcpValidatesConnectionByDefault() {
+	void oracleUcpDoesNotValidateConnectionByDefault() {
 		assertDataSource(PoolDataSourceImpl.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"), (dataSource) -> {
-					assertThat(dataSource.getValidateConnectionOnBorrow()).isTrue();
+					assertThat(dataSource.getValidateConnectionOnBorrow()).isFalse();
 					// Use an internal ping when using an Oracle JDBC driver
 					assertThat(dataSource.getSQLForValidateConnection()).isNull();
 				});
