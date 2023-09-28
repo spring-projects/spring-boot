@@ -119,7 +119,7 @@ public final class DockerImageNames {
 
 	/**
 	 * Return a {@link DockerImageName} suitable for running MariaDB.
-	 * @return a docker image name for running Mariadb
+	 * @return a docker image name for running MariaDB
 	 */
 	public static DockerImageName mariadb() {
 		return DockerImageName.parse("mariadb").withTag(MARIADB_VERSION);
