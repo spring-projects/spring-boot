@@ -22,7 +22,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.ClassUtils;
 
 /**
- * Delegate class used to launch the fat jar in a specific mode.
+ * Delegate class used to launch the uber jar in a specific mode.
  *
  * @author Phillip Webb
  * @since 2.3.0

@@ -1,6 +1,6 @@
 [[container-images.dockerfiles]]
 == Dockerfiles
-While it is possible to convert a Spring Boot fat jar into a docker image with just a few lines in the Dockerfile, we will use the <<container-images#container-images.efficient-images.layering,layering feature>> to create an optimized docker image.
+While it is possible to convert a Spring Boot uber jar into a docker image with just a few lines in the Dockerfile, we will use the <<container-images#container-images.efficient-images.layering,layering feature>> to create an optimized docker image.
 When you create a jar containing the layers index file, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 

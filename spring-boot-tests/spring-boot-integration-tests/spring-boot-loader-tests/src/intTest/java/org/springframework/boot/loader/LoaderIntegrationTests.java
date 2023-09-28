@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests loader that supports fat jars.
+ * Integration tests loader that supports uber jars.
  *
  * @author Phillip Webb
  * @author Moritz Halbritter

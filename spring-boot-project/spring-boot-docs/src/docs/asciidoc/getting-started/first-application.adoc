@@ -380,7 +380,7 @@ To gracefully exit the application, press `ctrl-c`.
 [[getting-started.first-application.executable-jar]]
 === Creating an Executable Jar
 We finish our example by creating a completely self-contained executable jar file that we could run in production.
-Executable jars (sometimes called "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.
+Executable jars (sometimes called "`uber jars`" or "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.
 
 .Executable jars and Java
 ****

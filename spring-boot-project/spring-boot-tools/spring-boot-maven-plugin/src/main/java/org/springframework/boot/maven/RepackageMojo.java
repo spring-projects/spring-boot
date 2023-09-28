@@ -106,7 +106,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private boolean attach = true;
 
 	/**
-	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * A list of the libraries that must be unpacked from uber jars in order to run.
 	 * Specify each library as a {@code <dependency>} with a {@code <groupId>} and a
 	 * {@code <artifactId>} and they will be unpacked at runtime.
 	 * @since 1.1.0

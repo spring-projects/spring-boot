@@ -68,9 +68,9 @@ import org.springframework.util.ReflectionUtils;
  * {@link #initialize(String[])} directly if your SpringApplication arguments are not
  * identical to your main method arguments.
  * <p>
- * By default, applications running in an IDE (i.e. those not packaged as "fat jars") will
- * automatically detect URLs that can change. It's also possible to manually configure
- * URLs or class file updates for remote restart scenarios.
+ * By default, applications running in an IDE (i.e. those not packaged as "uber jars")
+ * will automatically detect URLs that can change. It's also possible to manually
+ * configure URLs or class file updates for remote restart scenarios.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

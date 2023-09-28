@@ -85,7 +85,7 @@ public class ArtifactsLibraries implements Libraries {
 	/**
 	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
 	 * @param artifacts all artifacts that can be represented as libraries
-	 * @param includedArtifacts the actual artifacts to include in the fat jar
+	 * @param includedArtifacts the actual artifacts to include in the uber jar
 	 * @param localProjects projects for which {@link Library#isLocal() local} libraries
 	 * should be created
 	 * @param unpacks artifacts that should be unpacked on launch

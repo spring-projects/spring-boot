@@ -272,7 +272,7 @@ When building with Maven, it is recommended to add the following dependency in a
 	</dependency>
 ----
 
-If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the fat jar:
+If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the uber jar:
 
 [source,xml,indent=0,subs="verbatim"]
 ----

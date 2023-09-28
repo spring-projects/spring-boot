@@ -64,7 +64,7 @@ When specified as environment variables or manifest entries, the following names
 | `LOADER_SYSTEM`
 |===
 
-TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when the fat jar is built.
+TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when the uber jar is built.
 If you use that, specify the name of the class to launch by using the `Main-Class` attribute and leaving out `Start-Class`.
 
 The following rules apply to working with `PropertiesLauncher`:

@@ -1,8 +1,8 @@
 [[container-images.efficient-images]]
 == Efficient Container Images
-It is easily possible to package a Spring Boot fat jar as a docker image.
-However, there are various downsides to copying and running the fat jar as is in the docker image.
-There’s always a certain amount of overhead when running a fat jar without unpacking it, and in a containerized environment this can be noticeable.
+It is easily possible to package a Spring Boot uber jar as a docker image.
+However, there are various downsides to copying and running the uber jar as is in the docker image.
+There’s always a certain amount of overhead when running a uber jar without unpacking it, and in a containerized environment this can be noticeable.
 The other issue is that putting your application's code and all its dependencies in one layer in the Docker image is sub-optimal.
 Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more.
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.

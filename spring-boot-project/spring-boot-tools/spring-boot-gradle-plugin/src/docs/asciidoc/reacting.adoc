@@ -9,7 +9,7 @@ This section describes those changes.
 == Reacting to the Java Plugin
 When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
 
-1. Creates a {boot-jar-javadoc}[`BootJar`] task named `bootJar` that will create an executable, fat jar for the project.
+1. Creates a {boot-jar-javadoc}[`BootJar`] task named `bootJar` that will create an executable, uber jar for the project.
    The jar will contain everything on the runtime classpath of the main source set; classes are packaged in `BOOT-INF/classes` and jars are packaged in `BOOT-INF/lib`
 2. Configures the `assemble` task to depend on the `bootJar` task.
 3. Configures the `jar` task to use `plain` as the convention for its archive classifier.
