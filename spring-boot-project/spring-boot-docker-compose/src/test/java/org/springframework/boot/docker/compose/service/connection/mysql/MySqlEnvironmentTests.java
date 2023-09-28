@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class MySqlEnvironmentTests {
 
 	@Test
-	void createWhenHasMySqlRandomRootPasswordThrowsException() {
+	void createWhenHasMysqlRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MySqlEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true")))
 			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported");
@@ -54,40 +54,40 @@ class MySqlEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasMySqlUser() {
+	void getUsernameWhenHasMysqlUser() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_USER", "myself", "MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasNoMySqlUser() {
+	void getUsernameWhenHasNoMysqlUser() {
 		MySqlEnvironment environment = new MySqlEnvironment(Map.of("MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("root");
 	}
 
 	@Test
-	void getPasswordWhenHasMySqlPassword() {
+	void getPasswordWhenHasMysqlPassword() {
 		MySqlEnvironment environment = new MySqlEnvironment(Map.of("MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasMySqlRootPassword() {
+	void getPasswordWhenHasMysqlRootPassword() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_ROOT_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getPasswordWhenHasNoPasswordAndMySqlAllowEmptyPassword() {
+	void getPasswordWhenHasNoPasswordAndMysqlAllowEmptyPassword() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_ALLOW_EMPTY_PASSWORD", "true", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test
-	void getDatabaseWhenHasMySqlDatabase() {
+	void getDatabaseWhenHasMysqlDatabase() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_ALLOW_EMPTY_PASSWORD", "true", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
