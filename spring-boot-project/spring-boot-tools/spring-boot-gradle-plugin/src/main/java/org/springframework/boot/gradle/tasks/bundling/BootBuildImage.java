@@ -228,6 +228,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	/**
 	 * Returns the build temporary workspace that will be used when building the image.
 	 * @return the cache
+	 * @since 3.2.0
 	 */
 	@Nested
 	@Optional
@@ -239,6 +240,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	 * Customizes the {@link CacheSpec} for the build temporary workspace using the given
 	 * {@code action}.
 	 * @param action the action
+	 * @since 3.2.0
 	 */
 	public void buildWorkspace(Action<CacheSpec> action) {
 		action.execute(this.buildWorkspace);

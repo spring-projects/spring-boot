@@ -349,6 +349,7 @@ public class BuildRequest {
 	 * Return a new {@link BuildRequest} with an updated build workspace.
 	 * @param buildWorkspace the build workspace
 	 * @return an updated build request
+	 * @since 3.2.0
 	 */
 	public BuildRequest withBuildWorkspace(Cache buildWorkspace) {
 		Assert.notNull(buildWorkspace, "BuildWorkspace must not be null");
@@ -426,6 +427,7 @@ public class BuildRequest {
 	 * Return a new {@link BuildRequest} with an updated security options.
 	 * @param securityOptions the security options
 	 * @return an updated build request
+	 * @since 3.2.0
 	 */
 	public BuildRequest withSecurityOptions(List<String> securityOptions) {
 		Assert.notNull(securityOptions, "SecurityOption must not be null");
@@ -552,6 +554,11 @@ public class BuildRequest {
 		return this.tags;
 	}
 
+	/**
+	 * Return the build workspace that should be used by the lifecycle.
+	 * @return the build workspace or {@code null}
+	 * @since 3.2.0
+	 */
 	public Cache getBuildWorkspace() {
 		return this.buildWorkspace;
 	}
@@ -590,7 +597,8 @@ public class BuildRequest {
 
 	/**
 	 * Return the security options that should be used by the lifecycle.
-	 * @return the security options
+	 * @return the security options or {@code null}
+	 * @since 3.2.0
 	 */
 	public List<String> getSecurityOptions() {
 		return this.securityOptions;

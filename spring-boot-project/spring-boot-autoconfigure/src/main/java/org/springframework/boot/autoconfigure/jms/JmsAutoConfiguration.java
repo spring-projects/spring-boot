@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.jms.JmsProperties.AcknowledgeMode;
 import org.springframework.boot.autoconfigure.jms.JmsProperties.DeliveryMode;
 import org.springframework.boot.autoconfigure.jms.JmsProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -88,23 +89,18 @@ public class JmsAutoConfiguration {
 		}
 
 		private void mapTemplateProperties(Template properties, JmsTemplate template) {
-			PropertyMapper map = PropertyMapper.get();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getSession()::getAcknowledgeMode)
-				.to((acknowledgeMode) -> template.setSessionAcknowledgeMode(acknowledgeMode.getMode()));
+				.asInt(AcknowledgeMode::getMode)
+				.to(template::setSessionAcknowledgeMode);
 			map.from(properties.getSession()::isTransacted).to(template::setSessionTransacted);
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
 			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
-			map.from(properties::getDeliveryMode)
-				.whenNonNull()
-				.as(DeliveryMode::getValue)
-				.to(template::setDeliveryMode);
+			map.from(properties::getDeliveryMode).as(DeliveryMode::getValue).to(template::setDeliveryMode);
 			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
 			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
-			map.from(properties::getReceiveTimeout)
-				.whenNonNull()
-				.as(Duration::toMillis)
-				.to(template::setReceiveTimeout);
+			map.from(properties::getReceiveTimeout).as(Duration::toMillis).to(template::setReceiveTimeout);
 		}
 
 	}

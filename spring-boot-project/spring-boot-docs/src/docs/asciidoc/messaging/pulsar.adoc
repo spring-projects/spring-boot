@@ -52,6 +52,8 @@ For example, if you want to configure the issuer url for the `AuthenticationOAut
 If you use other forms, such as `issuerurl` or `issuer-url`, the setting will not be applied to the plugin.
 ====
 
+
+
 [[messaging.pulsar.connecting.ssl]]
 ==== SSL
 By default, Pulsar clients communicate with Pulsar services in plain text.

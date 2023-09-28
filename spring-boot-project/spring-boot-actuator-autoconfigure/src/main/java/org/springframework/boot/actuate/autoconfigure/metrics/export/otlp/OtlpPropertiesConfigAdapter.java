@@ -75,16 +75,15 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	@Override
 	@SuppressWarnings("removal")
 	public Map<String, String> resourceAttributes() {
-		Map<String, String> result;
-		if (!CollectionUtils.isEmpty(this.openTelemetryProperties.getResourceAttributes())) {
-			result = new HashMap<>(this.openTelemetryProperties.getResourceAttributes());
-		}
-		else {
-			result = new HashMap<>(get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
-		}
-		result.computeIfAbsent("service.name",
-				(ignore) -> this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME));
+		Map<String, String> resourceAttributes = this.openTelemetryProperties.getResourceAttributes();
+		Map<String, String> result = new HashMap<>((!CollectionUtils.isEmpty(resourceAttributes)) ? resourceAttributes
+				: get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
+		result.computeIfAbsent("service.name", (key) -> getApplicationName());
 		return Collections.unmodifiableMap(result);
+	}
+
+	private String getApplicationName() {
+		return this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 	}
 
 	@Override

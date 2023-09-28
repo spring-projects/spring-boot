@@ -22,6 +22,7 @@ import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 
 import org.springframework.boot.autoconfigure.jms.JmsProperties.Listener.Session;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
@@ -103,37 +104,21 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
-		JmsProperties.Listener listener = this.jmsProperties.getListener();
-		Session session = listener.getSession();
-		Boolean sessionTransacted = session.getTransacted();
-		if (this.transactionManager != null) {
-			factory.setTransactionManager(this.transactionManager);
-		}
-		else if (sessionTransacted == null) {
+		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
+		Session sessionProperties = listenerProperties.getSession();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this.transactionManager).to(factory::setTransactionManager);
+		map.from(this.destinationResolver).to(factory::setDestinationResolver);
+		map.from(this.messageConverter).to(factory::setMessageConverter);
+		map.from(this.exceptionListener).to(factory::setExceptionListener);
+		map.from(sessionProperties.getAcknowledgeMode()::getMode).to(factory::setSessionAcknowledgeMode);
+		if (this.transactionManager == null && sessionProperties.getTransacted() == null) {
 			factory.setSessionTransacted(true);
 		}
-		if (sessionTransacted != null) {
-			factory.setSessionTransacted(sessionTransacted);
-		}
-		if (this.destinationResolver != null) {
-			factory.setDestinationResolver(this.destinationResolver);
-		}
-		if (this.messageConverter != null) {
-			factory.setMessageConverter(this.messageConverter);
-		}
-		if (this.exceptionListener != null) {
-			factory.setExceptionListener(this.exceptionListener);
-		}
-		factory.setAutoStartup(listener.isAutoStartup());
-		factory.setSessionAcknowledgeMode(session.getAcknowledgeMode().getMode());
-		String concurrency = listener.formatConcurrency();
-		if (concurrency != null) {
-			factory.setConcurrency(concurrency);
-		}
-		Duration receiveTimeout = listener.getReceiveTimeout();
-		if (receiveTimeout != null) {
-			factory.setReceiveTimeout(receiveTimeout.toMillis());
-		}
+		map.from(sessionProperties::getTransacted).to(factory::setSessionTransacted);
+		map.from(listenerProperties::isAutoStartup).to(factory::setAutoStartup);
+		map.from(listenerProperties::formatConcurrency).to(factory::setConcurrency);
+		map.from(listenerProperties::getReceiveTimeout).as(Duration::toMillis).to(factory::setReceiveTimeout);
 	}
 
 }

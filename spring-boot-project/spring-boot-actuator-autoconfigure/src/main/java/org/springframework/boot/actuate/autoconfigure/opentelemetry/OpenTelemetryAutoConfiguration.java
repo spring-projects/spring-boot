@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
-import java.util.Map.Entry;
-
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -80,9 +78,7 @@ public class OpenTelemetryAutoConfiguration {
 
 	private static Resource toResource(OpenTelemetryProperties properties) {
 		ResourceBuilder builder = Resource.builder();
-		for (Entry<String, String> entry : properties.getResourceAttributes().entrySet()) {
-			builder.put(entry.getKey(), entry.getValue());
-		}
+		properties.getResourceAttributes().forEach(builder::put);
 		return builder.build();
 	}
 
