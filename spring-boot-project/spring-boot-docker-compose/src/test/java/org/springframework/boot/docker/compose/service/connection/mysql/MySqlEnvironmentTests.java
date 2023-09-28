@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jinseong Hwang
  */
 class MySqlEnvironmentTests {
 
@@ -53,14 +54,14 @@ class MySqlEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasMySqlUser() {
+	void getUsernameWhenHasMysqlUser() {
 		MySqlEnvironment environment = new MySqlEnvironment(
 				Map.of("MYSQL_USER", "myself", "MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasNoMySqlUser() {
+	void getUsernameWhenHasNoMysqlUser() {
 		MySqlEnvironment environment = new MySqlEnvironment(Map.of("MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("root");
 	}

@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jinseong Hwang
  */
 class MariaDbEnvironmentTests {
 
@@ -74,21 +75,21 @@ class MariaDbEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasMySqlUser() {
+	void getUsernameWhenHasMysqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MYSQL_USER", "myself", "MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasMariadbUserAndMySqlUser() {
+	void getUsernameWhenHasMariadbUserAndMysqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_USER", "myself", "MYSQL_USER", "me",
 				"MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasNoMariadbUserOrMySqlUser() {
+	void getUsernameWhenHasNoMariadbUserOrMysqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("root");
