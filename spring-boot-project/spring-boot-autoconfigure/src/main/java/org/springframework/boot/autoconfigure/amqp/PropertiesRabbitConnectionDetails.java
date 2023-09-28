@@ -53,9 +53,9 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	public List<Address> getAddresses() {
 		List<Address> addresses = new ArrayList<>();
 		for (String address : this.properties.determineAddresses().split(",")) {
-			int portSeparatorPosition = address.lastIndexOf(':');
-			String host = address.substring(0, portSeparatorPosition);
-			String port = address.substring(portSeparatorPosition + 1);
+			int portSeparatorIndex = address.lastIndexOf(':');
+			String host = address.substring(0, portSeparatorIndex);
+			String port = address.substring(portSeparatorIndex + 1);
 			addresses.add(new Address(host, Integer.parseInt(port)));
 		}
 		return addresses;

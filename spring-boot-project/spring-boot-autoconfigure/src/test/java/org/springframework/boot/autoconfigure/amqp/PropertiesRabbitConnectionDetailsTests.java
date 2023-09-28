@@ -23,20 +23,32 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
-class PropertiesRabbitConnectionDetailsTest {
+/**
+ * Tests for {@link PropertiesRabbitConnectionDetails}.
+ *
+ * @author Jonas Fügedi
+ */
+class PropertiesRabbitConnectionDetailsTests {
+
+	private static final int DEFAULT_PORT = 5672;
 
 	@Test
 	void getAddresses() {
 		RabbitProperties properties = new RabbitProperties();
-		properties.setAddresses("localhost:1234,[::1]:32863");
-		PropertiesRabbitConnectionDetails propertiesRabbitConnectionDetails = new PropertiesRabbitConnectionDetails(properties);
+		properties.setAddresses("localhost,localhost:1234,[::1],[::1]:32863");
+		PropertiesRabbitConnectionDetails propertiesRabbitConnectionDetails = new PropertiesRabbitConnectionDetails(
+				properties);
 		List<Address> addresses = propertiesRabbitConnectionDetails.getAddresses();
-		assertThat(addresses.size()).isEqualTo(2);
+		assertThat(addresses.size()).isEqualTo(4);
 		assertThat(addresses.get(0).host()).isEqualTo("localhost");
-		assertThat(addresses.get(1).host()).isEqualTo("[::1]");
-		assertThat(addresses.get(0).port()).isEqualTo(1234);
-		assertThat(addresses.get(1).port()).isEqualTo(32863);
+		assertThat(addresses.get(0).port()).isEqualTo(DEFAULT_PORT);
+		assertThat(addresses.get(1).host()).isEqualTo("localhost");
+		assertThat(addresses.get(1).port()).isEqualTo(1234);
+		assertThat(addresses.get(2).host()).isEqualTo("[::1]");
+		assertThat(addresses.get(2).port()).isEqualTo(DEFAULT_PORT);
+		assertThat(addresses.get(3).host()).isEqualTo("[::1]");
+		assertThat(addresses.get(3).port()).isEqualTo(32863);
 	}
+
 }
