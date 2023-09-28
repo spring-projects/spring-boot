@@ -12,13 +12,13 @@ apply plugin: "io.spring.dependency-management"
 repositories {
 	maven { url "file:${rootDir}/../test-repository"}
 	mavenCentral()
-	maven { 
+	maven {
 		url "https://repo.spring.io/milestone"
 		content {
 			excludeGroup "org.springframework.boot"
 		}
 	}
-	maven { 
+	maven {
 		url "https://repo.spring.io/snapshot"
 		content {
 			excludeGroup "org.springframework.boot"
@@ -41,7 +41,7 @@ configurations {
 	}
 }
 
-tasks.register("resourcesJar", Jar) { jar -> 
+tasks.register("resourcesJar", Jar) { jar ->
 	def nested = project.resources.text.fromString("nested")
 	from(nested) {
 		into "META-INF/resources/"
@@ -76,7 +76,7 @@ def boolean isWindows() {
 }
 
 ["jetty", "tomcat", "undertow"].each { webServer ->
-	def configurer = { task -> 
+	def configurer = { task ->
 		task.dependsOn resourcesJar
 		task.mainClass = "com.example.ResourceHandlingApplication"
 		task.classpath = configurations.getByName(webServer)
