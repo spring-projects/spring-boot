@@ -275,6 +275,13 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determineAddressesUsesHostAndPortPropertiesWhenNoAddressesSetIpV6() {
+		this.properties.setHost("[::1]");
+		this.properties.setPort(32863);
+		assertThat(this.properties.determineAddresses()).isEqualTo("[::1]:32863");
+	}
+
+	@Test
 	void determineAddressesUsesHostAndPortPropertiesWhenNoAddressesSet() {
 		this.properties.setHost("rabbit.example.com");
 		this.properties.setPort(1234);
