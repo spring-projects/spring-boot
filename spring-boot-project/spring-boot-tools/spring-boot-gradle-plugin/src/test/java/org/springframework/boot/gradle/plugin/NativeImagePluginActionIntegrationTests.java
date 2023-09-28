@@ -106,6 +106,14 @@ class NativeImagePluginActionIntegrationTests {
 	}
 
 	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
+		writeDummySpringApplicationAotProcessorMainClass();
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
+			.build("checkNativeImageClasspath");
+		assertThat(result.getOutput()).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
 	void classesGeneratedDuringAotProcessingAreOnTheNativeImageClasspath() {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
 			.build("checkNativeImageClasspath");

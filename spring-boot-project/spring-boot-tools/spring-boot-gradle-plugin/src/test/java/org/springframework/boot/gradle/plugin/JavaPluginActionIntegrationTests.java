@@ -142,7 +142,52 @@ class JavaPluginActionIntegrationTests {
 
 	@TestTemplate
 	void applyingJavaPluginCreatesDevelopmentOnlyConfiguration() {
-		assertThat(this.gradleBuild.build("build").getOutput()).contains("developmentOnly exists = true");
+		assertThat(this.gradleBuild.build("help").getOutput()).contains("developmentOnly exists = true");
+	}
+
+	@TestTemplate
+	void applyingJavaPluginCreatesTestAndDevelopmentOnlyConfiguration() {
+		assertThat(this.gradleBuild.build("help").getOutput()).contains("testAndDevelopmentOnly exists = true");
+	}
+
+	@TestTemplate
+	void testCompileClasspathIncludesTestAndDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testRuntimeClasspathIncludesTestAndDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testCompileClasspathDoesNotIncludeDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testRuntimeClasspathDoesNotIncludeDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void compileClasspathDoesNotIncludeTestAndDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void runtimeClasspathIncludesTestAndDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void compileClasspathDoesNotIncludeDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void runtimeClasspathIncludesDevelopmentOnlyDependencies() {
+		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
 	}
 
 	@TestTemplate

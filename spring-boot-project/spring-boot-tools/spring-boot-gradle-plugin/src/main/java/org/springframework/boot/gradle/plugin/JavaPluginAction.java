@@ -78,7 +78,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 	public void execute(Project project) {
 		classifyJarTask(project);
 		configureBuildTask(project);
+		configureProductionRuntimeClasspathConfiguration(project);
 		configureDevelopmentOnlyConfiguration(project);
+		configureTestAndDevelopmentOnlyConfiguration(project);
 		TaskProvider<ResolveMainClassName> resolveMainClassName = configureResolveMainClassNameTask(project);
 		TaskProvider<BootJar> bootJar = configureBootJarTask(project, resolveMainClassName);
 		configureBootBuildImageTask(project, bootJar);
@@ -160,12 +162,15 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		Configuration developmentOnly = project.getConfigurations()
 			.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		Configuration testAndDevelopmentOnly = project.getConfigurations()
+			.getByName(SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(mainSourceSet.getRuntimeClasspathConfigurationName());
 		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
 			.minus((developmentOnly.minus(productionRuntimeClasspath)))
+			.minus((testAndDevelopmentOnly.minus(productionRuntimeClasspath)))
 			.filter(new JarTypeFileSpec());
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
 			bootJar.setDescription(
@@ -270,13 +275,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
-	private void configureDevelopmentOnlyConfiguration(Project project) {
-		Configuration developmentOnly = project.getConfigurations()
-			.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
-		developmentOnly
-			.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
-		Configuration runtimeClasspath = project.getConfigurations()
-			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+	private void configureProductionRuntimeClasspathConfiguration(Project project) {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		AttributeContainer attributes = productionRuntimeClasspath.getAttributes();
@@ -286,10 +285,35 @@ final class JavaPluginAction implements PluginApplicationAction {
 		attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
 				objectFactory.named(LibraryElements.class, LibraryElements.JAR));
 		productionRuntimeClasspath.setVisible(false);
+		Configuration runtimeClasspath = project.getConfigurations()
+			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
 		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
 		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
+	}
+
+	private void configureDevelopmentOnlyConfiguration(Project project) {
+		Configuration developmentOnly = project.getConfigurations()
+			.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		developmentOnly
+			.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
+		Configuration runtimeClasspath = project.getConfigurations()
+			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+
 		runtimeClasspath.extendsFrom(developmentOnly);
+	}
+
+	private void configureTestAndDevelopmentOnlyConfiguration(Project project) {
+		Configuration testAndDevelopmentOnly = project.getConfigurations()
+			.create(SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		testAndDevelopmentOnly
+			.setDescription("Configuration for test and development-only dependencies such as Spring Boot's DevTools.");
+		Configuration runtimeClasspath = project.getConfigurations()
+			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		runtimeClasspath.extendsFrom(testAndDevelopmentOnly);
+		Configuration testImplementation = project.getConfigurations()
+			.getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME);
+		testImplementation.extendsFrom(testAndDevelopmentOnly);
 	}
 
 	/**

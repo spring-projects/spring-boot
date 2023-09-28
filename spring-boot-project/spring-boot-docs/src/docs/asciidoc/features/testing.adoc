@@ -1115,7 +1115,7 @@ This is especially useful for Testcontainer `Container` beans, as they keep thei
 
 include::code:MyContainersConfiguration[]
 
-WARNING: If you're using Gradle and want to use this feature, you need to change the configuration of the `spring-boot-devtools` dependency from `developmentOnly` to `testImplementation`.
+WARNING: If you're using Gradle and want to use this feature, you need to change the configuration of the `spring-boot-devtools` dependency from `developmentOnly` to `testAndDevelopmentOnly`.
 With the default scope of `developmentOnly`, the `bootTestRun` task will not pick up changes in your code, as the devtools are not active.
 
 

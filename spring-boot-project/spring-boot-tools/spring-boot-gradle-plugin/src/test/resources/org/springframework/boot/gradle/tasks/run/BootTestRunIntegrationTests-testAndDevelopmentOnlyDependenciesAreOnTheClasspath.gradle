@@ -1,0 +1,12 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testAndDevelopmentOnly("org.apache.commons:commons-lang3:3.12.0")
+}

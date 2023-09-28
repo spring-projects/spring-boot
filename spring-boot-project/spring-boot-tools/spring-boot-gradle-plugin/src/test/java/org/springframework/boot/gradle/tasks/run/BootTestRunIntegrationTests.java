@@ -117,6 +117,22 @@ class BootTestRunIntegrationTests {
 		}
 	}
 
+	@TestTemplate
+	void developmentOnlyDependenciesAreNotOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootTestRun");
+		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesAreOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootTestRun");
+		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
 	private void copyClasspathApplication() throws IOException {
 		copyApplication("classpath");
 	}

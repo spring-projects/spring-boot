@@ -106,8 +106,20 @@ class SpringBootAotPluginIntegrationTests {
 
 	@TestTemplate
 	void processTestAotDoesNotHaveDevelopmentOnlyDependenciesOnItsClasspath() {
-		String output = this.gradleBuild.build("processTestAotClasspath", "--stacktrace").getOutput();
+		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
 		assertThat(output).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
+	void processAotDoesNotHaveTestAndDevelopmentOnlyDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processAotClasspath").getOutput();
+		assertThat(output).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
+	void processTestAotHasTestAndDevelopmentOnlyDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
+		assertThat(output).contains("commons-lang");
 	}
 
 	@TestTemplate

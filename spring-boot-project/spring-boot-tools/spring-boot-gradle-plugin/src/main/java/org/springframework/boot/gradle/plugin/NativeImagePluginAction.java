@@ -83,7 +83,8 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	private boolean isNotDevelopmentOnly(Configuration configuration) {
-		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
+		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName())
+				&& !SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
 	}
 
 	private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension) {
