@@ -19,18 +19,27 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.List;
 
 import io.micrometer.tracing.Tracer;
+import io.micrometer.tracing.annotation.DefaultNewSpanParser;
+import io.micrometer.tracing.annotation.ImperativeMethodInvocationProcessor;
+import io.micrometer.tracing.annotation.MethodInvocationProcessor;
+import io.micrometer.tracing.annotation.NewSpanParser;
+import io.micrometer.tracing.annotation.SpanAspect;
+import io.micrometer.tracing.annotation.SpanTagAnnotationHandler;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
 import io.micrometer.tracing.propagation.Propagator;
+import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -39,6 +48,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link MicrometerTracingAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Jonatan Ivanov
  */
 class MicrometerTracingAutoConfigurationTests {
 
@@ -52,6 +62,9 @@ class MicrometerTracingAutoConfigurationTests {
 				assertThat(context).hasSingleBean(DefaultTracingObservationHandler.class);
 				assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
 				assertThat(context).hasSingleBean(PropagatingSenderTracingObservationHandler.class);
+				assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
+				assertThat(context).hasSingleBean(ImperativeMethodInvocationProcessor.class);
+				assertThat(context).hasSingleBean(SpanAspect.class);
 			});
 	}
 
@@ -75,14 +88,21 @@ class MicrometerTracingAutoConfigurationTests {
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("customDefaultTracingObservationHandler");
-			assertThat(context).hasSingleBean(DefaultTracingObservationHandler.class);
-			assertThat(context).hasBean("customPropagatingReceiverTracingObservationHandler");
-			assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
-			assertThat(context).hasBean("customPropagatingSenderTracingObservationHandler");
-			assertThat(context).hasSingleBean(PropagatingSenderTracingObservationHandler.class);
-		});
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class, CustomConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("customDefaultTracingObservationHandler");
+				assertThat(context).hasSingleBean(DefaultTracingObservationHandler.class);
+				assertThat(context).hasBean("customPropagatingReceiverTracingObservationHandler");
+				assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
+				assertThat(context).hasBean("customPropagatingSenderTracingObservationHandler");
+				assertThat(context).hasSingleBean(PropagatingSenderTracingObservationHandler.class);
+				assertThat(context).hasBean("customDefaultNewSpanParser");
+				assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
+				assertThat(context).hasBean("customImperativeMethodInvocationProcessor");
+				assertThat(context).hasSingleBean(ImperativeMethodInvocationProcessor.class);
+				assertThat(context).hasBean("customSpanAspect");
+				assertThat(context).hasSingleBean(SpanAspect.class);
+			});
 	}
 
 	@Test
@@ -91,6 +111,9 @@ class MicrometerTracingAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(DefaultTracingObservationHandler.class);
 			assertThat(context).doesNotHaveBean(PropagatingReceiverTracingObservationHandler.class);
 			assertThat(context).doesNotHaveBean(PropagatingSenderTracingObservationHandler.class);
+			assertThat(context).doesNotHaveBean(DefaultNewSpanParser.class);
+			assertThat(context).doesNotHaveBean(ImperativeMethodInvocationProcessor.class);
+			assertThat(context).doesNotHaveBean(SpanAspect.class);
 		});
 	}
 
@@ -100,7 +123,21 @@ class MicrometerTracingAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(DefaultTracingObservationHandler.class);
 			assertThat(context).doesNotHaveBean(PropagatingReceiverTracingObservationHandler.class);
 			assertThat(context).doesNotHaveBean(PropagatingSenderTracingObservationHandler.class);
+			assertThat(context).doesNotHaveBean(DefaultNewSpanParser.class);
+			assertThat(context).doesNotHaveBean(ImperativeMethodInvocationProcessor.class);
+			assertThat(context).doesNotHaveBean(SpanAspect.class);
 		});
+	}
+
+	@Test
+	void shouldNotSupplyBeansIfAspectjIsMissing() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(Advice.class))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(DefaultNewSpanParser.class);
+				assertThat(context).doesNotHaveBean(ImperativeMethodInvocationProcessor.class);
+				assertThat(context).doesNotHaveBean(SpanAspect.class);
+			});
 	}
 
 	@Test
@@ -108,7 +145,23 @@ class MicrometerTracingAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(PropagatingSenderTracingObservationHandler.class);
 			assertThat(context).doesNotHaveBean(PropagatingReceiverTracingObservationHandler.class);
+
+			assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
+			assertThat(context).hasSingleBean(ImperativeMethodInvocationProcessor.class);
+			assertThat(context).hasSingleBean(SpanAspect.class);
 		});
+	}
+
+	@Test
+	void shouldConfigureSpanTagAnnotationHandler() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class, SpanTagAnnotationHandlerConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
+				assertThat(context).hasSingleBean(SpanAspect.class);
+				assertThat(ReflectionTestUtils.getField(context.getBean(ImperativeMethodInvocationProcessor.class),
+						"spanTagAnnotationHandler"))
+					.isSameAs(context.getBean(SpanTagAnnotationHandler.class));
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -147,6 +200,34 @@ class MicrometerTracingAutoConfigurationTests {
 		@Bean
 		PropagatingSenderTracingObservationHandler<?> customPropagatingSenderTracingObservationHandler() {
 			return mock(PropagatingSenderTracingObservationHandler.class);
+		}
+
+		@Bean
+		DefaultNewSpanParser customDefaultNewSpanParser() {
+			return new DefaultNewSpanParser();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		ImperativeMethodInvocationProcessor customImperativeMethodInvocationProcessor(NewSpanParser newSpanParser,
+				Tracer tracer) {
+			return new ImperativeMethodInvocationProcessor(newSpanParser, tracer);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		SpanAspect customSpanAspect(MethodInvocationProcessor methodInvocationProcessor) {
+			return new SpanAspect(methodInvocationProcessor);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class SpanTagAnnotationHandlerConfiguration {
+
+		@Bean
+		SpanTagAnnotationHandler spanTagAnnotationHandler() {
+			return new SpanTagAnnotationHandler((aClass) -> null, (aClass) -> null);
 		}
 
 	}
