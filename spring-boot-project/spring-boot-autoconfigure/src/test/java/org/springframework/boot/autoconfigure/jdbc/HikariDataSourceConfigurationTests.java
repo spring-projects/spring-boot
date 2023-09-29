@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Olga Maciaszek-Sharma
  */
 class HikariDataSourceConfigurationTests {
 
@@ -148,6 +150,14 @@ class HikariDataSourceConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(HikariCheckpointRestoreLifecycle.class));
 	}
 
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableAndDataSourceInstantiatedByUserHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withUserConfiguration(UserDataSourceConfiguration.class)
+			.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetailsConfiguration {
 
@@ -174,6 +184,21 @@ class HikariDataSourceConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDataSourceConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			return DataSourceBuilder.create()
+				.driverClassName("org.postgresql.Driver")
+				.url("jdbc:postgresql://localhost:5432/database")
+				.username("user")
+				.password("password")
+				.build();
 		}
 
 	}
