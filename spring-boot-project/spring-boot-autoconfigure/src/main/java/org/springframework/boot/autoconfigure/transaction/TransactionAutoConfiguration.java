@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.transaction;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +34,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.aspectj.AbstractTransactionAspect;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -93,6 +95,17 @@ public class TransactionAutoConfiguration {
 				matchIfMissing = true)
 		public static class CglibAutoProxyConfiguration {
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(AbstractTransactionAspect.class)
+	static class AspectJTransactionManagementConfiguration {
+
+		@Bean
+		static LazyInitializationExcludeFilter eagerTransactionAspect() {
+			return LazyInitializationExcludeFilter.forBeanTypes(AbstractTransactionAspect.class);
 		}
 
 	}
