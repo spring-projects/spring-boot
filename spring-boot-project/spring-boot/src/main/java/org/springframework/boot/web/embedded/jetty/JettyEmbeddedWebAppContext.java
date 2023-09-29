@@ -49,7 +49,14 @@ class JettyEmbeddedWebAppContext extends WebAppContext {
 		}
 
 		void deferredInitialize() throws Exception {
-			super.initialize();
+			ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+			try {
+				Thread.currentThread().setContextClassLoader(getServletContext().getClassLoader());
+				super.initialize();
+			}
+			finally {
+				Thread.currentThread().setContextClassLoader(contextClassLoader);
+			}
 		}
 
 	}
