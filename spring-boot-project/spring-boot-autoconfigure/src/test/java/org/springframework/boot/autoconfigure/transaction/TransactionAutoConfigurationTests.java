@@ -22,11 +22,15 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -35,6 +39,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.aspectj.AbstractTransactionAspect;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -177,6 +182,16 @@ class TransactionAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void excludesAbstractTransactionAspectFromLazyInit() {
+		this.contextRunner.withUserConfiguration(AspectJTransactionManagementConfiguration.class)
+			.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
+			.run((context) -> {
+				LazyInitializationExcludeFilter filter = context.getBean(LazyInitializationExcludeFilter.class);
+				assertThat(filter.isExcluded(null, null, AbstractTransactionAspect.class)).isTrue();
+			});
+	}
+
 	@Configuration
 	static class SinglePlatformTransactionManagerConfiguration {
 
@@ -290,6 +305,12 @@ class TransactionAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableTransactionManagement(proxyTargetClass = false)
 	static class CustomTransactionManagementConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
+	static class AspectJTransactionManagementConfiguration {
 
 	}
 
