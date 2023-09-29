@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.testcomponents;
+package org.springframework.boot.web.servlet.testcomponents.listener;
 
 import java.io.IOException;
 import java.util.EnumSet;

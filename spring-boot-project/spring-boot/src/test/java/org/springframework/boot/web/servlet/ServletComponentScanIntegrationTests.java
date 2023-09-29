@@ -45,7 +45,10 @@ import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFa
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.testcomponents.TestMultipartServlet;
+import org.springframework.boot.web.servlet.testcomponents.filter.TestFilter;
+import org.springframework.boot.web.servlet.testcomponents.listener.TestListener;
+import org.springframework.boot.web.servlet.testcomponents.servlet.TestMultipartServlet;
+import org.springframework.boot.web.servlet.testcomponents.servlet.TestServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -127,11 +130,9 @@ class ServletComponentScanIntegrationTests {
 		File metaInf = new File(temp, "META-INF");
 		metaInf.mkdirs();
 		Properties index = new Properties();
-		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestFilter", WebFilter.class.getName());
-		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestListener",
-				WebListener.class.getName());
-		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestServlet",
-				WebServlet.class.getName());
+		index.setProperty(TestFilter.class.getName(), WebFilter.class.getName());
+		index.setProperty(TestListener.class.getName(), WebListener.class.getName());
+		index.setProperty(TestServlet.class.getName(), WebServlet.class.getName());
 		try (FileWriter writer = new FileWriter(new File(metaInf, "spring.components"))) {
 			index.store(writer, null);
 		}
