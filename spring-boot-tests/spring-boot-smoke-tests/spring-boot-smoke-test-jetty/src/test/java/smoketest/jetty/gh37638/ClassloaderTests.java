@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ClassloaderTest {
+class ClassloaderTests {
 
 	@Autowired
 	private DummyFilter dummyFilter;

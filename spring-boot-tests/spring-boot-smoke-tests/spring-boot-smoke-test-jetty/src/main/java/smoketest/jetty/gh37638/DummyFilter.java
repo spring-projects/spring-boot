@@ -21,8 +21,6 @@ import java.io.IOException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -30,7 +28,8 @@ import jakarta.servlet.ServletResponse;
 import org.springframework.stereotype.Component;
 
 /**
- * Simple Servlet Filter that catches the current context classloader during its initialization.
+ * Simple Servlet Filter that catches the current context classloader during its
+ * initialization.
  */
 @Component
 public class DummyFilter implements Filter {
@@ -43,7 +42,9 @@ public class DummyFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
 	}
+
 }

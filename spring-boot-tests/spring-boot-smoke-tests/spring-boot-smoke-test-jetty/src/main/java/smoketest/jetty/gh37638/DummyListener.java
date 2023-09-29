@@ -22,7 +22,8 @@ import jakarta.servlet.ServletContextListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Simple Servlet Listener that catches the current context classloader during its initialization.
+ * Simple Servlet Listener that catches the current context classloader during its
+ * initialization.
  */
 @Component
 public class DummyListener implements ServletContextListener {
@@ -33,4 +34,5 @@ public class DummyListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		this.classLoader = Thread.currentThread().getContextClassLoader();
 	}
+
 }
