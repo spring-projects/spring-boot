@@ -32,7 +32,7 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.transaction")
-public class TransactionProperties implements PlatformTransactionManagerCustomizer<AbstractPlatformTransactionManager> {
+public class TransactionProperties implements TransactionManagerCustomizer<AbstractPlatformTransactionManager> {
 
 	/**
 	 * Default transaction timeout. If a duration suffix is not specified, seconds will be

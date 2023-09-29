@@ -63,7 +63,8 @@ public class DataSourceTransactionManagerAutoConfiguration {
 		DataSourceTransactionManager transactionManager(Environment environment, DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			DataSourceTransactionManager transactionManager = createTransactionManager(environment, dataSource);
-			transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));
+			transactionManagerCustomizers
+				.ifAvailable((customizers) -> customizers.customize((TransactionManager) transactionManager));
 			return transactionManager;
 		}
 

@@ -62,7 +62,7 @@ class TransactionManagerCustomizationAutoConfigurationTests {
 
 		@Bean
 		TransactionManagerCustomizers customTransactionManagerCustomizers() {
-			return new TransactionManagerCustomizers(Collections.emptyList());
+			return TransactionManagerCustomizers.of(Collections.<TransactionManagerCustomizer<?>>emptyList());
 		}
 
 	}

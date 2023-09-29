@@ -23,26 +23,69 @@ import java.util.List;
 
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 /**
- * A collection of {@link PlatformTransactionManagerCustomizer}.
+ * A collection of {@link TransactionManagerCustomizer TransactionManagerCustomizers}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.5.0
  */
 public class TransactionManagerCustomizers {
 
-	private final List<PlatformTransactionManagerCustomizer<?>> customizers;
+	private final List<? extends TransactionManagerCustomizer<?>> customizers;
 
+	/**
+	 * Creates a new {@code TransactionManagerCustomizers} instance containing the given
+	 * {@code customizers}.
+	 * @param customizers the customizers
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of {@link #of(Collection)}
+	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public TransactionManagerCustomizers(Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
+		this((customizers != null) ? new ArrayList<>(customizers)
+				: Collections.<TransactionManagerCustomizer<?>>emptyList());
 	}
 
+	private TransactionManagerCustomizers(List<? extends TransactionManagerCustomizer<?>> customizers) {
+		this.customizers = customizers;
+	}
+
+	/**
+	 * Customize the given {@code platformTransactionManager}.
+	 * @param platformTransactionManager the platform transaction manager to customize
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link #customize(TransactionManager)}
+	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public void customize(PlatformTransactionManager platformTransactionManager) {
+		customize((TransactionManager) platformTransactionManager);
+	}
+
+	/**
+	 * Customize the given {@code transactionManager}.
+	 * @param transactionManager the transaction manager to customize
+	 * @since 3.2.0
+	 */
 	@SuppressWarnings("unchecked")
-	public void customize(PlatformTransactionManager transactionManager) {
-		LambdaSafe.callbacks(PlatformTransactionManagerCustomizer.class, this.customizers, transactionManager)
+	public void customize(TransactionManager transactionManager) {
+		LambdaSafe.callbacks(TransactionManagerCustomizer.class, this.customizers, transactionManager)
 			.withLogger(TransactionManagerCustomizers.class)
 			.invoke((customizer) -> customizer.customize(transactionManager));
+	}
+
+	/**
+	 * Returns a new {@code TransactionManagerCustomizers} instance containing the given
+	 * {@code customizers}.
+	 * @param customizers the customizers
+	 * @return the new instance
+	 * @since 3.2.0
+	 */
+	public static TransactionManagerCustomizers of(Collection<? extends TransactionManagerCustomizer<?>> customizers) {
+		return new TransactionManagerCustomizers((customizers != null) ? new ArrayList<>(customizers)
+				: Collections.<TransactionManagerCustomizer<?>>emptyList());
 	}
 
 }

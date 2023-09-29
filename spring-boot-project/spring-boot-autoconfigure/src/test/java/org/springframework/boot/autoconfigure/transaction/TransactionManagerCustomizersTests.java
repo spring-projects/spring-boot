@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ class TransactionManagerCustomizersTests {
 
 	@Test
 	void customizeWithNullCustomizersShouldDoNothing() {
-		new TransactionManagerCustomizers(null).customize(mock(PlatformTransactionManager.class));
+		TransactionManagerCustomizers.of(null).customize(mock(TransactionManager.class));
 	}
 
 	@Test
@@ -44,15 +45,14 @@ class TransactionManagerCustomizersTests {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestJtaCustomizer());
-		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(list);
-		customizers.customize(mock(PlatformTransactionManager.class));
-		customizers.customize(mock(JtaTransactionManager.class));
+		TransactionManagerCustomizers customizers = TransactionManagerCustomizers.of(list);
+		customizers.customize((TransactionManager) mock(PlatformTransactionManager.class));
+		customizers.customize((TransactionManager) mock(JtaTransactionManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);
 		assertThat(list.get(1).getCount()).isOne();
 	}
 
-	static class TestCustomizer<T extends PlatformTransactionManager>
-			implements PlatformTransactionManagerCustomizer<T> {
+	static class TestCustomizer<T extends PlatformTransactionManager> implements TransactionManagerCustomizer<T> {
 
 		private int count;
 

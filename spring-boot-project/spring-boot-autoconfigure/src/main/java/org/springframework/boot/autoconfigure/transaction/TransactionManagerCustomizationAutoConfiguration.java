@@ -39,8 +39,8 @@ public class TransactionManagerCustomizationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	TransactionManagerCustomizers platformTransactionManagerCustomizers(
-			ObjectProvider<PlatformTransactionManagerCustomizer<?>> customizers) {
-		return new TransactionManagerCustomizers(customizers.orderedStream().toList());
+			ObjectProvider<TransactionManagerCustomizer<?>> customizers) {
+		return TransactionManagerCustomizers.of(customizers.orderedStream().toList());
 	}
 
 }
