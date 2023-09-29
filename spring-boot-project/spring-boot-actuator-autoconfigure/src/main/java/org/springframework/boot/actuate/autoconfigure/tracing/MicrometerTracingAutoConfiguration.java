@@ -17,17 +17,26 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import io.micrometer.tracing.Tracer;
+import io.micrometer.tracing.annotation.DefaultNewSpanParser;
+import io.micrometer.tracing.annotation.ImperativeMethodInvocationProcessor;
+import io.micrometer.tracing.annotation.MethodInvocationProcessor;
+import io.micrometer.tracing.annotation.NewSpanParser;
+import io.micrometer.tracing.annotation.SpanAspect;
+import io.micrometer.tracing.annotation.SpanTagAnnotationHandler;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micrometer.tracing.propagation.Propagator;
+import org.aspectj.weaver.Advice;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -35,10 +44,12 @@ import org.springframework.core.annotation.Order;
  * {@link EnableAutoConfiguration Auto-configuration} for the Micrometer Tracing API.
  *
  * @author Moritz Halbritter
+ * @author Jonatan Ivanov
  * @since 3.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(Tracer.class)
+@ConditionalOnBean(Tracer.class)
 public class MicrometerTracingAutoConfiguration {
 
 	/**
@@ -60,7 +71,6 @@ public class MicrometerTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(Tracer.class)
 	@Order(DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER)
 	public DefaultTracingObservationHandler defaultTracingObservationHandler(Tracer tracer) {
 		return new DefaultTracingObservationHandler(tracer);
@@ -68,7 +78,7 @@ public class MicrometerTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean({ Tracer.class, Propagator.class })
+	@ConditionalOnBean(Propagator.class)
 	@Order(SENDER_TRACING_OBSERVATION_HANDLER_ORDER)
 	public PropagatingSenderTracingObservationHandler<?> propagatingSenderTracingObservationHandler(Tracer tracer,
 			Propagator propagator) {
@@ -77,11 +87,39 @@ public class MicrometerTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean({ Tracer.class, Propagator.class })
+	@ConditionalOnBean(Propagator.class)
 	@Order(RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER)
 	public PropagatingReceiverTracingObservationHandler<?> propagatingReceiverTracingObservationHandler(Tracer tracer,
 			Propagator propagator) {
 		return new PropagatingReceiverTracingObservationHandler<>(tracer, propagator);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Advice.class)
+	static class SpanAspectConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		DefaultNewSpanParser newSpanParser() {
+			return new DefaultNewSpanParser();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		ImperativeMethodInvocationProcessor imperativeMethodInvocationProcessor(NewSpanParser newSpanParser,
+				Tracer tracer, ObjectProvider<SpanTagAnnotationHandler> spanTagAnnotationHandler) {
+			ImperativeMethodInvocationProcessor methodInvocationProcessor = new ImperativeMethodInvocationProcessor(
+					newSpanParser, tracer);
+			spanTagAnnotationHandler.ifAvailable(methodInvocationProcessor::setSpanTagAnnotationHandler);
+			return methodInvocationProcessor;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		SpanAspect spanAspect(MethodInvocationProcessor methodInvocationProcessor) {
+			return new SpanAspect(methodInvocationProcessor);
+		}
+
 	}
 
 }
