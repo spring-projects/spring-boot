@@ -19,10 +19,17 @@ package org.springframework.boot.web.servlet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -40,7 +47,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @see ServletComponentScan
  * @see ServletComponentScanRegistrar
  */
-class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcessor, ApplicationContextAware {
+class ServletComponentRegisteringPostProcessor
+		implements BeanFactoryPostProcessor, ApplicationContextAware, BeanFactoryInitializationAotProcessor {
 
 	private static final List<ServletComponentHandler> HANDLERS;
 
@@ -103,6 +111,31 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
+		return new BeanFactoryInitializationAotContribution() {
+
+			@Override
+			public void applyTo(GenerationContext generationContext,
+					BeanFactoryInitializationCode beanFactoryInitializationCode) {
+				for (String beanName : beanFactory.getBeanDefinitionNames()) {
+					BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
+					if (Objects.equals(definition.getBeanClassName(),
+							WebListenerHandler.ServletComponentWebListenerRegistrar.class.getName())) {
+						String listenerClassName = (String) definition.getConstructorArgumentValues()
+							.getArgumentValue(0, String.class)
+							.getValue();
+						generationContext.getRuntimeHints()
+							.reflection()
+							.registerType(TypeReference.of(listenerClassName),
+									MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+					}
+				}
+			}
+
+		};
 	}
 
 }

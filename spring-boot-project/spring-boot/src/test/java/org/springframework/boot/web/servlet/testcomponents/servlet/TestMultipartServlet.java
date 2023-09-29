@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.testcomponents;
+package org.springframework.boot.web.servlet.testcomponents.servlet;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
