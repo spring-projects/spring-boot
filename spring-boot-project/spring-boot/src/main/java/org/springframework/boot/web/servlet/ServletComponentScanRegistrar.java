@@ -22,11 +22,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -98,15 +96,6 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 		private void addPackageNames(Collection<String> additionalPackageNames) {
 			this.packageNames.addAll(additionalPackageNames);
-		}
-
-	}
-
-	static class ServletComponentScanBeanRegistrationExcludeFilter implements BeanRegistrationExcludeFilter {
-
-		@Override
-		public boolean isExcludedFromAotProcessing(RegisteredBean registeredBean) {
-			return BEAN_NAME.equals(registeredBean.getBeanName());
 		}
 
 	}

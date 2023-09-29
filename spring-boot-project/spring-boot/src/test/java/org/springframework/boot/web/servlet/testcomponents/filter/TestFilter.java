@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.testcomponents;
+package org.springframework.boot.web.servlet.testcomponents.filter;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 
 @WebFilter("/*")
-class TestFilter implements Filter {
+public class TestFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
