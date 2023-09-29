@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.web.client;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
+import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 
@@ -29,47 +29,51 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link RestClientTest @RestClientTest} with two clients.
+ * Tests for {@link RestClientTest @RestClientTest} with two {@code RestClient} clients.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-@RestClientTest({ ExampleRestClient.class, AnotherExampleRestClient.class })
-class RestClientTestTwoComponentsIntegrationTests {
+@RestClientTest({ ExampleRestClientService.class, AnotherExampleRestClientService.class })
+class RestClientTestRestClientTwoComponentsIntegrationTests {
 
 	@Autowired
-	private ExampleRestClient client1;
+	private ExampleRestClientService client1;
 
 	@Autowired
-	private AnotherExampleRestClient client2;
+	private AnotherExampleRestClientService client2;
 
 	@Autowired
-	private MockServerRestTemplateCustomizer customizer;
+	private MockServerRestClientCustomizer customizer;
 
 	@Autowired
 	private MockRestServiceServer server;
 
 	@Test
 	void serverShouldNotWork() {
-		assertThatIllegalStateException()
-			.isThrownBy(
-					() -> this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML)))
+		assertThatIllegalStateException().isThrownBy(
+				() -> this.server.expect(requestTo(uri("/test"))).andRespond(withSuccess("hello", MediaType.TEXT_HTML)))
 			.withMessageContaining("Unable to use auto-configured");
 	}
 
 	@Test
 	void client1RestCallViaCustomizer() {
-		this.customizer.getServer(this.client1.getRestTemplate())
-			.expect(requestTo("/test"))
+		this.customizer.getServer(this.client1.getRestClientBuilder())
+			.expect(requestTo(uri("/test")))
 			.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client1.test()).isEqualTo("hello");
 	}
 
 	@Test
 	void client2RestCallViaCustomizer() {
-		this.customizer.getServer(this.client2.getRestTemplate())
-			.expect(requestTo("/test"))
+		this.customizer.getServer(this.client2.getRestClientBuilder())
+			.expect(requestTo(uri("/test")))
 			.andRespond(withSuccess("there", MediaType.TEXT_HTML));
 		assertThat(this.client2.test()).isEqualTo("there");
+	}
+
+	private static String uri(String path) {
+		return "https://example.com" + path;
 	}
 
 }

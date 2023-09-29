@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,19 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -38,29 +37,25 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 /**
  * Tests for
  * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer} with a
- * {@link RestTemplate} configured with a root URI.
+ * {@link RestClient} configured with a base URL.
  *
- * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @SpringBootTest
 @AutoConfigureMockRestServiceServer
-class AutoConfigureMockRestServiceServerWithRootUriIntegrationTests {
+class AutoConfigureMockRestServiceServerWithRestClientIntegrationTests {
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private RestClient restClient;
 
 	@Autowired
 	private MockRestServiceServer server;
 
-	@Autowired
-	MeterRegistry meterRegistry;
-
 	@Test
-	void whenRestTemplateAppliesARootUriThenMockServerExpectationsAreStillMatched() {
-		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test", String.class);
+	void mockServerExpectationsAreMatched() {
+		this.server.expect(requestTo("/rest/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		ResponseEntity<String> entity = this.restClient.get().uri("/test").retrieve().toEntity(String.class);
 		assertThat(entity.getBody()).isEqualTo("hello");
-		assertThat(this.meterRegistry.find("http.client.requests").tag("uri", "/test").timer()).isNotNull();
 	}
 
 	@EnableAutoConfiguration(exclude = CassandraAutoConfiguration.class)
@@ -68,8 +63,8 @@ class AutoConfigureMockRestServiceServerWithRootUriIntegrationTests {
 	static class RootUriConfiguration {
 
 		@Bean
-		RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-			return restTemplateBuilder.rootUri("/rest").build();
+		RestClient restClient(Builder restClientBuilder) {
+			return restClientBuilder.baseUrl("/rest").build();
 		}
 
 	}

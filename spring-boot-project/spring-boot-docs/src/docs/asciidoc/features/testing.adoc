@@ -735,17 +735,21 @@ include::code:server/MyDataLdapTests[]
 [[features.testing.spring-boot-applications.autoconfigured-rest-client]]
 ==== Auto-configured REST Clients
 You can use the `@RestClientTest` annotation to test REST clients.
-By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `RestTemplateBuilder`, and adds support for `MockRestServiceServer`.
+By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `RestTemplateBuilder` and a `RestClient.Builder`, and adds support for `MockRestServiceServer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@RestClientTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
-The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
+The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`.
 
-include::code:MyRestClientTests[]
+When using a `RestTemplateBuilder` in the beans under test and `RestTemplateBuilder.rootUri(String rootUri)` has been called when building the `RestTemplate`, then the root URI should be omitted from the `MockRestServiceServer` expectations as shown in the following example:
 
+include::code:MyRestTemplateServiceTests[]
 
+When using a `RestClient.Builder` in the beans under test, or when using a `RestTemplateBuilder` without calling `rootUri(String rootURI)`, the full URI must be used in the `MockRestServiceServer` expectations as shown in the following example:
+
+include::code:MyRestClientServiceTests[]
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 ==== Auto-configured Spring REST Docs Tests

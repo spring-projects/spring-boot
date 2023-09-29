@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Example web client used with {@link RestClientTest @RestClientTest} tests.
+ * Example web client using {@code RestTemplate} with
+ * {@link RestClientTest @RestClientTest} tests.
  *
  * @author Phillip Webb
  */
 @Service
-public class ExampleRestClient {
+public class ExampleRestTemplateService {
 
 	private final RestTemplate restTemplate;
 
-	public ExampleRestClient(RestTemplateBuilder builder) {
+	public ExampleRestTemplateService(RestTemplateBuilder builder) {
 		this.restTemplate = builder.rootUri("https://example.com").build();
 	}
 

@@ -14,41 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.client;
+package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredrestclient;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-/**
- * Tests for {@link RestClientTest @RestClientTest} without Jackson.
- *
- * @author Andy Wilkinson
- */
-@ClassPathExclusions("jackson-*.jar")
-@RestClientTest(ExampleRestTemplateService.class)
-class RestClientTestWithoutJacksonIntegrationTests {
+@RestClientTest(RemoteVehicleDetailsService.class)
+class MyRestTemplateServiceTests {
+
+	@Autowired
+	private RemoteVehicleDetailsService service;
 
 	@Autowired
 	private MockRestServiceServer server;
 
-	@Autowired
-	private ExampleRestTemplateService client;
-
 	@Test
-	void restClientTestCanBeUsedWhenJacksonIsNotOnTheClassPath() {
-		ClassLoader classLoader = getClass().getClassLoader();
-		assertThat(ClassUtils.isPresent("com.fasterxml.jackson.databind.Module", classLoader)).isFalse();
-		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
-		assertThat(this.client.test()).isEqualTo("hello");
+	void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
+		this.server.expect(requestTo("/greet/details")).andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
+		String greeting = this.service.callRestService();
+		assertThat(greeting).isEqualTo("hello");
 	}
 
 }

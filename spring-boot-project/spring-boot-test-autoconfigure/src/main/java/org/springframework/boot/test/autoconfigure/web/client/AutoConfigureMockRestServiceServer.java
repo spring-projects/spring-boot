@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,26 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
 
 /**
  * Annotation that can be applied to a test class to enable and configure
  * auto-configuration of a single {@link MockRestServiceServer}. Only useful when a single
- * call is made to {@link RestTemplateBuilder}. If multiple
- * {@link org.springframework.web.client.RestTemplate RestTemplates} are in use, inject
+ * call is made to {@link RestTemplateBuilder} or {@link RestClient.Builder}. If multiple
+ * {@link org.springframework.web.client.RestTemplate RestTemplates} or
+ * {@link org.springframework.web.client.RestClient RestClients} are in use, inject a
  * {@link MockServerRestTemplateCustomizer} and use
  * {@link MockServerRestTemplateCustomizer#getServer(org.springframework.web.client.RestTemplate)
- * getServer(RestTemplate)} or bind a {@link MockRestServiceServer} directly.
+ * getServer(RestTemplate)}, or inject a {@link MockServerRestClientCustomizer} and use
+ * {@link MockServerRestClientCustomizer#getServer(org.springframework.web.client.RestClient.Builder)
+ * * getServer(RestClient.Builder)}, or bind a {@link MockRestServiceServer} directly.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.4.0
  * @see MockServerRestTemplateCustomizer
  */
@@ -51,7 +57,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 public @interface AutoConfigureMockRestServiceServer {
 
 	/**
-	 * If {@link MockServerRestTemplateCustomizer} should be enabled and
+	 * If {@link MockServerRestTemplateCustomizer} and
+	 * {@link MockServerRestClientCustomizer} should be enabled and
 	 * {@link MockRestServiceServer} beans should be registered. Defaults to {@code true}
 	 * @return if mock support is enabled
 	 */

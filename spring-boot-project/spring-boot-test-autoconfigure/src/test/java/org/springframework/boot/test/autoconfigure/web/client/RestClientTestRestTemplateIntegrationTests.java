@@ -32,14 +32,14 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Phillip Webb
  */
-@RestClientTest(ExampleRestClient.class)
-class RestClientRestIntegrationTests {
+@RestClientTest(ExampleRestTemplateService.class)
+class RestClientTestRestTemplateIntegrationTests {
 
 	@Autowired
 	private MockRestServiceServer server;
 
 	@Autowired
-	private ExampleRestClient client;
+	private ExampleRestTemplateService client;
 
 	@Test
 	void mockServerCall1() {

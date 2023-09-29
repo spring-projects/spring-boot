@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,33 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 /**
  * A second example web client used with {@link RestClientTest @RestClientTest} tests.
  *
- * @author Phillip Webb
+ * @author Scott Frederick
  */
 @Service
-public class AnotherExampleRestClient {
+public class AnotherExampleRestClientService {
 
-	private final RestTemplate restTemplate;
+	private final Builder builder;
 
-	public AnotherExampleRestClient(RestTemplateBuilder builder) {
-		this.restTemplate = builder.rootUri("https://example.com").build();
+	private final RestClient restClient;
+
+	public AnotherExampleRestClientService(RestClient.Builder builder) {
+		this.builder = builder;
+		this.restClient = builder.baseUrl("https://example.com").build();
 	}
 
-	protected RestTemplate getRestTemplate() {
-		return this.restTemplate;
+	protected Builder getRestClientBuilder() {
+		return this.builder;
 	}
 
 	public String test() {
-		return this.restTemplate.getForEntity("/test", String.class).getBody();
+		return this.restClient.get().uri("/test").retrieve().toEntity(String.class).getBody();
 	}
 
 }

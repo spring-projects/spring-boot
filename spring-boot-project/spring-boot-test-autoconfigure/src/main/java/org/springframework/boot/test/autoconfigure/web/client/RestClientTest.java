@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Annotation for a Spring rest client test that focuses <strong>only</strong> on beans
- * that use {@link RestTemplateBuilder}.
+ * that use {@link RestTemplateBuilder} or {@link RestClient.Builder}.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to rest client tests (i.e. Jackson or GSON auto-configuration

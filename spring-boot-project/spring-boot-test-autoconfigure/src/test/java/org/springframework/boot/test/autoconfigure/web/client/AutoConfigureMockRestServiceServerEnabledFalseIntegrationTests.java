@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.context.ApplicationContext;
 
@@ -43,6 +44,8 @@ class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 	void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 			.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+			.isThrownBy(() -> this.applicationContext.getBean(MockServerRestClientCustomizer.class));
 	}
 
 }

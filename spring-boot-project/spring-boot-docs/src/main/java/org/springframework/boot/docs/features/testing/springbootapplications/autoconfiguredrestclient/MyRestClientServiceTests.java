@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(RemoteVehicleDetailsService.class)
-class MyRestClientTests {
+class MyRestClientServiceTests {
 
 	@Autowired
 	private RemoteVehicleDetailsService service;
@@ -38,7 +38,8 @@ class MyRestClientTests {
 
 	@Test
 	void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
-		this.server.expect(requestTo("/greet/details")).andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
+		this.server.expect(requestTo("https://example.com/greet/details"))
+			.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
 		String greeting = this.service.callRestService();
 		assertThat(greeting).isEqualTo("hello");
 	}

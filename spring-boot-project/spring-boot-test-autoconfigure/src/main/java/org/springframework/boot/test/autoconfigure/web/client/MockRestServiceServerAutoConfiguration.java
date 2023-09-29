@@ -19,10 +19,12 @@ package org.springframework.boot.test.autoconfigure.web.client;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.ClientHttpRequest;
@@ -33,12 +35,14 @@ import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.test.web.client.ResponseActions;
 import org.springframework.util.Assert;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Auto-configuration for {@link MockRestServiceServer} support.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.4.0
  * @see AutoConfigureMockRestServiceServer
  */
@@ -52,21 +56,29 @@ public class MockRestServiceServerAutoConfiguration {
 	}
 
 	@Bean
-	public MockRestServiceServer mockRestServiceServer(MockServerRestTemplateCustomizer customizer) {
+	public MockServerRestClientCustomizer mockServerRestClientCustomizer() {
+		return new MockServerRestClientCustomizer();
+	}
+
+	@Bean
+	public MockRestServiceServer mockRestServiceServer(MockServerRestTemplateCustomizer restTemplateCustomizer,
+			MockServerRestClientCustomizer restClientCustomizer) {
 		try {
-			return createDeferredMockRestServiceServer(customizer);
+			return createDeferredMockRestServiceServer(restTemplateCustomizer, restClientCustomizer);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private MockRestServiceServer createDeferredMockRestServiceServer(MockServerRestTemplateCustomizer customizer)
-			throws Exception {
+	private MockRestServiceServer createDeferredMockRestServiceServer(
+			MockServerRestTemplateCustomizer restTemplateCustomizer,
+			MockServerRestClientCustomizer restClientCustomizer) throws Exception {
 		Constructor<MockRestServiceServer> constructor = MockRestServiceServer.class
 			.getDeclaredConstructor(RequestExpectationManager.class);
 		constructor.setAccessible(true);
-		return constructor.newInstance(new DeferredRequestExpectationManager(customizer));
+		return constructor
+			.newInstance(new DeferredRequestExpectationManager(restTemplateCustomizer, restClientCustomizer));
 	}
 
 	/**
@@ -77,10 +89,14 @@ public class MockRestServiceServerAutoConfiguration {
 	 */
 	private static class DeferredRequestExpectationManager implements RequestExpectationManager {
 
-		private final MockServerRestTemplateCustomizer customizer;
+		private final MockServerRestTemplateCustomizer restTemplateCustomizer;
 
-		DeferredRequestExpectationManager(MockServerRestTemplateCustomizer customizer) {
-			this.customizer = customizer;
+		private final MockServerRestClientCustomizer restClientCustomizer;
+
+		DeferredRequestExpectationManager(MockServerRestTemplateCustomizer restTemplateCustomizer,
+				MockServerRestClientCustomizer restClientCustomizer) {
+			this.restTemplateCustomizer = restTemplateCustomizer;
+			this.restClientCustomizer = restClientCustomizer;
 		}
 
 		@Override
@@ -105,19 +121,34 @@ public class MockRestServiceServerAutoConfiguration {
 
 		@Override
 		public void reset() {
-			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
+			resetExpectations(this.restTemplateCustomizer.getExpectationManagers().values());
+			resetExpectations(this.restClientCustomizer.getExpectationManagers().values());
+		}
+
+		private void resetExpectations(Collection<RequestExpectationManager> expectationManagers) {
 			if (expectationManagers.size() == 1) {
-				getDelegate().reset();
+				expectationManagers.iterator().next().reset();
 			}
 		}
 
 		private RequestExpectationManager getDelegate() {
-			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
-			Assert.state(!expectationManagers.isEmpty(), "Unable to use auto-configured MockRestServiceServer since "
-					+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
-			Assert.state(expectationManagers.size() == 1, "Unable to use auto-configured MockRestServiceServer since "
-					+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
-			return expectationManagers.values().iterator().next();
+			Map<RestTemplate, RequestExpectationManager> restTemplateExpectationManagers = this.restTemplateCustomizer
+				.getExpectationManagers();
+			Map<RestClient.Builder, RequestExpectationManager> restClientExpectationManagers = this.restClientCustomizer
+				.getExpectationManagers();
+			Assert.state(!(restTemplateExpectationManagers.isEmpty() && restClientExpectationManagers.isEmpty()),
+					"Unable to use auto-configured MockRestServiceServer since "
+							+ "a mock server customizer has not been bound to a RestTemplate or RestClient");
+			if (!restTemplateExpectationManagers.isEmpty()) {
+				Assert.state(restTemplateExpectationManagers.size() == 1,
+						"Unable to use auto-configured MockRestServiceServer since "
+								+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
+				return restTemplateExpectationManagers.values().iterator().next();
+			}
+			Assert.state(restClientExpectationManagers.size() == 1,
+					"Unable to use auto-configured MockRestServiceServer since "
+							+ "MockServerRestClientCustomizer has been bound to more than one RestClient");
+			return restClientExpectationManagers.values().iterator().next();
 		}
 
 	}
