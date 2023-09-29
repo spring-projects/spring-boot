@@ -43,8 +43,9 @@ class TransactionManagerCustomizationAutoConfigurationTests {
 			TransactionManagerCustomizers customizers = context.getBean(TransactionManagerCustomizers.class);
 			assertThat(customizers).extracting("customizers")
 				.asList()
-				.singleElement()
-				.isInstanceOf(TransactionProperties.class);
+				.hasSize(2)
+				.hasAtLeastOneElementOfType(TransactionProperties.class)
+				.hasAtLeastOneElementOfType(ExecutionListenersTransactionManagerCustomizer.class);
 		});
 	}
 

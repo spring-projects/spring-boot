@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionExecutionListener;
 import org.springframework.transaction.TransactionManager;
 
 /**
@@ -41,6 +42,12 @@ public class TransactionManagerCustomizationAutoConfiguration {
 	TransactionManagerCustomizers platformTransactionManagerCustomizers(
 			ObjectProvider<TransactionManagerCustomizer<?>> customizers) {
 		return TransactionManagerCustomizers.of(customizers.orderedStream().toList());
+	}
+
+	@Bean
+	ExecutionListenersTransactionManagerCustomizer transactionExecutionListeners(
+			ObjectProvider<TransactionExecutionListener> listeners) {
+		return new ExecutionListenersTransactionManagerCustomizer(listeners.orderedStream().toList());
 	}
 
 }
