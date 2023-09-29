@@ -41,6 +41,7 @@ The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the 
 * https://site.mockito.org/[Mockito]: A Java mocking framework.
 * https://github.com/skyscreamer/JSONassert[JSONassert]: An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath]: XPath for JSON.
+* https://https://github.com/awaitility/awaitility[Awaitility]: A library for testing asynchronous systems.
 
 We generally find these common libraries to be useful when writing tests.
 If these libraries do not suit your needs, you can add additional test dependencies of your own.

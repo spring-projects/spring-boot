@@ -12,6 +12,7 @@ dependencies {
 	api("jakarta.xml.bind:jakarta.xml.bind-api")
 	api("net.minidev:json-smart")
 	api("org.assertj:assertj-core")
+	api("org.awaitility:awaitility")
 	api("org.hamcrest:hamcrest")
 	api("org.junit.jupiter:junit-jupiter")
 	api("org.mockito:mockito-core")
