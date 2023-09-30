@@ -25,9 +25,11 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
@@ -57,8 +59,21 @@ class ReactiveSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	void enablesWebFluxSecurity() {
+	void enablesWebFluxSecurityWhenUserDetailsServiceIsPresent() {
 		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
+	}
+
+	@Test
+	void enablesWebFluxSecurityWhenReactiveAuthenticationManagerIsPresent() {
+		this.contextRunner
+			.withBean(ReactiveAuthenticationManager.class, () -> mock(ReactiveAuthenticationManager.class))
+			.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
+	}
+
+	@Test
+	void enablesWebFluxSecurityWhenSecurityWebFilterChainIsPresent() {
+		this.contextRunner.withBean(SecurityWebFilterChain.class, () -> mock(SecurityWebFilterChain.class))
 			.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
 	}
 

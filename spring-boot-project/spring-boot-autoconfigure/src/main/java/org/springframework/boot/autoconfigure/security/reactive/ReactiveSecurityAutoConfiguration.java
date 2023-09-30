@@ -29,9 +29,10 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
@@ -54,25 +55,30 @@ public class ReactiveSecurityAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(WebFilterChainProxy.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	@Conditional(ReactiveAuthenticationManagerCondition.class)
+	@Conditional(EnableWebFluxSecurityCondition.class)
 	@EnableWebFluxSecurity
 	static class EnableWebFluxSecurityConfiguration {
 
 	}
 
-	static final class ReactiveAuthenticationManagerCondition extends AnyNestedCondition {
+	static final class EnableWebFluxSecurityCondition extends AnyNestedCondition {
 
-		ReactiveAuthenticationManagerCondition() {
+		EnableWebFluxSecurityCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnBean(AuthenticationManager.class)
-		static final class ConditionalOnAuthenticationManagerBean {
+		@ConditionalOnBean(ReactiveAuthenticationManager.class)
+		static final class ConditionalOnReactiveAuthenticationManagerBean {
 
 		}
 
 		@ConditionalOnBean(ReactiveUserDetailsService.class)
 		static final class ConditionalOnReactiveUserDetailsService {
+
+		}
+
+		@ConditionalOnBean(SecurityWebFilterChain.class)
+		static final class ConditionalOnSecurityWebFilterChain {
 
 		}
 
