@@ -18,7 +18,7 @@ package org.springframework.boot.testsupport.process;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link DisabledIfProcessUnavailable}.
