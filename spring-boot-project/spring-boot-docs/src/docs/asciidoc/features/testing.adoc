@@ -751,6 +751,8 @@ When using a `RestClient.Builder` in the beans under test, or when using a `Rest
 
 include::code:MyRestClientServiceTests[]
 
+
+
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 ==== Auto-configured Spring REST Docs Tests
 You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
