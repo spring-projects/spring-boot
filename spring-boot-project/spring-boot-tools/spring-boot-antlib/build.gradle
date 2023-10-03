@@ -19,7 +19,7 @@ dependencies {
 	antUnit "org.apache.ant:ant-antunit:1.3"
 	antIvy "org.apache.ivy:ivy:2.5.0"
 
-	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-classic"))
 	compileOnly("org.apache.ant:ant:${antVersion}")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))

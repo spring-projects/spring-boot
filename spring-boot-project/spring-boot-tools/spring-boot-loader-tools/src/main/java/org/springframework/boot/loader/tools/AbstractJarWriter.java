@@ -51,8 +51,6 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  */
 public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
-	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
-
 	private static final int BUFFER_SIZE = 32 * 1024;
 
 	private static final int UNIX_FILE_MODE = UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM;
@@ -199,13 +197,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		return library.getLastModified();
 	}
 
-	/**
-	 * Write the required spring-boot-loader classes to the JAR.
-	 * @throws IOException if the classes cannot be written
-	 */
 	@Override
 	public void writeLoaderClasses() throws IOException {
-		writeLoaderClasses(NESTED_LOADER_JAR);
+		writeLoaderClasses(LoaderImplementation.DEFAULT);
+	}
+
+	@Override
+	public void writeLoaderClasses(LoaderImplementation loaderImplementation) throws IOException {
+		writeLoaderClasses((loaderImplementation != null) ? loaderImplementation.getJarResourceName()
+				: LoaderImplementation.DEFAULT.getJarResourceName());
 	}
 
 	/**

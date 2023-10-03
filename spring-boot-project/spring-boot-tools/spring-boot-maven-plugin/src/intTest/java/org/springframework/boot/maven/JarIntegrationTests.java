@@ -76,6 +76,26 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenJarWithClassicLoaderIsRepackagedInPlaceOnlyRepackagedJarIsInstalled(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-with-classic-loader").goals("install").execute((project) -> {
+			File original = new File(project, "target/jar-with-classic-loader-0.0.1.BUILD-SNAPSHOT.jar.original");
+			assertThat(original).isFile();
+			File repackaged = new File(project, "target/jar-with-classic-loader-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(launchScript(repackaged)).isEmpty();
+			assertThat(jar(repackaged)).manifest((manifest) -> {
+				manifest.hasMainClass("org.springframework.boot.loader.launch.JarLauncher");
+				manifest.hasStartClass("some.random.Main");
+				manifest.hasAttribute("Not-Used", "Foo");
+			}).hasEntryWithName("org/springframework/boot/loader/launch/JarLauncher.class");
+			assertThat(buildLog(project))
+				.contains("Replacing main artifact " + repackaged + " with repackaged archive,")
+				.contains("The original artifact has been renamed to " + original)
+				.contains("Installing " + repackaged + " to")
+				.doesNotContain("Installing " + original + " to");
+		});
+	}
+
+	@TestTemplate
 	void whenAttachIsDisabledOnlyTheOriginalJarIsInstalled(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-attach-disabled").goals("install").execute((project) -> {
 			File original = new File(project, "target/jar-attach-disabled-0.0.1.BUILD-SNAPSHOT.jar.original");

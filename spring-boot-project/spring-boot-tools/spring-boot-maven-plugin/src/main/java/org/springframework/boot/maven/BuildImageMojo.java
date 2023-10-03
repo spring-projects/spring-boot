@@ -48,6 +48,7 @@ import org.springframework.boot.loader.tools.EntryWriter;
 import org.springframework.boot.loader.tools.ImagePackager;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.util.StringUtils;
 
 /**
@@ -188,6 +189,13 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	private LayoutType layout;
 
 	/**
+	 * The loader implementation that should be used.
+	 * @since 3.2.0
+	 */
+	@Parameter
+	private LoaderImplementation loaderImplementation;
+
+	/**
 	 * The layout factory that will be used to create the executable archive if no
 	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
 	 * parties.
@@ -204,6 +212,11 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	@Override
 	protected LayoutType getLayout() {
 		return this.layout;
+	}
+
+	@Override
+	protected LoaderImplementation getLoaderImplementation() {
+		return this.loaderImplementation;
 	}
 
 	/**
