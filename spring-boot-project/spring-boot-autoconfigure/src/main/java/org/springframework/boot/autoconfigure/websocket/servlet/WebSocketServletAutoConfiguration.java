@@ -16,9 +16,10 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import java.util.List;
+import java.util.EnumSet;
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.Servlet;
 import jakarta.websocket.server.ServerContainer;
 import org.apache.catalina.startup.Tomcat;
@@ -29,13 +30,15 @@ import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * Auto configuration for WebSocket servlet server in embedded Tomcat, Jetty or Undertow.
@@ -86,17 +89,16 @@ public class WebSocketServletAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(value = WebSocketUpgradeFilter.class,
-				parameterizedContainer = FilterRegistrationBean.class)
-		FilterRegistrationBean<WebSocketUpgradeFilter> webSocketUpgradeFilter() {
-			WebSocketUpgradeFilter websocketFilter = new WebSocketUpgradeFilter();
-			FilterRegistrationBean<WebSocketUpgradeFilter> registration = new FilterRegistrationBean<>(websocketFilter);
-			registration.setAsyncSupported(true);
-			registration.setDispatcherTypes(DispatcherType.REQUEST);
-			registration.setName(WebSocketUpgradeFilter.class.getName());
-			registration.setOrder(Ordered.LOWEST_PRECEDENCE);
-			registration.setUrlPatterns(List.of("/*"));
-			return registration;
+		@ConditionalOnNotWarDeployment
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		@ConditionalOnMissingBean(name = "websocketUpgradeFilterServletContextInitializer")
+		ServletContextInitializer websocketUpgradeFilterServletContextInitializer() {
+			return (servletContext) -> {
+				Dynamic registration = servletContext.addFilter(WebSocketUpgradeFilter.class.getName(),
+						new WebSocketUpgradeFilter());
+				registration.setAsyncSupported(true);
+				registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+			};
 		}
 
 	}
