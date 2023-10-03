@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link SilentExitExceptionHandler}.

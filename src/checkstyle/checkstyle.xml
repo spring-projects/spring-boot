@@ -33,7 +33,7 @@
 		</module>
 		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
 			<property name="maximum" value="0"/>
-			<property name="format" value="org\.junit\.Assert\.assert" />
+			<property name="format" value="org\.junit\.Assert|org\.junit\.jupiter\.api\.Assertions" />
 			<property name="message"
 				value="Please use AssertJ imports." />
 			<property name="ignoreComments" value="true" />
