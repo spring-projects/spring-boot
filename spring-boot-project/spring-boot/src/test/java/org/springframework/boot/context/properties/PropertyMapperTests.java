@@ -18,11 +18,11 @@ package org.springframework.boot.context.properties;
 
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link PropertyMapper}.
@@ -57,7 +57,7 @@ class PropertyMapperTests {
 
 	@Test
 	void fromValueAlwaysApplyingWhenNonNullShouldAlwaysApplyNonNullToSource() {
-		this.map.alwaysApplyingWhenNonNull().from((String) null).toCall(Assertions::fail);
+		this.map.alwaysApplyingWhenNonNull().from((String) null).toCall(() -> fail(null));
 	}
 
 	@Test
@@ -101,14 +101,14 @@ class PropertyMapperTests {
 
 	@Test
 	void whenNonNullWhenSuppliedNullShouldNotMap() {
-		this.map.from(() -> null).whenNonNull().as(String::valueOf).toCall(Assertions::fail);
+		this.map.from(() -> null).whenNonNull().as(String::valueOf).toCall(() -> fail(null));
 	}
 
 	@Test
 	void whenNonNullWhenSuppliedThrowsNullPointerExceptionShouldNotMap() {
 		this.map.from(() -> {
 			throw new NullPointerException();
-		}).whenNonNull().as(String::valueOf).toCall(Assertions::fail);
+		}).whenNonNull().as(String::valueOf).toCall(() -> fail(null));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenTrueWhenValueIsFalseShouldNotMap() {
-		this.map.from(false).whenTrue().toCall(Assertions::fail);
+		this.map.from(false).whenTrue().toCall(() -> fail(null));
 	}
 
 	@Test
@@ -130,17 +130,17 @@ class PropertyMapperTests {
 
 	@Test
 	void whenFalseWhenValueIsTrueShouldNotMap() {
-		this.map.from(true).whenFalse().toCall(Assertions::fail);
+		this.map.from(true).whenFalse().toCall(() -> fail(null));
 	}
 
 	@Test
 	void whenHasTextWhenValueIsNullShouldNotMap() {
-		this.map.from(() -> null).whenHasText().toCall(Assertions::fail);
+		this.map.from(() -> null).whenHasText().toCall(() -> fail(null));
 	}
 
 	@Test
 	void whenHasTextWhenValueIsEmptyShouldNotMap() {
-		this.map.from("").whenHasText().toCall(Assertions::fail);
+		this.map.from("").whenHasText().toCall(() -> fail(null));
 	}
 
 	@Test
@@ -157,7 +157,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenEqualToWhenValueIsNotEqualShouldNotMatch() {
-		this.map.from("123").whenEqualTo("321").toCall(Assertions::fail);
+		this.map.from("123").whenEqualTo("321").toCall(() -> fail(null));
 	}
 
 	@Test
@@ -169,7 +169,7 @@ class PropertyMapperTests {
 	@Test
 	void whenInstanceOfWhenValueIsNotTargetTypeShouldNotMatch() {
 		Supplier<Number> supplier = () -> 123L;
-		this.map.from(supplier).whenInstanceOf(Double.class).toCall(Assertions::fail);
+		this.map.from(supplier).whenInstanceOf(Double.class).toCall(() -> fail(null));
 	}
 
 	@Test
@@ -180,7 +180,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenWhenValueDoesNotMatchShouldNotMap() {
-		this.map.from("123").when("321"::equals).toCall(Assertions::fail);
+		this.map.from("123").when("321"::equals).toCall(() -> fail(null));
 	}
 
 	@Test
@@ -198,12 +198,12 @@ class PropertyMapperTests {
 
 	@Test
 	void alwaysApplyingWhenNonNullShouldAlwaysApplyNonNullToSource() {
-		this.map.alwaysApplyingWhenNonNull().from(() -> null).toCall(Assertions::fail);
+		this.map.alwaysApplyingWhenNonNull().from(() -> null).toCall(() -> fail(null));
 	}
 
 	@Test
 	void whenWhenValueNotMatchesShouldSupportChainedCalls() {
-		this.map.from("123").when("456"::equals).when("123"::equals).toCall(Assertions::fail);
+		this.map.from("123").when("456"::equals).when("123"::equals).toCall(() -> fail(null));
 	}
 
 	@Test
