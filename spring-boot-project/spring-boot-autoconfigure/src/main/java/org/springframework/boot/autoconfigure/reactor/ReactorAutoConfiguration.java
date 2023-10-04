@@ -27,14 +27,14 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
  *
  * @author Brian Clozel
- * @since 3.0.2
+ * @since 3.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Hooks.class)
 @EnableConfigurationProperties(ReactorProperties.class)
 public class ReactorAutoConfiguration {
 
-	public ReactorAutoConfiguration(ReactorProperties properties) {
+	ReactorAutoConfiguration(ReactorProperties properties) {
 		if (properties.getContextPropagation() == ReactorProperties.ContextPropagationMode.AUTO) {
 			Hooks.enableAutomaticContextPropagation();
 		}

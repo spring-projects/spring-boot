@@ -2092,7 +2092,7 @@
     },
     {
       "name": "spring.reactor.context-propagation",
-      "defaultValue": "auto"
+      "defaultValue": "limited"
     },
     {
       "name": "spring.reactor.stacktrace-mode.enabled",

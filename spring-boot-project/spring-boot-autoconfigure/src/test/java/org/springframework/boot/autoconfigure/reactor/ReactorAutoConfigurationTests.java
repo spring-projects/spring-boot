@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.reactor;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.micrometer.context.ContextRegistry;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ReactorAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  */
 class ReactorAutoConfigurationTests {
 
@@ -41,7 +43,7 @@ class ReactorAutoConfigurationTests {
 
 	private static final String THREADLOCAL_KEY = "ReactorAutoConfigurationTests";
 
-	private static final ThreadLocal<String> THREADLOCAL_VALUE = ThreadLocal.withInitial(() -> "failure");
+	private static final ThreadLocal<String> THREADLOCAL_VALUE = ThreadLocal.withInitial(() -> "initial");
 
 	@BeforeAll
 	static void initializeThreadLocalAccessors() {
@@ -49,15 +51,33 @@ class ReactorAutoConfigurationTests {
 		globalRegistry.registerThreadLocalAccessor(THREADLOCAL_KEY, THREADLOCAL_VALUE);
 	}
 
+	@AfterAll
+	static void removeThreadLocalAccessors() {
+		ContextRegistry globalRegistry = ContextRegistry.getInstance();
+		globalRegistry.removeThreadLocalAccessor(THREADLOCAL_KEY);
+	}
+
 	@Test
-	void shouldConfigureAutomaticContextPropagation() {
+	void shouldNotConfigurePropagationByDefault() {
 		AtomicReference<String> threadLocalValue = new AtomicReference<>();
 		this.contextRunner.run((applicationContext) -> {
 			Mono.just("test")
 				.doOnNext((element) -> threadLocalValue.set(THREADLOCAL_VALUE.get()))
-				.contextWrite(Context.of(THREADLOCAL_KEY, "success"))
+				.contextWrite(Context.of(THREADLOCAL_KEY, "updated"))
 				.block();
-			assertThat(threadLocalValue.get()).isEqualTo("success");
+			assertThat(threadLocalValue.get()).isEqualTo("initial");
+		});
+	}
+
+	@Test
+	void shouldConfigurePropagationIfSetToAuto() {
+		AtomicReference<String> threadLocalValue = new AtomicReference<>();
+		this.contextRunner.withPropertyValues("spring.reactor.context-propagation=auto").run((applicationContext) -> {
+			Mono.just("test")
+				.doOnNext((element) -> threadLocalValue.set(THREADLOCAL_VALUE.get()))
+				.contextWrite(Context.of(THREADLOCAL_KEY, "updated"))
+				.block();
+			assertThat(threadLocalValue.get()).isEqualTo("updated");
 		});
 	}
 

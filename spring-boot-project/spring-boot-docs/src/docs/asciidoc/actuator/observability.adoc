@@ -14,7 +14,11 @@ NOTE: Low cardinality key-values will be added to metrics and traces, while high
 Beans of type `ObservationPredicate`, `GlobalObservationConvention`, `ObservationFilter` and `ObservationHandler` will be automatically registered on the `ObservationRegistry`.
 You can additionally register any number of `ObservationRegistryCustomizer` beans to further configure the registry.
 
-For more details please see the https://micrometer.io/docs/observation[Micrometer Observation documentation].
+Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
+By default, `ThreadLocal` values are not automatically reinstated in reactive operators.
+This behavior is controlled with the configprop:spring.reactor.context-propagation[] property, which can be set to `auto` to enable automatic propagation.
+
+For more details about observations please see the https://micrometer.io/docs/observation[Micrometer Observation documentation].
 
 TIP: Observability for JDBC can be configured using a separate project.
 The https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
@@ -79,8 +83,5 @@ The attributes of the `Resource` can be configured via the configprop:management
 
 NOTE: Spring Boot does not provide auto-configuration for OpenTelemetry metrics or logging.
 OpenTelemetry tracing is only auto-configured when used together with <<actuator#actuator.micrometer-tracing, Micrometer Tracing>>.
-
-Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
-`ThreadLocal` values are automatically reinstated in reactive operators, this behavior is controlled with the configprop:spring.reactor.context-propagation[] property.
 
 The next sections will provide more details about logging, metrics and traces.

@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Reactor.
  *
  * @author Brian Clozel
- * @since 3.0.3
+ * @since 3.2.0
  */
 @ConfigurationProperties(prefix = "spring.reactor")
 public class ReactorProperties {
@@ -30,7 +30,7 @@ public class ReactorProperties {
 	/**
 	 * Context Propagation support mode for Reactor operators.
 	 */
-	private ContextPropagationMode contextPropagation = ContextPropagationMode.AUTO;
+	private ContextPropagationMode contextPropagation = ContextPropagationMode.LIMITED;
 
 	public ContextPropagationMode getContextPropagation() {
 		return this.contextPropagation;
