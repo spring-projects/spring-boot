@@ -24,12 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link PemSslStoreBundle}.
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class PemSslStoreBundleTests {
 
@@ -129,6 +131,34 @@ class PemSslStoreBundleTests {
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
 		assertThat(bundle.getTrustStore())
 			.satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
+	}
+
+	@Test
+	void shouldVerifyKeysIfEnabled() {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
+			.forCertificate("classpath:org/springframework/boot/ssl/pem/key1.crt")
+			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem");
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, "test-alias", "keysecret", true);
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
+	}
+
+	@Test
+	void shouldVerifyKeysIfEnabledAndCertificateChainIsUsed() {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
+			.forCertificate("classpath:org/springframework/boot/ssl/pem/key2-chain.crt")
+			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key2.pem");
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, "test-alias", "keysecret", true);
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
+	}
+
+	@Test
+	void shouldFailIfVerifyKeysIsEnabledAndKeysDontMatch() {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
+			.forCertificate("classpath:org/springframework/boot/ssl/pem/key2.crt")
+			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new PemSslStoreBundle(keyStoreDetails, null, null, null, true))
+			.withMessageContaining("Private key matches none of the certificates");
 	}
 
 	private Consumer<KeyStore> storeContainingCert(String keyAlias) {
