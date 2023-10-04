@@ -307,7 +307,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 				assertThat(jar).isFile();
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-zip-packaging:0.0.1.BUILD-SNAPSHOT")
-					.contains("Main-Class: org.springframework.boot.loader.PropertiesLauncher")
+					.contains("Main-Class: org.springframework.boot.loader.launch.PropertiesLauncher")
 					.contains("Successfully built image");
 				removeImage("build-image-zip-packaging", "0.0.1.BUILD-SNAPSHOT");
 			});
