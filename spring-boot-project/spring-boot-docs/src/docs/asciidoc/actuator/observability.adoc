@@ -80,4 +80,7 @@ The attributes of the `Resource` can be configured via the configprop:management
 NOTE: Spring Boot does not provide auto-configuration for OpenTelemetry metrics or logging.
 OpenTelemetry tracing is only auto-configured when used together with <<actuator#actuator.micrometer-tracing, Micrometer Tracing>>.
 
+Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
+`ThreadLocal` values are automatically reinstated in reactive operators, this behavior is controlled with the configprop:spring.reactor.context-propagation[] property.
+
 The next sections will provide more details about logging, metrics and traces.
