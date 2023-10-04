@@ -269,7 +269,8 @@ If you find such a problem, you need to request a fix with the original authors.
 [[using.devtools.livereload]]
 === LiveReload
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used to trigger a browser refresh when a resource is changed.
-LiveReload browser extensions are freely available for Chrome, Firefox and Safari from http://livereload.com/extensions/[livereload.com].
+LiveReload browser extensions are freely available for Chrome, Firefox and Safari.
+You can find these extensions by searching 'LiveReload' in the marketplace or store of your chosen browser.
 
 If you do not want to start the LiveReload server when your application runs, you can set the configprop:spring.devtools.livereload.enabled[] property to `false`.
 
