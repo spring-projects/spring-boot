@@ -20,8 +20,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.micrometer.context.ContextRegistry;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
@@ -44,6 +47,12 @@ class ReactorAutoConfigurationTests {
 	private static final String THREADLOCAL_KEY = "ReactorAutoConfigurationTests";
 
 	private static final ThreadLocal<String> THREADLOCAL_VALUE = ThreadLocal.withInitial(() -> "initial");
+
+	@BeforeEach
+	@AfterEach
+	void resetStaticState() {
+		Hooks.disableAutomaticContextPropagation();
+	}
 
 	@BeforeAll
 	static void initializeThreadLocalAccessors() {
