@@ -108,8 +108,7 @@ public abstract class TestJar {
 		writeManifest(jarOutputStream, "j2", multiRelease);
 		if (multiRelease) {
 			writeEntry(jarOutputStream, "multi-release.dat", BASE_VERSION);
-			writeEntry(jarOutputStream,
-					String.format("META-INF/versions/%d/multi-release.dat", MULTI_JAR_VERSION),
+			writeEntry(jarOutputStream, String.format("META-INF/versions/%d/multi-release.dat", MULTI_JAR_VERSION),
 					MULTI_JAR_VERSION);
 		}
 		else {
