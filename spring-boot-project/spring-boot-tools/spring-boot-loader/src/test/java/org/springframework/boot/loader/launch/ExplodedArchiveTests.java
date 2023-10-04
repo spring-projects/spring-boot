@@ -85,7 +85,7 @@ class ExplodedArchiveTests {
 	}
 
 	@Test
-	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
+	void getClassPathUrlsWhenNoPredicatesReturnsUrls() throws Exception {
 		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES);
 		URL[] expectedUrls = TestJar.expectedEntries().stream().map(this::toUrl).toArray(URL[]::new);
 		assertThat(urls).containsExactlyInAnyOrder(expectedUrls);
@@ -123,7 +123,7 @@ class ExplodedArchiveTests {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				File destination = new File(this.rootDirectory.getAbsolutePath() + File.separator + entry.getName());
+				File destination = new File(this.rootDirectory, entry.getName());
 				destination.getParentFile().mkdirs();
 				if (entry.isDirectory()) {
 					destination.mkdir();

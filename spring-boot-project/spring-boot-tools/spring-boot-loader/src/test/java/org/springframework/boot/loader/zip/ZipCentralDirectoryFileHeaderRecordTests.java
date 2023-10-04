@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.Test;
@@ -129,7 +131,8 @@ class ZipCentralDirectoryFileHeaderRecordTests {
 		record.copyTo(dataBlock, 0, entry);
 		assertThat(entry.getMethod()).isEqualTo(ZipEntry.DEFLATED);
 		assertThat(entry.getTimeLocal()).hasYear(2007);
-		assertThat(entry.getTime()).isEqualTo(1172356386000L);
+		ZonedDateTime expectedTime = ZonedDateTime.of(2007, 02, 24, 14, 33, 06, 0, ZoneId.systemDefault());
+		assertThat(entry.getTime()).isEqualTo(expectedTime.toEpochSecond() * 1000);
 		assertThat(entry.getCrc()).isEqualTo(0xFFFFFFFFL);
 		assertThat(entry.getCompressedSize()).isEqualTo(1);
 		assertThat(entry.getSize()).isEqualTo(2);

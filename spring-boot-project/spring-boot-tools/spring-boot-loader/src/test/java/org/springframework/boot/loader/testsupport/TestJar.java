@@ -35,21 +35,9 @@ import java.util.zip.ZipEntry;
  */
 public abstract class TestJar {
 
+	public static final int MULTI_JAR_VERSION = Runtime.version().feature();
+
 	private static final int BASE_VERSION = 8;
-
-	private static final int RUNTIME_VERSION;
-
-	static {
-		int version;
-		try {
-			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
-			version = (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
-		}
-		catch (Throwable ex) {
-			version = BASE_VERSION;
-		}
-		RUNTIME_VERSION = version;
-	}
 
 	public static void create(File file) throws Exception {
 		create(file, false);
@@ -120,8 +108,9 @@ public abstract class TestJar {
 		writeManifest(jarOutputStream, "j2", multiRelease);
 		if (multiRelease) {
 			writeEntry(jarOutputStream, "multi-release.dat", BASE_VERSION);
-			writeEntry(jarOutputStream, String.format("META-INF/versions/%d/multi-release.dat", RUNTIME_VERSION),
-					RUNTIME_VERSION);
+			writeEntry(jarOutputStream,
+					String.format("META-INF/versions/%d/multi-release.dat", MULTI_JAR_VERSION),
+					MULTI_JAR_VERSION);
 		}
 		else {
 			writeEntry(jarOutputStream, "3.dat", 3);

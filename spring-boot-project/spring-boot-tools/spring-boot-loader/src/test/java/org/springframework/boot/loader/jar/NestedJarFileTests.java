@@ -352,7 +352,8 @@ class NestedJarFileTests {
 			assertThat(jar.stream().map((entry) -> entry.getName() + ":" + entry.getRealName())).containsExactly(
 					"META-INF/:META-INF/", "META-INF/MANIFEST.MF:META-INF/MANIFEST.MF",
 					"multi-release.dat:multi-release.dat",
-					"META-INF/versions/17/multi-release.dat:META-INF/versions/17/multi-release.dat");
+					"META-INF/versions/%1$d/multi-release.dat:META-INF/versions/%1$d/multi-release.dat"
+						.formatted(TestJar.MULTI_JAR_VERSION));
 		}
 	}
 
@@ -361,7 +362,8 @@ class NestedJarFileTests {
 		try (NestedJarFile jar = new NestedJarFile(this.file, "multi-release.jar", Runtime.version())) {
 			assertThat(jar.versionedStream().map((entry) -> entry.getName() + ":" + entry.getRealName()))
 				.containsExactly("META-INF/:META-INF/", "META-INF/MANIFEST.MF:META-INF/MANIFEST.MF",
-						"multi-release.dat:META-INF/versions/17/multi-release.dat");
+						"multi-release.dat:META-INF/versions/%1$d/multi-release.dat"
+							.formatted(TestJar.MULTI_JAR_VERSION));
 		}
 	}
 
