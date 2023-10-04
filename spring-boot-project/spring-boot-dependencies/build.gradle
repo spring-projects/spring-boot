@@ -1564,7 +1564,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "3.1.0-M1") {
+	library("Spring Kafka", "3.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
