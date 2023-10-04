@@ -24,6 +24,8 @@
 			<property name="regexp" value="true" />
 			<property name="illegalClasses"
 				value="javax.annotation.PostConstruct, jakarta.annotation.PostConstruct"/>
+			<property name="illegalPkgs"
+				value="^io\.opentelemetry\.semconv.*"/>
 		</module>
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">

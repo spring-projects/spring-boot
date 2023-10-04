@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -52,6 +53,8 @@ public class OpenTelemetryAutoConfiguration {
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "application";
 
+	static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
+
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
 	OpenTelemetrySdk openTelemetry(ObjectProvider<SdkTracerProvider> tracerProvider,
@@ -67,12 +70,10 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings("deprecation")
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		return Resource.getDefault()
-			.merge(Resource.create(Attributes
-				.of(io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME, applicationName)))
+			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)))
 			.merge(toResource(properties));
 	}
 

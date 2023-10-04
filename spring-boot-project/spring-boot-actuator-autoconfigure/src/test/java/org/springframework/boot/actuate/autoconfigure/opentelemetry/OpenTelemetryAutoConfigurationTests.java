@@ -24,6 +24,7 @@ import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.semconv.ResourceAttributes;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -81,22 +82,20 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void shouldApplySpringApplicationNameToResource() {
 		this.runner.withPropertyValues("spring.application.name=my-application").run((context) -> {
 			Resource resource = context.getBean(Resource.class);
-			assertThat(resource.getAttributes().asMap()).contains(entry(
-					io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME, "my-application"));
+			assertThat(resource.getAttributes().asMap())
+				.contains(entry(ResourceAttributes.SERVICE_NAME, "my-application"));
 		});
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void shouldFallbackToDefaultApplicationNameIfSpringApplicationNameIsNotSet() {
 		this.runner.run((context) -> {
 			Resource resource = context.getBean(Resource.class);
-			assertThat(resource.getAttributes().asMap()).contains(
-					entry(io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME, "application"));
+			assertThat(resource.getAttributes().asMap())
+				.contains(entry(ResourceAttributes.SERVICE_NAME, "application"));
 		});
 	}
 
