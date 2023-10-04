@@ -94,9 +94,9 @@ class PaketoBuilderTests {
 							"paketo-buildpacks/executable-jar", "paketo-buildpacks/dist-zip",
 							"paketo-buildpacks/spring-boot");
 				metadata.processOfType("web")
-					.containsExactly("java", "org.springframework.boot.loader.launch.launch.JarLauncher");
+					.containsExactly("java", "org.springframework.boot.loader.launch.JarLauncher");
 				metadata.processOfType("executable-jar")
-					.containsExactly("java", "org.springframework.boot.loader.launch.launch.JarLauncher");
+					.containsExactly("java", "org.springframework.boot.loader.launch.JarLauncher");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "executable-jar");
