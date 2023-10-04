@@ -1369,7 +1369,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2022.0.10") {
+	library("Spring Data Bom", "2022.0.11-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
