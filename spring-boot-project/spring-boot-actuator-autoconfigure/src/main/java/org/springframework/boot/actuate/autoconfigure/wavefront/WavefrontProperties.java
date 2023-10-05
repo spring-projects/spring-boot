@@ -58,6 +58,11 @@ public class WavefrontProperties {
 	private String apiToken;
 
 	/**
+	 * Type of the API token.
+	 */
+	private TokenType apiTokenType;
+
+	/**
 	 * Application configuration.
 	 */
 	private final Application application = new Application();
@@ -165,6 +170,14 @@ public class WavefrontProperties {
 
 	public void setTraceDerivedCustomTagKeys(Set<String> traceDerivedCustomTagKeys) {
 		this.traceDerivedCustomTagKeys = traceDerivedCustomTagKeys;
+	}
+
+	public TokenType getApiTokenType() {
+		return this.apiTokenType;
+	}
+
+	public void setApiTokenType(TokenType apiTokenType) {
+		this.apiTokenType = apiTokenType;
 	}
 
 	public static class Application {
@@ -382,6 +395,32 @@ public class WavefrontProperties {
 			}
 
 		}
+
+	}
+
+	/**
+	 * Wavefront token type.
+	 *
+	 * @since 3.2.0
+	 */
+	public enum TokenType {
+
+		/**
+		 * No token.
+		 */
+		NO_TOKEN,
+		/**
+		 * Wavefront API token.
+		 */
+		WAVEFRONT_API_TOKEN,
+		/**
+		 * CSP API token.
+		 */
+		CSP_API_TOKEN,
+		/**
+		 * CSP client credentials.
+		 */
+		CSP_CLIENT_CREDENTIALS
 
 	}
 

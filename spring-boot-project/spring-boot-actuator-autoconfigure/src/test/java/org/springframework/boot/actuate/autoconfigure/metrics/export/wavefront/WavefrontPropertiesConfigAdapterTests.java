@@ -18,11 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
 
+import com.wavefront.sdk.common.clients.service.token.TokenService.Type;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Metrics.Export;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.TokenType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -105,6 +109,22 @@ class WavefrontPropertiesConfigAdapterTests extends
 		Export properties = createProperties();
 		properties.setReportDayDistribution(true);
 		assertThat(createConfigAdapter(properties).reportDayDistribution()).isTrue();
+	}
+
+	@ParameterizedTest
+	@CsvSource(textBlock = """
+			null,					WAVEFRONT_API_TOKEN
+			NO_TOKEN,				NO_TOKEN
+			WAVEFRONT_API_TOKEN,	WAVEFRONT_API_TOKEN
+			CSP_API_TOKEN,			CSP_API_TOKEN
+			CSP_CLIENT_CREDENTIALS,	CSP_CLIENT_CREDENTIALS
+			""")
+	void whenTokenTypeIsSetAdapterReturnsIt(String property, String wavefront) {
+		TokenType propertyToken = property.equals("null") ? null : TokenType.valueOf(property);
+		Type wavefrontToken = Type.valueOf(wavefront);
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setApiTokenType(propertyToken);
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).apiTokenType()).isEqualTo(wavefrontToken);
 	}
 
 }
