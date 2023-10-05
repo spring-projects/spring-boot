@@ -28,12 +28,12 @@ anchors:
     GITHUB_USERNAME: ((github-username))
     MILESTONE: ((milestone))
   sontatype-task-params: &sonatype-task-params
-    SONATYPE_USER_TOKEN: ((sonatype-username))
-    SONATYPE_PASSWORD_TOKEN: ((sonatype-password))
+    SONATYPE_USER: ((sonatype-username))
+    SONATYPE_PASSWORD: ((sonatype-password))
     SONATYPE_URL: ((sonatype-url))
     SONATYPE_STAGING_PROFILE_ID: ((sonatype-staging-profile-id))
   artifactory-task-params: &artifactory-task-params
-    ARTIFACTORY_SERVER: ((artifactory-server))
+    ARTIFACTORY_URL: ((artifactory-url))
     ARTIFACTORY_USERNAME: ((artifactory-username))
     ARTIFACTORY_PASSWORD: ((artifactory-password))
   sdkman-task-params: &sdkman-task-params
@@ -197,7 +197,7 @@ resources:
   type: artifactory-resource
   icon: package-variant
   source:
-    uri: ((artifactory-server))
+    uri: ((artifactory-url))
     username: ((artifactory-username))
     password: ((artifactory-password))
     build_name: ((build-name))
