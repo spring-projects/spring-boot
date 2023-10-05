@@ -1,0 +1,33 @@
+package org.springframework.boot.autoconfigure.data.rest;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+/**
+ * Configurations for Bean Validation against Repository Events
+ *
+ * @author Yang Li
+ * @since 3.1.0
+ */
+@Configuration
+public class RepositoryEventBeanValidationConfiguration implements RepositoryRestConfigurer {
+
+	@Bean
+	@ConditionalOnClass(LocalValidatorFactoryBean.class)
+	@ConditionalOnMissingBean(LocalValidatorFactoryBean.class)
+	LocalValidatorFactoryBean localValidatorFactoryBean() {
+		return new LocalValidatorFactoryBean();
+	}
+
+	@Override
+	public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener v) {
+		v.addValidator("beforeCreate", localValidatorFactoryBean());
+		v.addValidator("beforeSave", localValidatorFactoryBean());
+		v.addValidator("beforeLinkSave", localValidatorFactoryBean());
+	}
+}
