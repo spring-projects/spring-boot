@@ -24,15 +24,19 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.ssl.pem.PemDirectorySslStoreBundle;
+import org.springframework.boot.ssl.pem.PemDirectorySslStoreBundle.CertificateMatcher;
+import org.springframework.boot.ssl.pem.PemDirectorySslStoreBundle.KeyLocator;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 
 /**
  * {@link SslBundle} backed by {@link JksSslBundleProperties} or
- * {@link PemSslBundleProperties}.
+ * {@link PemSslBundleProperties} or {@link PemDirectorySslBundleProperties}.
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public final class PropertiesSslBundle implements SslBundle {
@@ -106,6 +110,17 @@ public final class PropertiesSslBundle implements SslBundle {
 		return new PropertiesSslBundle(asSslStoreBundle(properties), properties);
 	}
 
+	/**
+	 * Get an {@link SslBundle} for the given {@link PemDirectorySslBundleProperties}.
+	 * @param properties the source properties
+	 * @return an {@link SslBundle} instance
+	 * @since 3.2.0
+	 */
+	public static SslBundle get(PemDirectorySslBundleProperties properties) {
+		properties.validate();
+		return new PropertiesSslBundle(asSslStoreBundle(properties), properties);
+	}
+
 	private static SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
 		PemSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
 		PemSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
@@ -127,6 +142,13 @@ public final class PropertiesSslBundle implements SslBundle {
 	private static JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
 		return new JksSslStoreDetails(properties.getType(), properties.getProvider(), properties.getLocation(),
 				properties.getPassword());
+	}
+
+	private static SslStoreBundle asSslStoreBundle(PemDirectorySslBundleProperties properties) {
+		return new PemDirectorySslStoreBundle(properties.toDetails(),
+				CertificateMatcher.withExtension(properties.getCertificateExtension()),
+				KeyLocator.withExtension(properties.getCertificateExtension(), properties.getKeyExtension()),
+				properties.getCertificateSelection().getCertificateSelector());
 	}
 
 }

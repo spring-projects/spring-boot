@@ -54,12 +54,21 @@ public class SslProperties {
 		 */
 		private final Map<String, JksSslBundleProperties> jks = new LinkedHashMap<>();
 
+		/**
+		 * Directory containing PEM-encoded SSL trust material.
+		 */
+		private final Map<String, PemDirectorySslBundleProperties> pemdir = new LinkedHashMap<>();
+
 		public Map<String, PemSslBundleProperties> getPem() {
 			return this.pem;
 		}
 
 		public Map<String, JksSslBundleProperties> getJks() {
 			return this.jks;
+		}
+
+		public Map<String, PemDirectorySslBundleProperties> getPemdir() {
+			return this.pemdir;
 		}
 
 	}

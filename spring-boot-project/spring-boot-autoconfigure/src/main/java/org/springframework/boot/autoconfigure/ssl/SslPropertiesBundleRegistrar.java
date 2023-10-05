@@ -28,6 +28,7 @@ import org.springframework.boot.ssl.SslBundleRegistry;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 
@@ -41,6 +42,7 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	public void registerBundles(SslBundleRegistry registry) {
 		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get);
 		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get);
+		registerBundles(registry, this.properties.getPemdir(), PropertiesSslBundle::get);
 	}
 
 	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,

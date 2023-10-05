@@ -16,13 +16,20 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.autoconfigure.ssl.PemDirectorySslBundleProperties.CertificateSelection;
 import org.springframework.boot.ssl.SslBundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,6 +104,47 @@ class PropertiesSslBundleTests {
 		KeyStore trustStore = sslBundle.getStores().getTrustStore();
 		assertThat(trustStore.getType()).isEqualTo("PKCS12");
 		assertThat(trustStore.getProvider().getName()).isEqualTo("SUN");
+	}
+
+	@Test
+	void pemDirectoryPropertiesAreMappedToSslBundle(@TempDir Path tempDir) throws Exception {
+		storeFile("/org/springframework/boot/autoconfigure/ssl/rsa-key.pem", tempDir.resolve("1.key"));
+		storeFile("/org/springframework/boot/autoconfigure/ssl/rsa-cert.pem", tempDir.resolve("1.crt"));
+		PemDirectorySslBundleProperties properties = new PemDirectorySslBundleProperties();
+		properties.getKey().setAlias("alias");
+		properties.getKey().setPassword("secret");
+		properties.getOptions().setCiphers(Set.of("cipher1", "cipher2", "cipher3"));
+		properties.getOptions().setEnabledProtocols(Set.of("protocol1", "protocol2"));
+		properties.getKeystore().setType("PKCS12");
+		properties.getTruststore().setType("PKCS12");
+		properties.setVerifyKeys(true);
+		properties.setKeyExtension(".key");
+		properties.setCertificateExtension(".crt");
+		properties.setCertificateSelection(CertificateSelection.LONGEST_LIFETIME);
+		properties.setDirectory(tempDir.toAbsolutePath().toString());
+		SslBundle sslBundle = PropertiesSslBundle.get(properties);
+		assertThat(sslBundle.getKey().getAlias()).isEqualTo("alias");
+		assertThat(sslBundle.getKey().getPassword()).isEqualTo("secret");
+		assertThat(sslBundle.getOptions().getCiphers()).containsExactlyInAnyOrder("cipher1", "cipher2", "cipher3");
+		assertThat(sslBundle.getOptions().getEnabledProtocols()).containsExactlyInAnyOrder("protocol1", "protocol2");
+		assertThat(sslBundle.getStores()).isNotNull();
+		Certificate certificate = sslBundle.getStores().getKeyStore().getCertificate("alias");
+		assertThat(certificate).isNotNull();
+		assertThat(certificate.getType()).isEqualTo("X.509");
+		Key key = sslBundle.getStores().getKeyStore().getKey("alias", null);
+		assertThat(key).isNotNull();
+		assertThat(key.getAlgorithm()).isEqualTo("RSA");
+		certificate = sslBundle.getStores().getTrustStore().getCertificate("alias-0");
+		assertThat(certificate).isNotNull();
+		assertThat(certificate.getType()).isEqualTo("X.509");
+	}
+
+	private static void storeFile(String resourceName, Path file) throws IOException {
+		try (InputStream resourceStream = PropertiesSslBundleTests.class.getResourceAsStream(resourceName);
+				OutputStream fileStream = Files.newOutputStream(file)) {
+			assertThat(resourceStream).isNotNull();
+			resourceStream.transferTo(fileStream);
+		}
 	}
 
 }
