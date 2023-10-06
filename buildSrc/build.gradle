@@ -34,6 +34,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.11.4")
 	implementation("com.gradle:gradle-enterprise-gradle-plugin:3.12.1")
 	implementation("com.tngtech.archunit:archunit:1.0.0")
+	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
