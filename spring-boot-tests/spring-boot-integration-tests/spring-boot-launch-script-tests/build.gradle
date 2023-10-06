@@ -2,9 +2,13 @@ plugins {
 	id "java"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
+	id "de.undercouch.download"
 }
 
 description = "Spring Boot Launch Script Integration Tests"
+
+def jdkVersion = "17.0.8.1+1"
+def jdkArch = "aarch64".equalsIgnoreCase(System.getProperty("os.arch")) ? "aarch64" : "amd64"
 
 configurations {
 	app
@@ -36,6 +40,26 @@ task buildApp(type: GradleBuild) {
 	dir = "${buildDir}/spring-boot-launch-script-tests-app"
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
+}
+
+task downloadJdk(type: Download) {
+	def destFolder = new File(rootProject.buildDir, "downloads/jdk/bellsoft")
+	destFolder.mkdirs()
+	src "https://download.bell-sw.com/java/${jdkVersion}/bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
+	dest destFolder
+	tempAndMove true
+	overwrite false
+}
+
+task syncJdkDownloads(type: Sync) {
+	dependsOn downloadJdk
+	from "${rootProject.buildDir}/downloads/jdk/bellsoft/"
+	include "bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
+	into "${project.buildDir}/downloads/jdk/bellsoft/"
+}
+
+processIntTestResources {
+	dependsOn syncJdkDownloads
 }
 
 intTest {
