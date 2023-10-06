@@ -18,6 +18,8 @@ dependencies {
 	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
+	app("org.bouncycastle:bcprov-jdk18on:1.76")
 
 	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -43,6 +45,18 @@ task buildApp(type: GradleBuild) {
 	tasks  = ["build"]
 }
 
+task syncSignedJarAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-loader-tests-signed-jar")
+	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-signed-jar")
+}
+
+task buildSignedJarApp(type: GradleBuild) {
+	dependsOn syncSignedJarAppSource, syncMavenRepository
+	dir = "${buildDir}/spring-boot-loader-tests-signed-jar"
+	startParameter.buildCacheEnabled = false
+	tasks  = ["build"]
+}
+
 task downloadJdk(type: Download) {
 	def destFolder = new File(rootProject.buildDir, "downloads/jdk/oracle")
 	destFolder.mkdirs()
@@ -64,5 +78,5 @@ processIntTestResources {
 }
 
 intTest {
-	dependsOn buildApp
+	dependsOn buildApp, buildSignedJarApp
 }

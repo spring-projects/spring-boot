@@ -1,0 +1,30 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+plugins {
+	id "java"
+	id "org.springframework.boot"
+}
+
+apply plugin: "io.spring.dependency-management"
+
+repositories {
+	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	mavenCentral()
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+}
+
+dependencies {
+	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.bouncycastle:bcprov-jdk18on:1.76")
+}
+
+tasks.register("bootJarUnpack", BootJar.class) {
+	mainClass = "org.springframework.boot.loaderapp.LoaderSignedJarTestApplication"
+	classpath = bootJar.classpath
+	requiresUnpack '**/bcprov-jdk18on-*.jar'
+	archiveClassifier.set("unpack")
+	targetJavaVersion = targetCompatibility
+}
+
+build.dependsOn bootJarUnpack

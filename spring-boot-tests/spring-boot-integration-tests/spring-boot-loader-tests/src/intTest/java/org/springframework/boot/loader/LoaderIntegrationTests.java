@@ -37,6 +37,7 @@ import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnava
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
 /**
  * Integration tests loader that supports fat jars.
@@ -52,7 +53,7 @@ class LoaderIntegrationTests {
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
-		try (GenericContainer<?> container = createContainer(javaRuntime)) {
+		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-app", null)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
 			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from")
@@ -62,18 +63,46 @@ class LoaderIntegrationTests {
 		}
 	}
 
-	private GenericContainer<?> createContainer(JavaRuntime javaRuntime) {
+	@ParameterizedTest
+	@MethodSource("javaRuntimes")
+	void runSignedJar(JavaRuntime javaRuntime) {
+		assumeThat(javaRuntime.toString()).isNotEqualTo("Oracle JDK 17"); // gh-28837
+		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-signed-jar",
+				null)) {
+			container.start();
+			System.out.println(this.output.toUtf8String());
+			assertThat(this.output.toUtf8String()).contains("Legion of the Bouncy Castle");
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("javaRuntimes")
+	void runSignedJarWhenUnpack(JavaRuntime javaRuntime) {
+		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-signed-jar",
+				"unpack")) {
+			container.start();
+			System.out.println(this.output.toUtf8String());
+			assertThat(this.output.toUtf8String()).contains("Legion of the Bouncy Castle");
+		}
+	}
+
+	private GenericContainer<?> createContainer(JavaRuntime javaRuntime, String name, String classifier) {
 		return javaRuntime.getContainer()
 			.withLogConsumer(this.output)
-			.withCopyFileToContainer(MountableFile.forHostPath(findApplication().toPath()), "/app.jar")
+			.withCopyFileToContainer(findApplication(name, classifier), "/app.jar")
 			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
 			.withCommand("java", "-jar", "app.jar");
 	}
 
-	private File findApplication() {
-		String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-loader-tests-app");
-		File jar = new File(name);
-		Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
+	private MountableFile findApplication(String name, String classifier) {
+		return MountableFile.forHostPath(findJarFile(name, classifier).toPath());
+	}
+
+	private File findJarFile(String name, String classifier) {
+		classifier = (classifier != null) ? "-" + classifier : "";
+		String path = String.format("build/%1$s/build/libs/%1$s%2$s.jar", name, classifier);
+		File jar = new File(path);
+		Assert.state(jar.isFile(), () -> "Could not find " + path + ". Have you built it?");
 		return jar;
 	}
 
