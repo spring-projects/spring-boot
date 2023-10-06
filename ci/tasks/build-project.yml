@@ -8,7 +8,6 @@ outputs:
 caches:
 - path: gradle
 - path: build/downloads
-- path: embedmongo
 params:
   BRANCH:
   CI: true
