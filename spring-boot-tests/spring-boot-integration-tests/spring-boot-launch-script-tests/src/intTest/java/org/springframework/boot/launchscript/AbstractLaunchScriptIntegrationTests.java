@@ -17,12 +17,9 @@
 package org.springframework.boot.launchscript;
 
 import java.io.File;
-import java.net.URI;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 import org.assertj.core.api.Condition;
@@ -49,11 +46,6 @@ import static org.hamcrest.Matchers.containsString;
  * @author Moritz Halbritter
  */
 abstract class AbstractLaunchScriptIntegrationTests {
-
-	private static final Map<Architecture, URI> JAVA_DOWNLOAD_URLS = Map.of(Architecture.AMD64,
-			URI.create("https://download.bell-sw.com/java/17.0.8.1+1/bellsoft-jdk17.0.8.1+1-linux-amd64.tar.gz"),
-			Architecture.AARCH64,
-			URI.create("https://download.bell-sw.com/java/17.0.8.1+1/bellsoft-jdk17.0.8.1+1-linux-aarch64.tar.gz"));
 
 	protected static final char ESC = 27;
 
@@ -108,9 +100,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 	private static final class LaunchScriptTestContainer extends GenericContainer<LaunchScriptTestContainer> {
 
 		private LaunchScriptTestContainer(String os, String version, String scriptsDir, String testScript) {
-			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
-				.withDockerfile(Paths.get("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile"))
-				.withBuildArg("JAVA_DOWNLOAD_URL", getJavaDownloadUrl()));
+			super(createImage(os, version));
 			withCopyFileToContainer(MountableFile.forHostPath(findApplication().getAbsolutePath()), "/app.jar");
 			withCopyFileToContainer(
 					MountableFile.forHostPath("src/intTest/resources/scripts/" + scriptsDir + "test-functions.sh"),
@@ -123,14 +113,15 @@ abstract class AbstractLaunchScriptIntegrationTests {
 			withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)));
 		}
 
-		private static String getJavaDownloadUrl() {
-			Architecture architecture = Architecture.current();
-			Assert.notNull(architecture,
-					() -> String.format("Failed to find current architecture. Value of os.arch is: '%s'",
-							System.getProperty("os.arch")));
-			URI uri = JAVA_DOWNLOAD_URLS.get(architecture);
-			Assert.notNull(uri, () -> String.format("No JDK download URL for architecture %s found", architecture));
-			return uri.toString();
+		private static ImageFromDockerfile createImage(String os, String version) {
+			ImageFromDockerfile image = new ImageFromDockerfile(
+					"spring-boot-launch-script/" + os.toLowerCase() + "-" + version);
+			image.withFileFromFile("Dockerfile",
+					new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile"));
+			for (File file : new File("build/downloads/jdk/bellsoft").listFiles()) {
+				image.withFileFromFile("downloads/" + file.getName(), file);
+			}
+			return image;
 		}
 
 		private static File findApplication() {
@@ -138,32 +129,6 @@ abstract class AbstractLaunchScriptIntegrationTests {
 			File jar = new File(name);
 			Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
 			return jar;
-		}
-
-	}
-
-	private enum Architecture {
-
-		AMD64, AARCH64;
-
-		/**
-		 * Returns the current architecture.
-		 * @return the current architecture or {@code null}
-		 */
-		static Architecture current() {
-			String arch = System.getProperty("os.arch");
-			if (arch == null) {
-				return null;
-			}
-			switch (arch) {
-				case "amd64":
-				case "x86_64":
-					return AMD64;
-				case "aarch64":
-					return AARCH64;
-				default:
-					return null;
-			}
 		}
 
 	}
