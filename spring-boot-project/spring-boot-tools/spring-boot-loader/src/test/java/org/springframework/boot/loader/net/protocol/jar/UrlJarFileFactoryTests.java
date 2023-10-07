@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.loader.net.protocol.Handlers;
 import org.springframework.boot.loader.testsupport.TestJar;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class UrlJarFileFactoryTests {
 
 	@TempDir

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
 import org.springframework.boot.loader.testsupport.TestJar;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.withSettings;
  *
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class ArchiveTests {
 
 	@TempDir
@@ -75,8 +77,9 @@ class ArchiveTests {
 		CodeSource codeSource = mock(CodeSource.class);
 		given(protectionDomain.getCodeSource()).willReturn(codeSource);
 		given(codeSource.getLocation()).willReturn(jarFile.toURI().toURL());
-		Archive archive = Archive.create(protectionDomain);
-		assertThat(archive).isInstanceOf(JarFileArchive.class);
+		try (Archive archive = Archive.create(protectionDomain)) {
+			assertThat(archive).isInstanceOf(JarFileArchive.class);
+		}
 	}
 
 	@Test
@@ -99,13 +102,17 @@ class ArchiveTests {
 	void createFromFileWhenJarFileReturnsJarFileArchive() throws Exception {
 		File target = new File(this.temp, "missing");
 		TestJar.create(target);
-		assertThat(Archive.create(target)).isInstanceOf(JarFileArchive.class);
+		try (Archive archive = Archive.create(target)) {
+			assertThat(archive).isInstanceOf(JarFileArchive.class);
+		}
 	}
 
 	@Test
 	void createFromFileWhenDirectoryReturnsExplodedFileArchive() throws Exception {
 		File target = this.temp;
-		assertThat(Archive.create(target)).isInstanceOf(ExplodedArchive.class);
+		try (Archive archive = Archive.create(target)) {
+			assertThat(archive).isInstanceOf(ExplodedArchive.class);
+		}
 	}
 
 }

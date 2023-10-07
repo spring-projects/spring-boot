@@ -24,6 +24,8 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.springframework.boot.loader.ref.Cleaner;
+
 /**
  * A {@link JarFile} subclass returned from a {@link JarUrlConnection}.
  *
@@ -37,6 +39,8 @@ class UrlJarFile extends JarFile {
 
 	UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
 		super(file, true, ZipFile.OPEN_READ, version);
+		// Registered only for test cleanup since parent class is JarFile
+		Cleaner.instance.register(this, null);
 		this.manifest = new UrlJarManifest(super::getManifest);
 		this.closeAction = closeAction;
 	}
@@ -53,7 +57,9 @@ class UrlJarFile extends JarFile {
 
 	@Override
 	public void close() throws IOException {
-		this.closeAction.accept(this);
+		if (this.closeAction != null) {
+			this.closeAction.accept(this);
+		}
 		super.close();
 	}
 

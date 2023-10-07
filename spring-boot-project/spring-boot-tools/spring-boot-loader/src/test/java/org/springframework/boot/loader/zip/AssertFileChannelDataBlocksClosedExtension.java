@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -57,7 +59,9 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 
 		private final Set<Path> paths = new LinkedHashSet<>();
 
-		private final List<Cleanable> cleanup = new ArrayList<>();
+		private final List<Cleanable> clean = new ArrayList<>();
+
+		private final List<Closeable> close = new ArrayList<>();
 
 		@Override
 		public void openedFileChannel(Path path, FileChannel fileChannel) {
@@ -71,16 +75,24 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 
 		void clear() {
 			this.paths.clear();
-			this.cleanup.clear();
+			this.clean.clear();
 		}
 
-		void assertAllClosed() {
-			this.cleanup.forEach(Cleanable::clean);
+		void assertAllClosed() throws IOException {
+			for (Closeable closeable : this.close) {
+				closeable.close();
+			}
+			this.clean.forEach(Cleanable::clean);
 			assertThat(this.paths).as("open paths").isEmpty();
 		}
 
-		private void addedCleanable(Cleanable cleanable) {
-			this.cleanup.add(cleanable);
+		private void addedCleanable(Object obj, Cleanable cleanable) {
+			if (cleanable != null) {
+				this.clean.add(cleanable);
+			}
+			if (obj instanceof Closeable closeable) {
+				this.close.add(closeable);
+			}
 		}
 
 	}

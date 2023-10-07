@@ -56,7 +56,9 @@ class UrlNestedJarFile extends NestedJarFile {
 
 	@Override
 	public void close() throws IOException {
-		this.closeAction.accept(this);
+		if (this.closeAction != null) {
+			this.closeAction.accept(this);
+		}
 		super.close();
 	}
 
