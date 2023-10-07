@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -42,6 +43,7 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -63,6 +65,15 @@ class RestTemplateAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(
 				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer").isLazyInit())
 			.isTrue());
+	}
+
+	@Test
+	void assertExceptionWhenCustomRestTemplateConfigurerIsDefined() {
+		this.contextRunner
+			.withUserConfiguration(RestTemplateCustomConfigurerConfig.class)
+			.run((context) -> assertThrows( BeanDefinitionOverrideException.class, () ->{
+				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer");
+			}));
 	}
 
 	@Test
@@ -259,6 +270,16 @@ class RestTemplateAutoConfigurationTests {
 		@Bean
 		RestTemplateRequestCustomizer<?> restTemplateRequestCustomizer() {
 			return (request) -> request.getHeaders().add("spring", "boot");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestTemplateCustomConfigurerConfig {
+
+		@Bean
+		RestTemplateBuilderConfigurer restTemplateBuilderConfigurer() {
+			return new RestTemplateBuilderConfigurer();
 		}
 
 	}
