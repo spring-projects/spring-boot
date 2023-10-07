@@ -373,6 +373,7 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public void close() throws IOException {
+		super.close();
 		if (this.closed) {
 			return;
 		}
