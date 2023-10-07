@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.hateoas;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties properties} for Spring HATEOAS.
+ * {@link ConfigurationProperties Properties} for Spring HATEOAS.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties properties} for reactive codecs.
+ * {@link ConfigurationProperties Properties} for reactive codecs.
  *
  * @author Brian Clozel
  * @since 2.2.1
