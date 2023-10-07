@@ -137,7 +137,7 @@ class DependencyFilterMojoTests {
 	}
 
 	private static File createArtifactFile(String jarType) {
-		Path jarPath = temp.resolve(UUID.randomUUID().toString() + ".jar");
+		Path jarPath = temp.resolve(UUID.randomUUID() + ".jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
 		if (jarType != null) {

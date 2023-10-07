@@ -25,7 +25,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties properties} for RSocket support.
+ * {@link ConfigurationProperties Properties} for RSocket support.
  *
  * @author Brian Clozel
  * @author Chris Bono
