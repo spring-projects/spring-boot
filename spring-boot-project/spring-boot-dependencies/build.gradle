@@ -202,7 +202,7 @@ bom {
 			]
 		}
 	}
-	library("Commons Pool2", "2.11.1") {
+	library("Commons Pool2", "2.12.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-pool2"
