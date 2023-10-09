@@ -71,7 +71,31 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	}
 
 	@Test
-	void createContextCustomizerWhenClassHasNonStaticServiceConnectionFailsWithHepfulException() {
+	void createContextCustomizerWhenInterfaceHasServiceConnectionsReturnsCustomizer() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(ServiceConnectionsInterface.class, null);
+		assertThat(customizer).isNotNull();
+		assertThat(customizer.getSources()).hasSize(2);
+	}
+
+	@Test
+	void createContextCustomizerWhenSuperclassHasServiceConnectionsReturnsCustomizer() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(ServiceConnectionsSubclass.class, null);
+		assertThat(customizer).isNotNull();
+		assertThat(customizer.getSources()).hasSize(2);
+	}
+
+	@Test
+	void createContextCustomizerWhenImplementedInterfaceHasServiceConnectionsReturnsCustomizer() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(ServiceConnectionsImpl.class, null);
+		assertThat(customizer).isNotNull();
+		assertThat(customizer.getSources()).hasSize(2);
+	}
+
+	@Test
+	void createContextCustomizerWhenClassHasNonStaticServiceConnectionFailsWithHelpfulException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.factory.createContextCustomizer(NonStaticServiceConnection.class, null))
 			.withMessage("@ServiceConnection field 'service' must be static");
@@ -79,7 +103,7 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	}
 
 	@Test
-	void createContextCustomizerWhenClassHasAnnotationOnNonConnectionFieldFailsWithHepfulException() {
+	void createContextCustomizerWhenClassHasAnnotationOnNonConnectionFieldFailsWithHelpfulException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.factory.createContextCustomizer(ServiceConnectionOnWrongFieldType.class, null))
 			.withMessage("Field 'service2' in " + ServiceConnectionOnWrongFieldType.class.getName()
@@ -138,6 +162,27 @@ class ServiceConnectionContextCustomizerFactoryTests {
 			private static Container<?> service3 = new MockContainer();
 
 		}
+
+	}
+
+	interface ServiceConnectionsInterface {
+
+		@ServiceConnection
+		Container<?> service1 = new MockContainer();
+
+		@ServiceConnection
+		Container<?> service2 = new MockContainer();
+
+		default void dummy() {
+		}
+
+	}
+
+	static class ServiceConnectionsSubclass extends ServiceConnections {
+
+	}
+
+	static class ServiceConnectionsImpl implements ServiceConnectionsInterface {
 
 	}
 

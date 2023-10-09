@@ -41,6 +41,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFactory {
 
@@ -60,6 +61,9 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		});
 		if (TestContextAnnotationUtils.searchEnclosingClass(clazz)) {
 			findSources(clazz.getEnclosingClass(), sources);
+		}
+		for (Class<?> implementedInterface : clazz.getInterfaces()) {
+			findSources(implementedInterface, sources);
 		}
 	}
 
