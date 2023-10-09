@@ -219,12 +219,15 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private static final class TcpSslServerCustomizer
 			extends org.springframework.boot.web.embedded.netty.SslServerCustomizer {
 
+		private final SslBundle sslBundle;
+
 		private TcpSslServerCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
 			super(null, clientAuth, sslBundle);
+			this.sslBundle = sslBundle;
 		}
 
 		private TcpServer apply(TcpServer server) {
-			AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec();
+			AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec(this.sslBundle);
 			return server.secure((spec) -> spec.sslContext(sslContextSpec));
 		}
 

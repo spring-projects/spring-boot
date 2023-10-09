@@ -17,10 +17,14 @@
 package org.springframework.boot.web.embedded.netty;
 
 import io.netty.handler.ssl.ClientAuth;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.Http2SslContextSpec;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.AbstractProtocolSslContextSpec;
+import reactor.netty.tcp.SslProvider;
+import reactor.netty.tcp.SslProvider.SslContextSpec;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -36,41 +40,77 @@ import org.springframework.boot.web.server.Ssl;
  * @author Chris Bono
  * @author Cyril Dangerville
  * @author Scott Frederick
+ * @author Moritz Halbritter
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public class SslServerCustomizer implements NettyServerCustomizer {
 
+	private static final Log logger = LogFactory.getLog(SslServerCustomizer.class);
+
 	private final Http2 http2;
 
-	private final Ssl.ClientAuth clientAuth;
+	private final ClientAuth clientAuth;
 
-	private final SslBundle sslBundle;
+	private volatile SslProvider sslProvider;
+
+	private volatile SslBundle sslBundle;
 
 	public SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
 		this.http2 = http2;
-		this.clientAuth = clientAuth;
+		this.clientAuth = Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE);
 		this.sslBundle = sslBundle;
+		this.sslProvider = createSslProvider(sslBundle);
 	}
 
 	@Override
 	public HttpServer apply(HttpServer server) {
-		AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec();
-		return server.secure((spec) -> spec.sslContext(sslContextSpec));
+		return server.secure(this::applySecurity);
 	}
 
+	private void applySecurity(SslContextSpec spec) {
+		spec.sslContext(this.sslProvider.getSslContext())
+			.setSniAsyncMappings((domainName, promise) -> promise.setSuccess(this.sslProvider));
+	}
+
+	void updateSslBundle(SslBundle sslBundle) {
+		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
+		this.sslBundle = sslBundle;
+		this.sslProvider = createSslProvider(sslBundle);
+	}
+
+	private SslProvider createSslProvider(SslBundle sslBundle) {
+		return SslProvider.builder().sslContext(createSslContextSpec(sslBundle)).build();
+	}
+
+	/**
+	 * Factory method used to create an {@link AbstractProtocolSslContextSpec}.
+	 * @return the {@link AbstractProtocolSslContextSpec} to use
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link #createSslContextSpec(SslBundle)}
+	 */
+	@Deprecated(since = "3.2", forRemoval = true)
 	protected AbstractProtocolSslContextSpec<?> createSslContextSpec() {
+		return createSslContextSpec(this.sslBundle);
+	}
+
+	/**
+	 * Create an {@link AbstractProtocolSslContextSpec} for a given {@link SslBundle}.
+	 * @param sslBundle the {@link SslBundle} to use
+	 * @return an {@link AbstractProtocolSslContextSpec} instance
+	 * @since 3.2.0
+	 */
+	protected final AbstractProtocolSslContextSpec<?> createSslContextSpec(SslBundle sslBundle) {
 		AbstractProtocolSslContextSpec<?> sslContextSpec = (this.http2 != null && this.http2.isEnabled())
-				? Http2SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory())
-				: Http11SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory());
-		sslContextSpec.configure((builder) -> {
-			builder.trustManager(this.sslBundle.getManagers().getTrustManagerFactory());
-			SslOptions options = this.sslBundle.getOptions();
+				? Http2SslContextSpec.forServer(sslBundle.getManagers().getKeyManagerFactory())
+				: Http11SslContextSpec.forServer(sslBundle.getManagers().getKeyManagerFactory());
+		return sslContextSpec.configure((builder) -> {
+			builder.trustManager(sslBundle.getManagers().getTrustManagerFactory());
+			SslOptions options = sslBundle.getOptions();
 			builder.protocols(options.getEnabledProtocols());
 			builder.ciphers(SslOptions.asSet(options.getCiphers()));
-			builder.clientAuth(org.springframework.boot.web.server.Ssl.ClientAuth.map(this.clientAuth, ClientAuth.NONE,
-					ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
+			builder.clientAuth(this.clientAuth);
 		});
-		return sslContextSpec;
 	}
 
 }

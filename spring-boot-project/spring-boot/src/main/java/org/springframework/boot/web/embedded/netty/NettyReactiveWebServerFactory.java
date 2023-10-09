@@ -37,11 +37,13 @@ import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link NettyWebServer}s.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
@@ -170,7 +172,12 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		return new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(), getSslBundle()).apply(httpServer);
+		SslServerCustomizer customizer = new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(), getSslBundle());
+		String bundleName = getSsl().getBundle();
+		if (StringUtils.hasText(bundleName)) {
+			getSslBundles().addBundleUpdateHandler(bundleName, customizer::updateSslBundle);
+		}
+		return customizer.apply(httpServer);
 	}
 
 	private HttpProtocol[] listProtocols() {
