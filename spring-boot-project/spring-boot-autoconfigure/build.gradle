@@ -241,7 +241,9 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
-	testImplementation("org.springframework.kafka:spring-kafka-test")
+	testImplementation("org.springframework.kafka:spring-kafka-test") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.testcontainers:cassandra")
