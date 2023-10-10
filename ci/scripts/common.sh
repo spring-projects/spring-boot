@@ -1,7 +1,7 @@
 source /opt/concourse-java.sh
 
 if [[ -d $PWD/gradle ]]; then
-	EXPORT GRADLE_USER_HOMR=`pwd`/gradle
+	export GRADLE_USER_HOME=`pwd`/gradle
 fi
 
 setup_symlinks
