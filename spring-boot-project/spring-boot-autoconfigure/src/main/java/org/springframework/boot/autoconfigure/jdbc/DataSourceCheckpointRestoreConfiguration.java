@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCheckpointRestore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,17 +32,14 @@ import org.springframework.context.annotation.Configuration;
  * Checkpoint-restore specific configuration.
  *
  * @author Olga Maciaszek-Sharma
- * @since 3.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnCheckpointRestore
 @ConditionalOnBean(DataSource.class)
-public class DataSourceCheckpointRestoreConfiguration {
+class DataSourceCheckpointRestoreConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource",
-			matchIfMissing = true)
 	static class Hikari {
 
 		@Bean

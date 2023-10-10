@@ -140,21 +140,19 @@ class HikariDataSourceConfigurationTests {
 	@ClassPathOverrides("org.crac:crac:1.3.0")
 	void whenCheckpointRestoreIsAvailableAndDataSourceHasBeenWrappedHikariAutoConfigRegistersLifecycleBean() {
 		this.contextRunner.withUserConfiguration(DataSourceWrapperConfiguration.class)
-			.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
 			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
 	}
 
 	@Test
 	void whenCheckpointRestoreIsNotAvailableHikariAutoConfigDoesNotRegisterLifecycleBean() {
-		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
+		this.contextRunner
 			.run((context) -> assertThat(context).doesNotHaveBean(HikariCheckpointRestoreLifecycle.class));
 	}
 
 	@Test
 	@ClassPathOverrides("org.crac:crac:1.3.0")
-	void whenCheckpointRestoreIsAvailableAndDataSourceInstantiatedByUserHikariAutoConfigRegistersLifecycleBean() {
+	void whenCheckpointRestoreIsAvailableAndDataSourceIsFromUserConfigurationHikariAutoConfigRegistersLifecycleBean() {
 		this.contextRunner.withUserConfiguration(UserDataSourceConfiguration.class)
-			.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
 			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
 	}
 
