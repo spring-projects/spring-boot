@@ -55,8 +55,10 @@ import org.eclipse.jetty.ee10.webapp.WebInfConfiguration;
 import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields.Mutable;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http.MimeTypes.Wrapper;
+import org.eclipse.jetty.http.SetCookieParser;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -787,6 +789,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		private final class SameSiteCookieHttpStreamWrapper extends HttpStream.Wrapper {
 
+			private static final SetCookieParser setCookieParser = SetCookieParser.newInstance();
+
 			private final Request request;
 
 			private SameSiteCookieHttpStreamWrapper(HttpStream wrapped, Request request) {
@@ -799,15 +803,18 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				super.prepareResponse(headers);
 				ListIterator<HttpField> headerFields = headers.listIterator();
 				while (headerFields.hasNext()) {
-					HttpCookieUtils.SetCookieHttpField updatedField = applySameSiteIfNecessary(headerFields.next());
+					HttpField updatedField = applySameSiteIfNecessary(headerFields.next());
 					if (updatedField != null) {
 						headerFields.set(updatedField);
 					}
 				}
 			}
 
-			private HttpCookieUtils.SetCookieHttpField applySameSiteIfNecessary(HttpField headerField) {
-				HttpCookie cookie = HttpCookieUtils.getSetCookie(headerField);
+			private HttpField applySameSiteIfNecessary(HttpField headerField) {
+				if (headerField.getHeader() != HttpHeader.SET_COOKIE) {
+					return null;
+				}
+				HttpCookie cookie = setCookieParser.parse(headerField.getValue());
 				if (cookie == null) {
 					return null;
 				}
