@@ -33,7 +33,7 @@ import java.util.EventListener;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.UUID;
@@ -52,8 +52,10 @@ import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
 import org.eclipse.jetty.ee10.webapp.Configuration;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.ee10.webapp.WebInfConfiguration;
+import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpField;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpFields.Mutable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.MimeTypes;
@@ -68,7 +70,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.HttpCookieUtils;
-import org.eclipse.jetty.server.HttpStream;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
@@ -775,6 +776,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	private static class SuppliedSameSiteCookieHandlerWrapper extends Handler.Wrapper {
 
+		private static final SetCookieParser setCookieParser = SetCookieParser.newInstance();
+
 		private final List<CookieSameSiteSupplier> suppliers;
 
 		SuppliedSameSiteCookieHandlerWrapper(List<CookieSameSiteSupplier> suppliers) {
@@ -783,62 +786,74 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		@Override
 		public boolean handle(Request request, Response response, Callback callback) throws Exception {
-			request.addHttpStreamWrapper((stream) -> new SameSiteCookieHttpStreamWrapper(stream, request));
-			return super.handle(request, response, callback);
+			SuppliedSameSiteCookieResponse wrappedResponse = new SuppliedSameSiteCookieResponse(request, response);
+			return super.handle(request, wrappedResponse, callback);
 		}
 
-		private final class SameSiteCookieHttpStreamWrapper extends HttpStream.Wrapper {
+		private class SuppliedSameSiteCookieResponse extends Response.Wrapper {
 
-			private static final SetCookieParser setCookieParser = SetCookieParser.newInstance();
+			private HttpFields.Mutable wrappedHeaders;
 
-			private final Request request;
-
-			private SameSiteCookieHttpStreamWrapper(HttpStream wrapped, Request request) {
-				super(wrapped);
-				this.request = request;
+			SuppliedSameSiteCookieResponse(Request request, Response wrapped) {
+				super(request, wrapped);
+				this.wrappedHeaders = new SuppliedSameSiteCookieHeaders(
+						request.getConnectionMetaData().getHttpConfiguration().getResponseCookieCompliance(),
+						wrapped.getHeaders());
 			}
 
 			@Override
-			public void prepareResponse(Mutable headers) {
-				super.prepareResponse(headers);
-				ListIterator<HttpField> headerFields = headers.listIterator();
-				while (headerFields.hasNext()) {
-					HttpField updatedField = applySameSiteIfNecessary(headerFields.next());
-					if (updatedField != null) {
-						headerFields.set(updatedField);
-					}
-				}
+			public Mutable getHeaders() {
+				return this.wrappedHeaders;
 			}
 
-			private HttpField applySameSiteIfNecessary(HttpField headerField) {
-				if (headerField.getHeader() != HttpHeader.SET_COOKIE) {
-					return null;
-				}
-				HttpCookie cookie = setCookieParser.parse(headerField.getValue());
-				if (cookie == null) {
-					return null;
-				}
-				SameSite sameSite = getSameSite(cookie);
+		}
+
+		private class SuppliedSameSiteCookieHeaders extends HttpFields.Mutable.Wrapper {
+
+			private final CookieCompliance compliance;
+
+			SuppliedSameSiteCookieHeaders(CookieCompliance compliance, HttpFields.Mutable fields) {
+				super(fields);
+				this.compliance = compliance;
+			}
+
+			@Override
+			public HttpField onAddField(HttpField field) {
+				return (field.getHeader() != HttpHeader.SET_COOKIE) ? field : onAddSetCookieField(field);
+			}
+
+			private HttpField onAddSetCookieField(HttpField field) {
+				HttpCookie cookie = setCookieParser.parse(field.getValue());
+				SameSite sameSite = (cookie != null) ? getSameSite(cookie) : null;
 				if (sameSite == null) {
-					return null;
+					return field;
 				}
-				return new HttpCookieUtils.SetCookieHttpField(
-						HttpCookie.build(cookie)
-							.sameSite(org.eclipse.jetty.http.HttpCookie.SameSite.from(sameSite.name()))
-							.build(),
-						this.request.getConnectionMetaData().getHttpConfiguration().getResponseCookieCompliance());
+				HttpCookie updatedCookie = buildCookieWithUpdatedSameSite(cookie, sameSite);
+				return new HttpCookieUtils.SetCookieHttpField(updatedCookie, this.compliance);
+			}
+
+			private HttpCookie buildCookieWithUpdatedSameSite(HttpCookie cookie, SameSite sameSite) {
+				return HttpCookie.build(cookie)
+					.sameSite(org.eclipse.jetty.http.HttpCookie.SameSite.from(sameSite.name()))
+					.build();
 			}
 
 			private SameSite getSameSite(HttpCookie cookie) {
+				return getSameSite(asServletCookie(cookie));
+			}
+
+			private SameSite getSameSite(Cookie cookie) {
+				return SuppliedSameSiteCookieHandlerWrapper.this.suppliers.stream()
+					.map((supplier) -> supplier.getSameSite(cookie))
+					.filter(Objects::nonNull)
+					.findFirst()
+					.orElse(null);
+			}
+
+			private Cookie asServletCookie(HttpCookie cookie) {
 				Cookie servletCookie = new Cookie(cookie.getName(), cookie.getValue());
 				cookie.getAttributes().forEach(servletCookie::setAttribute);
-				for (CookieSameSiteSupplier supplier : SuppliedSameSiteCookieHandlerWrapper.this.suppliers) {
-					SameSite sameSite = supplier.getSameSite(servletCookie);
-					if (sameSite != null) {
-						return sameSite;
-					}
-				}
-				return null;
+				return servletCookie;
 			}
 
 		}
