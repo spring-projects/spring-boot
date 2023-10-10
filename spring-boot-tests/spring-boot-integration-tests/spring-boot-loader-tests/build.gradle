@@ -44,7 +44,7 @@ task buildApp(type: GradleBuild) {
 }
 
 task downloadJdk(type: Download) {
-	def destFolder = new File(rootProject.buildDir, "downloads/jdk/oracle")
+	def destFolder = new File(project.gradle.gradleUserHomeDir, "caches/springboot/downloads/jdk/oracle")
 	destFolder.mkdirs()
 	src "https://download.oracle.com/java/17/archive/jdk-${oracleJdkVersion}_linux-${oracleJdkArch}_bin.tar.gz"
 	dest destFolder
@@ -54,7 +54,7 @@ task downloadJdk(type: Download) {
 
 task syncJdkDownloads(type: Sync) {
 	dependsOn downloadJdk
-	from "${rootProject.buildDir}/downloads/jdk/oracle/"
+	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/oracle/"
 	include "jdk-${oracleJdkVersion}_linux-${oracleJdkArch}_bin.tar.gz"
 	into "${project.buildDir}/downloads/jdk/oracle/"
 }

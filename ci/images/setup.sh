@@ -37,6 +37,7 @@ if [[ $# -eq 2 ]]; then
 	test -f /opt/openjdk-toolchain/bin/javac
 fi
 
+
 ###########################################################
 # DOCKER
 ###########################################################
@@ -52,6 +53,7 @@ chmod +x entrykit && \
 mv entrykit /bin/entrykit && \
 entrykit --symlink
 
+
 ###########################################################
 # DOCKER COMPOSE
 ###########################################################
@@ -59,9 +61,3 @@ mkdir -p /usr/local/lib/docker/cli-plugins
 DOCKER_COMPOSE_URL=$( ./get-docker-compose-url.sh )
 curl -L ${DOCKER_COMPOSE_URL} -o /usr/local/lib/docker/cli-plugins/docker-compose
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-
-###########################################################
-# GRADLE ENTERPRISE
-###########################################################
-mkdir ~/.gradle
-echo 'systemProp.user.name=concourse' > ~/.gradle/gradle.properties
