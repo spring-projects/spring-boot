@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigur
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 
 /**
  * Configuration classes for WebClient client connectors.
