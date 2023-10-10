@@ -51,9 +51,3 @@ curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERSI
 chmod +x entrykit && \
 mv entrykit /bin/entrykit && \
 entrykit --symlink
-
-###########################################################
-# GRADLE ENTERPRISE
-###########################################################
-mkdir ~/.gradle
-echo 'systemProp.user.name=concourse' > ~/.gradle/gradle.properties

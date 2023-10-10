@@ -43,7 +43,7 @@ task buildApp(type: GradleBuild) {
 }
 
 task downloadJdk(type: Download) {
-	def destFolder = new File(rootProject.buildDir, "downloads/jdk/bellsoft")
+	def destFolder = new File(project.gradle.gradleUserHomeDir, "caches/springboot/downloads/jdk/bellsoft")
 	destFolder.mkdirs()
 	src "https://download.bell-sw.com/java/${jdkVersion}/bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
 	dest destFolder
@@ -53,7 +53,7 @@ task downloadJdk(type: Download) {
 
 task syncJdkDownloads(type: Sync) {
 	dependsOn downloadJdk
-	from "${rootProject.buildDir}/downloads/jdk/bellsoft/"
+	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/bellsoft/"
 	include "bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
 	into "${project.buildDir}/downloads/jdk/bellsoft/"
 }
