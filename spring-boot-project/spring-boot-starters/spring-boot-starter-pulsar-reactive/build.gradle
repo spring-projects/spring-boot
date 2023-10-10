@@ -11,9 +11,6 @@ dependencies {
 
 checkRuntimeClasspathForConflicts {
 	ignore { name -> name.startsWith("org/bouncycastle/") ||
-				name.matches("^org\\/apache\\/pulsar\\/.*\\/package-info.class\$") ||
-				name.equals("findbugsExclude.xml") ||
-				name.startsWith("org/springframework/pulsar/shade/com/github/benmanes/caffeine/") ||
-				name.startsWith("org/springframework/pulsar/shade/com/google/errorprone/") ||
-				name.startsWith("org/springframework/pulsar/shade/org/checkerframework/") }
+			name.matches("^org\\/apache\\/pulsar\\/.*\\/package-info.class\$") ||
+			name.equals("findbugsExclude.xml") }
 }
