@@ -51,8 +51,8 @@ class JmsTemplateObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldBackOffWhenMircrometerCoreIsNotPresent() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.core")).run((context) -> {
+	void shouldBackOffWhenMicrometerJakartaIsNotPresent() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.jakarta")).run((context) -> {
 			JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 			assertThat(jmsTemplate).extracting("observationRegistry").isNull();
 		});

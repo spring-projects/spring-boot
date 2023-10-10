@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.jms;
 
-import io.micrometer.core.instrument.binder.jms.JmsPublishObservationContext;
+import io.micrometer.jakarta9.instrument.jms.JmsPublishObservationContext;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.Message;

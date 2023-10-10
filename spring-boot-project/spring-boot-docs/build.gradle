@@ -89,7 +89,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.zaxxer:HikariCP")
-	implementation("io.micrometer:micrometer-core")
+	implementation("io.micrometer:micrometer-jakarta9")
 	implementation("io.micrometer:micrometer-tracing")
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
