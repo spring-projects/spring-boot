@@ -459,4 +459,12 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 		});
 	}
 
+	@TestTemplate
+	void whenSigned(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-signed").execute((project) -> {
+			File repackaged = new File(project, "target/jar-signed-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithName("META-INF/BOOT.SF");
+		});
+	}
+
 }

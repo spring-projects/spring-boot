@@ -111,6 +111,8 @@ class BootZipCopyAction implements CopyAction {
 
 	private final ResolvedDependencies resolvedDependencies;
 
+	private final boolean supportsSignatureFile;
+
 	private final LayerResolver layerResolver;
 
 	private final LoaderImplementation loaderImplementation;
@@ -119,7 +121,7 @@ class BootZipCopyAction implements CopyAction {
 			boolean includeDefaultLoader, String layerToolsLocation, Spec<FileTreeElement> requiresUnpack,
 			Spec<FileTreeElement> exclusions, LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding,
-			ResolvedDependencies resolvedDependencies, LayerResolver layerResolver,
+			ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile, LayerResolver layerResolver,
 			LoaderImplementation loaderImplementation) {
 		this.output = output;
 		this.manifest = manifest;
@@ -135,6 +137,7 @@ class BootZipCopyAction implements CopyAction {
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
 		this.resolvedDependencies = resolvedDependencies;
+		this.supportsSignatureFile = supportsSignatureFile;
 		this.layerResolver = layerResolver;
 		this.loaderImplementation = loaderImplementation;
 	}
@@ -302,6 +305,7 @@ class BootZipCopyAction implements CopyAction {
 		void finish() throws IOException {
 			writeLoaderEntriesIfNecessary(null);
 			writeJarToolsIfNecessary();
+			writeSignatureFileIfNecessary();
 			writeClassPathIndexIfNecessary();
 			writeNativeImageArgFileIfNecessary();
 			// We must write the layer index last
@@ -349,6 +353,22 @@ class BootZipCopyAction implements CopyAction {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(library);
 				this.layerIndex.add(layer, name);
 			}
+		}
+
+		private void writeSignatureFileIfNecessary() throws IOException {
+			if (BootZipCopyAction.this.supportsSignatureFile && hasSignedLibrary()) {
+				writeEntry("META-INF/BOOT.SF", (out) -> {
+				}, false);
+			}
+		}
+
+		private boolean hasSignedLibrary() throws IOException {
+			for (FileCopyDetails writtenLibrary : this.writtenLibraries.values()) {
+				if (FileUtils.isSignedJarFile(writtenLibrary.getFile())) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void writeClassPathIndexIfNecessary() throws IOException {

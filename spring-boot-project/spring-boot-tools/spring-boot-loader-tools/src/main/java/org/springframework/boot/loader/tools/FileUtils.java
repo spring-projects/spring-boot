@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * Utilities for manipulating files and directories in Spring Boot tooling.
@@ -59,6 +62,33 @@ public abstract class FileUtils {
 	 */
 	public static String sha1Hash(File file) throws IOException {
 		return Digest.sha1(InputStreamSupplier.forFile(file));
+	}
+
+	/**
+	 * Returns {@code true} if the given jar file has been signed.
+	 * @param file the file to check
+	 * @return if the file has been signed
+	 * @throws IOException on IO error
+	 */
+	public static boolean isSignedJarFile(File file) throws IOException {
+		try (JarFile jarFile = new JarFile(file)) {
+			if (hasDigestEntry(jarFile.getManifest())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean hasDigestEntry(Manifest manifest) {
+		return (manifest != null) && manifest.getEntries().values().stream().anyMatch(FileUtils::hasDigestName);
+	}
+
+	private static boolean hasDigestName(Attributes attributes) {
+		return attributes.keySet().stream().anyMatch(FileUtils::isDigestName);
+	}
+
+	private static boolean isDigestName(Object name) {
+		return String.valueOf(name).toUpperCase().endsWith("-DIGEST");
 	}
 
 }

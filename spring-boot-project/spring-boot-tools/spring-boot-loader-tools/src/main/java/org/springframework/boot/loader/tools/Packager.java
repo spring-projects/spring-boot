@@ -217,6 +217,7 @@ public abstract class Packager {
 		if (isLayered()) {
 			writeLayerIndex(writer);
 		}
+		writeSignatureFileIfNecessary(writtenLibraries, writer);
 	}
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
@@ -261,6 +262,10 @@ public abstract class Packager {
 			this.layersIndex.add(layer, name);
 			writer.writeEntry(name, this.layersIndex::writeTo);
 		}
+	}
+
+	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
+			throws IOException {
 	}
 
 	private EntryTransformer getEntityTransformer() {

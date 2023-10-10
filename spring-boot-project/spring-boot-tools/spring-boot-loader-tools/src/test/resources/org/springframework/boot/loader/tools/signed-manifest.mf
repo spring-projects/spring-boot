@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: 1.5.0_08 (Sun Microsystems Inc.)
+Specification-Version: 1.1
+
+Name: org/bouncycastle/pqc/legacy/math/linearalgebra/GoppaCode.class
+SHA-256-Digest: wNhEfeTvNG9ggqKfLjQDDoFoDqeWwGUc47JiL7VqxqU=
+
+Name: org/bouncycastle/crypto/modes/gcm/Tables8kGCMMultiplier.class
+SHA-256-Digest: nqljr9DNx4nNie4sbkZajVenvd3LdMF3X5s5dmSMToM=

@@ -660,7 +660,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		return library.getFile();
 	}
 
-	private Library newLibrary(File file, LibraryScope scope, boolean unpackRequired) {
+	protected Library newLibrary(File file, LibraryScope scope, boolean unpackRequired) {
 		return new Library(null, file, scope, null, unpackRequired, false, true);
 	}
 
@@ -687,7 +687,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 				&& hasPackagedEntry("org/springframework/boot/loader/launch/JarLauncher.class");
 	}
 
-	private boolean hasPackagedEntry(String name) throws IOException {
+	protected boolean hasPackagedEntry(String name) throws IOException {
 		return getPackagedEntry(name) != null;
 	}
 

@@ -16,12 +16,15 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -40,6 +43,15 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootJarIntegrationTests() {
 		super("bootJar", "BOOT-INF/lib/", "BOOT-INF/classes/", "BOOT-INF/");
+	}
+
+	@TestTemplate
+	void signed() throws Exception {
+		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
+		try (JarFile jarFile = new JarFile(jar)) {
+			assertThat(jarFile.getEntry("META-INF/BOOT.SF")).isNotNull();
+		}
 	}
 
 	@TestTemplate

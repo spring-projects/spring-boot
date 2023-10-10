@@ -37,7 +37,6 @@ import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnava
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
 
 /**
  * Integration tests loader that supports fat jars.
@@ -66,7 +65,6 @@ class LoaderIntegrationTests {
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
 	void runSignedJar(JavaRuntime javaRuntime) {
-		assumeThat(javaRuntime.toString()).isNotEqualTo("Oracle JDK 17"); // gh-28837
 		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-signed-jar",
 				null)) {
 			container.start();

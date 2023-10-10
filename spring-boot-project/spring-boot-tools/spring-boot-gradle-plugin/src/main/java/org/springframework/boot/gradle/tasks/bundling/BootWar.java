@@ -121,10 +121,10 @@ public abstract class BootWar extends War implements BootArchive {
 		if (!isLayeredDisabled()) {
 			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 			String layerToolsLocation = this.layered.getIncludeLayerTools().get() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, layerResolver,
-					layerToolsLocation);
+			return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, false,
+					layerResolver, layerToolsLocation);
 		}
-		return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation);
+		return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, false);
 	}
 
 	@Override
