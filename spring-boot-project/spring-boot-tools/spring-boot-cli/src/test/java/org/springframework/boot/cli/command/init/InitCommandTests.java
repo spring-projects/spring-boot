@@ -80,7 +80,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void generateProject() throws Exception {
-		String fileName = UUID.randomUUID().toString() + ".zip";
+		String fileName = UUID.randomUUID() + ".zip";
 		File file = new File(fileName);
 		assertThat(file).as("file should not exist").doesNotExist();
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip", fileName);
@@ -175,7 +175,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void generateProjectAndExtractUnsupportedArchive(@TempDir File tempDir) throws Exception {
-		String fileName = UUID.randomUUID().toString() + ".zip";
+		String fileName = UUID.randomUUID() + ".zip";
 		File file = new File(fileName);
 		assertThat(file).as("file should not exist").doesNotExist();
 		try {
@@ -193,7 +193,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void generateProjectAndExtractUnknownContentType(@TempDir File tempDir) {
-		String fileName = UUID.randomUUID().toString() + ".zip";
+		String fileName = UUID.randomUUID() + ".zip";
 		File file = new File(fileName);
 		assertThat(file).as("file should not exist").doesNotExist();
 		try {

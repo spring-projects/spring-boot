@@ -812,7 +812,7 @@ bom {
 	library("Kotlin Serialization", "1.6.0") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
-					"kotlinx-serialization-bom"
+				"kotlinx-serialization-bom"
 			]
 		}
 	}

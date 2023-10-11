@@ -85,8 +85,7 @@ class CompositePropagationFactory extends Propagation.Factory {
 	}
 
 	/**
-	 * Creates a new {@link CompositePropagationFactory}, which uses the given
-	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
+	 * Creates a new {@link CompositePropagationFactory}.
 	 * @param properties the propagation properties
 	 * @return the {@link CompositePropagationFactory}
 	 */
@@ -95,8 +94,7 @@ class CompositePropagationFactory extends Propagation.Factory {
 	}
 
 	/**
-	 * Creates a new {@link CompositePropagationFactory}, which uses the given
-	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
+	 * Creates a new {@link CompositePropagationFactory}.
 	 * @param properties the propagation properties
 	 * @param baggageManager the baggage manager to use, or {@code null}
 	 * @param localFields the local fields, or {@code null}
