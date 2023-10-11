@@ -87,7 +87,7 @@ bom {
 			]
 		}
 	}
-	library("Maven", "3.9.4") {
+	library("Maven", "${mavenVersion}") {
 		group("org.apache.maven") {
 			modules = [
 				"maven-core",
