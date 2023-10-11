@@ -593,7 +593,7 @@ If that is not what you want, you can disable transaction management for a test 
 
 include::code:MyTransactionalTests[]
 
-If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
+If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
 (See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
 
 
@@ -611,7 +611,7 @@ By default, Data JDBC tests are transactional and roll back at the end of each t
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole test class as <<features#features.testing.spring-boot-applications.autoconfigured-jdbc,shown in the JDBC example>>.
 
-If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
+If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
 (See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
 
 
@@ -619,7 +619,7 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-r2dbc]]
 ==== Auto-configured Data R2DBC Tests
 `@DataR2dbcTest` is similar to `@DataJdbcTest` but is for tests that use Spring Data R2DBC repositories.
-By default, it configures an in-memory embedded database, a `R2dbcEntityTemplate`, and Spring Data R2DBC repositories.
+By default, it configures an in-memory embedded database, an `R2dbcEntityTemplate`, and Spring Data R2DBC repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataR2dbcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -627,7 +627,7 @@ TIP: A list of the auto-configurations that are enabled by `@DataR2dbcTest` can 
 
 By default, Data R2DBC tests are not transactional.
 
-If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
+If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
 (See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
 
 
