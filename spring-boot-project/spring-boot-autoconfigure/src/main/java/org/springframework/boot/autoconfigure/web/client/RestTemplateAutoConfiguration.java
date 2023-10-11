@@ -45,7 +45,6 @@ public class RestTemplateAutoConfiguration {
 
 	@Bean
 	@Lazy
-	@ConditionalOnMissingBean
 	public RestTemplateBuilderConfigurer restTemplateBuilderConfigurer(
 			ObjectProvider<HttpMessageConverters> messageConverters,
 			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers,

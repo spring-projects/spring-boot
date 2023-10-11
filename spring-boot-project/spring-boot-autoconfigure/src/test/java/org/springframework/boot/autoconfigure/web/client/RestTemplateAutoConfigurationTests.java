@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -63,6 +64,14 @@ class RestTemplateAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(
 				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer").isLazyInit())
 			.isTrue());
+	}
+
+	@Test
+	void shouldFailOnCustomRestTemplateBuilderConfigurer() {
+		this.contextRunner.withUserConfiguration(RestTemplateCustomConfigurerConfig.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(BeanDefinitionOverrideException.class)
+				.hasMessageContaining("with name 'restTemplateBuilderConfigurer'"));
 	}
 
 	@Test
@@ -259,6 +268,16 @@ class RestTemplateAutoConfigurationTests {
 		@Bean
 		RestTemplateRequestCustomizer<?> restTemplateRequestCustomizer() {
 			return (request) -> request.getHeaders().add("spring", "boot");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestTemplateCustomConfigurerConfig {
+
+		@Bean
+		RestTemplateBuilderConfigurer restTemplateBuilderConfigurer() {
+			return new RestTemplateBuilderConfigurer();
 		}
 
 	}
