@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * Details required to establish a connection to a OpenTelemetry service.
+ * Details required to establish a connection to an OpenTelemetry service.
  *
  * @author Eddú Meléndez
  * @since 3.2.0
@@ -27,8 +27,8 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 public interface OtlpTracingConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Address to where metrics will be published.
-	 * @return the address to where metrics will be published
+	 * Address to where tracing will be published.
+	 * @return the address to where tracing will be published
 	 */
 	String getUrl();
 

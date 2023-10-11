@@ -33,13 +33,13 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OpenTelemetryTracingConnectionDetailsFactory}.
+ * Tests for {@link OpenTelemetryTracingContainerConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class OpenTelemetryTracingConnectionDetailsFactoryIntegrationTests {
+class OpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection

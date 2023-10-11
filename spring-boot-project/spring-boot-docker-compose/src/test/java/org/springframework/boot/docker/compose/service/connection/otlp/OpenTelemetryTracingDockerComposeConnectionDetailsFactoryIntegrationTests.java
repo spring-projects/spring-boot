@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-public class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests
+class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests() {
