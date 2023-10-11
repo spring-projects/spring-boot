@@ -34,16 +34,15 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJava18()) {
-			return Arrays.asList("7.3.3", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4-rc-1");
+			return Arrays.asList("7.3.3", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4");
 		}
 		if (isJava17()) {
-			return Arrays.asList("7.2", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4-rc-1");
+			return Arrays.asList("7.2", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4");
 		}
 		if (isJava16()) {
-			return Arrays.asList("7.0.2", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4-rc-1");
+			return Arrays.asList("7.0.2", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4");
 		}
-		return Arrays.asList("6.8.3", "6.9.4", "7.0.2", GradleVersion.current().getVersion(), "8.0.2", "8.3",
-				"8.4-rc-1");
+		return Arrays.asList("6.8.3", "6.9.4", "7.0.2", GradleVersion.current().getVersion(), "8.0.2", "8.3", "8.4");
 	}
 
 	public static String minimumCompatible() {
