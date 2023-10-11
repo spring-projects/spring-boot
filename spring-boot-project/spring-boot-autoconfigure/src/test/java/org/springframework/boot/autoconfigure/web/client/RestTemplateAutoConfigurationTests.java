@@ -43,7 +43,6 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -68,12 +67,11 @@ class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	void assertExceptionWhenCustomRestTemplateConfigurerIsDefined() {
-		this.contextRunner
-			.withUserConfiguration(RestTemplateCustomConfigurerConfig.class)
-			.run((context) -> assertThrows( BeanDefinitionOverrideException.class, () ->{
-				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer");
-			}));
+	void shouldFailOnCustomRestTemplateBuilderConfigurer() {
+		this.contextRunner.withUserConfiguration(RestTemplateCustomConfigurerConfig.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(BeanDefinitionOverrideException.class)
+				.hasMessageContaining("with name 'restTemplateBuilderConfigurer'"));
 	}
 
 	@Test
