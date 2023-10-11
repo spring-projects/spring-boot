@@ -22,7 +22,7 @@ import java.util.Arrays;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties properties} for Spring GraphQL.
+ * {@link ConfigurationProperties Properties} for Spring GraphQL.
  *
  * @author Brian Clozel
  * @since 2.7.0

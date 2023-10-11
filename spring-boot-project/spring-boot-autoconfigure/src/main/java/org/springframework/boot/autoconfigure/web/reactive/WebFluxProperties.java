@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ConfigurationProperties properties} for Spring WebFlux.
+ * {@link ConfigurationProperties Properties} for Spring WebFlux.
  *
  * @author Brian Clozel
  * @author Vedran Pavic

@@ -192,7 +192,7 @@ public class BraveAutoConfiguration {
 			// There's a chicken-and-egg problem here: to create a builder, we need a
 			// factory. But the CompositePropagationFactory needs data from the builder.
 			// We create a throw-away builder with a throw-away factory, and then copy the
-			// config to the real builder
+			// config to the real builder.
 			FactoryBuilder throwAwayBuilder = BaggagePropagation.newFactoryBuilder(createThrowAwayFactory());
 			baggagePropagationCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(throwAwayBuilder));
