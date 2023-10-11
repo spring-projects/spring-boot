@@ -39,6 +39,8 @@ import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.jvm.toolchain.JavaToolchainSpec;
 
 import org.springframework.boot.gradle.tasks.aot.AbstractAot;
 import org.springframework.boot.gradle.tasks.aot.ProcessAot;
@@ -151,6 +153,13 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			.set(project.getLayout().getBuildDirectory().dir("generated/" + sourceSet.getName() + "Classes"));
 		task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
 		task.getArtifactId().set(project.provider(() -> project.getName()));
+		configureToolchainConvention(project, task);
+	}
+
+	private void configureToolchainConvention(Project project, AbstractAot aotTask) {
+		JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+		JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+		aotTask.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
