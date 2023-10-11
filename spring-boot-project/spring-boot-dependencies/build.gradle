@@ -120,7 +120,7 @@ bom {
 			]
 		}
 	}
-	library("AssertJ", "3.22.0") {
+	library("AssertJ", "${assertjVersion}") {
 		group("org.assertj") {
 			modules = [
 				"assertj-core"
@@ -210,7 +210,7 @@ bom {
 			]
 		}
 	}
-	library("Commons Codec", "1.15") {
+	library("Commons Codec", "${commonsCodecVersion}") {
 		group("commons-codec") {
 			modules = [
 				"commons-codec"
@@ -443,7 +443,7 @@ bom {
 			]
 		}
 	}
-	library("Hamcrest", "2.2") {
+	library("Hamcrest", "${hamcrestVersion}") {
 		group("org.hamcrest") {
 			modules = [
 				"hamcrest",
@@ -599,7 +599,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.13.5") {
+	library("Jackson Bom", "${jacksonVersion}") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
@@ -1085,7 +1085,7 @@ bom {
 			]
 		}
 	}
-	library("JUnit Jupiter", "5.8.2") {
+	library("JUnit Jupiter", "${junitJupiterVersion}") {
 		group("org.junit") {
 			imports = [
 				"junit-bom"
