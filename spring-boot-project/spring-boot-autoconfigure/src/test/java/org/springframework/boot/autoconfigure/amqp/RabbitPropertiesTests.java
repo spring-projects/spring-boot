@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Rafael Carvalho
+ * @author Scott Frederick
  */
 class RabbitPropertiesTests {
 
@@ -318,6 +319,12 @@ class RabbitPropertiesTests {
 	@Test
 	void determineSslReturnFlagPropertyWhenNoAddresses() {
 		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
+	}
+
+	@Test
+	void determineSslEnabledIsTrueWhenBundleIsSetAndNoAddresses() {
+		this.properties.getSsl().setBundle("test");
 		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
 	}
 

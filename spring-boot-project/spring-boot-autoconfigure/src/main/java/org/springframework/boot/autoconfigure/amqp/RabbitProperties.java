@@ -46,6 +46,7 @@ import org.springframework.util.unit.DataSize;
  * @author Franjo Zilic
  * @author Eddú Meléndez
  * @author Rafael Carvalho
+ * @author Scott Frederick
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -401,6 +402,11 @@ public class RabbitProperties {
 		private Boolean enabled;
 
 		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
+		/**
 		 * Path to the key store that holds the SSL certificate.
 		 */
 		private String keyStore;
@@ -467,7 +473,7 @@ public class RabbitProperties {
 		 * @see #getEnabled() ()
 		 */
 		public boolean determineEnabled() {
-			boolean defaultEnabled = Optional.ofNullable(getEnabled()).orElse(false);
+			boolean defaultEnabled = Optional.ofNullable(getEnabled()).orElse(false) || this.bundle != null;
 			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
 				return defaultEnabled;
 			}
@@ -477,6 +483,14 @@ public class RabbitProperties {
 
 		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
 		}
 
 		public String getKeyStore() {

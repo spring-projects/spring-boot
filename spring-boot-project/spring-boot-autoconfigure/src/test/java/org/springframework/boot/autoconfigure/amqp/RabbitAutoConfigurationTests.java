@@ -60,6 +60,7 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -102,12 +103,13 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void testDefaultRabbitConfiguration() {
@@ -778,6 +780,16 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void enableSslWithInvalidSslBundleFails() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.ssl.bundle=invalid")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure().hasMessageContaining("SSL bundle name 'invalid' cannot be found");
+			});
+	}
+
+	@Test
 	// Make sure that we at least attempt to load the store
 	void enableSslWithNonExistingKeystoreShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
@@ -824,6 +836,19 @@ class RabbitAutoConfigurationTests {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("barType");
 				assertThat(context).getFailure().hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
+			});
+	}
+
+	@Test
+	void enableSslWithBundle() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.ssl.bundle=test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password=password")
+			.run((context) -> {
+				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
 			});
 	}
 
