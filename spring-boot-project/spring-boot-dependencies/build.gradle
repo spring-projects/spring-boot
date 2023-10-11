@@ -1148,17 +1148,30 @@ bom {
 				"pulsar-client-1x",
 				"pulsar-client-2x-shaded",
 				"pulsar-client-admin-api",
-				"pulsar-client-admin-original",
-				"pulsar-client-admin",
-				"pulsar-client-all",
+				"pulsar-client-admin-original" {
+					exclude group: 'com.sun.activation', module: 'javax.activation'
+				},
+				"pulsar-client-admin" {
+					exclude group: 'com.sun.activation', module: 'javax.activation'
+					exclude group: 'javax.validation', module: 'validation-api'
+				},
+				"pulsar-client-all" {
+					exclude group: 'com.sun.activation', module: 'javax.activation'
+					exclude group: 'javax.validation', module: 'validation-api'
+				},
 				"pulsar-client-api",
 				"pulsar-client-auth-athenz",
 				"pulsar-client-auth-sasl",
 				"pulsar-client-messagecrypto-bc",
-				"pulsar-client-original",
+				"pulsar-client-original" {
+					exclude group: 'com.sun.activation', module: 'javax.activation'
+				},
 				"pulsar-client-tools-api",
 				"pulsar-client-tools",
-				"pulsar-client",
+				"pulsar-client" {
+					exclude group: 'com.sun.activation', module: 'javax.activation'
+					exclude group: 'javax.validation', module: 'validation-api'
+				},
 				"pulsar-common",
 				"pulsar-config-validation",
 				"pulsar-functions-api",
@@ -1221,11 +1234,22 @@ bom {
 	library("Pulsar Reactive", "0.4.0") {
 		group("org.apache.pulsar") {
 			modules = [
-				"pulsar-client-reactive-adapter",
+				"pulsar-client-reactive-adapter" {
+					// it includes a pulsar-client with unwanted transitive deps
+					exclude group: "org.apache.pulsar", module: "pulsar-client"
+				},
 				"pulsar-client-reactive-api",
 				"pulsar-client-reactive-jackson",
-				"pulsar-client-reactive-producer-cache-caffeine-shaded",
-				"pulsar-client-reactive-producer-cache-caffeine"
+				"pulsar-client-reactive-producer-cache-caffeine-shaded" {
+					// it includes a pulsar-client-reactive-adapter that includes a
+					// pulsar-client with unwanted transitive deps
+					exclude group: "org.apache.pulsar", module: "pulsar-client-reactive-adapter"
+				},
+				"pulsar-client-reactive-producer-cache-caffeine" {
+					// it includes a pulsar-client-reactive-adapter that includes a
+					// pulsar-client with unwanted transitive deps
+					exclude group: "org.apache.pulsar", module: "pulsar-client-reactive-adapter"
+				}
 			]
 		}
 	}
