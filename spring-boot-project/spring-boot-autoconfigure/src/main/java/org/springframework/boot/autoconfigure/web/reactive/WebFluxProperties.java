@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ConfigurationProperties properties} for Spring WebFlux.
+ * {@link ConfigurationProperties Properties} for Spring WebFlux.
  *
  * @author Brian Clozel
  * @since 2.0.0

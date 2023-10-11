@@ -276,7 +276,7 @@ Alternatively, rather than open all suffix patterns, it is more secure to only s
 As of Spring Framework 5.3, Spring MVC supports two strategies for matching request paths to controllers.
 By default, Spring Boot uses the `PathPatternParser` strategy.
 `PathPatternParser` is an https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[optimized implementation] but comes with some restrictions compared to the `AntPathMatcher` strategy.
-`PathPatternParser` restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
+`PathPatternParser` restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path pattern variants].
 It is also incompatible with suffix pattern matching (configprop:spring.mvc.pathmatch.use-suffix-pattern[deprecated], configprop:spring.mvc.pathmatch.use-registered-suffix-pattern[deprecated]) and configuring the `DispatcherServlet` with a path prefix (configprop:spring.mvc.servlet.path[]).
 
 The strategy can be configured using the configprop:spring.mvc.pathmatch.matching-strategy[] configuration property, as shown in the following example:

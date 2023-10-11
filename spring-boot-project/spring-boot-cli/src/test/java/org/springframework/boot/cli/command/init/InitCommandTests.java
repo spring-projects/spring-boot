@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void generateProject() throws Exception {
-		String fileName = UUID.randomUUID().toString() + ".zip";
+		String fileName = UUID.randomUUID() + ".zip";
 		File file = new File(fileName);
 		assertThat(file.exists()).as("file should not exist").isFalse();
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip", fileName);
@@ -177,7 +177,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void generateProjectAndExtractUnsupportedArchive(@TempDir File tempDir) throws Exception {
-		String fileName = UUID.randomUUID().toString() + ".zip";
+		String fileName = UUID.randomUUID() + ".zip";
 		File file = new File(fileName);
 		assertThat(file.exists()).as("file should not exist").isFalse();
 		try {
@@ -195,7 +195,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void generateProjectAndExtractUnknownContentType(@TempDir File tempDir) throws Exception {
-		String fileName = UUID.randomUUID().toString() + ".zip";
+		String fileName = UUID.randomUUID() + ".zip";
 		File file = new File(fileName);
 		assertThat(file.exists()).as("file should not exist").isFalse();
 		try {
