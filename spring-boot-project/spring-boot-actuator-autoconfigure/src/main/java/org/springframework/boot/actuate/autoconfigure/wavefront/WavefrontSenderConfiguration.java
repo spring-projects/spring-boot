@@ -52,7 +52,8 @@ public class WavefrontSenderConfiguration {
 	@ConditionalOnMissingBean
 	@Conditional(WavefrontTracingOrMetricsCondition.class)
 	public WavefrontSender wavefrontSender(WavefrontProperties properties) {
-		Builder builder = new Builder(properties.getEffectiveUri().toString(), properties.getApiTokenOrThrow());
+		Builder builder = new Builder(properties.getEffectiveUri().toString(), properties.getWavefrontApiTokenType(),
+				properties.getApiTokenOrThrow());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		WavefrontProperties.Sender sender = properties.getSender();
 		map.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);

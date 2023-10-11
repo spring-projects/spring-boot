@@ -22,7 +22,6 @@ import io.micrometer.wavefront.WavefrontConfig;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Metrics.Export;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.TokenType;
 
 /**
  * Adapter to convert {@link WavefrontProperties} to a {@link WavefrontConfig}.
@@ -88,16 +87,7 @@ public class WavefrontPropertiesConfigAdapter
 
 	@Override
 	public Type apiTokenType() {
-		TokenType apiTokenType = this.properties.getApiTokenType();
-		if (apiTokenType == null) {
-			return WavefrontConfig.super.apiTokenType();
-		}
-		return switch (apiTokenType) {
-			case NO_TOKEN -> Type.NO_TOKEN;
-			case WAVEFRONT_API_TOKEN -> Type.WAVEFRONT_API_TOKEN;
-			case CSP_API_TOKEN -> Type.CSP_API_TOKEN;
-			case CSP_CLIENT_CREDENTIALS -> Type.CSP_CLIENT_CREDENTIALS;
-		};
+		return this.properties.getWavefrontApiTokenType();
 	}
 
 }

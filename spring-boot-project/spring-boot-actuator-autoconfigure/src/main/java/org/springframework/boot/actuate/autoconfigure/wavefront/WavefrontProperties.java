@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.wavefront.sdk.common.clients.service.token.TokenService.Type;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -137,7 +139,7 @@ public class WavefrontProperties {
 	 * @return the API token
 	 */
 	public String getApiTokenOrThrow() {
-		if (this.apiToken == null && !usesProxy()) {
+		if (this.apiTokenType != TokenType.NO_TOKEN && this.apiToken == null && !usesProxy()) {
 			throw new InvalidConfigurationPropertyValueException("management.wavefront.api-token", null,
 					"This property is mandatory whenever publishing directly to the Wavefront API");
 		}
@@ -178,6 +180,23 @@ public class WavefrontProperties {
 
 	public void setApiTokenType(TokenType apiTokenType) {
 		this.apiTokenType = apiTokenType;
+	}
+
+	/**
+	 * Returns the {@link Type Wavefront token type}.
+	 * @return the Wavefront token type
+	 * @since 3.2.0
+	 */
+	public Type getWavefrontApiTokenType() {
+		if (this.apiTokenType == null) {
+			return usesProxy() ? Type.NO_TOKEN : Type.WAVEFRONT_API_TOKEN;
+		}
+		return switch (this.apiTokenType) {
+			case NO_TOKEN -> Type.NO_TOKEN;
+			case WAVEFRONT_API_TOKEN -> Type.WAVEFRONT_API_TOKEN;
+			case CSP_API_TOKEN -> Type.CSP_API_TOKEN;
+			case CSP_CLIENT_CREDENTIALS -> Type.CSP_CLIENT_CREDENTIALS;
+		};
 	}
 
 	public static class Application {
