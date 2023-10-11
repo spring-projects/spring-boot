@@ -32,10 +32,10 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  *
  * @author Eddú Meléndez
  */
-class OpenTelemetryMetricsConnectionDetailsFactory
+class OpenTelemetryMetricsContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, OtlpMetricsConnectionDetails> {
 
-	OpenTelemetryMetricsConnectionDetailsFactory() {
+	OpenTelemetryMetricsContainerConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
@@ -43,13 +43,13 @@ class OpenTelemetryMetricsConnectionDetailsFactory
 	@Override
 	protected OtlpMetricsConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<Container<?>> source) {
-		return new OpenTelemetryContainerMetricsConnectionDetails(source);
+		return new OpenTelemetryMetricsContainerConnectionDetails(source);
 	}
 
-	private static final class OpenTelemetryContainerMetricsConnectionDetails
+	private static final class OpenTelemetryMetricsContainerConnectionDetails
 			extends ContainerConnectionDetails<Container<?>> implements OtlpMetricsConnectionDetails {
 
-		private OpenTelemetryContainerMetricsConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		private OpenTelemetryMetricsContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
