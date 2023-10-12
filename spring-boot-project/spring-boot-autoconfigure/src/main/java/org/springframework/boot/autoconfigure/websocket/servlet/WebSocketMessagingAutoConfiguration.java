@@ -64,8 +64,7 @@ public class WebSocketMessagingAutoConfiguration {
 
 		@Override
 		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-			converter.setObjectMapper(this.objectMapper);
+			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter(this.objectMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
 			resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
 			converter.setContentTypeResolver(resolver);
