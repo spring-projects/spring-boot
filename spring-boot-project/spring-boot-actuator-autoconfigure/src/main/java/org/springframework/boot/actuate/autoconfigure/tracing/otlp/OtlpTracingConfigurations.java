@@ -33,16 +33,13 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Moritz Halbritter
  */
-final class OtlpTracingConfigurations {
-
-	private OtlpTracingConfigurations() {
-	}
+class OtlpTracingConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetails {
 
 		@Bean
-		@ConditionalOnMissingBean(OtlpTracingConnectionDetails.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "endpoint")
 		OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpProperties properties) {
 			return new PropertiesOtlpTracingConnectionDetails(properties);

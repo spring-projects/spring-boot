@@ -23,7 +23,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link OtlpMetricsConnectionDetails} for a {@code OTLP} service.
+ * {@link OtlpMetricsConnectionDetails} for an OTLP service.
  *
  * @author Eddú Meléndez
  */
@@ -39,17 +39,17 @@ class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
 
 	@Override
 	protected OtlpMetricsConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new OpenTelemetryContainerMetricsConnectionDetails(source.getRunningService());
+		return new OpenTelemetryMetricsDockerComposeConnectionDetails(source.getRunningService());
 	}
 
-	private static final class OpenTelemetryContainerMetricsConnectionDetails extends DockerComposeConnectionDetails
+	private static final class OpenTelemetryMetricsDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements OtlpMetricsConnectionDetails {
 
 		private final String host;
 
 		private final int port;
 
-		private OpenTelemetryContainerMetricsConnectionDetails(RunningService source) {
+		private OpenTelemetryMetricsDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.port = source.ports().get(OTLP_PORT);

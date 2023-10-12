@@ -23,7 +23,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link OtlpTracingConnectionDetails} for a {@code OTLP} service.
+ * {@link OtlpTracingConnectionDetails} for an OTLP service.
  *
  * @author Eddú Meléndez
  */

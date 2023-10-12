@@ -57,7 +57,7 @@ public class OtlpMetricsExportAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(OtlpMetricsConnectionDetails.class)
+	@ConditionalOnMissingBean
 	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails() {
 		return new PropertiesOtlpMetricsConnectionDetails(this.properties);
 	}
