@@ -127,7 +127,7 @@ class DefaultSslBundleRegistryTests {
 		this.registry.registerBundle("test1", this.bundle1);
 		this.registry.getBundle("test1");
 		this.registry.updateBundle("test1", this.bundle2);
-		assertThat(output).contains("SSL bundle 'test1' has been updated");
+		assertThat(output).contains("SSL bundle 'test1' has been updated but may be in use by a technology that doesn't support SSL reloading");
 	}
 
 }
