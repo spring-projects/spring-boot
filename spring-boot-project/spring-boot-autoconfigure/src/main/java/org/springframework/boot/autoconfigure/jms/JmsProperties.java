@@ -403,47 +403,6 @@ public class JmsProperties {
 
 	}
 
-	/**
-	 * Translate the acknowledge modes defined on the {@link jakarta.jms.Session}.
-	 *
-	 * <p>
-	 * {@link jakarta.jms.Session#SESSION_TRANSACTED} is not defined as we take care of
-	 * this already through a call to {@code setSessionTransacted}.
-	 */
-	public enum AcknowledgeMode {
-
-		/**
-		 * Messages sent or received from the session are automatically acknowledged. This
-		 * is the simplest mode and enables once-only message delivery guarantee.
-		 */
-		AUTO(1),
-
-		/**
-		 * Messages are acknowledged once the message listener implementation has called
-		 * {@link jakarta.jms.Message#acknowledge()}. This mode gives the application
-		 * (rather than the JMS provider) complete control over message acknowledgement.
-		 */
-		CLIENT(2),
-
-		/**
-		 * Similar to auto acknowledgment except that said acknowledgment is lazy. As a
-		 * consequence, the messages might be delivered more than once. This mode enables
-		 * at-least-once message delivery guarantee.
-		 */
-		DUPS_OK(3);
-
-		private final int mode;
-
-		AcknowledgeMode(int mode) {
-			this.mode = mode;
-		}
-
-		public int getMode() {
-			return this.mode;
-		}
-
-	}
-
 	public enum DeliveryMode {
 
 		/**
