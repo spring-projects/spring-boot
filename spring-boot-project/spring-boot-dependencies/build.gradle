@@ -1982,6 +1982,10 @@ bom {
 		}
 	}
 	library("Undertow", "2.2.26.Final") {
+		prohibit {
+			versionRange "[2.2.27.Final]"
+			because "it is not compatibile with Java 8 (https://issues.redhat.com/browse/UNDERTOW-2324)"
+		}
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
