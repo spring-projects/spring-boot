@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -53,6 +54,21 @@ class TaskExecutorMetricsAutoConfigurationTests {
 	@Test
 	void taskExecutorUsingAutoConfigurationIsInstrumented() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).singleElement()
+					.satisfies(
+							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("applicationTaskExecutor"));
+				assertThatExceptionOfType(MeterNotFoundException.class)
+					.isThrownBy(() -> registry.get("executor").timer());
+			});
+	}
+
+	@Test
+	void taskExecutorIsInstrumentedWhenUsingLazyInitialization() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.withBean(LazyInitializationBeanFactoryPostProcessor.class)
 			.run((context) -> {
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
