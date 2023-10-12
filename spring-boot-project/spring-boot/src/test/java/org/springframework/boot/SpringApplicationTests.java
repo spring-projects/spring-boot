@@ -158,6 +158,7 @@ import static org.mockito.Mockito.spy;
  * @author Nguyen Bao Sach
  * @author Chris Bono
  * @author Sebastien Deleuze
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -1390,6 +1391,30 @@ class SpringApplicationTests {
 		assertThatNoException().isThrownBy(() -> this.context.getBean(SingleUseAdditionalConfig.class));
 	}
 
+	@Test
+	void shouldStartDaemonThreadIfKeepAliveIsEnabled() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("--spring.main.keep-alive=true");
+		Set<Thread> threads = getCurrentThreads();
+		assertThat(threads).filteredOn((thread) -> thread.getName().equals("keep-alive"))
+			.singleElement()
+			.satisfies((thread) -> assertThat(thread.isDaemon()).isFalse());
+	}
+
+	@Test
+	void shouldStopKeepAliveThreadIfContextIsClosed() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setKeepAlive(true);
+		this.context = application.run();
+		Set<Thread> threadsBeforeClose = getCurrentThreads();
+		assertThat(threadsBeforeClose).filteredOn((thread) -> thread.getName().equals("keep-alive")).isNotEmpty();
+		this.context.close();
+		Set<Thread> threadsAfterClose = getCurrentThreads();
+		assertThat(threadsAfterClose).filteredOn((thread) -> thread.getName().equals("keep-alive")).isEmpty();
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
@@ -1430,6 +1455,10 @@ class SpringApplicationTests {
 			}
 
 		};
+	}
+
+	private Set<Thread> getCurrentThreads() {
+		return Thread.getAllStackTraces().keySet();
 	}
 
 	static class TestEventListener<E extends ApplicationEvent> implements SmartApplicationListener {

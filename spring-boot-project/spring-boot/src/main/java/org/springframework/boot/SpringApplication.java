@@ -65,6 +65,7 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.aot.AotApplicationContextInitializer;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
@@ -163,6 +164,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Brian Clozel
  * @author Ethan Rubinson
  * @author Chris Bono
+ * @author Moritz Halbritter
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -239,6 +241,8 @@ public class SpringApplication {
 	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
 
 	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
+
+	private boolean keepAlive;
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -408,6 +412,11 @@ public class SpringApplication {
 		}
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
+		}
+		if (this.keepAlive) {
+			KeepAlive keepAlive = new KeepAlive();
+			keepAlive.start();
+			context.addApplicationListener(keepAlive);
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
 		if (!AotDetector.useGeneratedArtifacts()) {
@@ -1278,6 +1287,26 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Whether to keep the application alive even if there are no more non-daemon threads.
+	 * @return whether to keep the application alive even if there are no more non-daemon
+	 * threads
+	 * @since 3.2.0
+	 */
+	public boolean isKeepAlive() {
+		return this.keepAlive;
+	}
+
+	/**
+	 * Whether to keep the application alive even if there are no more non-daemon threads.
+	 * @param keepAlive whether to keep the application alive even if there are no more
+	 * non-daemon threads
+	 * @since 3.2.0
+	 */
+	public void setKeepAlive(boolean keepAlive) {
+		this.keepAlive = keepAlive;
+	}
+
+	/**
 	 * Return a {@link SpringApplicationShutdownHandlers} instance that can be used to add
 	 * or remove handlers that perform actions before the JVM is shutdown.
 	 * @return a {@link SpringApplicationShutdownHandlers} instance
@@ -1597,6 +1626,36 @@ public class SpringApplication {
 		@Override
 		public SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
 			return this.used.compareAndSet(false, true) ? this.delegate.getRunListener(springApplication) : null;
+		}
+
+	}
+
+	/**
+	 * A non-daemon thread to keep the JVM alive. Reacts to {@link ContextClosedEvent} to
+	 * stop itself when the application context is closed.
+	 */
+	private static final class KeepAlive extends Thread implements ApplicationListener<ContextClosedEvent> {
+
+		KeepAlive() {
+			setName("keep-alive");
+			setDaemon(false);
+		}
+
+		@Override
+		public void onApplicationEvent(ContextClosedEvent event) {
+			interrupt();
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Thread.sleep(Long.MAX_VALUE);
+				}
+				catch (InterruptedException ex) {
+					break;
+				}
+			}
 		}
 
 	}

@@ -376,3 +376,17 @@ Spring Boot ships with the `BufferingApplicationStartup` variant; this implement
 Applications can ask for the bean of type `BufferingApplicationStartup` in any component.
 
 Spring Boot can also be configured to expose a {spring-boot-actuator-restapi-docs}/#startup[`startup` endpoint] that provides this information as a JSON document.
+
+
+
+[[features.spring-application.virtual-threads]]
+=== Virtual threads
+If you're running on Java 21 or up, you can enable virtual threads by setting the property configprop:spring.threads.virtual.enabled[] to `true`.
+
+WARNING: One side effect of virtual threads is that these threads are daemon threads.
+A JVM will exit if there are no non-daemon threads.
+This behavior can be a problem when you rely on, e.g. `@Scheduled` beans to keep your application alive.
+If you use virtual threads, the scheduler thread is a virtual thread and therefore a daemon thread and won't keep the JVM alive.
+This does not only affect scheduling, but can be the case with other technologies, too!
+To keep the JVM running in all cases, it is recommended to set the property configprop:spring.main.keep-alive[] to `true`.
+This ensures that the JVM is kept alive, even if all threads are virtual threads.
