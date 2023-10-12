@@ -264,7 +264,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch Client", "8.10.2") {
+	library("Elasticsearch Client", "8.10.3") {
 		group("org.elasticsearch.client") {
 			modules = [
 				"elasticsearch-rest-client" {
