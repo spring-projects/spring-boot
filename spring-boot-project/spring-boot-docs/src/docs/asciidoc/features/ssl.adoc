@@ -104,3 +104,33 @@ In addition, the `SslBundle` provides details about the key being used, the prot
 The following example shows retrieving an `SslBundle` and using it to create an `SSLContext`:
 
 include::code:MyComponent[]
+
+[[features.ssl.reloading]]
+=== Reloading SSL bundles
+
+SSL bundles can be reloaded when the key material changes.
+The component consuming the bundle has to be compatible with reloadable SSL bundles.
+Currently the following components are compatible:
+
+* Tomcat web server
+* Netty web server
+
+To enable reloading, you need to opt-in via a configuration property as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+    spring:
+      ssl:
+        bundle:
+          pem:
+            mybundle:
+              reload-on-update: true
+              keystore:
+                certificate: "file:/some/directory/application.crt"
+                private-key: "file:/some/directory/application.key"
+----
+
+A file watcher is then watching the files and if they change, the SSL bundle will be reloaded.
+This in turn triggers a reload in the consuming component, e.g. Tomcat rotates the certificates in the SSL enabled connectors.
+
+You can configure the quiet period (to make sure that there are no more changes) of the file watcher with the configprop:spring.ssl.bundle.watch.file.quiet-period[] property.
