@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
-import com.mongodb.connection.netty.NettyStreamFactoryFactory;
+import com.mongodb.connection.TransportSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -113,11 +113,10 @@ public class MongoReactiveAutoConfiguration {
 
 		@Override
 		public void customize(Builder builder) {
-			if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
+			if (!isCustomTransportConfiguration(this.settings.getIfAvailable())) {
 				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 				this.eventLoopGroup = eventLoopGroup;
-				builder
-					.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
+				builder.transportSettings(TransportSettings.nettyBuilder().eventLoopGroup(eventLoopGroup).build());
 			}
 		}
 
@@ -130,8 +129,10 @@ public class MongoReactiveAutoConfiguration {
 			}
 		}
 
-		private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
-			return settings != null && settings.getStreamFactoryFactory() != null;
+		@SuppressWarnings("deprecation")
+		private boolean isCustomTransportConfiguration(MongoClientSettings settings) {
+			return settings != null
+					&& (settings.getTransportSettings() != null || settings.getStreamFactoryFactory() != null);
 		}
 
 	}

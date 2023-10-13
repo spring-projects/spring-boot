@@ -1023,7 +1023,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.10.2") {
+	library("MongoDB", "4.11.0") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
