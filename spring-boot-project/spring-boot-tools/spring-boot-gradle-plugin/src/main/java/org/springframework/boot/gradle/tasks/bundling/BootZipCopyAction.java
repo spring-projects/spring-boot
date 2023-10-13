@@ -46,9 +46,11 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.java.archives.Manifest;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.WorkResults;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
@@ -455,7 +457,24 @@ class BootZipCopyAction implements CopyAction {
 
 		private int getFileMode(FileCopyDetails details) {
 			return (BootZipCopyAction.this.fileMode != null) ? BootZipCopyAction.this.fileMode
-					: UnixStat.FILE_FLAG | details.getMode();
+					: UnixStat.FILE_FLAG | getPermissions(details);
+		}
+
+		@SuppressWarnings("unchecked")
+		private int getPermissions(FileCopyDetails details) {
+			if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
+				try {
+					Object permissions = ((Provider<Object>) details.getClass()
+						.getMethod("getImmutablePermissions")
+						.invoke(details)).get();
+					return ((Provider<Integer>) permissions.getClass().getMethod("toUnixNumeric").invoke(permissions))
+						.get();
+				}
+				catch (Exception ex) {
+					throw new GradleException("Failed to get permissions", ex);
+				}
+			}
+			return details.getMode();
 		}
 
 	}

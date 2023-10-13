@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
@@ -36,11 +38,13 @@ import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.java.archives.Manifest;
+import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
+import org.gradle.util.GradleVersion;
 
 /**
  * Support class for implementations of {@link BootArchive}.
@@ -125,8 +129,8 @@ class BootArchiveSupport {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
-		Integer dirMode = jar.getDirMode();
-		Integer fileMode = jar.getFileMode();
+		Integer dirMode = getDirMode(jar);
+		Integer fileMode = getFileMode(jar);
 		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
 		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
 		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
@@ -138,6 +142,46 @@ class BootArchiveSupport {
 				includeDefaultLoader, layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec,
 				compressionResolver, encoding, resolvedDependencies, layerResolver);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
+	}
+
+	private Integer getDirMode(CopySpec copySpec) {
+		return getMode(copySpec, "getDirPermissions", copySpec::getDirMode);
+	}
+
+	private Integer getFileMode(CopySpec copySpec) {
+		return getMode(copySpec, "getFilePermissions", copySpec::getFileMode);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Integer getMode(CopySpec copySpec, String methodName, Supplier<Integer> fallback) {
+		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
+			try {
+				Object filePermissions = ((Property<Object>) copySpec.getClass().getMethod(methodName).invoke(copySpec))
+					.getOrNull();
+				return getMode(filePermissions);
+			}
+			catch (Exception ex) {
+				throw new GradleException("Failed to get permissions", ex);
+			}
+		}
+		return fallback.get();
+	}
+
+	private Integer getMode(Object permissions) throws Exception {
+		if (permissions == null) {
+			return null;
+		}
+		String user = asIntegerString(permissions.getClass().getMethod("getUser").invoke(permissions));
+		String group = asIntegerString(permissions.getClass().getMethod("getGroup").invoke(permissions));
+		String other = asIntegerString(permissions.getClass().getMethod("getOther").invoke(permissions));
+		return Integer.parseInt("0" + user + group + other, 8);
+	}
+
+	private String asIntegerString(Object permissions) throws Exception {
+		boolean read = (boolean) permissions.getClass().getMethod("getRead").invoke(permissions);
+		boolean write = (boolean) permissions.getClass().getMethod("getWrite").invoke(permissions);
+		boolean execute = (boolean) permissions.getClass().getMethod("getExecute").invoke(permissions);
+		return Integer.toString(((read) ? 4 : 0) + ((write) ? 2 : 0) + ((execute) ? 1 : 0));
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
