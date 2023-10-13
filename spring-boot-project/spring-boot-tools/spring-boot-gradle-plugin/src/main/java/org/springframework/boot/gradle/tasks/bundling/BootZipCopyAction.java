@@ -465,7 +465,7 @@ class BootZipCopyAction implements CopyAction {
 			if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
 				try {
 					Object permissions = ((Provider<Object>) details.getClass()
-						.getMethod("getImmutablePermissions")
+						.getMethod("getPermissions")
 						.invoke(details)).get();
 					return ((Provider<Integer>) permissions.getClass().getMethod("toUnixNumeric").invoke(permissions))
 						.get();

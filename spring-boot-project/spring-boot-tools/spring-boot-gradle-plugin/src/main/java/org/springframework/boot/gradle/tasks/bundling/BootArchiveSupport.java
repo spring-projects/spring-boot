@@ -158,30 +158,14 @@ class BootArchiveSupport {
 			try {
 				Object filePermissions = ((Property<Object>) copySpec.getClass().getMethod(methodName).invoke(copySpec))
 					.getOrNull();
-				return getMode(filePermissions);
+				return (filePermissions != null)
+						? (int) filePermissions.getClass().getMethod("toUnixNumeric").invoke(filePermissions) : null;
 			}
 			catch (Exception ex) {
 				throw new GradleException("Failed to get permissions", ex);
 			}
 		}
 		return fallback.get();
-	}
-
-	private Integer getMode(Object permissions) throws Exception {
-		if (permissions == null) {
-			return null;
-		}
-		String user = asIntegerString(permissions.getClass().getMethod("getUser").invoke(permissions));
-		String group = asIntegerString(permissions.getClass().getMethod("getGroup").invoke(permissions));
-		String other = asIntegerString(permissions.getClass().getMethod("getOther").invoke(permissions));
-		return Integer.parseInt("0" + user + group + other, 8);
-	}
-
-	private String asIntegerString(Object permissions) throws Exception {
-		boolean read = (boolean) permissions.getClass().getMethod("getRead").invoke(permissions);
-		boolean write = (boolean) permissions.getClass().getMethod("getWrite").invoke(permissions);
-		boolean execute = (boolean) permissions.getClass().getMethod("getExecute").invoke(permissions);
-		return Integer.toString(((read) ? 4 : 0) + ((write) ? 2 : 0) + ((execute) ? 1 : 0));
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
