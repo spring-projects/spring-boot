@@ -19,8 +19,10 @@ package org.springframework.boot.gradle.plugin;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -34,6 +36,7 @@ import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.jvm.application.tasks.CreateStartScripts;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.run.BootRun;
 
@@ -55,7 +58,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 			.register("bootStartScripts", CreateStartScripts.class,
 					(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
-		binCopySpec.setFileMode(0755);
+		configureFilePermissions(binCopySpec, 0755);
 		distribution.getContents().with(binCopySpec);
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class)
@@ -85,7 +88,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 
 	private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {
 		CopySpec copySpec = project.copySpec().into("lib").from(artifactFiles(configuration));
-		copySpec.setFileMode(0644);
+		configureFilePermissions(copySpec, 0644);
 		return copySpec;
 	}
 
@@ -110,6 +113,36 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to read '" + name + "'", ex);
+		}
+	}
+
+	private void configureFilePermissions(CopySpec copySpec, int mode) {
+		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
+			try {
+				Method filePermissions = copySpec.getClass().getMethod("filePermissions", Action.class);
+				filePermissions.invoke(copySpec, new Action<Object>() {
+
+					@Override
+					public void execute(Object filePermissions) {
+						String unixPermissions = Integer.toString(mode, 8);
+						try {
+							Method unix = filePermissions.getClass().getMethod("unix", String.class);
+							unix.invoke(filePermissions, unixPermissions);
+						}
+						catch (Exception ex) {
+							throw new GradleException("Failed to set file permissions to '" + unixPermissions + "'",
+									ex);
+						}
+					}
+
+				});
+			}
+			catch (Exception ex) {
+				throw new GradleException("Failed to set file permissions", ex);
+			}
+		}
+		else {
+			copySpec.setFileMode(mode);
 		}
 	}
 
