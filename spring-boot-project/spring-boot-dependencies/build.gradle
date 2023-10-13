@@ -1606,7 +1606,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "6.2.0-SNAPSHOT") {
+	library("Spring Security", "6.2.0-M3") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			imports = [
