@@ -39,6 +39,7 @@ import org.springframework.javapoet.ClassName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link ServletComponentScanRegistrar}
@@ -158,6 +159,16 @@ class ServletComponentScanRegistrarTests {
 			.accepts(generationContext.getRuntimeHints());
 	}
 
+	@Test
+	void processAheadOfTimeSucceedsForWebServletWithMultipartConfig() {
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+		context.registerBean(ScanServletPackage.class);
+		TestGenerationContext generationContext = new TestGenerationContext(
+				ClassName.get(getClass().getPackageName(), "TestTarget"));
+		assertThatNoException()
+			.isThrownBy(() -> new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext));
+	}
+
 	@SuppressWarnings("unchecked")
 	private void compile(GenericApplicationContext context, Consumer<GenericApplicationContext> freshContext) {
 		TestGenerationContext generationContext = new TestGenerationContext(
@@ -212,6 +223,12 @@ class ServletComponentScanRegistrarTests {
 	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan("org.springframework.boot.web.servlet.testcomponents.listener")
 	static class ScanListenerPackage {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ServletComponentScan("org.springframework.boot.web.servlet.testcomponents.servlet")
+	static class ScanServletPackage {
 
 	}
 
