@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class WebSocketMessagingAutoConfiguration {
 
 		@Override
 		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-			converter.setObjectMapper(this.objectMapper);
+			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter(this.objectMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
 			resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
 			converter.setContentTypeResolver(resolver);
