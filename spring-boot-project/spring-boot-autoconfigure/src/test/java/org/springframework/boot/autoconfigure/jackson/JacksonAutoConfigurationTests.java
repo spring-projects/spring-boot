@@ -294,20 +294,23 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void enableEnumFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.enum-data-type.write_enums_to_lowercase:true").run((context) -> {
-			ObjectMapper mapper = context.getBean(ObjectMapper.class);
-			assertThat(EnumFeature.WRITE_ENUMS_TO_LOWERCASE.enabledByDefault()).isFalse();
-			assertThat(mapper.getSerializationConfig().isEnabled(EnumFeature.WRITE_ENUMS_TO_LOWERCASE)).isTrue();
-		});
+		this.contextRunner.withPropertyValues("spring.jackson.enum-data-type.write_enums_to_lowercase:true")
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(EnumFeature.WRITE_ENUMS_TO_LOWERCASE.enabledByDefault()).isFalse();
+				assertThat(mapper.getSerializationConfig().isEnabled(EnumFeature.WRITE_ENUMS_TO_LOWERCASE)).isTrue();
+			});
 	}
 
 	@Test
 	void disableJsonNodeFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.json-node-data-type.write_null_properties:false").run((context) -> {
-			ObjectMapper mapper = context.getBean(ObjectMapper.class);
-			assertThat(JsonNodeFeature.WRITE_NULL_PROPERTIES.enabledByDefault()).isTrue();
-			assertThat(mapper.getDeserializationConfig().isEnabled(JsonNodeFeature.WRITE_NULL_PROPERTIES)).isFalse();
-		});
+		this.contextRunner.withPropertyValues("spring.jackson.json-node-data-type.write_null_properties:false")
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(JsonNodeFeature.WRITE_NULL_PROPERTIES.enabledByDefault()).isTrue();
+				assertThat(mapper.getDeserializationConfig().isEnabled(JsonNodeFeature.WRITE_NULL_PROPERTIES))
+					.isFalse();
+			});
 	}
 
 	@Test
