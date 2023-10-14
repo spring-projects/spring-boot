@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.EnumFeature;
+import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -38,6 +40,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Johannes Edmeier
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
@@ -85,6 +88,16 @@ public class JacksonProperties {
 	 * Jackson on/off features for generators.
 	 */
 	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(JsonGenerator.Feature.class);
+
+	/**
+	 * Jackson on/off features for enum types.
+	 */
+	private final Map<EnumFeature, Boolean> enumDatatype = new EnumMap<>(EnumFeature.class);
+
+	/**
+	 * Jackson on/off features for JsonNode types.
+	 */
+	private final Map<JsonNodeFeature, Boolean> jsonNodeDatatype = new EnumMap<>(JsonNodeFeature.class);
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
@@ -152,6 +165,14 @@ public class JacksonProperties {
 
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
+	}
+
+	public Map<EnumFeature, Boolean> getEnumDatatype() {
+		return this.enumDatatype;
+	}
+
+	public Map<JsonNodeFeature, Boolean> getJsonNodeDatatype() {
+		return this.jsonNodeDatatype;
 	}
 
 	public JsonInclude.Include getDefaultPropertyInclusion() {
