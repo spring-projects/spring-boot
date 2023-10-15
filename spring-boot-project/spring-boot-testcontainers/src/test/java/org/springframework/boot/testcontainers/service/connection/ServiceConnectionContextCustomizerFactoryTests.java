@@ -95,6 +95,14 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	}
 
 	@Test
+	void createContextCustomizerWhenInheritedImplementedInterfaceHasServiceConnectionsReturnsCustomizer() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(ServiceConnectionsImplSubclass.class, null);
+		assertThat(customizer).isNotNull();
+		assertThat(customizer.getSources()).hasSize(2);
+	}
+
+	@Test
 	void createContextCustomizerWhenClassHasNonStaticServiceConnectionFailsWithHelpfulException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.factory.createContextCustomizer(NonStaticServiceConnection.class, null))
@@ -183,6 +191,10 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	}
 
 	static class ServiceConnectionsImpl implements ServiceConnectionsInterface {
+
+	}
+
+	static class ServiceConnectionsImplSubclass extends ServiceConnectionsImpl {
 
 	}
 
