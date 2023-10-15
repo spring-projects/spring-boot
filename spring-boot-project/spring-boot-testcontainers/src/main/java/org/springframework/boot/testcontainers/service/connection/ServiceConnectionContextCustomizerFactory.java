@@ -49,26 +49,26 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		List<ContainerConnectionSource<?>> sources = new ArrayList<>();
-		findSources(testClass, sources);
+		collectSources(testClass, sources);
 		return new ServiceConnectionContextCustomizer(sources);
 	}
 
-	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?>> sources) {
-		if (clazz == Object.class || clazz == null) {
+	private void collectSources(Class<?> candidate, List<ContainerConnectionSource<?>> sources) {
+		if (candidate == Object.class || candidate == null) {
 			return;
 		}
-		ReflectionUtils.doWithLocalFields(clazz, (field) -> {
+		ReflectionUtils.doWithLocalFields(candidate, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
 				.forEach((annotation) -> sources.add(createSource(field, annotation)));
 		});
-		if (TestContextAnnotationUtils.searchEnclosingClass(clazz)) {
-			findSources(clazz.getEnclosingClass(), sources);
+		if (TestContextAnnotationUtils.searchEnclosingClass(candidate)) {
+			collectSources(candidate.getEnclosingClass(), sources);
 		}
-		for (Class<?> implementedInterface : clazz.getInterfaces()) {
-			findSources(implementedInterface, sources);
+		for (Class<?> implementedInterface : candidate.getInterfaces()) {
+			collectSources(implementedInterface, sources);
 		}
-		findSources(clazz.getSuperclass(), sources);
+		collectSources(candidate.getSuperclass(), sources);
 	}
 
 	@SuppressWarnings("unchecked")
