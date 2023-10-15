@@ -54,7 +54,10 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?>> sources) {
-		ReflectionUtils.doWithFields(clazz, (field) -> {
+		if (clazz == Object.class || clazz == null) {
+			return;
+		}
+		ReflectionUtils.doWithLocalFields(clazz, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
 				.forEach((annotation) -> sources.add(createSource(field, annotation)));
@@ -65,6 +68,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		for (Class<?> implementedInterface : clazz.getInterfaces()) {
 			findSources(implementedInterface, sources);
 		}
+		findSources(clazz.getSuperclass(), sources);
 	}
 
 	@SuppressWarnings("unchecked")
