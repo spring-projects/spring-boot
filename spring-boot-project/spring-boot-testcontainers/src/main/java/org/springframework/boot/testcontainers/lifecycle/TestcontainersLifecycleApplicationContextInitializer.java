@@ -47,7 +47,8 @@ public class TestcontainersLifecycleApplicationContextInitializer
 		}
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		applicationContext.addBeanFactoryPostProcessor(new TestcontainersLifecycleBeanFactoryPostProcessor());
-		beanFactory.addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor(beanFactory));
+		TestcontainersStartup startup = TestcontainersStartup.get(applicationContext.getEnvironment());
+		beanFactory.addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor(beanFactory, startup));
 	}
 
 }

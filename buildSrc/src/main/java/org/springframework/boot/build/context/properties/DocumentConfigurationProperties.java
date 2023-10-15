@@ -78,8 +78,10 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		snippets.add("application-properties.security", "Security Properties", this::securityPrefixes);
 		snippets.add("application-properties.rsocket", "RSocket Properties", this::rsocketPrefixes);
 		snippets.add("application-properties.actuator", "Actuator Properties", this::actuatorPrefixes);
-		snippets.add("application-properties.docker-compose", "Docker Compose Properties", this::dockerComposePrefixes);
 		snippets.add("application-properties.devtools", "Devtools Properties", this::devtoolsPrefixes);
+		snippets.add("application-properties.docker-compose", "Docker Compose Properties", this::dockerComposePrefixes);
+		snippets.add("application-properties.testcontainers", "Testcontainers Properties",
+				this::testcontainersPrefixes);
 		snippets.add("application-properties.testing", "Testing Properties", this::testingPrefixes);
 		snippets.writeTo(this.outputDir.toPath());
 	}
@@ -224,7 +226,11 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	private void testingPrefixes(Config prefix) {
-		prefix.accept("spring.test");
+		prefix.accept("spring.test.");
+	}
+
+	private void testcontainersPrefixes(Config prefix) {
+		prefix.accept("spring.testcontainers.");
 	}
 
 }

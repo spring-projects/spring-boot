@@ -61,6 +61,7 @@ dependencies {
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-devtools"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-docker-compose"))
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-testcontainers"))
 
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
@@ -74,6 +75,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
 
 	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
 

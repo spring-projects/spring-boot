@@ -16,13 +16,18 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.AbstractBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.MapPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -102,6 +107,22 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 		applicationContext.register(BeanCurrentlyInCreationExceptionConfiguration2.class,
 				BeanCurrentlyInCreationExceptionConfiguration1.class);
 		applicationContext.refresh();
+	}
+
+	@Test
+	void setupStartupBasedOnEnvironmentProperty() {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		applicationContext.getEnvironment()
+			.getPropertySources()
+			.addLast(new MapPropertySource("test", Map.of("spring.testcontainers.startup", "parallel")));
+		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+		AbstractBeanFactory beanFactory = (AbstractBeanFactory) applicationContext.getBeanFactory();
+		BeanPostProcessor beanPostProcessor = beanFactory.getBeanPostProcessors()
+			.stream()
+			.filter(TestcontainersLifecycleBeanPostProcessor.class::isInstance)
+			.findFirst()
+			.get();
+		assertThat(beanPostProcessor).extracting("startup").isEqualTo(TestcontainersStartup.PARALLEL);
 	}
 
 	private AnnotationConfigApplicationContext createApplicationContext(Startable container) {

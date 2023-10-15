@@ -1072,6 +1072,9 @@ include::code:test/MyContainersConfiguration[]
 NOTE: The lifecycle of `Container` beans is automatically managed by Spring Boot.
 Containers will be started and stopped automatically.
 
+TIP: You can use the configprop:spring.testcontainers.startup[] property to change how containers are started.
+By default `sequential` startup is used, but you may also choose `parallel` if you wish to start multiple containers in parallel.
+
 Once you have defined your test configuration, you can use the `with(...)` method to attach it to your test launcher:
 
 include::code:test/TestMyApplication[]

@@ -16,9 +16,11 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,46 +60,59 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	private final ConfigurableListableBeanFactory beanFactory;
 
+	private final TestcontainersStartup startup;
+
 	private volatile boolean containersInitialized = false;
 
-	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory) {
+	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory,
+			TestcontainersStartup startup) {
 		this.beanFactory = beanFactory;
+		this.startup = startup;
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof Startable startable) {
-			startable.start();
-		}
-		if (this.beanFactory.isConfigurationFrozen()) {
+		if (!this.containersInitialized && this.beanFactory.isConfigurationFrozen()) {
 			initializeContainers();
 		}
 		return bean;
 	}
 
 	private void initializeContainers() {
-		if (this.containersInitialized) {
-			return;
-		}
-		this.containersInitialized = true;
 		Set<String> beanNames = new LinkedHashSet<>();
 		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false)));
 		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
+		initializeContainers(beanNames);
+	}
+
+	private void initializeContainers(Set<String> beanNames) {
+		List<Object> beans = new ArrayList<>(beanNames.size());
 		for (String beanName : beanNames) {
 			try {
-				this.beanFactory.getBean(beanName);
+				beans.add(this.beanFactory.getBean(beanName));
 			}
 			catch (BeanCreationException ex) {
 				if (ex.contains(BeanCurrentlyInCreationException.class)) {
-					this.containersInitialized = false;
 					return;
 				}
 				throw ex;
 			}
 		}
-		if (!beanNames.isEmpty()) {
-			logger.debug(LogMessage.format("Initialized container beans '%s'", beanNames));
+		if (!this.containersInitialized) {
+			this.containersInitialized = true;
+			if (!beanNames.isEmpty()) {
+				logger.debug(LogMessage.format("Initialized container beans '%s'", beanNames));
+			}
+			start(beans);
 		}
+	}
+
+	private void start(List<Object> beans) {
+		Set<Startable> startables = beans.stream()
+			.filter(Startable.class::isInstance)
+			.map(Startable.class::cast)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
+		this.startup.start(startables);
 	}
 
 	@Override
