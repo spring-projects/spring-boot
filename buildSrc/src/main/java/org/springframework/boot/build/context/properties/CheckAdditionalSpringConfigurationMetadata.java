@@ -93,7 +93,7 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
 	@SuppressWarnings("unchecked")
 	private void check(String key, Map<String, Object> json, Analysis analysis) {
-		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.get(key);
+		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.getOrDefault(key, Collections.emptyList());
 		List<String> names = groups.stream().map((group) -> (String) group.get("name")).toList();
 		List<String> sortedNames = sortedCopy(names);
 		for (int i = 0; i < names.size(); i++) {
