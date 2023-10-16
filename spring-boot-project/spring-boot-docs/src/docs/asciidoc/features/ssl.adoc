@@ -105,9 +105,10 @@ The following example shows retrieving an `SslBundle` and using it to create an 
 
 include::code:MyComponent[]
 
+
+
 [[features.ssl.reloading]]
 === Reloading SSL bundles
-
 SSL bundles can be reloaded when the key material changes.
 The component consuming the bundle has to be compatible with reloadable SSL bundles.
 Currently the following components are compatible:
