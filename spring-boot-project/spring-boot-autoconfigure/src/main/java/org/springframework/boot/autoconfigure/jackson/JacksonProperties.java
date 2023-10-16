@@ -90,16 +90,6 @@ public class JacksonProperties {
 	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(JsonGenerator.Feature.class);
 
 	/**
-	 * Jackson on/off features for enum types.
-	 */
-	private final Map<EnumFeature, Boolean> enumDatatype = new EnumMap<>(EnumFeature.class);
-
-	/**
-	 * Jackson on/off features for JsonNode types.
-	 */
-	private final Map<JsonNodeFeature, Boolean> jsonNodeDatatype = new EnumMap<>(JsonNodeFeature.class);
-
-	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
 	 * the values in Jackson's JsonInclude.Include enumeration.
 	 */
@@ -126,6 +116,8 @@ public class JacksonProperties {
 	 * Locale used for formatting.
 	 */
 	private Locale locale;
+
+	private final Datatype datatype = new Datatype();
 
 	public String getDateFormat() {
 		return this.dateFormat;
@@ -165,14 +157,6 @@ public class JacksonProperties {
 
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
-	}
-
-	public Map<EnumFeature, Boolean> getEnumDatatype() {
-		return this.enumDatatype;
-	}
-
-	public Map<JsonNodeFeature, Boolean> getJsonNodeDatatype() {
-		return this.jsonNodeDatatype;
 	}
 
 	public JsonInclude.Include getDefaultPropertyInclusion() {
@@ -215,6 +199,10 @@ public class JacksonProperties {
 		this.locale = locale;
 	}
 
+	public Datatype getDatatype() {
+		return this.datatype;
+	}
+
 	public enum ConstructorDetectorStrategy {
 
 		/**
@@ -237,6 +225,28 @@ public class JacksonProperties {
 		 * for ambiguous cases.
 		 */
 		EXPLICIT_ONLY;
+
+	}
+
+	public static class Datatype {
+
+		/**
+		 * Jackson on/off features for enums.
+		 */
+		private final Map<EnumFeature, Boolean> enumFeatures = new EnumMap<>(EnumFeature.class);
+
+		/**
+		 * Jackson on/off features for JsonNodes.
+		 */
+		private final Map<JsonNodeFeature, Boolean> jsonNode = new EnumMap<>(JsonNodeFeature.class);
+
+		public Map<EnumFeature, Boolean> getEnum() {
+			return this.enumFeatures;
+		}
+
+		public Map<JsonNodeFeature, Boolean> getJsonNode() {
+			return this.jsonNode;
+		}
 
 	}
 

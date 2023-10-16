@@ -294,7 +294,7 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void enableEnumFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.enum-data-type.write_enums_to_lowercase:true")
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.enum.write-enums-to-lowercase=true")
 			.run((context) -> {
 				ObjectMapper mapper = context.getBean(ObjectMapper.class);
 				assertThat(EnumFeature.WRITE_ENUMS_TO_LOWERCASE.enabledByDefault()).isFalse();
@@ -304,7 +304,7 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void disableJsonNodeFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.json-node-data-type.write_null_properties:false")
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.jsonnode.write-null-properties:false")
 			.run((context) -> {
 				ObjectMapper mapper = context.getBean(ObjectMapper.class);
 				assertThat(JsonNodeFeature.WRITE_NULL_PROPERTIES.enabledByDefault()).isTrue();
