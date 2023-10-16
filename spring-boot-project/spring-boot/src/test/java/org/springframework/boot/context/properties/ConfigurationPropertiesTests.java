@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -1171,6 +1172,22 @@ class ConfigurationPropertiesTests {
 		PotentiallyConstructorBoundProperties properties = this.context
 			.getBean(PotentiallyConstructorBoundProperties.class);
 		assertThat(properties.getProp()).isEqualTo("alpha");
+	}
+
+	@Test
+	void loadWhenBindingClasspathPatternToResourceArrayShouldBindMultipleValues() {
+		load(ResourceArrayPropertiesConfiguration.class,
+				"test.resources=classpath*:org/springframework/boot/context/properties/*.class");
+		ResourceArrayProperties properties = this.context.getBean(ResourceArrayProperties.class);
+		assertThat(properties.getResources()).hasSizeGreaterThan(1);
+	}
+
+	@Test
+	void loadWhenBindingClasspathPatternToResourceCollectionShouldBindMultipleValues() {
+		load(ResourceCollectionPropertiesConfiguration.class,
+				"test.resources=classpath*:org/springframework/boot/context/properties/*.class");
+		ResourceCollectionProperties properties = this.context.getBean(ResourceCollectionProperties.class);
+		assertThat(properties.getResources()).hasSizeGreaterThan(1);
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -3054,6 +3071,46 @@ class ConfigurationPropertiesTests {
 
 		void setProp(String prop) {
 			this.prop = prop;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ResourceArrayProperties.class)
+	static class ResourceArrayPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ResourceArrayProperties {
+
+		private Resource[] resources;
+
+		Resource[] getResources() {
+			return this.resources;
+		}
+
+		void setResources(Resource[] resources) {
+			this.resources = resources;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ResourceCollectionProperties.class)
+	static class ResourceCollectionPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ResourceCollectionProperties {
+
+		private Collection<Resource> resources;
+
+		Collection<Resource> getResources() {
+			return this.resources;
+		}
+
+		void setResources(Collection<Resource> resources) {
+			this.resources = resources;
 		}
 
 	}
