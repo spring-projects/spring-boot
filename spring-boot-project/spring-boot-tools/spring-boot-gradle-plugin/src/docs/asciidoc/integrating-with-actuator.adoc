@@ -95,3 +95,5 @@ include::../gradle/integrating-with-actuator/build-info-additional.gradle[tags=a
 ----
 include::../gradle/integrating-with-actuator/build-info-additional.gradle.kts[tags=additional]
 ----
+
+An additional property's value can be computed lazily by using a `Provider`.
