@@ -213,6 +213,8 @@ public class JacksonAutoConfiguration {
 				configureFeatures(builder, this.jacksonProperties.getMapper());
 				configureFeatures(builder, this.jacksonProperties.getParser());
 				configureFeatures(builder, this.jacksonProperties.getGenerator());
+				configureFeatures(builder, this.jacksonProperties.getDatatype().getEnum());
+				configureFeatures(builder, this.jacksonProperties.getDatatype().getJsonNode());
 				configureDateFormat(builder);
 				configurePropertyNamingStrategy(builder);
 				configureModules(builder);

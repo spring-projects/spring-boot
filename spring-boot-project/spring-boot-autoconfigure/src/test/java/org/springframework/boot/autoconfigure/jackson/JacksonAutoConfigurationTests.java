@@ -45,6 +45,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
 import com.fasterxml.jackson.databind.cfg.ConstructorDetector.SingleArgConstructor;
+import com.fasterxml.jackson.databind.cfg.EnumFeature;
+import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
@@ -88,6 +90,7 @@ import static org.mockito.Mockito.mock;
  * @author Johannes Edmeier
  * @author Grzegorz Poznachowski
  * @author Ralf Ueberfuhr
+ * @author Eddú Meléndez
  */
 class JacksonAutoConfigurationTests {
 
@@ -287,6 +290,27 @@ class JacksonAutoConfigurationTests {
 			assertThat(mapper.getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES))
 				.isFalse();
 		});
+	}
+
+	@Test
+	void enableEnumFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.enum.write-enums-to-lowercase=true")
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(EnumFeature.WRITE_ENUMS_TO_LOWERCASE.enabledByDefault()).isFalse();
+				assertThat(mapper.getSerializationConfig().isEnabled(EnumFeature.WRITE_ENUMS_TO_LOWERCASE)).isTrue();
+			});
+	}
+
+	@Test
+	void disableJsonNodeFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.jsonnode.write-null-properties:false")
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(JsonNodeFeature.WRITE_NULL_PROPERTIES.enabledByDefault()).isTrue();
+				assertThat(mapper.getDeserializationConfig().isEnabled(JsonNodeFeature.WRITE_NULL_PROPERTIES))
+					.isFalse();
+			});
 	}
 
 	@Test

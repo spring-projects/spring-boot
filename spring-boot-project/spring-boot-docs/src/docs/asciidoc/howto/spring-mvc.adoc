@@ -64,10 +64,18 @@ Spring Boot also has some features to make it easier to customize this behavior.
 
 You can configure the `ObjectMapper` and `XmlMapper` instances by using the environment.
 Jackson provides an extensive suite of on/off features that can be used to configure various aspects of its processing.
-These features are described in six enums (in Jackson) that map onto properties in the environment:
+These features are described in several enums (in Jackson) that map onto properties in the environment:
 
 |===
 | Enum | Property | Values
+
+| `com.fasterxml.jackson.databind.cfg.EnumFeature`
+| `spring.jackson.datatype.enum.<feature_name>`
+| `true`, `false`
+
+| `com.fasterxml.jackson.databind.cfg.JsonNodeFeature`
+| `spring.jackson.datatype.jsonnode.<feature_name>`
+| `true`, `false`
 
 | `com.fasterxml.jackson.databind.DeserializationFeature`
 | `spring.jackson.deserialization.<feature_name>`
