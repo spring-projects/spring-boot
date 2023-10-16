@@ -195,7 +195,7 @@ public class GraphQlWebMvcAutoConfiguration {
 			mapping.setWebSocketUpgradeMatch(true);
 			mapping.setUrlMap(Collections.singletonMap(path,
 					handler.initWebSocketHttpRequestHandler(new DefaultHandshakeHandler())));
-			mapping.setOrder(2); // Ahead of HTTP endpoint ("routerFunctionMapping" bean)
+			mapping.setOrder(-2); // Ahead of HTTP endpoint ("routerFunctionMapping" bean)
 			return mapping;
 		}
 

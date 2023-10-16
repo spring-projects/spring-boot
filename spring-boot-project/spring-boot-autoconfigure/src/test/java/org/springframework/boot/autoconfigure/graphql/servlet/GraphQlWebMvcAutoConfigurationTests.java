@@ -45,7 +45,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -162,8 +166,12 @@ class GraphQlWebMvcAutoConfigurationTests {
 
 	@Test
 	void shouldConfigureWebSocketBeans() {
-		this.contextRunner.withPropertyValues("spring.graphql.websocket.path=/ws")
-			.run((context) -> assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class));
+		this.contextRunner.withPropertyValues("spring.graphql.websocket.path=/ws").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class);
+			assertThat(context.getBeanProvider(HandlerMapping.class).orderedStream().toList()).containsSubsequence(
+					context.getBean(WebSocketHandlerMapping.class), context.getBean(RouterFunctionMapping.class),
+					context.getBean(RequestMappingHandlerMapping.class));
+		});
 	}
 
 	@Test
