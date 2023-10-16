@@ -198,7 +198,7 @@ final class BindConverter {
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
 			return Set.of(new ConvertiblePair(String.class, Object.class),
-					new ConvertiblePair(String.class, Object[].class),
+					new ConvertiblePair(String.class, Resource[].class),
 					new ConvertiblePair(String.class, Collection.class));
 		}
 
