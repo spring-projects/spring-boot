@@ -789,7 +789,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return new JksSslStoreDetails(getStoreType(location), null, location, "secret");
 	}
 
-	private SslBundle createPemSslBundle(String cert, String privateKey) {
+	protected SslBundle createPemSslBundle(String cert, String privateKey) {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(cert).withPrivateKey(privateKey);
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(cert);
 		SslStoreBundle stores = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
@@ -807,14 +807,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory)).contains("scheme=https");
 	}
 
-	private HttpComponentsClientHttpRequestFactory createHttpComponentsRequestFactory(
+	protected HttpComponentsClientHttpRequestFactory createHttpComponentsRequestFactory(
 			SSLConnectionSocketFactory socketFactory) {
 		PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
 			.setSSLSocketFactory(socketFactory)
 			.build();
 		HttpClient httpClient = this.httpClientBuilder.get().setConnectionManager(connectionManager).build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		return requestFactory;
+		return new HttpComponentsClientHttpRequestFactory(httpClient);
 	}
 
 	private String getStoreType(String keyStore) {
@@ -1457,7 +1456,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected abstract Charset getCharset(Locale locale);
 
-	private void addTestTxtFile(AbstractServletWebServerFactory factory) throws IOException {
+	protected void addTestTxtFile(AbstractServletWebServerFactory factory) throws IOException {
 		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.txt")));
 		factory.setDocumentRoot(this.tempDir);
 		factory.setRegisterDefaultServlet(true);

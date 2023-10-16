@@ -16,11 +16,22 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.io.FileNotFoundException;
+import java.io.UncheckedIOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
+import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link SslBundleRegistrar} that registers SSL bundles based
@@ -28,25 +39,87 @@ import org.springframework.boot.ssl.SslBundleRegistry;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 
+	private static final Pattern PEM_CONTENT = Pattern.compile("-+BEGIN\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
+
 	private final SslProperties.Bundles properties;
 
-	SslPropertiesBundleRegistrar(SslProperties properties) {
+	private final FileWatcher fileWatcher;
+
+	SslPropertiesBundleRegistrar(SslProperties properties, FileWatcher fileWatcher) {
 		this.properties = properties.getBundle();
+		this.fileWatcher = fileWatcher;
 	}
 
 	@Override
 	public void registerBundles(SslBundleRegistry registry) {
-		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get);
-		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get);
+		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::getLocations);
+		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::getLocations);
 	}
 
 	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
-			Function<P, SslBundle> bundleFactory) {
-		properties.forEach((bundleName, bundleProperties) -> registry.registerBundle(bundleName,
-				bundleFactory.apply(bundleProperties)));
+			Function<P, SslBundle> bundleFactory, Function<P, Set<Location>> locationsSupplier) {
+		properties.forEach((bundleName, bundleProperties) -> {
+			SslBundle bundle = bundleFactory.apply(bundleProperties);
+			registry.registerBundle(bundleName, bundle);
+			if (bundleProperties.isReloadOnUpdate()) {
+				Set<Path> paths = locationsSupplier.apply(bundleProperties)
+					.stream()
+					.filter(Location::hasValue)
+					.map((location) -> toPath(bundleName, location))
+					.collect(Collectors.toSet());
+				this.fileWatcher.watch(paths,
+						() -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
+			}
+		});
+	}
+
+	private Set<Location> getLocations(JksSslBundleProperties properties) {
+		JksSslBundleProperties.Store keystore = properties.getKeystore();
+		JksSslBundleProperties.Store truststore = properties.getTruststore();
+		Set<Location> locations = new LinkedHashSet<>();
+		locations.add(new Location("keystore.location", keystore.getLocation()));
+		locations.add(new Location("truststore.location", truststore.getLocation()));
+		return locations;
+	}
+
+	private Set<Location> getLocations(PemSslBundleProperties properties) {
+		PemSslBundleProperties.Store keystore = properties.getKeystore();
+		PemSslBundleProperties.Store truststore = properties.getTruststore();
+		Set<Location> locations = new LinkedHashSet<>();
+		locations.add(new Location("keystore.private-key", keystore.getPrivateKey()));
+		locations.add(new Location("keystore.certificate", keystore.getCertificate()));
+		locations.add(new Location("truststore.private-key", truststore.getPrivateKey()));
+		locations.add(new Location("truststore.certificate", truststore.getCertificate()));
+		return locations;
+	}
+
+	private Path toPath(String bundleName, Location watchableLocation) {
+		String value = watchableLocation.value();
+		String field = watchableLocation.field();
+		Assert.state(!PEM_CONTENT.matcher(value).find(),
+				() -> "SSL bundle '%s' '%s' is not a URL and can't be watched".formatted(bundleName, field));
+		try {
+			URL url = ResourceUtils.getURL(value);
+			Assert.state("file".equalsIgnoreCase(url.getProtocol()),
+					() -> "SSL bundle '%s' '%s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
+			return Path.of(url.getFile()).toAbsolutePath();
+		}
+		catch (FileNotFoundException ex) {
+			throw new UncheckedIOException(
+					"SSL bundle '%s' '%s' location '%s' cannot be watched".formatted(bundleName, field, value), ex);
+		}
+	}
+
+	private record Location(String field, String value) {
+
+		boolean hasValue() {
+			return StringUtils.hasText(this.value);
+		}
+
 	}
 
 }

@@ -146,6 +146,15 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		this.sslStoreProvider = sslStoreProvider;
 	}
 
+	/**
+	 * Return the configured {@link SslBundles}.
+	 * @return the {@link SslBundles} or {@code null}
+	 * @since 3.2.0
+	 */
+	public SslBundles getSslBundles() {
+		return this.sslBundles;
+	}
+
 	@Override
 	public void setSslBundles(SslBundles sslBundles) {
 		this.sslBundles = sslBundles;

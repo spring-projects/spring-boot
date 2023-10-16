@@ -106,7 +106,6 @@ public class NettyWebServer implements WebServer {
 	 * @param resourceFactory the factory for the server's {@link LoopResources loop
 	 * resources}, may be {@code null}
 	 * @since 3.2.0
-	 * {@link #NettyWebServer(HttpServer, ReactorHttpHandlerAdapter, Duration, Shutdown, ReactorResourceFactory)}
 	 */
 	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
 			Shutdown shutdown, ReactorResourceFactory resourceFactory) {
@@ -149,7 +148,7 @@ public class NettyWebServer implements WebServer {
 		StringBuilder message = new StringBuilder();
 		tryAppend(message, "port %s", server::port);
 		tryAppend(message, "path %s", server::path);
-		return (message.length() > 0) ? "Netty started on " + message : "Netty started";
+		return (!message.isEmpty()) ? "Netty started on " + message : "Netty started";
 	}
 
 	protected String getStartedLogMessage() {
@@ -159,10 +158,11 @@ public class NettyWebServer implements WebServer {
 	private void tryAppend(StringBuilder message, String format, Supplier<Object> supplier) {
 		try {
 			Object value = supplier.get();
-			message.append((message.length() != 0) ? " " : "");
+			message.append((!message.isEmpty()) ? " " : "");
 			message.append(String.format(format, value));
 		}
 		catch (UnsupportedOperationException ex) {
+			// Ignore
 		}
 	}
 
