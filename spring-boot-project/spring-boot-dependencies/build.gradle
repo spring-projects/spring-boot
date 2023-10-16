@@ -1456,7 +1456,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "3.1.2-SNAPSHOT") {
+	library("Spring LDAP", "3.1.2") {
 		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
