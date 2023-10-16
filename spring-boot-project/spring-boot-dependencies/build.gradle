@@ -1419,7 +1419,7 @@ bom {
 			]
 		}
 	}
-	library("Pooled JMS", "1.2.4") {
+	library("Pooled JMS", "1.2.5") {
 		prohibit {
 			versionRange "[2.0.0,)"
 			because "it requires Java 11"
