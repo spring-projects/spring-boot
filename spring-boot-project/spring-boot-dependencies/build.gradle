@@ -1721,7 +1721,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.17-SNAPSHOT") {
+	library("Spring AMQP", "2.4.17") {
 		considerSnapshots()
 		prohibit {
 			versionRange "[3.0.0-M1,)"
