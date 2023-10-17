@@ -670,11 +670,11 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void runFunctionalCommandLineRunnersAndApplicationRunners() {
-		SpringApplication application = new SpringApplication(FunctionalRunnerConfig.class);
+	void runCommandLineRunnersAndApplicationRunnersUsingOrderOnBeanDefinitions() {
+		SpringApplication application = new SpringApplication(BeanDefinitionOrderRunnerConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("arg");
-		FunctionalRunnerConfig config = this.context.getBean(FunctionalRunnerConfig.class);
+		BeanDefinitionOrderRunnerConfig config = this.context.getBean(BeanDefinitionOrderRunnerConfig.class);
 		assertThat(config.runners).containsExactly("runnerA", "runnerB", "runnerC");
 	}
 
@@ -1585,12 +1585,12 @@ class SpringApplicationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class FunctionalRunnerConfig {
+	static class BeanDefinitionOrderRunnerConfig {
 
-		List<String> runners = new ArrayList<>();
+		private final List<String> runners = new ArrayList<>();
 
 		@Bean
-		@Order // default is LOWEST_PRECEDENCE
+		@Order
 		CommandLineRunner runnerC() {
 			return (args) -> this.runners.add("runnerC");
 		}
