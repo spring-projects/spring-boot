@@ -29,6 +29,8 @@ import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.apache.pulsar.common.schema.SchemaType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -39,6 +41,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.pulsar.annotation.PulsarBootstrapConfiguration;
 import org.springframework.pulsar.annotation.PulsarListenerAnnotationBeanPostProcessor;
 import org.springframework.pulsar.annotation.PulsarReaderAnnotationBeanPostProcessor;
@@ -464,6 +467,27 @@ class PulsarAutoConfigurationTests {
 					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", false));
 		}
 
+		@Test
+		@EnabledForJreRange(min = JRE.JAVA_21)
+		void whenVirtualThreadsAreEnabledOnJava21AndLaterListenerContainerShouldUseVirtualThreads() {
+			this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+				ConcurrentPulsarListenerContainerFactory<?> factory = context
+					.getBean(ConcurrentPulsarListenerContainerFactory.class);
+				assertThat(factory.getContainerProperties().getConsumerTaskExecutor())
+					.isInstanceOf(VirtualThreadTaskExecutor.class);
+			});
+		}
+
+		@Test
+		@EnabledForJreRange(max = JRE.JAVA_20)
+		void whenVirtualThreadsAreEnabledOnJava20AndEarlierListenerContainerShouldNotUseVirtualThreads() {
+			this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+				ConcurrentPulsarListenerContainerFactory<?> factory = context
+					.getBean(ConcurrentPulsarListenerContainerFactory.class);
+				assertThat(factory.getContainerProperties().getConsumerTaskExecutor()).isNull();
+			});
+		}
+
 	}
 
 	@Nested
@@ -496,6 +520,27 @@ class PulsarAutoConfigurationTests {
 					assertThat(customizers.fromField(readerFactory, "defaultConfigCustomizers")).callsInOrder(
 							ReaderBuilder::readerName, "fromPropsCustomizer", "fromCustomizer1", "fromCustomizer2");
 				});
+		}
+
+		@Test
+		@EnabledForJreRange(min = JRE.JAVA_21)
+		void whenVirtualThreadsAreEnabledOnJava21AndLaterReaderShouldUseVirtualThreads() {
+			this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+				DefaultPulsarReaderContainerFactory<?> factory = context
+					.getBean(DefaultPulsarReaderContainerFactory.class);
+				assertThat(factory.getContainerProperties().getReaderTaskExecutor())
+					.isInstanceOf(VirtualThreadTaskExecutor.class);
+			});
+		}
+
+		@Test
+		@EnabledForJreRange(max = JRE.JAVA_20)
+		void whenVirtualThreadsAreEnabledOnJava20AndEarlierReaderShouldNotUseVirtualThreads() {
+			this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+				DefaultPulsarReaderContainerFactory<?> factory = context
+					.getBean(DefaultPulsarReaderContainerFactory.class);
+				assertThat(factory.getContainerProperties().getReaderTaskExecutor()).isNull();
+			});
 		}
 
 		@TestConfiguration(proxyBeanMethods = false)
