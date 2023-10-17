@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -43,6 +44,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
 public class R2dbcTransactionManagerAutoConfiguration {
 
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
 	public R2dbcTransactionManager connectionFactoryTransactionManager(ConnectionFactory connectionFactory) {
 		return new R2dbcTransactionManager(connectionFactory);

@@ -25,11 +25,13 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +64,20 @@ class R2dbcTransactionManagerAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SingleConnectionFactoryConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(TransactionalOperator.class)
 				.hasSingleBean(ReactiveTransactionManager.class));
+	}
+
+	@Test
+	void coexistenceOfCustomTransactionManagerWithDefaultOne() {
+		this.contextRunner
+				.withUserConfiguration(SingleConnectionFactoryConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(AlwaysReadOnlyTransactionManagerAutoConfiguration.class))
+			.run((context) -> {
+				ReactiveTransactionManager defaultTm = context.getBean(ReactiveTransactionManager.class);
+				ReactiveTransactionManager customTm = context.getBean("customTransactionManager", CustomAlwaysReadOnlyTransactionManager.class);
+				assertThat(defaultTm).isNotSameAs(customTm);  // verifying different instances
+				assertThat(defaultTm).isInstanceOf(R2dbcTransactionManager.class);
+				assertThat(customTm).isInstanceOf(CustomAlwaysReadOnlyTransactionManager.class);
+			});
 	}
 
 	@Test
@@ -119,6 +135,26 @@ class R2dbcTransactionManagerAutoConfigurationTests {
 				.map(TransactionSynchronizationManager::isActualTransactionActive);
 		}
 
+	}
+
+	@AutoConfiguration(after = R2dbcTransactionManagerAutoConfiguration.class)
+	static class AlwaysReadOnlyTransactionManagerAutoConfiguration {
+
+		@Bean
+		CustomAlwaysReadOnlyTransactionManager customTransactionManager(ConnectionFactory connectionFactory) {
+			return new CustomAlwaysReadOnlyTransactionManager(connectionFactory);
+		}
+
+	}
+	static class CustomAlwaysReadOnlyTransactionManager extends R2dbcTransactionManager {
+		public CustomAlwaysReadOnlyTransactionManager(ConnectionFactory connectionFactory) {
+			super(connectionFactory);
+		}
+
+		@Override
+		public boolean isEnforceReadOnly() {
+			return true;
+		}
 	}
 
 }
