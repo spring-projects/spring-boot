@@ -1117,6 +1117,19 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getItem().getValue()).isEqualTo("foo");
 	}
 
+	@Test
+	void loadWhenBindingToConstructorParametersWithConversionToCustomListImplementation() {
+		load(ConstructorBoundCustomListPropertiesConfiguration.class, "test.values=a,b");
+		assertThat(this.context.getBean(ConstructorBoundCustomListProperties.class).getValues()).containsExactly("a",
+				"b");
+	}
+
+	@Test
+	void loadWhenBindingToJavaBeanWithConversionToCustomListImplementation() {
+		load(SetterBoundCustomListPropertiesConfiguration.class, "test.values=a,b");
+		assertThat(this.context.getBean(SetterBoundCustomListProperties.class).getValues()).containsExactly("a", "b");
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
 	}
@@ -2853,6 +2866,85 @@ class ConfigurationPropertiesTests {
 		@Override
 		public WithPublicObjectToObjectMethod convert(String source) {
 			return new WithPublicObjectToObjectMethod(source);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ConstructorBoundCustomListProperties.class)
+	static class ConstructorBoundCustomListPropertiesConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		static Converter<ArrayList<?>, CustomList<?>> arrayListToCustomList() {
+			return new Converter<ArrayList<?>, CustomList<?>>() {
+
+				@Override
+				public CustomList<?> convert(ArrayList<?> source) {
+					return new CustomList<>(source);
+				}
+
+			};
+
+		}
+
+	}
+
+	@ConstructorBinding
+	@ConfigurationProperties("test")
+	static class ConstructorBoundCustomListProperties {
+
+		private final CustomList<String> values;
+
+		ConstructorBoundCustomListProperties(CustomList<String> values) {
+			this.values = values;
+		}
+
+		CustomList<String> getValues() {
+			return this.values;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(SetterBoundCustomListProperties.class)
+	static class SetterBoundCustomListPropertiesConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		static Converter<ArrayList<?>, CustomList<?>> arrayListToCustomList() {
+			return new Converter<ArrayList<?>, CustomList<?>>() {
+
+				@Override
+				public CustomList<?> convert(ArrayList<?> source) {
+					return new CustomList<>(source);
+				}
+
+			};
+
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class SetterBoundCustomListProperties {
+
+		private CustomList<String> values;
+
+		CustomList<String> getValues() {
+			return this.values;
+		}
+
+		void setValues(CustomList<String> values) {
+			this.values = values;
+		}
+
+	}
+
+	static final class CustomList<E> extends ArrayList<E> {
+
+		CustomList(List<E> delegate) {
+			super(delegate);
 		}
 
 	}
