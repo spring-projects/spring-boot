@@ -33,7 +33,7 @@ import org.springframework.core.annotation.Order;
  * @see ApplicationRunner
  */
 @FunctionalInterface
-public interface CommandLineRunner {
+public interface CommandLineRunner extends Runner {
 
 	/**
 	 * Callback used to run the bean.
