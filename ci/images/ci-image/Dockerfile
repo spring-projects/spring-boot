@@ -9,7 +9,3 @@ RUN ./setup.sh java17
 ENV JAVA_HOME /opt/openjdk
 ENV PATH $JAVA_HOME/bin:$PATH
 ADD docker-lib.sh /docker-lib.sh
-
-ADD build-release-scripts.sh /build-release-scripts.sh
-ADD releasescripts /release-scripts
-RUN ./build-release-scripts.sh
