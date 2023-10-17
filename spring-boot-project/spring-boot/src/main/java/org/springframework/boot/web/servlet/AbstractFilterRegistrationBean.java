@@ -159,6 +159,28 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	}
 
 	/**
+	 * Determines the {@link DispatcherType dispatcher types} for which the filter should
+	 * be registered. Applies defaults based on the type of filter being registered if
+	 * none have been configured. Modifications to the returned {@link EnumSet} will have
+	 * no effect on the registration.
+	 * @return the dispatcher types, never {@code null}
+	 * @since 3.2.0
+	 */
+	public EnumSet<DispatcherType> determineDispatcherTypes() {
+		if (this.dispatcherTypes == null) {
+			T filter = getFilter();
+			if (ClassUtils.isPresent("org.springframework.web.filter.OncePerRequestFilter",
+					filter.getClass().getClassLoader()) && filter instanceof OncePerRequestFilter) {
+				return EnumSet.allOf(DispatcherType.class);
+			}
+			else {
+				return EnumSet.of(DispatcherType.REQUEST);
+			}
+		}
+		return EnumSet.copyOf(this.dispatcherTypes);
+	}
+
+	/**
 	 * Convenience method to {@link #setDispatcherTypes(EnumSet) set dispatcher types}
 	 * using the specified elements.
 	 * @param first the first dispatcher type
@@ -216,17 +238,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	@Override
 	protected void configure(FilterRegistration.Dynamic registration) {
 		super.configure(registration);
-		EnumSet<DispatcherType> dispatcherTypes = this.dispatcherTypes;
-		if (dispatcherTypes == null) {
-			T filter = getFilter();
-			if (ClassUtils.isPresent("org.springframework.web.filter.OncePerRequestFilter",
-					filter.getClass().getClassLoader()) && filter instanceof OncePerRequestFilter) {
-				dispatcherTypes = EnumSet.allOf(DispatcherType.class);
-			}
-			else {
-				dispatcherTypes = EnumSet.of(DispatcherType.REQUEST);
-			}
-		}
+		EnumSet<DispatcherType> dispatcherTypes = determineDispatcherTypes();
 		Set<String> servletNames = new LinkedHashSet<>();
 		for (ServletRegistrationBean<?> servletRegistrationBean : this.servletRegistrationBeans) {
 			servletNames.add(servletRegistrationBean.getServletName());

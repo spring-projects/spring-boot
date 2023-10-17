@@ -18,16 +18,21 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.SpringBootMockMvcBuilderCustomizer.DeferredLinesWriter;
@@ -37,11 +42,12 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebAp
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 /**
  * Tests for {@link SpringBootMockMvcBuilderCustomizer}.
@@ -51,7 +57,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpringBootMockMvcBuilderCustomizerTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void customizeShouldAddFilters() {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		MockServletContext servletContext = new MockServletContext();
@@ -65,8 +70,11 @@ class SpringBootMockMvcBuilderCustomizerTests {
 			.getBean("filterRegistrationBean");
 		Filter testFilter = (Filter) context.getBean("testFilter");
 		Filter otherTestFilter = registrationBean.getFilter();
-		List<Filter> filters = (List<Filter>) ReflectionTestUtils.getField(builder, "filters");
-		assertThat(filters).containsExactlyInAnyOrder(testFilter, otherTestFilter);
+		assertThat(builder).extracting("filters", as(InstanceOfAssertFactories.LIST))
+			.extracting("delegate", "initParams", "dispatcherTypes")
+			.containsExactlyInAnyOrder(tuple(testFilter, Collections.emptyMap(), EnumSet.of(DispatcherType.REQUEST)),
+					tuple(otherTestFilter, Map.of("a", "alpha", "b", "bravo"),
+							EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR)));
 	}
 
 	@Test
@@ -130,7 +138,11 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 		@Bean
 		FilterRegistrationBean<OtherTestFilter> filterRegistrationBean() {
-			return new FilterRegistrationBean<>(new OtherTestFilter());
+			FilterRegistrationBean<OtherTestFilter> filterRegistrationBean = new FilterRegistrationBean<>(
+					new OtherTestFilter());
+			filterRegistrationBean.setInitParameters(Map.of("a", "alpha", "b", "bravo"));
+			filterRegistrationBean.setDispatcherTypes(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+			return filterRegistrationBean;
 		}
 
 		@Bean
@@ -179,6 +191,11 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		public void destroy() {
 
 		}
+
+	}
+
+	static record RegisteredFilter(Filter filter, Map<String, String> initParameters,
+			EnumSet<DispatcherType> dispatcherTypes) {
 
 	}
 

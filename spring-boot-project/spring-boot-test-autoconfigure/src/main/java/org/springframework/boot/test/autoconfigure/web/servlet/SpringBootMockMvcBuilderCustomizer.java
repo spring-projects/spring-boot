@@ -116,12 +116,8 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder, AbstractFilterRegistrationBean<?> registration) {
 		Filter filter = registration.getFilter();
 		Collection<String> urls = registration.getUrlPatterns();
-		if (urls.isEmpty()) {
-			builder.addFilters(filter);
-		}
-		else {
-			builder.addFilter(filter, StringUtils.toStringArray(urls));
-		}
+		builder.addFilter(filter, registration.getInitParameters(), registration.determineDispatcherTypes(),
+				StringUtils.toStringArray(urls));
 	}
 
 	public void setAddFilters(boolean addFilters) {
