@@ -18,6 +18,7 @@ package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -44,20 +45,20 @@ class NestedLocationTests {
 	}
 
 	@Test
-	void createWhenFileIsNullThrowsException() {
+	void createWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new NestedLocation(null, "nested.jar"))
-			.withMessageContaining("'file' must not be null");
+			.withMessageContaining("'path' must not be null");
 	}
 
 	@Test
 	void createWhenNestedEntryNameIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new NestedLocation(new File("test.jar"), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new NestedLocation(Path.of("test.jar"), null))
 			.withMessageContaining("'nestedEntryName' must not be empty");
 	}
 
 	@Test
 	void createWhenNestedEntryNameIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new NestedLocation(new File("test.jar"), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new NestedLocation(Path.of("test.jar"), null))
 			.withMessageContaining("'nestedEntryName' must not be empty");
 	}
 
@@ -91,7 +92,7 @@ class NestedLocationTests {
 		File file = new File(this.temp, "test.jar");
 		NestedLocation location = NestedLocation
 			.fromUrl(new URL("nested:" + file.getAbsolutePath() + "/!lib/nested.jar"));
-		assertThat(location.file()).isEqualTo(file);
+		assertThat(location.path()).isEqualTo(file.toPath());
 		assertThat(location.nestedEntryName()).isEqualTo("lib/nested.jar");
 	}
 

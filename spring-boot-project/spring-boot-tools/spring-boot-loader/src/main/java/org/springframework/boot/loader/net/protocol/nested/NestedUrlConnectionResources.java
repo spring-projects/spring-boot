@@ -51,7 +51,7 @@ class NestedUrlConnectionResources implements Runnable {
 	void connect() throws IOException {
 		synchronized (this) {
 			if (this.zipContent == null) {
-				this.zipContent = ZipContent.open(this.location.file().toPath(), this.location.nestedEntryName());
+				this.zipContent = ZipContent.open(this.location.path(), this.location.nestedEntryName());
 				try {
 					connectData();
 				}

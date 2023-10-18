@@ -82,7 +82,7 @@ class UrlJarFileFactory {
 	private JarFile createJarFileForNested(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		NestedLocation location = NestedLocation.fromUrl(url);
-		return new UrlNestedJarFile(location.file(), location.nestedEntryName(), version, closeAction);
+		return new UrlNestedJarFile(location.path().toFile(), location.nestedEntryName(), version, closeAction);
 	}
 
 	private JarFile createJarFileForStream(URL url, Version version, Consumer<JarFile> closeAction) throws IOException {

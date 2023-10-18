@@ -16,8 +16,9 @@
 
 package org.springframework.boot.loader.net.protocol.nested;
 
-import java.io.File;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,18 +44,18 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  * uncompressed entry that contains the nested jar, or a directory entry. The entry must
  * not start with a {@code '/'}.
  *
- * @param file the zip file that contains the nested entry
+ * @param path the path to the zip that contains the nested entry
  * @param nestedEntryName the nested entry name
  * @author Phillip Webb
  * @since 3.2.0
  */
-public record NestedLocation(File file, String nestedEntryName) {
+public record NestedLocation(Path path, String nestedEntryName) {
 
 	private static final Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
 
 	public NestedLocation {
-		if (file == null) {
-			throw new IllegalArgumentException("'file' must not be null");
+		if (path == null) {
+			throw new IllegalArgumentException("'path' must not be null");
 		}
 		if (nestedEntryName == null || nestedEntryName.trim().isEmpty()) {
 			throw new IllegalArgumentException("'nestedEntryName' must not be empty");
@@ -86,9 +87,9 @@ public record NestedLocation(File file, String nestedEntryName) {
 	}
 
 	private static NestedLocation create(int index, String location) {
-		String file = location.substring(0, index);
+		String path = location.substring(0, index);
 		String nestedEntryName = location.substring(index + 2);
-		return new NestedLocation((!file.isEmpty()) ? new File(file) : null, nestedEntryName);
+		return new NestedLocation((!path.isEmpty()) ? Path.of(path) : null, nestedEntryName);
 	}
 
 	static void clearCache() {

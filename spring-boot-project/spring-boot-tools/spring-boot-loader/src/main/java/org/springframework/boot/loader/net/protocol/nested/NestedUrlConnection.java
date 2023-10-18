@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.net.protocol.nested;
 
+import java.io.File;
 import java.io.FilePermission;
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.lang.ref.Cleaner.Cleanable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.security.Permission;
 
 import org.springframework.boot.loader.ref.Cleaner;
@@ -43,7 +45,7 @@ class NestedUrlConnection extends URLConnection {
 
 	private final Cleanable cleanup;
 
-	private long lastModified;
+	private long lastModified = -1;
 
 	private FilePermission permission;
 
@@ -91,8 +93,13 @@ class NestedUrlConnection extends URLConnection {
 
 	@Override
 	public long getLastModified() {
-		if (this.lastModified == 0) {
-			this.lastModified = this.resources.getLocation().file().lastModified();
+		if (this.lastModified == -1) {
+			try {
+				this.lastModified = Files.getLastModifiedTime(this.resources.getLocation().path()).toMillis();
+			}
+			catch (IOException ex) {
+				this.lastModified = 0;
+			}
 		}
 		return this.lastModified;
 	}
@@ -100,7 +107,8 @@ class NestedUrlConnection extends URLConnection {
 	@Override
 	public Permission getPermission() throws IOException {
 		if (this.permission == null) {
-			this.permission = new FilePermission(this.resources.getLocation().file().getCanonicalPath(), "read");
+			File file = this.resources.getLocation().path().toFile();
+			this.permission = new FilePermission(file.getCanonicalPath(), "read");
 		}
 		return this.permission;
 	}
