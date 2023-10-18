@@ -65,7 +65,7 @@ class RestartApplicationListenerTests {
 
 	@Test
 	void initializeWithReady() {
-		testInitialize(false);
+		testInitialize(false, new ImplicitlyEnabledRestartApplicationListener());
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("args", ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
 		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(), "rootContexts")).isNotEmpty();
@@ -73,7 +73,7 @@ class RestartApplicationListenerTests {
 
 	@Test
 	void initializeWithFail() {
-		testInitialize(true);
+		testInitialize(true, new ImplicitlyEnabledRestartApplicationListener());
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("args", ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
 		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(), "rootContexts")).isEmpty();
@@ -82,7 +82,7 @@ class RestartApplicationListenerTests {
 	@Test
 	void disableWithSystemProperty(CapturedOutput output) {
 		System.setProperty(ENABLED_PROPERTY, "false");
-		testInitialize(false);
+		testInitialize(false, new ImplicitlyEnabledRestartApplicationListener());
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", false);
 		assertThat(output).contains("Restart disabled due to System property");
 	}
@@ -90,14 +90,28 @@ class RestartApplicationListenerTests {
 	@Test
 	void enableWithSystemProperty(CapturedOutput output) {
 		System.setProperty(ENABLED_PROPERTY, "true");
-		testInitialize(false);
+		testInitialize(false, new ImplicitlyEnabledRestartApplicationListener());
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", true);
 		assertThat(output).contains("Restart enabled irrespective of application packaging due to System property");
 	}
 
-	private void testInitialize(boolean failed) {
+	@Test
+	void enableWithSystemPropertyWhenImplicitlyDisabled(CapturedOutput output) {
+		System.setProperty(ENABLED_PROPERTY, "true");
+		testInitialize(false, new RestartApplicationListener());
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", true);
+		assertThat(output).contains("Restart enabled irrespective of application packaging due to System property");
+	}
+
+	@Test
+	void implicitlyDisabledInTests(CapturedOutput output) {
+		testInitialize(false, new RestartApplicationListener());
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", false);
+		assertThat(output).contains("Restart disabled due to context in which it is running");
+	}
+
+	private void testInitialize(boolean failed, RestartApplicationListener listener) {
 		Restarter.clearInstance();
-		RestartApplicationListener listener = new RestartApplicationListener();
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 		SpringApplication application = new SpringApplication();
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
@@ -111,6 +125,15 @@ class RestartApplicationListenerTests {
 		else {
 			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS, context, null));
 		}
+	}
+
+	private static class ImplicitlyEnabledRestartApplicationListener extends RestartApplicationListener {
+
+		@Override
+		boolean implicitlyEnableRestart() {
+			return true;
+		}
+
 	}
 
 }

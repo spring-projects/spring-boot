@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -66,7 +67,14 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		String enabled = System.getProperty(ENABLED_PROPERTY);
 		RestartInitializer restartInitializer = null;
 		if (enabled == null) {
-			restartInitializer = new DefaultRestartInitializer();
+			if (implicitlyEnableRestart()) {
+				restartInitializer = new DefaultRestartInitializer();
+			}
+			else {
+				logger.info("Restart disabled due to context in which it is running");
+				Restarter.disable();
+				return;
+			}
 		}
 		else if (Boolean.parseBoolean(enabled)) {
 			restartInitializer = new DefaultRestartInitializer() {
@@ -94,6 +102,10 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 					ENABLED_PROPERTY));
 			Restarter.disable();
 		}
+	}
+
+	boolean implicitlyEnableRestart() {
+		return DevToolsEnablementDeducer.shouldEnable(Thread.currentThread());
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {

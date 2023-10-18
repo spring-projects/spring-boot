@@ -408,7 +408,7 @@ public class Restarter {
 	}
 
 	void prepare(ConfigurableApplicationContext applicationContext) {
-		if (applicationContext != null && applicationContext.getParent() != null) {
+		if (!this.enabled || (applicationContext != null && applicationContext.getParent() != null)) {
 			return;
 		}
 		if (applicationContext instanceof GenericApplicationContext genericContext) {
