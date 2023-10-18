@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.io.FileNotFoundException;
-import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
@@ -106,10 +104,10 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 			URL url = ResourceUtils.getURL(value);
 			Assert.state("file".equalsIgnoreCase(url.getProtocol()),
 					() -> "SSL bundle '%s' '%s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
-			return Path.of(url.getFile()).toAbsolutePath();
+			return Path.of(url.toURI()).toAbsolutePath();
 		}
-		catch (FileNotFoundException ex) {
-			throw new UncheckedIOException(
+		catch (Exception ex) {
+			throw new RuntimeException(
 					"SSL bundle '%s' '%s' location '%s' cannot be watched".formatted(bundleName, field, value), ex);
 		}
 	}

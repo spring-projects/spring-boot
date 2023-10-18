@@ -111,7 +111,7 @@ class FileWatcherTests {
 		Path directory = tempDir.resolve("dir1");
 		assertThatExceptionOfType(UncheckedIOException.class)
 			.isThrownBy(() -> this.fileWatcher.watch(Set.of(directory), new WaitingCallback()))
-			.withMessageMatching("Failed to register paths for watching: \\[.+/dir1]");
+			.withMessage("Failed to register paths for watching: [%s]".formatted(directory));
 	}
 
 	@Test
