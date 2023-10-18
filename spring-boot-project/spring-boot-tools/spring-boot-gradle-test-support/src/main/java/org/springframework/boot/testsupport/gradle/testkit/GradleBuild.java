@@ -118,7 +118,6 @@ public class GradleBuild {
 				new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")),
-				new File(pathOfJarContaining("org.jetbrains.kotlin.compilerRunner.KotlinLogger")),
 				new File(pathOfJarContaining(KotlinPlatformJvmPlugin.class)),
 				new File(pathOfJarContaining(KotlinProject.class)),
 				new File(pathOfJarContaining(KotlinToolingVersion.class)),
