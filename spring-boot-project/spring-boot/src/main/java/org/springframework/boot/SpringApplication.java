@@ -156,6 +156,7 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @author Ethan Rubinson
  * @author Chris Bono
+ * @author Tadaya Tsuyukubo
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -740,18 +741,14 @@ public class SpringApplication {
 	}
 
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
-		List<Object> runners = new ArrayList<>();
-		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
-		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
-		AnnotationAwareOrderComparator.sort(runners);
-		for (Object runner : new LinkedHashSet<>(runners)) {
+		context.getBeanProvider(Runner.class).orderedStream().forEach((runner) -> {
 			if (runner instanceof ApplicationRunner) {
 				callRunner((ApplicationRunner) runner, args);
 			}
 			if (runner instanceof CommandLineRunner) {
 				callRunner((CommandLineRunner) runner, args);
 			}
-		}
+		});
 	}
 
 	private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
