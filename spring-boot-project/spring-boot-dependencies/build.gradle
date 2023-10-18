@@ -1867,7 +1867,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.2.2") {
+	library("Spring Session Bom", "2021.2.3") {
 		considerSnapshots()
 		prohibit {
 			versionRange "[2022.0.0-M1,)"
