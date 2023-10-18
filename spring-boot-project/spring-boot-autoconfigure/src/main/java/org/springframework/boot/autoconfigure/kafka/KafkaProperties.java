@@ -38,6 +38,8 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -55,6 +57,8 @@ import org.springframework.util.unit.DataSize;
  * @author Artem Bilan
  * @author Nakul Mishra
  * @author Tomaz Fernandes
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -157,7 +161,7 @@ public class KafkaProperties {
 		return this.retry;
 	}
 
-	private Map<String, Object> buildCommonProperties() {
+	private Map<String, Object> buildCommonProperties(SslBundles sslBundles) {
 		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
@@ -165,7 +169,7 @@ public class KafkaProperties {
 		if (this.clientId != null) {
 			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
 		}
-		properties.putAll(this.ssl.buildProperties());
+		properties.putAll(this.ssl.buildProperties(sslBundles));
 		properties.putAll(this.security.buildProperties());
 		if (!CollectionUtils.isEmpty(this.properties)) {
 			properties.putAll(this.properties);
@@ -177,13 +181,29 @@ public class KafkaProperties {
 	 * Create an initial map of consumer properties from the state of this instance.
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
-	 * default kafkaConsumerFactory bean.
+	 * default {@code kafkaConsumerFactory} bean.
+	 * @return the consumer properties initialized with the customizations defined on this
+	 * instance
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link #buildConsumerProperties(SslBundles)}}
+	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public Map<String, Object> buildConsumerProperties() {
+		return buildConsumerProperties(null);
+	}
+
+	/**
+	 * Create an initial map of consumer properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary, and override the
+	 * default {@code kafkaConsumerFactory} bean.
+	 * @param sslBundles bundles providing SSL trust material
 	 * @return the consumer properties initialized with the customizations defined on this
 	 * instance
 	 */
-	public Map<String, Object> buildConsumerProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.consumer.buildProperties());
+	public Map<String, Object> buildConsumerProperties(SslBundles sslBundles) {
+		Map<String, Object> properties = buildCommonProperties(sslBundles);
+		properties.putAll(this.consumer.buildProperties(sslBundles));
 		return properties;
 	}
 
@@ -191,13 +211,29 @@ public class KafkaProperties {
 	 * Create an initial map of producer properties from the state of this instance.
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
-	 * default kafkaProducerFactory bean.
+	 * default {@code kafkaProducerFactory} bean.
+	 * @return the producer properties initialized with the customizations defined on this
+	 * instance
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link #buildProducerProperties(SslBundles)}}
+	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public Map<String, Object> buildProducerProperties() {
+		return buildProducerProperties(null);
+	}
+
+	/**
+	 * Create an initial map of producer properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary, and override the
+	 * default {@code kafkaProducerFactory} bean.
+	 * @param sslBundles bundles providing SSL trust material
 	 * @return the producer properties initialized with the customizations defined on this
 	 * instance
 	 */
-	public Map<String, Object> buildProducerProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.producer.buildProperties());
+	public Map<String, Object> buildProducerProperties(SslBundles sslBundles) {
+		Map<String, Object> properties = buildCommonProperties(sslBundles);
+		properties.putAll(this.producer.buildProperties(sslBundles));
 		return properties;
 	}
 
@@ -205,13 +241,29 @@ public class KafkaProperties {
 	 * Create an initial map of admin properties from the state of this instance.
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
-	 * default kafkaAdmin bean.
+	 * default {@code kafkaAdmin} bean.
+	 * @return the admin properties initialized with the customizations defined on this
+	 * instance
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link #buildAdminProperties(SslBundles)}}
+	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	public Map<String, Object> buildAdminProperties() {
+		return buildAdminProperties(null);
+	}
+
+	/**
+	 * Create an initial map of admin properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary, and override the
+	 * default {@code kafkaAdmin} bean.
+	 * @param sslBundles bundles providing SSL trust material
 	 * @return the admin properties initialized with the customizations defined on this
 	 * instance
 	 */
-	public Map<String, Object> buildAdminProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.admin.buildProperties());
+	public Map<String, Object> buildAdminProperties(SslBundles sslBundles) {
+		Map<String, Object> properties = buildCommonProperties(sslBundles);
+		properties.putAll(this.admin.buildProperties(sslBundles));
 		return properties;
 	}
 
@@ -221,10 +273,25 @@ public class KafkaProperties {
 	 * This allows you to add additional properties, if necessary.
 	 * @return the streams properties initialized with the customizations defined on this
 	 * instance
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link #buildStreamsProperties(SslBundles)}}
 	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public Map<String, Object> buildStreamsProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.streams.buildProperties());
+		return buildStreamsProperties(null);
+	}
+
+	/**
+	 * Create an initial map of streams properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary.
+	 * @param sslBundles bundles providing SSL trust material
+	 * @return the streams properties initialized with the customizations defined on this
+	 * instance
+	 */
+	public Map<String, Object> buildStreamsProperties(SslBundles sslBundles) {
+		Map<String, Object> properties = buildCommonProperties(sslBundles);
+		properties.putAll(this.streams.buildProperties(sslBundles));
 		return properties;
 	}
 
@@ -426,7 +493,7 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties() {
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAutoCommitInterval)
@@ -451,7 +518,7 @@ public class KafkaProperties {
 			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
-			return properties.with(this.ssl, this.security, this.properties);
+			return properties.with(this.ssl, this.security, this.properties, sslBundles);
 		}
 
 	}
@@ -613,7 +680,7 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties() {
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
@@ -627,7 +694,7 @@ public class KafkaProperties {
 			map.from(this::getKeySerializer).to(properties.in(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
 			map.from(this::getRetries).to(properties.in(ProducerConfig.RETRIES_CONFIG));
 			map.from(this::getValueSerializer).to(properties.in(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
-			return properties.with(this.ssl, this.security, this.properties);
+			return properties.with(this.ssl, this.security, this.properties, sslBundles);
 		}
 
 	}
@@ -734,11 +801,11 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties() {
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
-			return properties.with(this.ssl, this.security, this.properties);
+			return properties.with(this.ssl, this.security, this.properties, sslBundles);
 		}
 
 	}
@@ -885,7 +952,7 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties() {
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
@@ -899,7 +966,7 @@ public class KafkaProperties {
 			map.from(this::getClientId).to(properties.in(CommonClientConfigs.CLIENT_ID_CONFIG));
 			map.from(this::getReplicationFactor).to(properties.in("replication.factor"));
 			map.from(this::getStateDir).to(properties.in("state.dir"));
-			return properties.with(this.ssl, this.security, this.properties);
+			return properties.with(this.ssl, this.security, this.properties, sslBundles);
 		}
 
 	}
@@ -1199,6 +1266,11 @@ public class KafkaProperties {
 	public static class Ssl {
 
 		/**
+		 * Name of the SSL bundle to use.
+		 */
+		private String bundle;
+
+		/**
 		 * Password of the private key in either key store key or key store file.
 		 */
 		private String keyPassword;
@@ -1252,6 +1324,14 @@ public class KafkaProperties {
 		 * SSL protocol to use.
 		 */
 		private String protocol;
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
+		}
 
 		public String getKeyPassword() {
 			return this.keyPassword;
@@ -1341,26 +1421,39 @@ public class KafkaProperties {
 			this.protocol = protocol;
 		}
 
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
+			return buildProperties(null);
+		}
+
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			validate();
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
-			map.from(this::getKeyStoreCertificateChain)
-				.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
-			map.from(this::getKeyStoreKey).to(properties.in(SslConfigs.SSL_KEYSTORE_KEY_CONFIG));
-			map.from(this::getKeyStoreLocation)
-				.as(this::resourceToPath)
-				.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
-			map.from(this::getKeyStorePassword).to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
-			map.from(this::getKeyStoreType).to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
-			map.from(this::getTrustStoreCertificates).to(properties.in(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG));
-			map.from(this::getTrustStoreLocation)
-				.as(this::resourceToPath)
-				.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
-			map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
-			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
-			map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
+			if (getBundle() != null) {
+				properties.in(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG)
+					.accept(SslBundleSslEngineFactory.class.getName());
+				properties.in(SslBundle.class.getName()).accept(sslBundles.getBundle(getBundle()));
+			}
+			else {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
+				map.from(this::getKeyStoreCertificateChain)
+					.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
+				map.from(this::getKeyStoreKey).to(properties.in(SslConfigs.SSL_KEYSTORE_KEY_CONFIG));
+				map.from(this::getKeyStoreLocation)
+					.as(this::resourceToPath)
+					.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
+				map.from(this::getKeyStorePassword).to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
+				map.from(this::getKeyStoreType).to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
+				map.from(this::getTrustStoreCertificates)
+					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG));
+				map.from(this::getTrustStoreLocation)
+					.as(this::resourceToPath)
+					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
+				map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
+				map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
+				map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
+			}
 			return properties;
 		}
 
@@ -1371,6 +1464,22 @@ public class KafkaProperties {
 			});
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.trust-store-certificates", getTrustStoreCertificates());
+				entries.put("spring.kafka.ssl.trust-store-location", getTrustStoreLocation());
+			});
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.kafka.ssl.bundle", getBundle());
+				entries.put("spring.kafka.ssl.key-store-key", getKeyStoreKey());
+			});
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.kafka.ssl.bundle", getBundle());
+				entries.put("spring.kafka.ssl.key-store-location", getKeyStoreLocation());
+			});
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.kafka.ssl.bundle", getBundle());
+				entries.put("spring.kafka.ssl.trust-store-certificates", getTrustStoreCertificates());
+			});
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.kafka.ssl.bundle", getBundle());
 				entries.put("spring.kafka.ssl.trust-store-location", getTrustStoreLocation());
 			});
 		}
@@ -1628,8 +1737,8 @@ public class KafkaProperties {
 			return (value) -> put(key, value);
 		}
 
-		Properties with(Ssl ssl, Security security, Map<String, String> properties) {
-			putAll(ssl.buildProperties());
+		Properties with(Ssl ssl, Security security, Map<String, String> properties, SslBundles sslBundles) {
+			putAll(ssl.buildProperties(sslBundles));
 			putAll(security.buildProperties());
 			putAll(properties);
 			return this;
