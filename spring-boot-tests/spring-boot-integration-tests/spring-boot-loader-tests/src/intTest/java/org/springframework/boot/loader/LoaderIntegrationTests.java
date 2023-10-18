@@ -51,11 +51,12 @@ class LoaderIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
-	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
+	void runJar(JavaRuntime javaRuntime) {
 		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-app", null)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
 			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from")
+				.contains(">>>>> gh-7161 [/gh-7161/example.txt]")
 				.doesNotContain("WARNING:")
 				.doesNotContain("illegal")
 				.doesNotContain("jar written to temp");

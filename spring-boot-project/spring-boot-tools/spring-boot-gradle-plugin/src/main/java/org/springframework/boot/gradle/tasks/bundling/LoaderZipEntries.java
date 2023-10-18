@@ -66,8 +66,8 @@ class LoaderZipEntries {
 					writeDirectory(new ZipArchiveEntry(entry), out);
 					written.addDirectory(entry);
 				}
-				else if (entry.getName().endsWith(".class")) {
-					writeClass(new ZipArchiveEntry(entry), loaderJar, out);
+				else if (entry.getName().endsWith(".class") || entry.getName().startsWith("META-INF/services/")) {
+					writeFile(new ZipArchiveEntry(entry), loaderJar, out);
 					written.addFile(entry);
 				}
 				entry = loaderJar.getNextEntry();
@@ -82,7 +82,7 @@ class LoaderZipEntries {
 		out.closeArchiveEntry();
 	}
 
-	private void writeClass(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
+	private void writeFile(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
 		prepareEntry(entry, this.fileMode);
 		out.putArchiveEntry(entry);
 		copy(in, out);

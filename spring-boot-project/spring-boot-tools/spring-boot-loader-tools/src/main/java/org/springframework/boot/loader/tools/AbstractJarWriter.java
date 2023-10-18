@@ -220,7 +220,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		try (JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()))) {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {
-				if (isDirectoryEntry(entry) || isClassEntry(entry)) {
+				if (isDirectoryEntry(entry) || isClassEntry(entry) || isServicesEntry(entry)) {
 					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream));
 				}
 			}
@@ -233,6 +233,10 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	private boolean isClassEntry(JarEntry entry) {
 		return entry.getName().endsWith(".class");
+	}
+
+	private boolean isServicesEntry(JarEntry entry) {
+		return !entry.isDirectory() && entry.getName().startsWith("META-INF/services/");
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {

@@ -75,6 +75,19 @@ public record NestedLocation(Path path, String nestedEntryName) {
 		return parse(UrlDecoder.decode(url.getPath()));
 	}
 
+	/**
+	 * Create a new {@link NestedLocation} from the given URI.
+	 * @param uri the nested URI
+	 * @return a new {@link NestedLocation} instance
+	 * @throws IllegalArgumentException if the URI is not valid
+	 */
+	public static NestedLocation fromUri(URI uri) {
+		if (uri == null || !"nested".equalsIgnoreCase(uri.getScheme())) {
+			throw new IllegalArgumentException("'uri' must not be null and must use 'nested' scheme");
+		}
+		return parse(uri.getSchemeSpecificPart());
+	}
+
 	static NestedLocation parse(String path) {
 		if (path == null || path.isEmpty()) {
 			throw new IllegalArgumentException("'path' must not be empty");

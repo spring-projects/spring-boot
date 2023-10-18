@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -92,6 +93,34 @@ class NestedLocationTests {
 		File file = new File(this.temp, "test.jar");
 		NestedLocation location = NestedLocation
 			.fromUrl(new URL("nested:" + file.getAbsolutePath() + "/!lib/nested.jar"));
+		assertThat(location.path()).isEqualTo(file.toPath());
+		assertThat(location.nestedEntryName()).isEqualTo("lib/nested.jar");
+	}
+
+	@Test
+	void fromUriWhenUrlIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NestedLocation.fromUri(null))
+			.withMessageContaining("'uri' must not be null");
+	}
+
+	@Test
+	void fromUriWhenNotNestedProtocolThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NestedLocation.fromUri(new URI("file://test.jar")))
+			.withMessageContaining("must use 'nested' scheme");
+	}
+
+	@Test
+	void fromUriWhenNoSeparatorThrowsExceptiuon() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> NestedLocation.fromUri(new URI("nested:test.jar!nested.jar")))
+			.withMessageContaining("'path' must contain '/!'");
+	}
+
+	@Test
+	void fromUriReturnsNestedLocation() throws Exception {
+		File file = new File(this.temp, "test.jar");
+		NestedLocation location = NestedLocation
+			.fromUri(new URI("nested:" + file.getAbsolutePath() + "/!lib/nested.jar"));
 		assertThat(location.path()).isEqualTo(file.toPath());
 		assertThat(location.nestedEntryName()).isEqualTo("lib/nested.jar");
 	}
