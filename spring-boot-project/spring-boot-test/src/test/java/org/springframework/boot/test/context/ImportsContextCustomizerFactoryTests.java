@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
@@ -75,6 +76,20 @@ class ImportsContextCustomizerFactoryTests {
 	}
 
 	@Test
+	void contextCustomizerEqualsAndHashCodeConsidersComponentScan() {
+		ContextCustomizer customizer1 = this.factory
+			.createContextCustomizer(TestWithImportAndComponentScanOfSomePackage.class, null);
+		ContextCustomizer customizer2 = this.factory
+			.createContextCustomizer(TestWithImportAndComponentScanOfSomePackage.class, null);
+		ContextCustomizer customizer3 = this.factory
+			.createContextCustomizer(TestWithImportAndComponentScanOfAnotherPackage.class, null);
+		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
+		assertThat(customizer1).isEqualTo(customizer2);
+		assertThat(customizer3.hashCode()).isNotEqualTo(customizer2.hashCode()).isNotEqualTo(customizer1.hashCode());
+		assertThat(customizer3).isNotEqualTo(customizer2).isNotEqualTo(customizer1);
+	}
+
+	@Test
 	void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
@@ -102,6 +117,18 @@ class ImportsContextCustomizerFactoryTests {
 
 	@Import(ImportedBean.class)
 	static class TestWithImport {
+
+	}
+
+	@Import(ImportedBean.class)
+	@ComponentScan("some.package")
+	static class TestWithImportAndComponentScanOfSomePackage {
+
+	}
+
+	@Import(ImportedBean.class)
+	@ComponentScan("another.package")
+	static class TestWithImportAndComponentScanOfAnotherPackage {
 
 	}
 

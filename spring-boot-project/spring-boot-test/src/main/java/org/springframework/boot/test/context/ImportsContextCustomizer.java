@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -36,6 +37,7 @@ import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -237,7 +239,18 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			Set<Class<?>> seen = new HashSet<>();
 			collectClassAnnotations(testClass, annotations, seen);
 			Set<Object> determinedImports = determineImports(annotations, testClass);
-			this.key = Collections.unmodifiableSet((determinedImports != null) ? determinedImports : annotations);
+			if (determinedImports == null) {
+				this.key = Collections.unmodifiableSet(annotations);
+			}
+			else {
+				Set<Object> key = new HashSet<>();
+				key.addAll(determinedImports);
+				Set<Annotation> componentScanning = annotations.stream()
+					.filter(ComponentScan.class::isInstance)
+					.collect(Collectors.toSet());
+				key.addAll(componentScanning);
+				this.key = Collections.unmodifiableSet(key);
+			}
 		}
 
 		private void collectClassAnnotations(Class<?> classType, Set<Annotation> annotations, Set<Class<?>> seen) {
