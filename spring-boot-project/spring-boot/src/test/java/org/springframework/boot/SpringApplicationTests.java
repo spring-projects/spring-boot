@@ -97,6 +97,7 @@ import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -158,6 +159,7 @@ import static org.mockito.Mockito.spy;
  * @author Nguyen Bao Sach
  * @author Chris Bono
  * @author Sebastien Deleuze
+ * @author Tadaya Tsuyukubo
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -626,6 +628,15 @@ class SpringApplicationTests {
 		assertThat(this.context).has(runTestRunnerBean("runnerA"));
 		assertThat(this.context).has(runTestRunnerBean("runnerB"));
 		assertThat(this.context).has(runTestRunnerBean("runnerC"));
+	}
+
+	@Test
+	void runCommandLineRunnersAndApplicationRunnersUsingOrderOnBeanDefinitions() {
+		SpringApplication application = new SpringApplication(BeanDefinitionOrderRunnerConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("arg");
+		BeanDefinitionOrderRunnerConfig config = this.context.getBean(BeanDefinitionOrderRunnerConfig.class);
+		assertThat(config.runners).containsExactly("runnerA", "runnerB", "runnerC");
 	}
 
 	@Test
@@ -1642,6 +1653,31 @@ class SpringApplicationTests {
 		@Bean
 		TestCommandLineRunner runnerA() {
 			return new TestCommandLineRunner(Ordered.HIGHEST_PRECEDENCE);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BeanDefinitionOrderRunnerConfig {
+
+		private final List<String> runners = new ArrayList<>();
+
+		@Bean
+		@Order
+		CommandLineRunner runnerC() {
+			return (args) -> this.runners.add("runnerC");
+		}
+
+		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE - 1)
+		ApplicationRunner runnerB() {
+			return (args) -> this.runners.add("runnerB");
+		}
+
+		@Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		CommandLineRunner runnerA() {
+			return (args) -> this.runners.add("runnerA");
 		}
 
 	}
