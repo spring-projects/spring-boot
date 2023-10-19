@@ -3,7 +3,7 @@ spring:
     banner-mode: off
 sonatype:
   exclude:
-    - "build-info\.json"
+    - "build-info.json"
     - "org/springframework/boot/spring-boot-docs/.*"
 sdkman:
   artifact: "org.springframework.boot:spring-boot-cli:*:zip:bin"
