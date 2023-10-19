@@ -28,7 +28,7 @@ anchors:
     GITHUB_USERNAME: ((github-username))
     MILESTONE: ((milestone))
   sontatype-task-params: &sonatype-task-params
-    SONATYPE_USER: ((sonatype-username))
+    SONATYPE_USERNAME: ((sonatype-username))
     SONATYPE_PASSWORD: ((sonatype-password))
     SONATYPE_URL: ((sonatype-url))
     SONATYPE_STAGING_PROFILE_ID: ((sonatype-staging-profile-id))
@@ -463,7 +463,6 @@ jobs:
 - name: promote-milestone
   serial: true
   plan:
-  - get: ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -473,7 +472,6 @@ jobs:
       download_artifacts: false
       save_build_info: true
   - task: promote
-    image: ci-image
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: M
@@ -492,7 +490,6 @@ jobs:
 - name: promote-rc
   serial: true
   plan:
-  - get: ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -502,7 +499,6 @@ jobs:
       download_artifacts: false
       save_build_info: true
   - task: promote
-    image: ci-image
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RC
@@ -521,7 +517,6 @@ jobs:
 - name: promote-release
   serial: true
   plan:
-  - get: ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -532,7 +527,6 @@ jobs:
       save_build_info: true
       threads: 8
   - task: promote
-    image: ci-image
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RELEASE
@@ -580,7 +574,6 @@ jobs:
 - name: publish-to-sdkman
   serial: true
   plan:
-    - get: ci-image
     - get: git-repo
     - get: artifactory-repo
       passed: [create-github-release]
@@ -588,7 +581,6 @@ jobs:
         download_artifacts: false
         save_build_info: true
     - task: publish-to-sdkman
-      image: ci-image
       file: git-repo/ci/tasks/publish-to-sdkman.yml
       params:
         <<: *sdkman-task-params
