@@ -114,7 +114,7 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.getEnvironment()
 			.getPropertySources()
-			.addLast(new MapPropertySource("test", Map.of("spring.testcontainers.startup", "parallel")));
+			.addLast(new MapPropertySource("test", Map.of("spring.testcontainers.beans.startup", "parallel")));
 		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 		AbstractBeanFactory beanFactory = (AbstractBeanFactory) applicationContext.getBeanFactory();
 		BeanPostProcessor beanPostProcessor = beanFactory.getBeanPostProcessors()

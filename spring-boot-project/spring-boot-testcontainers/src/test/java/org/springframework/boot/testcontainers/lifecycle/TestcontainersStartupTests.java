@@ -82,7 +82,7 @@ class TestcontainersStartupTests {
 		MockEnvironment environment = new MockEnvironment();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> TestcontainersStartup.get(environment.withProperty(PROPERTY, "bad")))
-			.withMessage("Unknown 'spring.testcontainers.startup' property value 'bad'");
+			.withMessage("Unknown 'spring.testcontainers.beans.startup' property value 'bad'");
 	}
 
 	private List<TestStartable> createTestStartables(int size) {

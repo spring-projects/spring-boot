@@ -61,7 +61,7 @@ public enum TestcontainersStartup {
 	 * The {@link Environment} property used to change the {@link TestcontainersStartup}
 	 * strategy.
 	 */
-	public static final String PROPERTY = "spring.testcontainers.startup";
+	public static final String PROPERTY = "spring.testcontainers.beans.startup";
 
 	abstract void start(Collection<? extends Startable> startables);
 

@@ -1,7 +1,7 @@
 {
   "properties": [
     {
-      "name": "spring.testcontainers.startup",
+      "name": "spring.testcontainers.beans.startup",
       "type": "org.springframework.boot.testcontainers.lifecycle.TestcontainersStartup",
        "description": "Testcontainers startup modes.",
        "defaultValue": "sequential"
