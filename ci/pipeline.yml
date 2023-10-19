@@ -28,7 +28,7 @@ anchors:
     GITHUB_USERNAME: ((github-username))
     MILESTONE: ((milestone))
   sontatype-task-params: &sonatype-task-params
-    SONATYPE_USER: ((sonatype-username))
+    SONATYPE_USERNAME: ((sonatype-username))
     SONATYPE_PASSWORD: ((sonatype-password))
     SONATYPE_URL: ((sonatype-url))
     SONATYPE_STAGING_PROFILE_ID: ((sonatype-staging-profile-id))
