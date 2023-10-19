@@ -116,7 +116,7 @@ public class PulsarProperties {
 		/**
 		 * Client lookup timeout.
 		 */
-		private Duration lookupTimeout = Duration.ofMillis(-1); // FIXME
+		private Duration lookupTimeout;
 
 		/**
 		 * Duration to wait for a connection to a broker to be established.
