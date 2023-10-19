@@ -21,6 +21,9 @@
 						<goals>
 							<goal>repackage</goal>
 						</goals>
+						<configuration>
+							<loaderImplementation>CLASSIC</loaderImplementation>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -37,7 +40,6 @@
 							<Not-Used>Foo</Not-Used>
 						</manifestEntries>
 					</archive>
-					<loaderImplementation>CLASSIC</loaderImplementation>
 				</configuration>
 			</plugin>
 		</plugins>
