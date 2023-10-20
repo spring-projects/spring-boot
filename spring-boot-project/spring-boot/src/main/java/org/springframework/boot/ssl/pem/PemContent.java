@@ -21,6 +21,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.springframework.util.FileCopyUtils;
@@ -38,17 +42,56 @@ final class PemContent {
 
 	private static final Pattern PEM_FOOTER = Pattern.compile("-+END\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
 
-	private PemContent() {
+	private String text;
+
+	private PemContent(String text) {
+		this.text = text;
 	}
 
-	static String load(String content) {
-		if (content == null || isPemContent(content)) {
-			return content;
+	List<X509Certificate> getCertificates() {
+		return PemCertificateParser.parse(this.text);
+	}
+
+	List<PrivateKey> getPrivateKeys() {
+		return PemPrivateKeyParser.parse(this.text);
+	}
+
+	List<PrivateKey> getPrivateKeys(String password) {
+		return PemPrivateKeyParser.parse(this.text, password);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		return Objects.equals(this.text, ((PemContent) obj).text);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.text);
+	}
+
+	@Override
+	public String toString() {
+		return this.text;
+	}
+
+	static PemContent load(String content) {
+		if (content == null) {
+			return null;
+		}
+		if (isPemContent(content)) {
+			return new PemContent(content);
 		}
 		try {
 			URL url = ResourceUtils.getURL(content);
 			try (Reader reader = new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)) {
-				return FileCopyUtils.copyToString(reader);
+				return new PemContent(FileCopyUtils.copyToString(reader));
 			}
 		}
 		catch (IOException ex) {

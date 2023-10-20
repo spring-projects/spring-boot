@@ -176,28 +176,28 @@ final class PemPrivateKeyParser {
 
 	/**
 	 * Parse a private key from the specified string.
-	 * @param key the private key to parse
+	 * @param text the text to parse
 	 * @return the parsed private key
 	 */
-	static PrivateKey[] parse(String key) {
-		return parse(key, null);
+	static List<PrivateKey> parse(String text) {
+		return parse(text, null);
 	}
 
 	/**
 	 * Parse a private key from the specified string, using the provided password for
 	 * decryption if necessary.
-	 * @param key the private key to parse
+	 * @param text the text to parse
 	 * @param password the password used to decrypt an encrypted private key
 	 * @return the parsed private key
 	 */
-	static PrivateKey[] parse(String key, String password) {
-		if (key == null) {
+	static List<PrivateKey> parse(String text, String password) {
+		if (text == null) {
 			return null;
 		}
 		List<PrivateKey> keys = new ArrayList<>();
 		try {
 			for (PemParser pemParser : PEM_PARSERS) {
-				PrivateKey privateKey = pemParser.parse(key, password);
+				PrivateKey privateKey = pemParser.parse(text, password);
 				if (privateKey != null) {
 					keys.add(privateKey);
 				}
@@ -206,7 +206,7 @@ final class PemPrivateKeyParser {
 		catch (Exception ex) {
 			throw new IllegalStateException("Error loading private key file: " + ex.getMessage(), ex);
 		}
-		return keys.toArray(PrivateKey[]::new);
+		return List.copyOf(keys);
 	}
 
 	/**

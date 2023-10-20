@@ -19,6 +19,7 @@ package org.springframework.boot.ssl.pem;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,19 +36,19 @@ class PemCertificateParserTests {
 
 	@Test
 	void parseCertificate() throws Exception {
-		X509Certificate[] certificates = PemCertificateParser.parse(read("test-cert.pem"));
+		List<X509Certificate> certificates = PemCertificateParser.parse(read("test-cert.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(1);
-		assertThat(certificates[0].getType()).isEqualTo("X.509");
+		assertThat(certificates.get(0).getType()).isEqualTo("X.509");
 	}
 
 	@Test
 	void parseCertificateChain() throws Exception {
-		X509Certificate[] certificates = PemCertificateParser.parse(read("test-cert-chain.pem"));
+		List<X509Certificate> certificates = PemCertificateParser.parse(read("test-cert-chain.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(2);
-		assertThat(certificates[0].getType()).isEqualTo("X.509");
-		assertThat(certificates[1].getType()).isEqualTo("X.509");
+		assertThat(certificates.get(0).getType()).isEqualTo("X.509");
+		assertThat(certificates.get(1).getType()).isEqualTo("X.509");
 	}
 
 	private String read(String path) throws IOException {

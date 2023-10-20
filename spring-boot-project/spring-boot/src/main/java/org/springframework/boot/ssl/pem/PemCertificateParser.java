@@ -48,17 +48,17 @@ final class PemCertificateParser {
 
 	/**
 	 * Parse certificates from the specified string.
-	 * @param certificates the certificates to parse
+	 * @param text the text to parse
 	 * @return the parsed certificates
 	 */
-	static X509Certificate[] parse(String certificates) {
-		if (certificates == null) {
+	static List<X509Certificate> parse(String text) {
+		if (text == null) {
 			return null;
 		}
 		CertificateFactory factory = getCertificateFactory();
 		List<X509Certificate> certs = new ArrayList<>();
-		readCertificates(certificates, factory, certs::add);
-		return (!certs.isEmpty()) ? certs.toArray(X509Certificate[]::new) : null;
+		readCertificates(text, factory, certs::add);
+		return List.copyOf(certs);
 	}
 
 	private static CertificateFactory getCertificateFactory() {

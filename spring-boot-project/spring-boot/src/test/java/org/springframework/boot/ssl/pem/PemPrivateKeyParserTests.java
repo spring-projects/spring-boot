@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -219,9 +220,9 @@ class PemPrivateKeyParserTests {
 		// -passout pass:test
 		// where <algorithm> is aes128 or aes256
 		String content = read("org/springframework/boot/web/server/pkcs8/" + file);
-		PrivateKey[] privateKeys = PemPrivateKeyParser.parse(content, "test");
+		List<PrivateKey> privateKeys = PemPrivateKeyParser.parse(content, "test");
 		assertThat(privateKeys).isNotEmpty();
-		PrivateKey privateKey = privateKeys[0];
+		PrivateKey privateKey = privateKeys.get(0);
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo(algorithm);
 	}
@@ -268,8 +269,8 @@ class PemPrivateKeyParserTests {
 	}
 
 	private PrivateKey parse(String key) {
-		PrivateKey[] keys = PemPrivateKeyParser.parse(key);
-		return (!ObjectUtils.isEmpty(keys)) ? keys[0] : null;
+		List<PrivateKey> keys = PemPrivateKeyParser.parse(key);
+		return (!ObjectUtils.isEmpty(keys)) ? keys.get(0) : null;
 	}
 
 	private String read(String path) throws IOException {

@@ -57,19 +57,19 @@ class PemContentTests {
 				+lGuHKdhNOVW9CmqPD1y76o6c8PQKuF7KZEoY2jvy3GeIfddBvqXgZ4PbWvFz1jO
 				32C9XWHwRA4=
 				-----END CERTIFICATE-----""";
-		assertThat(PemContent.load(content)).isEqualTo(content);
+		assertThat(PemContent.load(content)).hasToString(content);
 	}
 
 	@Test
 	void loadWhenClasspathLocationReturnsContent() throws IOException {
-		String actual = PemContent.load("classpath:test-cert.pem");
+		String actual = PemContent.load("classpath:test-cert.pem").toString();
 		String expected = new ClassPathResource("test-cert.pem").getContentAsString(StandardCharsets.UTF_8);
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	void loadWhenFileLocationReturnsContent() throws IOException {
-		String actual = PemContent.load("src/test/resources/test-cert.pem");
+		String actual = PemContent.load("src/test/resources/test-cert.pem").toString();
 		String expected = new ClassPathResource("test-cert.pem").getContentAsString(StandardCharsets.UTF_8);
 		assertThat(actual).isEqualTo(expected);
 	}
