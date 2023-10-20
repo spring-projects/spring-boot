@@ -27,6 +27,7 @@ import java.security.cert.X509Certificate;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.pem.KeyVerifier.Result;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -150,13 +151,18 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) {
 		String privateKeyContent = PemContent.load(details.privateKey());
-		return PemPrivateKeyParser.parse(privateKeyContent, details.privateKeyPassword());
+		if (privateKeyContent == null) {
+			return null;
+		}
+		PrivateKey[] privateKeys = PemPrivateKeyParser.parse(privateKeyContent, details.privateKeyPassword());
+		Assert.state(!ObjectUtils.isEmpty(privateKeys), "Loaded private keys are empty");
+		return privateKeys[0];
 	}
 
 	private static X509Certificate[] loadCertificates(PemSslStoreDetails details) {
 		String certificateContent = PemContent.load(details.certificate());
 		X509Certificate[] certificates = PemCertificateParser.parse(certificateContent);
-		Assert.state(certificates != null && certificates.length > 0, "Loaded certificates are empty");
+		Assert.state(!ObjectUtils.isEmpty(certificates), "Loaded certificates are empty");
 		return certificates;
 	}
 

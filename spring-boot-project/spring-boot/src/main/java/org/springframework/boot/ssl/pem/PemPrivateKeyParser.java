@@ -69,6 +69,10 @@ final class PemPrivateKeyParser {
 
 	private static final String SEC1_EC_FOOTER = "-+END\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+";
 
+	private static final String PKCS1_DSA_HEADER = "-+BEGIN\\s+DSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
+
+	private static final String PKCS1_DSA_FOOTER = "-+END\\s+DSA\\s+PRIVATE\\s+KEY[^-]*-+";
+
 	private static final String BASE64_TEXT = "([a-z0-9+/=\\r\\n]+)";
 
 	public static final int BASE64_TEXT_GROUP = 1;
@@ -83,6 +87,9 @@ final class PemPrivateKeyParser {
 				"RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
 		parsers.add(new PemParser(PKCS8_ENCRYPTED_HEADER, PKCS8_ENCRYPTED_FOOTER,
 				PemPrivateKeyParser::createKeySpecForPkcs8Encrypted, "RSA", "RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
+		parsers.add(new PemParser(PKCS1_DSA_HEADER, PKCS1_DSA_FOOTER, (bytes, password) -> {
+			throw new IllegalStateException("Unsupported private key format");
+		}));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -172,7 +179,7 @@ final class PemPrivateKeyParser {
 	 * @param key the private key to parse
 	 * @return the parsed private key
 	 */
-	static PrivateKey parse(String key) {
+	static PrivateKey[] parse(String key) {
 		return parse(key, null);
 	}
 
@@ -183,22 +190,23 @@ final class PemPrivateKeyParser {
 	 * @param password the password used to decrypt an encrypted private key
 	 * @return the parsed private key
 	 */
-	static PrivateKey parse(String key, String password) {
+	static PrivateKey[] parse(String key, String password) {
 		if (key == null) {
 			return null;
 		}
+		List<PrivateKey> keys = new ArrayList<>();
 		try {
 			for (PemParser pemParser : PEM_PARSERS) {
 				PrivateKey privateKey = pemParser.parse(key, password);
 				if (privateKey != null) {
-					return privateKey;
+					keys.add(privateKey);
 				}
 			}
-			throw new IllegalStateException("Unrecognized private key format");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Error loading private key file: " + ex.getMessage(), ex);
 		}
+		return keys.toArray(PrivateKey[]::new);
 	}
 
 	/**
@@ -239,7 +247,7 @@ final class PemPrivateKeyParser {
 				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
 				}
 			}
-			return null;
+			throw new IllegalStateException("Unrecognized private key format");
 		}
 
 	}
