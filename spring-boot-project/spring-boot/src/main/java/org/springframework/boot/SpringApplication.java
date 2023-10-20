@@ -1684,15 +1684,13 @@ public class SpringApplication {
 		}
 
 		static Startup create() {
-			if (ClassUtils.isPresent("jdk.crac.management.CRaCMXBean", Startup.class.getClassLoader())) {
-				return new CracStartup();
-			}
-			return new StandardStartup();
+			return (!ClassUtils.isPresent("jdk.crac.management.CRaCMXBean", Startup.class.getClassLoader()))
+					? new StandardStartup() : new CoordinatedRestoreAtCheckpointStartup();
 		}
 
 	}
 
-	private static class CracStartup extends Startup {
+	private static class CoordinatedRestoreAtCheckpointStartup extends Startup {
 
 		private final StandardStartup fallback = new StandardStartup();
 
