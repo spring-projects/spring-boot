@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import liquibase.UpdateSummaryEnum;
+import liquibase.UpdateSummaryOutputEnum;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,6 +119,9 @@ class LiquibaseAutoConfigurationTests {
 				assertThat(liquibase.getDefaultSchema()).isNull();
 				assertThat(liquibase.isDropFirst()).isFalse();
 				assertThat(liquibase.isClearCheckSums()).isFalse();
+				UpdateSummaryOutputEnum showSummaryOutput = (UpdateSummaryOutputEnum) ReflectionTestUtils
+					.getField(liquibase, "showSummaryOutput");
+				assertThat(showSummaryOutput).isEqualTo(UpdateSummaryOutputEnum.LOG);
 			}));
 	}
 
@@ -381,6 +386,28 @@ class LiquibaseAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.liquibase.label-filter:test, production")
 			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabelFilter()).isEqualTo("test, production")));
+	}
+
+	@Test
+	void overrideShowSummary() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.show-summary=off")
+			.run(assertLiquibase((liquibase) -> {
+				UpdateSummaryEnum showSummary = (UpdateSummaryEnum) ReflectionTestUtils.getField(liquibase,
+						"showSummary");
+				assertThat(showSummary).isEqualTo(UpdateSummaryEnum.OFF);
+			}));
+	}
+
+	@Test
+	void overrideShowSummaryOutput() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.show-summary-output=all")
+			.run(assertLiquibase((liquibase) -> {
+				UpdateSummaryOutputEnum showSummaryOutput = (UpdateSummaryOutputEnum) ReflectionTestUtils
+					.getField(liquibase, "showSummaryOutput");
+				assertThat(showSummaryOutput).isEqualTo(UpdateSummaryOutputEnum.ALL);
+			}));
 	}
 
 	@Test
