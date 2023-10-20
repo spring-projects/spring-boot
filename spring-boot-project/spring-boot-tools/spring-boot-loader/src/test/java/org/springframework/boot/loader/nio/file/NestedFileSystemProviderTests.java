@@ -137,8 +137,9 @@ class NestedFileSystemProviderTests {
 	void newByteChannelReturnsByteChannel() throws Exception {
 		URI uri = new URI(this.uriPrefix + "nested.jar");
 		Path path = this.provider.getPath(uri);
-		SeekableByteChannel byteChannel = this.provider.newByteChannel(path, Set.of(StandardOpenOption.READ));
-		assertThat(byteChannel).isInstanceOf(NestedByteChannel.class);
+		try (SeekableByteChannel byteChannel = this.provider.newByteChannel(path, Set.of(StandardOpenOption.READ))) {
+			assertThat(byteChannel).isInstanceOf(NestedByteChannel.class);
+		}
 	}
 
 	@Test
