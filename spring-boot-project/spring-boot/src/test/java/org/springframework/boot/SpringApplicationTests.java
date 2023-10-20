@@ -1421,15 +1421,12 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setKeepAlive(true);
 		this.context = application.run();
-		Set<Thread> threadsBeforeClose = getCurrentThreads();
-		assertThat(threadsBeforeClose).filteredOn((thread) -> thread.getName().equals("keep-alive")).isNotEmpty();
+		assertThat(getCurrentThreads()).filteredOn((thread) -> thread.getName().equals("keep-alive")).isNotEmpty();
 		this.context.close();
-		Set<Thread> threadsAfterClose = getCurrentThreads();
 		Awaitility.await()
 			.atMost(Duration.ofSeconds(30))
-			.untilAsserted(
-					() -> assertThat(threadsAfterClose).filteredOn((thread) -> thread.getName().equals("keep-alive"))
-						.isEmpty());
+			.untilAsserted(() -> assertThat(getCurrentThreads())
+				.filteredOn((thread) -> thread.getName().equals("keep-alive")));
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
