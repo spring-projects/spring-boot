@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -117,9 +116,9 @@ class DefaultSslBundleRegistryTests {
 
 	@Test
 	void shouldFailIfUpdatingNonRegisteredBundle() {
-		assertThatThrownBy(() -> this.registry.updateBundle("dummy", this.bundle1))
-			.isInstanceOf(NoSuchSslBundleException.class)
-			.hasMessageContaining("'dummy'");
+		assertThatExceptionOfType(NoSuchSslBundleException.class)
+			.isThrownBy(() -> this.registry.updateBundle("dummy", this.bundle1))
+			.withMessageContaining("'dummy'");
 	}
 
 	@Test

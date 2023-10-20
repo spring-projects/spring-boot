@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.build.mavenplugin.PluginXmlParser.Plugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PluginXmlParser}.
@@ -49,9 +49,9 @@ class PluginXmlParserTests {
 
 	@Test
 	void parseNonExistingFileThrowException() {
-		assertThatThrownBy(() -> this.parser.parse(new File("src/test/resources/nonexistent.xml")))
-			.isInstanceOf(RuntimeException.class)
-			.hasCauseInstanceOf(FileNotFoundException.class);
+		assertThatExceptionOfType(RuntimeException.class)
+			.isThrownBy(() -> this.parser.parse(new File("src/test/resources/nonexistent.xml")))
+			.withCauseInstanceOf(FileNotFoundException.class);
 	}
 
 }

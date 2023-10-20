@@ -26,7 +26,7 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link RabbitProperties}.
@@ -369,9 +369,9 @@ class RabbitPropertiesTests {
 	void hostPropertyMustBeSingleHost() {
 		this.properties.setHost("my-rmq-host.net,my-rmq-host-2.net");
 		assertThat(this.properties.getHost()).isEqualTo("my-rmq-host.net,my-rmq-host-2.net");
-		assertThatThrownBy(this.properties::determineAddresses)
-			.isInstanceOf(InvalidConfigurationPropertyValueException.class)
-			.hasMessageContaining("spring.rabbitmq.host");
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(this.properties::determineAddresses)
+			.withMessageContaining("spring.rabbitmq.host");
 	}
 
 }

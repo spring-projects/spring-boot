@@ -30,7 +30,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link PemPrivateKeyParser}.
@@ -76,12 +75,12 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldNotParseUnsupportedTraditionalPkcs1(String file) {
-		assertThatThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs1/" + file)))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("Error loading private key file")
-			.hasCauseInstanceOf(IllegalStateException.class)
-			.cause()
-			.hasMessageContaining("Unrecognized private key format");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs1/" + file)))
+			.withMessageContaining("Error loading private key file")
+			.withCauseInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@ParameterizedTest
@@ -119,12 +118,12 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldNotParseUnsupportedEcPkcs8(String file) {
-		assertThatThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file)))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("Error loading private key file")
-			.hasCauseInstanceOf(IllegalStateException.class)
-			.cause()
-			.hasMessageContaining("Unrecognized private key format");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file)))
+			.withMessageContaining("Error loading private key file")
+			.withCauseInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@ParameterizedTest
@@ -190,12 +189,12 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldNotParseUnsupportedEcSec1(String file) {
-		assertThatThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/sec1/" + file)))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("Error loading private key file")
-			.hasCauseInstanceOf(IllegalStateException.class)
-			.cause()
-			.hasMessageContaining("Unrecognized private key format");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/sec1/" + file)))
+			.withMessageContaining("Error loading private key file")
+			.withCauseInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@Test

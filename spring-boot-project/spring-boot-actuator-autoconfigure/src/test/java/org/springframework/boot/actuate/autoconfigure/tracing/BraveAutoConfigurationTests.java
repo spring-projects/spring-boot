@@ -57,7 +57,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -285,30 +285,33 @@ class BraveAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("management.tracing.propagation.type=W3C",
 					"management.tracing.brave.span-joining-supported=true")
-			.run((context) -> assertThatThrownBy(() -> context.getBean(Tracing.class)).rootCause()
+			.run((context) -> assertThatException().isThrownBy(() -> context.getBean(Tracing.class))
+				.havingRootCause()
 				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
-				.hasMessage(
-						"The following configuration properties have incompatible values: [management.tracing.propagation.type, management.tracing.brave.span-joining-supported]"));
+				.withMessage("The following configuration properties have incompatible values: "
+						+ "[management.tracing.propagation.type, management.tracing.brave.span-joining-supported]"));
 	}
 
 	@Test
 	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosenAsConsume() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.produce=B3",
 				"management.tracing.propagation.consume=W3C", "management.tracing.brave.span-joining-supported=true")
-			.run((context) -> assertThatThrownBy(() -> context.getBean(Tracing.class)).rootCause()
+			.run((context) -> assertThatException().isThrownBy(() -> context.getBean(Tracing.class))
+				.havingRootCause()
 				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
-				.hasMessage(
-						"The following configuration properties have incompatible values: [management.tracing.propagation.consume, management.tracing.brave.span-joining-supported]"));
+				.withMessage("The following configuration properties have incompatible values: "
+						+ "[management.tracing.propagation.consume, management.tracing.brave.span-joining-supported]"));
 	}
 
 	@Test
 	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosenAsProduce() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.consume=B3",
 				"management.tracing.propagation.produce=W3C", "management.tracing.brave.span-joining-supported=true")
-			.run((context) -> assertThatThrownBy(() -> context.getBean(Tracing.class)).rootCause()
+			.run((context) -> assertThatException().isThrownBy(() -> context.getBean(Tracing.class))
+				.havingRootCause()
 				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
-				.hasMessage(
-						"The following configuration properties have incompatible values: [management.tracing.propagation.produce, management.tracing.brave.span-joining-supported]"));
+				.withMessage("The following configuration properties have incompatible values: "
+						+ "[management.tracing.propagation.produce, management.tracing.brave.span-joining-supported]"));
 	}
 
 	@Test

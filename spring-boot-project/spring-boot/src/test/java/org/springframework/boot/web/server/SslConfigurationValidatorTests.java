@@ -24,7 +24,7 @@ import java.security.KeyStoreException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link SslConfigurationValidator}.
@@ -66,17 +66,17 @@ class SslConfigurationValidatorTests {
 
 	@Test
 	void validateKeyAliasWhenAliasNotFoundShouldThrowException() {
-		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("Keystore does not contain alias '" + INVALID_ALIAS + "'");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
+			.withMessage("Keystore does not contain alias '" + INVALID_ALIAS + "'");
 	}
 
 	@Test
 	void validateKeyAliasWhenKeyStoreThrowsExceptionOnContains() throws KeyStoreException {
 		KeyStore uninitializedKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(uninitializedKeyStore, "alias"))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("Could not determine if keystore contains alias 'alias'");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> SslConfigurationValidator.validateKeyAlias(uninitializedKeyStore, "alias"))
+			.withMessage("Could not determine if keystore contains alias 'alias'");
 	}
 
 }

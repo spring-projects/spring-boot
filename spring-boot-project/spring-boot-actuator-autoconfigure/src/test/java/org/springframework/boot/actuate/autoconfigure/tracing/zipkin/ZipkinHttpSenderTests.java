@@ -33,7 +33,7 @@ import zipkin2.reporter.ClosedSenderException;
 import zipkin2.reporter.Sender;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Abstract base test class which is used for testing the different implementations of the
@@ -60,8 +60,8 @@ abstract class ZipkinHttpSenderTests {
 	@Test
 	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
 		this.sender.close();
-		assertThatThrownBy(() -> this.sender.sendSpans(Collections.emptyList()))
-			.isInstanceOf(ClosedSenderException.class);
+		assertThatExceptionOfType(ClosedSenderException.class)
+			.isThrownBy(() -> this.sender.sendSpans(Collections.emptyList()));
 	}
 
 	protected void makeRequest(List<byte[]> encodedSpans, boolean async) throws IOException {

@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontPropert
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link WavefrontProperties}.
@@ -51,9 +51,9 @@ class WavefrontPropertiesTests {
 		properties.setUri(URI.create("http://localhost:2878"));
 		properties.setApiToken(null);
 		assertThat(properties.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
-		assertThatThrownBy(properties::getApiTokenOrThrow)
-			.isInstanceOf(InvalidConfigurationPropertyValueException.class)
-			.hasMessageContaining("management.wavefront.api-token");
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(properties::getApiTokenOrThrow)
+			.withMessageContaining("management.wavefront.api-token");
 	}
 
 	@Test

@@ -32,6 +32,7 @@ import com.datastax.oss.driver.internal.core.session.throttling.PassThroughReque
 import com.datastax.oss.driver.internal.core.session.throttling.RateLimitingRequestThrottler;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration.PropertiesCassandraConnectionDetails;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
@@ -42,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link CassandraAutoConfiguration}
@@ -299,9 +300,10 @@ class CassandraAutoConfigurationTests {
 	@Test
 	void driverConfigLoaderWithRateLimitingRequiresExtraConfiguration() {
 		this.contextRunner.withPropertyValues("spring.cassandra.request.throttler.type=rate-limiting")
-			.run((context) -> assertThatThrownBy(() -> context.getBean(CqlSession.class))
-				.hasMessageContaining("Error instantiating class RateLimitingRequestThrottler")
-				.hasMessageContaining("No configuration setting found for key"));
+			.run((context) -> assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> context.getBean(CqlSession.class))
+				.withMessageContaining("Error instantiating class RateLimitingRequestThrottler")
+				.withMessageContaining("No configuration setting found for key"));
 	}
 
 	@Test

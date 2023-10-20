@@ -52,7 +52,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -198,8 +198,8 @@ class ObservationAutoConfigurationTests {
 			Observation.start("observation2", observationRegistry).stop();
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.get("observation1").timer().count()).isOne();
-			assertThatThrownBy(() -> meterRegistry.get("observation2").timer())
-				.isInstanceOf(MeterNotFoundException.class);
+			assertThatExceptionOfType(MeterNotFoundException.class)
+				.isThrownBy(() -> meterRegistry.get("observation2").timer());
 		});
 	}
 
@@ -329,8 +329,8 @@ class ObservationAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("spring.security.filterchains", observationRegistry).stop();
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThatThrownBy(() -> meterRegistry.get("spring.security.filterchains").timer())
-				.isInstanceOf(MeterNotFoundException.class);
+			assertThatExceptionOfType(MeterNotFoundException.class)
+				.isThrownBy(() -> meterRegistry.get("spring.security.filterchains").timer());
 		});
 	}
 

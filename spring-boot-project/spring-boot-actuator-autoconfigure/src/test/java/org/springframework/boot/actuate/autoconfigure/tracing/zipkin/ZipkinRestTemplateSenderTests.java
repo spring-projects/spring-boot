@@ -34,7 +34,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -109,8 +109,8 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
 		}
 		else {
-			assertThatThrownBy(() -> makeSyncRequest(Collections.emptyList()))
-				.hasMessageContaining("500 Internal Server Error");
+			assertThatException().isThrownBy(() -> makeSyncRequest(Collections.emptyList()))
+				.withMessageContaining("500 Internal Server Error");
 		}
 	}
 
