@@ -8,7 +8,6 @@ dependencies {
 	api("jakarta.servlet:jakarta.servlet-api")
 	api("jakarta.websocket:jakarta.websocket-api")
 	api("jakarta.websocket:jakarta.websocket-client-api")
-	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.eclipse.jetty.ee10:jetty-ee10-servlets")
 	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
