@@ -102,8 +102,10 @@ public record NestedLocation(Path path, String nestedEntryName) {
 
 	private static NestedLocation create(int index, String location) {
 		String locationPath = location.substring(0, index);
-		if (isWindows() && locationPath.startsWith("/")) {
-			locationPath = locationPath.substring(1, locationPath.length());
+		if (isWindows()) {
+			while (locationPath.startsWith("/")) {
+				locationPath = locationPath.substring(1, locationPath.length());
+			}
 		}
 		String nestedEntryName = location.substring(index + 2);
 		return new NestedLocation((!locationPath.isEmpty()) ? Path.of(locationPath) : null, nestedEntryName);
