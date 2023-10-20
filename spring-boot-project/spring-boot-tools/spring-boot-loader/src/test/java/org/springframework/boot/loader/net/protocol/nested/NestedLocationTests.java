@@ -120,7 +120,7 @@ class NestedLocationTests {
 	void fromUriReturnsNestedLocation() throws Exception {
 		File file = new File(this.temp, "test.jar");
 		NestedLocation location = NestedLocation
-			.fromUri(new URI("nested:" + file.getAbsolutePath() + "/!lib/nested.jar"));
+			.fromUri(new URI("nested:" + file.getAbsoluteFile().toURI().getPath() + "/!lib/nested.jar"));
 		assertThat(location.path()).isEqualTo(file.toPath());
 		assertThat(location.nestedEntryName()).isEqualTo("lib/nested.jar");
 	}

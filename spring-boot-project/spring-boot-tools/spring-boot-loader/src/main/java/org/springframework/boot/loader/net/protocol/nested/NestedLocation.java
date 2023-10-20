@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.net.protocol.nested;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -100,9 +101,16 @@ public record NestedLocation(Path path, String nestedEntryName) {
 	}
 
 	private static NestedLocation create(int index, String location) {
-		String path = location.substring(0, index);
+		String locationPath = location.substring(0, index);
+		if (isWindows() && locationPath.startsWith("/")) {
+			locationPath = locationPath.substring(1, locationPath.length());
+		}
 		String nestedEntryName = location.substring(index + 2);
-		return new NestedLocation((!path.isEmpty()) ? Path.of(path) : null, nestedEntryName);
+		return new NestedLocation((!locationPath.isEmpty()) ? Path.of(locationPath) : null, nestedEntryName);
+	}
+
+	private static boolean isWindows() {
+		return File.separatorChar == '\\';
 	}
 
 	static void clearCache() {
