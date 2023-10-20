@@ -33,7 +33,7 @@ import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BuildInfo}.
@@ -191,8 +191,8 @@ class BuildInfoTests {
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().getAdditional().put("a", null);
-		assertThatThrownBy(() -> buildInfoProperties(task))
-			.hasMessage("Additional property 'a' is illegal as its value is null");
+		assertThatExceptionOfType(Throwable.class).isThrownBy(() -> buildInfoProperties(task))
+			.withMessage("Additional property 'a' is illegal as its value is null");
 	}
 
 	private Project createProject(String projectName) {

@@ -36,6 +36,7 @@ import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -51,7 +52,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EmbeddedMongoAutoConfiguration}.
@@ -82,8 +83,10 @@ class EmbeddedMongoAutoConfigurationTests {
 		TestPropertyValues.of("spring.data.mongodb.port=0").applyTo(this.context);
 		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 				EmbeddedMongoAutoConfiguration.class);
-		assertThatThrownBy(() -> this.context.refresh()).hasRootCauseExactlyInstanceOf(IllegalStateException.class)
-			.hasRootCauseMessage("Set the spring.mongodb.embedded.version property or define your own MongodConfig "
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> this.context.refresh())
+			.withRootCauseExactlyInstanceOf(IllegalStateException.class)
+			.havingRootCause()
+			.withMessage("Set the spring.mongodb.embedded.version property or define your own MongodConfig "
 					+ "bean to use embedded MongoDB");
 	}
 

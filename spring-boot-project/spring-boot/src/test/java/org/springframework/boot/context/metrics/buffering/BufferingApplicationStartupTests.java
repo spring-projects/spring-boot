@@ -27,7 +27,8 @@ import org.springframework.boot.context.metrics.buffering.StartupTimeline.Timeli
 import org.springframework.core.metrics.StartupStep;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link BufferingApplicationStartup}.
@@ -86,8 +87,8 @@ class BufferingApplicationStartupTests {
 	void startRecordingShouldFailIfEventsWereRecorded() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		applicationStartup.start("first").end();
-		assertThatThrownBy(applicationStartup::startRecording).isInstanceOf(IllegalStateException.class)
-			.hasMessage("Cannot restart recording once steps have been buffered.");
+		assertThatIllegalStateException().isThrownBy(applicationStartup::startRecording)
+			.withMessage("Cannot restart recording once steps have been buffered.");
 	}
 
 	@Test
@@ -95,8 +96,8 @@ class BufferingApplicationStartupTests {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		StartupStep step = applicationStartup.start("first");
 		step.end();
-		assertThatThrownBy(() -> step.tag("name", "value")).isInstanceOf(IllegalStateException.class)
-			.hasMessage("StartupStep has already ended.");
+		assertThatIllegalStateException().isThrownBy(() -> step.tag("name", "value"))
+			.withMessage("StartupStep has already ended.");
 	}
 
 	@Test
@@ -104,7 +105,8 @@ class BufferingApplicationStartupTests {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		StartupStep step = applicationStartup.start("first");
 		step.tag("name", "value");
-		assertThatThrownBy(() -> step.getTags().iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> step.getTags().iterator().remove());
 	}
 
 	@Test // gh-25792

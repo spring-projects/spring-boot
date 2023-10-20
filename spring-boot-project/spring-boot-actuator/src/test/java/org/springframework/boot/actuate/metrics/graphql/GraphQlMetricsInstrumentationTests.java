@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.metrics.AutoTimer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -143,11 +143,9 @@ class GraphQlMetricsInstrumentationTests {
 		DataFetcher<CompletionStage<String>> dataFetcher = mock(DataFetcher.class);
 		given(dataFetcher.get(any())).willThrow(new IllegalStateException("test"));
 		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
-
 		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters);
 		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
-		assertThatThrownBy(() -> instrumented.get(environment)).isInstanceOf(IllegalStateException.class);
-
+		assertThatIllegalArgumentException().isThrownBy(() -> instrumented.get(environment));
 		Timer timer = this.registry.find("graphql.datafetcher").timer();
 		assertThat(timer).isNotNull();
 		assertThat(timer.count()).isEqualTo(1);

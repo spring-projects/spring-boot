@@ -43,7 +43,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -145,9 +145,10 @@ class MetricsWebClientFilterFunctionTests {
 			.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR")
 			.timer()
 			.count()).isEqualTo(1);
-		assertThatThrownBy(() -> this.registry.get("http.client.requests")
-			.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200")
-			.timer()).isInstanceOf(MeterNotFoundException.class);
+		assertThatExceptionOfType(MeterNotFoundException.class)
+			.isThrownBy(() -> this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200")
+				.timer());
 	}
 
 	@Test
@@ -162,9 +163,10 @@ class MetricsWebClientFilterFunctionTests {
 			.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200")
 			.timer()
 			.count()).isEqualTo(1);
-		assertThatThrownBy(() -> this.registry.get("http.client.requests")
-			.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR")
-			.timer()).isInstanceOf(MeterNotFoundException.class);
+		assertThatExceptionOfType(MeterNotFoundException.class)
+			.isThrownBy(() -> this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR")
+				.timer());
 	}
 
 	@Test

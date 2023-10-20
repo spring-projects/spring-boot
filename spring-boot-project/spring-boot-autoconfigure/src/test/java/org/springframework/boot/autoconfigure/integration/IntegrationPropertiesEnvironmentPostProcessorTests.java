@@ -34,7 +34,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -69,11 +69,11 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 	void registerIntegrationPropertiesPropertySourceWithUnknownResourceThrowsException() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		ClassPathResource unknown = new ClassPathResource("does-not-exist.properties", getClass());
-		assertThatThrownBy(() -> new IntegrationPropertiesEnvironmentPostProcessor()
-			.registerIntegrationPropertiesPropertySource(environment, unknown))
-			.isInstanceOf(IllegalStateException.class)
-			.hasCauseInstanceOf(FileNotFoundException.class)
-			.hasMessageContaining(unknown.toString());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new IntegrationPropertiesEnvironmentPostProcessor()
+				.registerIntegrationPropertiesPropertySource(environment, unknown))
+			.withCauseInstanceOf(FileNotFoundException.class)
+			.withMessageContaining(unknown.toString());
 	}
 
 	@Test

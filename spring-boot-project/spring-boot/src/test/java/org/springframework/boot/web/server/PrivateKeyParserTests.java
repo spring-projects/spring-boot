@@ -28,7 +28,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link PrivateKeyParser}.
@@ -75,12 +74,12 @@ class PrivateKeyParserTests {
 	})
 	// @formatter:on
 	void shouldNotParseUnsupportedTraditionalPkcs1(String file) {
-		assertThatThrownBy(() -> PrivateKeyParser.parse("classpath:org/springframework/boot/web/server/pkcs1/" + file))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("Error loading private key file")
-			.hasCauseInstanceOf(IllegalStateException.class)
-			.getCause()
-			.hasMessageContaining("Unrecognized private key format");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PrivateKeyParser.parse("classpath:org/springframework/boot/web/server/pkcs1/" + file))
+			.withMessageContaining("Error loading private key file")
+			.withCauseInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@ParameterizedTest
@@ -118,12 +117,12 @@ class PrivateKeyParserTests {
 	})
 	// @formatter:on
 	void shouldNotParseUnsupportedEcPkcs8(String file) {
-		assertThatThrownBy(() -> PrivateKeyParser.parse("classpath:org/springframework/boot/web/server/pkcs8/" + file))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("Error loading private key file")
-			.hasCauseInstanceOf(IllegalStateException.class)
-			.getCause()
-			.hasMessageContaining("Unrecognized private key format");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PrivateKeyParser.parse("classpath:org/springframework/boot/web/server/pkcs8/" + file))
+			.withMessageContaining("Error loading private key file")
+			.withCauseInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@EnabledForJreRange(min = JRE.JAVA_17, disabledReason = "EdDSA is only supported since Java 17")
@@ -191,12 +190,12 @@ class PrivateKeyParserTests {
 	})
 	// @formatter:on
 	void shouldNotParseUnsupportedEcSec1(String file) {
-		assertThatThrownBy(() -> PrivateKeyParser.parse("classpath:org/springframework/boot/web/server/sec1/" + file))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("Error loading private key file")
-			.hasCauseInstanceOf(IllegalStateException.class)
-			.getCause()
-			.hasMessageContaining("Unrecognized private key format");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PrivateKeyParser.parse("classpath:org/springframework/boot/web/server/sec1/" + file))
+			.withMessageContaining("Error loading private key file")
+			.withCauseInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.withMessageContaining("Unrecognized private key format");
 	}
 
 	@Test
