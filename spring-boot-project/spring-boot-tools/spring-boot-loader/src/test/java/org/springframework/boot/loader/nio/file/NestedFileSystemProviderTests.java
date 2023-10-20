@@ -30,17 +30,15 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.spi.FileSystemProvider;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.testsupport.TestJar;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -54,6 +52,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class NestedFileSystemProviderTests {
 
 	@TempDir
@@ -70,11 +69,6 @@ class NestedFileSystemProviderTests {
 		this.file = new File(this.temp, "test.jar");
 		TestJar.create(this.file);
 		this.uriPrefix = "nested:" + this.file.toURI().getPath() + "/!";
-	}
-
-	@AfterEach
-	void cleanUp() {
-		this.provider.cleanUp();
 	}
 
 	@Test
@@ -268,8 +262,6 @@ class NestedFileSystemProviderTests {
 
 		private Path mockJarPath;
 
-		private List<Path> paths = new ArrayList<>();
-
 		@Override
 		protected Path getJarPath(Path path) {
 			return (this.mockJarPath != null) ? this.mockJarPath : super.getJarPath(path);
@@ -277,24 +269,6 @@ class NestedFileSystemProviderTests {
 
 		void setMockJarPath(Path mockJarPath) {
 			this.mockJarPath = mockJarPath;
-		}
-
-		@Override
-		public Path getPath(URI uri) {
-			Path path = super.getPath(uri);
-			this.paths.add(path);
-			return path;
-		}
-
-		private void cleanUp() {
-			this.paths.forEach((path) -> {
-				try {
-					Path.of(path.toUri()).getFileSystem().close();
-				}
-				catch (Exception ex) {
-					// Ignore
-				}
-			});
 		}
 
 	}
