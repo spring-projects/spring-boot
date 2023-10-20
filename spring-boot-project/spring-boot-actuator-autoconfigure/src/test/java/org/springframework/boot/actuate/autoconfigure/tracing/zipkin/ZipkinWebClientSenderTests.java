@@ -36,7 +36,7 @@ import zipkin2.reporter.Sender;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link ZipkinWebClientSender}.
@@ -112,8 +112,8 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
 		}
 		else {
-			assertThatThrownBy(() -> makeSyncRequest(Collections.emptyList()))
-				.hasMessageContaining("500 Internal Server Error");
+			assertThatException().isThrownBy(() -> makeSyncRequest(Collections.emptyList()))
+				.withMessageContaining("500 Internal Server Error");
 		}
 
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));

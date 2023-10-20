@@ -101,6 +101,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.entry;
@@ -709,11 +710,10 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
-		assertThatExceptionOfType(Exception.class).isThrownBy(() -> load(WithCustomValidatorConfiguration.class))
-			.satisfies((ex) -> {
-				assertThat(ex).hasCauseInstanceOf(BindException.class);
-				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
-			});
+		assertThatException().isThrownBy(() -> load(WithCustomValidatorConfiguration.class)).satisfies((ex) -> {
+			assertThat(ex).hasCauseInstanceOf(BindException.class);
+			assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
+		});
 	}
 
 	@Test
@@ -726,7 +726,7 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
-		assertThatExceptionOfType(Exception.class).isThrownBy(() -> load(ValidatorProperties.class)).satisfies((ex) -> {
+		assertThatException().isThrownBy(() -> load(ValidatorProperties.class)).satisfies((ex) -> {
 			assertThat(ex).hasCauseInstanceOf(BindException.class);
 			assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
 		});
@@ -734,8 +734,7 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenConstructorBoundConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
-		assertThatExceptionOfType(Exception.class)
-			.isThrownBy(() -> load(ValidatorConstructorBoundPropertiesConfiguration.class))
+		assertThatException().isThrownBy(() -> load(ValidatorConstructorBoundPropertiesConfiguration.class))
 			.satisfies((ex) -> {
 				assertThat(ex).hasCauseInstanceOf(BindException.class);
 				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
@@ -909,8 +908,7 @@ class ConfigurationPropertiesTests {
 		Map<String, Object> source = new HashMap<>();
 		source.put("test.duration", "P12D");
 		sources.addLast(new MapPropertySource("test", source));
-		assertThatExceptionOfType(Exception.class)
-			.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
+		assertThatException().isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
 			.havingCause()
 			.isInstanceOf(BindException.class);
 	}
@@ -921,8 +919,7 @@ class ConfigurationPropertiesTests {
 		Map<String, Object> source = new HashMap<>();
 		source.put("test.period", "P12D");
 		sources.addLast(new MapPropertySource("test", source));
-		assertThatExceptionOfType(Exception.class)
-			.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
+		assertThatException().isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
 			.havingCause()
 			.isInstanceOf(BindException.class);
 	}
@@ -938,8 +935,7 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenBindingToConstructorParametersShouldValidate() {
-		assertThatExceptionOfType(Exception.class)
-			.isThrownBy(() -> load(ConstructorParameterValidationConfiguration.class))
+		assertThatException().isThrownBy(() -> load(ConstructorParameterValidationConfiguration.class))
 			.satisfies((ex) -> {
 				assertThat(ex).hasCauseInstanceOf(BindException.class);
 				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
@@ -3062,7 +3058,7 @@ class ConfigurationPropertiesTests {
 		@Bean
 		@ConfigurationPropertiesBinding
 		static Converter<ArrayList<?>, CustomList<?>> arrayListToCustomList() {
-			return new Converter<ArrayList<?>, CustomList<?>>() {
+			return new Converter<>() {
 
 				@Override
 				public CustomList<?> convert(ArrayList<?> source) {
@@ -3096,7 +3092,7 @@ class ConfigurationPropertiesTests {
 		@Bean
 		@ConfigurationPropertiesBinding
 		static Converter<ArrayList<?>, CustomList<?>> arrayListToCustomList() {
-			return new Converter<ArrayList<?>, CustomList<?>>() {
+			return new Converter<>() {
 
 				@Override
 				public CustomList<?> convert(ArrayList<?> source) {

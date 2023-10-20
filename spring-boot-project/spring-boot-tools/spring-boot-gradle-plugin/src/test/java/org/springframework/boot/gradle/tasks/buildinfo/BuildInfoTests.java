@@ -33,7 +33,7 @@ import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link BuildInfo}.
@@ -167,8 +167,8 @@ class BuildInfoTests {
 	@Test
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
-		assertThatThrownBy(() -> task.getProperties().getAdditional().put("a", null))
-			.hasMessage("Cannot add an entry with a null value to a property of type Map.");
+		assertThatException().isThrownBy(() -> task.getProperties().getAdditional().put("a", null))
+			.withMessage("Cannot add an entry with a null value to a property of type Map.");
 	}
 
 	private Project createProject(String projectName) {

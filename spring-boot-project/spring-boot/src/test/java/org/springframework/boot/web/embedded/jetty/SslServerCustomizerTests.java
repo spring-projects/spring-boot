@@ -38,7 +38,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
@@ -92,8 +92,7 @@ class SslServerCustomizerTests {
 	void configureSslWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
-		assertThatExceptionOfType(Exception.class)
-			.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
+		assertThatException().isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
 			.satisfies((ex) -> {
 				assertThat(ex).isInstanceOf(WebServerException.class);
 				assertThat(ex).hasMessageContaining("Could not load key store 'null'");

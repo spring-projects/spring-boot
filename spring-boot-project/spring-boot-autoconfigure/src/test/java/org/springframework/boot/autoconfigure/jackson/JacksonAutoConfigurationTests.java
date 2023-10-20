@@ -73,7 +73,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
@@ -339,10 +339,10 @@ class JacksonAutoConfigurationTests {
 	void disableDefaultLeniency() {
 		this.contextRunner.withPropertyValues("spring.jackson.default-leniency:false").run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
-			assertThatThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
-				.isInstanceOf(InvalidFormatException.class)
-				.hasMessageContaining("expected format")
-				.hasMessageContaining("yyyyMMdd");
+			assertThatExceptionOfType(InvalidFormatException.class)
+				.isThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
+				.withMessageContaining("expected format")
+				.withMessageContaining("yyyyMMdd");
 		});
 	}
 
