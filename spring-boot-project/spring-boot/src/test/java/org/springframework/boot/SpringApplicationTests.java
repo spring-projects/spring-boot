@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.function.Supplier;
 
 import jakarta.annotation.PostConstruct;
 import org.assertj.core.api.Condition;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1423,7 +1425,11 @@ class SpringApplicationTests {
 		assertThat(threadsBeforeClose).filteredOn((thread) -> thread.getName().equals("keep-alive")).isNotEmpty();
 		this.context.close();
 		Set<Thread> threadsAfterClose = getCurrentThreads();
-		assertThat(threadsAfterClose).filteredOn((thread) -> thread.getName().equals("keep-alive")).isEmpty();
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.untilAsserted(
+					() -> assertThat(threadsAfterClose).filteredOn((thread) -> thread.getName().equals("keep-alive"))
+						.isEmpty());
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
