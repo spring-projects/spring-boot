@@ -16,7 +16,6 @@
 
 package smoketest.test.web;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import smoketest.test.WelcomeCommandLineRunner;
 import smoketest.test.domain.VehicleIdentificationNumber;
@@ -31,6 +30,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -96,8 +96,8 @@ class UserVehicleControllerTests {
 	@Test
 	void welcomeCommandLineRunnerShouldNotBeAvailable() {
 		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
-		Assertions.assertThatThrownBy(() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class))
-			.isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+			.isThrownBy(() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class));
 	}
 
 }

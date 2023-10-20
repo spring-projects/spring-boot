@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link ConditionEvaluationReportLoggingListener}.
@@ -67,7 +67,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+		assertThatException().isThrownBy(context::refresh)
 			.satisfies((ex) -> withDebugLogging(() -> context
 				.publishEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
 		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
@@ -78,7 +78,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+		assertThatException().isThrownBy(context::refresh)
 			.satisfies((ex) -> withInfoLogging(() -> context
 				.publishEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
 		assertThat(output).doesNotContain("CONDITIONS EVALUATION REPORT")

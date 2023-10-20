@@ -24,8 +24,8 @@ import org.mockito.InOrder;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
@@ -59,8 +59,8 @@ class ContextConsumerTests {
 		given(predicate.test(24)).willReturn(false);
 		ContextConsumer<ApplicationContext> firstConsumer = (context) -> assertThat(predicate.test(42)).isFalse();
 		ContextConsumer<ApplicationContext> secondConsumer = (context) -> assertThat(predicate.test(24)).isFalse();
-		assertThatThrownBy(() -> firstConsumer.andThen(secondConsumer).accept(mock(ApplicationContext.class)))
-			.isInstanceOf(AssertionError.class);
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> firstConsumer.andThen(secondConsumer).accept(mock(ApplicationContext.class)));
 		then(predicate).should().test(42);
 		then(predicate).shouldHaveNoMoreInteractions();
 	}

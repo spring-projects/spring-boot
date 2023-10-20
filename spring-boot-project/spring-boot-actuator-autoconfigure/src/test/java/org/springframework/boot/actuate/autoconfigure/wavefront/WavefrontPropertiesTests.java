@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link WavefrontProperties}.
@@ -47,8 +47,8 @@ class WavefrontPropertiesTests {
 		sut.setUri(URI.create("http://localhost:2878"));
 		sut.setApiToken(null);
 		assertThat(sut.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
-		assertThatThrownBy(sut::getApiTokenOrThrow).isInstanceOf(InvalidConfigurationPropertyValueException.class)
-			.hasMessageContaining("management.wavefront.api-token");
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class).isThrownBy(sut::getApiTokenOrThrow)
+			.withMessageContaining("management.wavefront.api-token");
 	}
 
 }
