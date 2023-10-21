@@ -120,11 +120,11 @@ class WavefrontPropertiesConfigAdapterTests extends
 			CSP_CLIENT_CREDENTIALS,	CSP_CLIENT_CREDENTIALS
 			""")
 	void whenTokenTypeIsSetAdapterReturnsIt(String property, String wavefront) {
-		TokenType propertyToken = property.equals("null") ? null : TokenType.valueOf(property);
-		Type wavefrontToken = Type.valueOf(wavefront);
+		TokenType propertyTokenType = property.equals("null") ? null : TokenType.valueOf(property);
+		Type wavefrontTokenType = Type.valueOf(wavefront);
 		WavefrontProperties properties = new WavefrontProperties();
-		properties.setApiTokenType(propertyToken);
-		assertThat(new WavefrontPropertiesConfigAdapter(properties).apiTokenType()).isEqualTo(wavefrontToken);
+		properties.setApiTokenType(propertyTokenType);
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).apiTokenType()).isEqualTo(wavefrontTokenType);
 	}
 
 }

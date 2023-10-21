@@ -214,7 +214,7 @@ class GraphQlAutoConfigurationTests {
 			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
 			GraphQLSchema schema = graphQlSource.schema();
 			GraphQLOutputType bookConnection = schema.getQueryType().getField("books").getType();
-			assertThat(bookConnection).isNotNull().isInstanceOf(GraphQLObjectType.class);
+			assertThat(bookConnection).isInstanceOf(GraphQLObjectType.class);
 			assertThat((GraphQLObjectType) bookConnection)
 				.satisfies((connection) -> assertThat(connection.getFieldDefinition("edges")).isNotNull());
 		});
