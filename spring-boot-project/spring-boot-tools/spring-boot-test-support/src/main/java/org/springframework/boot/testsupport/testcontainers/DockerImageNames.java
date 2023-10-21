@@ -160,7 +160,6 @@ public final class DockerImageNames {
 	/**
 	 * Return a {@link DockerImageName} suitable for running OpenTelemetry.
 	 * @return a docker image name for running OpenTelemetry
-	 * @since 3.2.0
 	 */
 	public static DockerImageName opentelemetry() {
 		return DockerImageName.parse("otel/opentelemetry-collector-contrib").withTag(OPENTELEMETRY_VERSION);

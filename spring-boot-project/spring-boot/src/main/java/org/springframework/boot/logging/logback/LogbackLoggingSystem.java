@@ -412,7 +412,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
-				throw new IllegalStateException("Interrupted while waiting for non-subtitute logger factory", ex);
+				throw new IllegalStateException("Interrupted while waiting for non-substitute logger factory", ex);
 			}
 			factory = LoggerFactory.getILoggerFactory();
 		}

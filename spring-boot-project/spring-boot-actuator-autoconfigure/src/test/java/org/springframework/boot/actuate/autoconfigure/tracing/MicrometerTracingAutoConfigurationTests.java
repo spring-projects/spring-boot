@@ -34,12 +34,10 @@ import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -158,9 +156,8 @@ class MicrometerTracingAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
 				assertThat(context).hasSingleBean(SpanAspect.class);
-				assertThat(ReflectionTestUtils.getField(context.getBean(ImperativeMethodInvocationProcessor.class),
-						"spanTagAnnotationHandler"))
-					.isSameAs(context.getBean(SpanTagAnnotationHandler.class));
+				assertThat(context.getBean(ImperativeMethodInvocationProcessor.class)).hasFieldOrPropertyWithValue(
+						"spanTagAnnotationHandler", context.getBean(SpanTagAnnotationHandler.class));
 			});
 	}
 
@@ -208,14 +205,12 @@ class MicrometerTracingAutoConfigurationTests {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
 		ImperativeMethodInvocationProcessor customImperativeMethodInvocationProcessor(NewSpanParser newSpanParser,
 				Tracer tracer) {
 			return new ImperativeMethodInvocationProcessor(newSpanParser, tracer);
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
 		SpanAspect customSpanAspect(MethodInvocationProcessor methodInvocationProcessor) {
 			return new SpanAspect(methodInvocationProcessor);
 		}

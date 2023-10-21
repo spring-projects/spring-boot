@@ -99,13 +99,13 @@ public class MicrometerTracingAutoConfiguration {
 	static class SpanAspectConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(NewSpanParser.class)
 		DefaultNewSpanParser newSpanParser() {
 			return new DefaultNewSpanParser();
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(MethodInvocationProcessor.class)
 		ImperativeMethodInvocationProcessor imperativeMethodInvocationProcessor(NewSpanParser newSpanParser,
 				Tracer tracer, ObjectProvider<SpanTagAnnotationHandler> spanTagAnnotationHandler) {
 			ImperativeMethodInvocationProcessor methodInvocationProcessor = new ImperativeMethodInvocationProcessor(

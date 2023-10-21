@@ -39,8 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class LogbackLoggingSystemParallelInitializationTests {
 
-	private final LoggingSystem loggingSystem = LoggingSystem
-		.get(LogbackLoggingSystemParallelInitializationTests.class.getClassLoader());
+	private final LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
 
 	@AfterEach
 	void cleanUp() {
