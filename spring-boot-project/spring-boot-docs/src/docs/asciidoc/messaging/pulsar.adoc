@@ -57,9 +57,9 @@ If you use other forms, such as `issuerurl` or `issuer-url`, the setting will no
 [[messaging.pulsar.connecting.ssl]]
 ==== SSL
 By default, Pulsar clients communicate with Pulsar services in plain text.
-You can follow {spring-pulsar-docs}#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
+You can follow {spring-pulsar-docs}reference/pulsar.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
 
-For complete details on the client and authentication see the Spring for Apache Pulsar {spring-pulsar-docs}#pulsar-client[reference documentation].
+For complete details on the client and authentication see the Spring for Apache Pulsar {spring-pulsar-docs}reference/pulsar.html#pulsar-client[reference documentation].
 
 
 
@@ -85,7 +85,7 @@ If you need more control over the configuration, consider registering one or mor
 [[messaging.pulsar.admin.auth]]
 ==== Authentication
 When accessing a Pulsar cluster that requires authentication, the admin client requires the same security configuration as the regular Pulsar client.
-You can use the aforementioned <<pulsar.adoc#messaging.pulsar.connecting.auth,authentication configuration>> by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
+You can use the aforementioned <<messaging.pulsar.connecting.auth,authentication configuration>> by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
 
 TIP: To create a topic on startup, add a bean of type `PulsarTopic`.
 If the topic already exists, the bean is ignored.
