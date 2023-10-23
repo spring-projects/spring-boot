@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.util.Assert;
 
 /**
  * Default {@link DockerCompose} implementation backed by {@link DockerCli}.
@@ -79,7 +81,8 @@ class DefaultDockerCompose implements DockerCompose {
 		List<RunningService> result = new ArrayList<>();
 		Map<String, DockerCliInspectResponse> inspected = inspect(runningPsResponses);
 		for (DockerCliComposePsResponse psResponse : runningPsResponses) {
-			DockerCliInspectResponse inspectResponse = inspected.get(psResponse.id());
+			DockerCliInspectResponse inspectResponse = inspectContainer(psResponse.id(), inspected);
+			Assert.notNull(inspectResponse, () -> "Failed to inspect container '%s'".formatted(psResponse.id()));
 			result.add(new DefaultRunningService(this.hostname, dockerComposeFile, psResponse, inspectResponse));
 		}
 		return Collections.unmodifiableList(result);
@@ -89,6 +92,20 @@ class DefaultDockerCompose implements DockerCompose {
 		List<String> ids = runningPsResponses.stream().map(DockerCliComposePsResponse::id).toList();
 		List<DockerCliInspectResponse> inspectResponses = this.cli.run(new DockerCliCommand.Inspect(ids));
 		return inspectResponses.stream().collect(Collectors.toMap(DockerCliInspectResponse::id, Function.identity()));
+	}
+
+	private DockerCliInspectResponse inspectContainer(String id, Map<String, DockerCliInspectResponse> inspected) {
+		DockerCliInspectResponse inspect = inspected.get(id);
+		if (inspect != null) {
+			return inspect;
+		}
+		// Docker Compose v2.23.0 returns truncated ids, so we have to do a prefix match
+		for (Entry<String, DockerCliInspectResponse> entry : inspected.entrySet()) {
+			if (entry.getKey().startsWith(id)) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	private List<DockerCliComposePsResponse> runComposePs() {

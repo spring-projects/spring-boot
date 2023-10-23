@@ -84,7 +84,7 @@ class DockerCliIntegrationTests {
 			String id = ps.get(0).id();
 			List<DockerCliInspectResponse> inspect = cli.run(new Inspect(List.of(id)));
 			assertThat(inspect).isNotEmpty();
-			assertThat(inspect.get(0).id()).isEqualTo(id);
+			assertThat(inspect.get(0).id()).startsWith(id);
 			// Run stop, then run ps and verify the services are stopped
 			cli.run(new ComposeStop(Duration.ofSeconds(10)));
 			ps = cli.run(new ComposePs());

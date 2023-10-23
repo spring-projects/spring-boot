@@ -46,7 +46,7 @@ class DefaultDockerComposeTests {
 
 	private static final String HOST = "192.168.1.1";
 
-	private DockerCli cli = mock(DockerCli.class);
+	private final DockerCli cli = mock(DockerCli.class);
 
 	@Test
 	void upRunsUpCommand() {
@@ -139,6 +139,22 @@ class DefaultDockerComposeTests {
 		assertThat(runningServices).hasSize(1);
 		RunningService runningService = runningServices.get(0);
 		assertThat(runningService.host()).isEqualTo("192.168.1.1");
+	}
+
+	@Test
+	void worksWithTruncatedIds() {
+		String shortId = "123";
+		String longId = "123456";
+		DockerCliComposePsResponse psResponse = new DockerCliComposePsResponse(shortId, "name", "redis", "running");
+		Config config = new Config("redis", Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(longId, config, null, null);
+		willReturn(List.of(new DockerCliContextResponse("test", true, "https://192.168.1.1"))).given(this.cli)
+			.run(new DockerCliCommand.Context());
+		willReturn(List.of(psResponse)).given(this.cli).run(new DockerCliCommand.ComposePs());
+		willReturn(List.of(inspectResponse)).given(this.cli).run(new DockerCliCommand.Inspect(List.of(shortId)));
+		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, null);
+		List<RunningService> runningServices = compose.getRunningServices();
+		assertThat(runningServices).hasSize(1);
 	}
 
 }
