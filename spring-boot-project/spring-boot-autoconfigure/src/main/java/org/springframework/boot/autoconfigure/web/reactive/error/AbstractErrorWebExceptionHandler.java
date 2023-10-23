@@ -62,13 +62,12 @@ import org.springframework.web.util.HtmlUtils;
 public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler, InitializingBean {
 
 	/**
-	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
+	 * Currently duplicated from Spring Web's DisconnectedClientHelper.
 	 */
 	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS;
 
 	static {
 		Set<String> exceptions = new HashSet<>();
-		exceptions.add("AbortedException");
 		exceptions.add("ClientAbortException");
 		exceptions.add("EOFException");
 		exceptions.add("EofException");

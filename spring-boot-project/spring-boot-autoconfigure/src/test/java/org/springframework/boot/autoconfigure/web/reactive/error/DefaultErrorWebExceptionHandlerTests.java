@@ -38,7 +38,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
+import org.springframework.web.util.DisconnectedClientHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,8 +58,7 @@ class DefaultErrorWebExceptionHandlerTests {
 	void disconnectedClientExceptionsMatchesFramework() {
 		Object errorHandlers = ReflectionTestUtils.getField(AbstractErrorWebExceptionHandler.class,
 				"DISCONNECTED_CLIENT_EXCEPTIONS");
-		Object webHandlers = ReflectionTestUtils.getField(HttpWebHandlerAdapter.class,
-				"DISCONNECTED_CLIENT_EXCEPTIONS");
+		Object webHandlers = ReflectionTestUtils.getField(DisconnectedClientHelper.class, "EXCEPTION_TYPE_NAMES");
 		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);
 	}
 
