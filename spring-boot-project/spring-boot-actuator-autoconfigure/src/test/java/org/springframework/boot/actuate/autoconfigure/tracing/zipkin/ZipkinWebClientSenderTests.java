@@ -162,7 +162,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		if (async) {
 			CallbackResult callbackResult = makeAsyncRequest(sender, Collections.emptyList());
 			assertThat(callbackResult.success()).isFalse();
-			assertThat(callbackResult.error()).isNotNull().isInstanceOf(TimeoutException.class);
+			assertThat(callbackResult.error()).isInstanceOf(TimeoutException.class);
 		}
 		else {
 			assertThatException().isThrownBy(() -> makeSyncRequest(sender, Collections.emptyList()))

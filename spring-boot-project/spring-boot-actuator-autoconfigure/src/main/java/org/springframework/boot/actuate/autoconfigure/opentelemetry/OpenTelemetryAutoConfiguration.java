@@ -53,7 +53,7 @@ public class OpenTelemetryAutoConfiguration {
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "application";
 
-	static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
+	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
 
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)

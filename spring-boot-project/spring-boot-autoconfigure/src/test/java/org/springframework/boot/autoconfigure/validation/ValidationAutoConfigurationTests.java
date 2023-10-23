@@ -217,7 +217,7 @@ class ValidationAutoConfigurationTests {
 				.isSameAs(userMethodValidationPostProcessor);
 			assertThat(context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
 			Object validator = ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator");
-			assertThat(validator).isNotNull().isInstanceOf(Supplier.class);
+			assertThat(validator).isInstanceOf(Supplier.class);
 			assertThat(context.getBean(Validator.class)).isNotSameAs(((Supplier<Validator>) validator).get());
 		});
 	}

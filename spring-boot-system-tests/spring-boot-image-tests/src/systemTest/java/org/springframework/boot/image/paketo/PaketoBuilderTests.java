@@ -475,11 +475,9 @@ class PaketoBuilderTests {
 		if (javaVersion.startsWith("1.")) {
 			return javaVersion.substring(2, 3);
 		}
-		else {
-			int firstDotIndex = javaVersion.indexOf(".");
-			if (firstDotIndex != -1) {
-				return javaVersion.substring(0, firstDotIndex);
-			}
+		int firstDotIndex = javaVersion.indexOf(".");
+		if (firstDotIndex != -1) {
+			return javaVersion.substring(0, firstDotIndex);
 		}
 		return javaVersion;
 	}
