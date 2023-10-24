@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -218,16 +217,9 @@ class PemPrivateKeyParserTests {
 		// openssl pkcs8 -topk8 -in <input file> -out <output file> -v2 <algorithm>
 		// -passout pass:test
 		// where <algorithm> is aes128 or aes256
-<<<<<<< HEAD
-		String content = read("org/springframework/boot/web/server/pkcs8/" + file);
-		List<PrivateKey> privateKeys = PemPrivateKeyParser.parse(content, "test");
-		assertThat(privateKeys).isNotEmpty();
-		PrivateKey privateKey = privateKeys.get(0);
-=======
 		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file),
 				"test");
 		assertThat(privateKey).isNotNull();
->>>>>>> parent of 32e6ce210e1 (Allow PemPrivateKeyParser to parse multiple keys)
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo(algorithm);
 	}
@@ -267,24 +259,13 @@ class PemPrivateKeyParserTests {
 	}
 
 	@Test
-	void shouldNotParseEncryptedPkcs1() throws Exception {
+	void shouldNotParseEncryptedPkcs1() {
 		// created with:
 		// openssl genrsa -aes-256-cbc -out rsa-aes-256-cbc.key
-<<<<<<< HEAD
-		assertThat(PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs1/rsa-aes-256-cbc.key"),
-				"test"))
-			.isEmpty();
-	}
-
-	private PrivateKey parse(String key) {
-		List<PrivateKey> keys = PemPrivateKeyParser.parse(key);
-		return (!ObjectUtils.isEmpty(keys)) ? keys.get(0) : null;
-=======
 		assertThatIllegalStateException()
 			.isThrownBy(() -> PemPrivateKeyParser
 				.parse(read("org/springframework/boot/web/server/pkcs1/rsa-aes-256-cbc.key"), "test"))
 			.withMessageContaining("Unrecognized private key format");
->>>>>>> parent of 32e6ce210e1 (Allow PemPrivateKeyParser to parse multiple keys)
 	}
 
 	private String read(String path) throws IOException {
