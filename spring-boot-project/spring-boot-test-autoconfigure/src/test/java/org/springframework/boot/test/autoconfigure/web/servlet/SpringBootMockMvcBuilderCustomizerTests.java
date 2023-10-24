@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -66,15 +67,18 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(context);
 		SpringBootMockMvcBuilderCustomizer customizer = new SpringBootMockMvcBuilderCustomizer(context);
 		customizer.customize(builder);
-		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context
-			.getBean("filterRegistrationBean");
-		Filter testFilter = (Filter) context.getBean("testFilter");
-		Filter otherTestFilter = registrationBean.getFilter();
+		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context.getBean("otherTestFilter");
+		TestFilter testFilter = context.getBean("testFilter", TestFilter.class);
+		OtherTestFilter otherTestFilter = (OtherTestFilter) registrationBean.getFilter();
 		assertThat(builder).extracting("filters", as(InstanceOfAssertFactories.LIST))
-			.extracting("delegate", "initParams", "dispatcherTypes")
-			.containsExactlyInAnyOrder(tuple(testFilter, Collections.emptyMap(), EnumSet.of(DispatcherType.REQUEST)),
-					tuple(otherTestFilter, Map.of("a", "alpha", "b", "bravo"),
-							EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR)));
+			.extracting("delegate", "dispatcherTypes")
+			.containsExactlyInAnyOrder(tuple(testFilter, EnumSet.of(DispatcherType.REQUEST)),
+					tuple(otherTestFilter, EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR)));
+		builder.build();
+		assertThat(testFilter.filterName).isEqualTo("testFilter");
+		assertThat(testFilter.initParams).isEmpty();
+		assertThat(otherTestFilter.filterName).isEqualTo("otherTestFilter");
+		assertThat(otherTestFilter.initParams).isEqualTo(Map.of("a", "alpha", "b", "bravo"));
 	}
 
 	@Test
@@ -137,7 +141,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 	static class FilterConfiguration {
 
 		@Bean
-		FilterRegistrationBean<OtherTestFilter> filterRegistrationBean() {
+		FilterRegistrationBean<OtherTestFilter> otherTestFilter() {
 			FilterRegistrationBean<OtherTestFilter> filterRegistrationBean = new FilterRegistrationBean<>(
 					new OtherTestFilter());
 			filterRegistrationBean.setInitParameters(Map.of("a", "alpha", "b", "bravo"));
@@ -158,9 +162,15 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 	static class TestFilter implements Filter {
 
+		private String filterName;
+
+		private Map<String, String> initParams = new HashMap<>();
+
 		@Override
 		public void init(FilterConfig filterConfig) {
-
+			this.filterName = filterConfig.getFilterName();
+			Collections.list(filterConfig.getInitParameterNames())
+				.forEach((name) -> this.initParams.put(name, filterConfig.getInitParameter(name)));
 		}
 
 		@Override
@@ -177,9 +187,15 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 	static class OtherTestFilter implements Filter {
 
+		private String filterName;
+
+		private Map<String, String> initParams = new HashMap<>();
+
 		@Override
 		public void init(FilterConfig filterConfig) {
-
+			this.filterName = filterConfig.getFilterName();
+			Collections.list(filterConfig.getInitParameterNames())
+				.forEach((name) -> this.initParams.put(name, filterConfig.getInitParameter(name)));
 		}
 
 		@Override

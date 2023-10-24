@@ -265,6 +265,15 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	 */
 	public abstract T getFilter();
 
+	/**
+	 * Returns the filter name that will be registered.
+	 * @return the filter name
+	 * @since 3.2.0
+	 */
+	public String getFilterName() {
+		return getOrDeduceName(getFilter());
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder(getOrDeduceName(this));
