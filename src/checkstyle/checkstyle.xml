@@ -46,6 +46,15 @@
 				value="Please use specialized AssertJ assertThat*Exception method." />
 			<property name="ignoreComments" value="true" />
 		</module>
+		<module
+			name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0" />
+			<property name="format"
+					  value="assertThatThrownBy\(" />
+			<property name="message"
+					  value="Please use AssertJ assertThatExceptionOfType method." />
+			<property name="ignoreComments" value="true" />
+		</module>
  		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
  			<property name="maximum" value="0"/>
 			<property name="format" value="org\.mockito\.(Mockito|BDDMockito)\.(when|doThrow|doAnswer|doReturn|verify|verifyNoInteractions|verifyNoMoreInteractions)" />
