@@ -871,7 +871,7 @@ A `CacheMetricsRegistrar` bean is made available to make that process easier.
 [[actuator.metrics.supported.spring-batch]]
 ==== Spring Batch Metrics
 
-See the {spring-batch-docs}monitoring-and-metrics.html[Spring Batch reference documentation].
+See the {spring-batch-docs}/monitoring-and-metrics.html[Spring Batch reference documentation].
 
 
 
@@ -959,7 +959,7 @@ Auto-configuration enables the instrumentation of all available RabbitMQ connect
 
 [[actuator.metrics.supported.spring-integration]]
 ==== Spring Integration Metrics
-Spring Integration automatically provides {spring-integration-docs}metrics.html#micrometer-integration[Micrometer support] whenever a `MeterRegistry` bean is available.
+Spring Integration automatically provides {spring-integration-docs}/metrics.html#micrometer-integration[Micrometer support] whenever a `MeterRegistry` bean is available.
 Metrics are published under the `spring.integration.` meter name.
 
 

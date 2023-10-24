@@ -59,4 +59,4 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 === Storing the Job Repository
 Spring Batch requires a data store for the `Job` repository.
 If you use Spring Boot, you must use an actual database.
-Note that it can be an in-memory database, see {spring-batch-docs}job.html#configuringJobRepository[Configuring a Job Repository].
+Note that it can be an in-memory database, see {spring-batch-docs}/job.html#configuringJobRepository[Configuring a Job Repository].

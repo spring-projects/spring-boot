@@ -250,8 +250,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
+		def toAntoraVersion = version -> {
+			String formatted = version.split("\\.").take(2).join('.')
+			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
+		}
 		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
-		def integrationDocs = String.format("https://docs.spring.io/spring-integration/docs/%s/reference/html/", integrationVersion)
+		String integrationDocs = String.format("https://docs.spring.io/spring-integration/reference/%s", toAntoraVersion(integrationVersion))
 		attributes "spring-integration-docs": integrationDocs
 	}
 	dependsOn documentationTest
