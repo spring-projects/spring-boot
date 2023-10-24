@@ -52,11 +52,7 @@ final class PemContent {
 		return PemCertificateParser.parse(this.text);
 	}
 
-	List<PrivateKey> getPrivateKeys() {
-		return PemPrivateKeyParser.parse(this.text);
-	}
-
-	List<PrivateKey> getPrivateKeys(String password) {
+	PrivateKey getPrivateKeys(String password) {
 		return PemPrivateKeyParser.parse(this.text, password);
 	}
 

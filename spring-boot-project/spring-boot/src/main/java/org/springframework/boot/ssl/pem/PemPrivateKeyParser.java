@@ -69,10 +69,6 @@ final class PemPrivateKeyParser {
 
 	private static final String SEC1_EC_FOOTER = "-+END\\s+EC\\s+PRIVATE\\s+KEY[^-]*-+";
 
-	private static final String PKCS1_DSA_HEADER = "-+BEGIN\\s+DSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
-
-	private static final String PKCS1_DSA_FOOTER = "-+END\\s+DSA\\s+PRIVATE\\s+KEY[^-]*-+";
-
 	private static final String BASE64_TEXT = "([a-z0-9+/=\\r\\n]+)";
 
 	public static final int BASE64_TEXT_GROUP = 1;
@@ -87,9 +83,6 @@ final class PemPrivateKeyParser {
 				"RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
 		parsers.add(new PemParser(PKCS8_ENCRYPTED_HEADER, PKCS8_ENCRYPTED_FOOTER,
 				PemPrivateKeyParser::createKeySpecForPkcs8Encrypted, "RSA", "RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
-		parsers.add(new PemParser(PKCS1_DSA_HEADER, PKCS1_DSA_FOOTER, (bytes, password) -> {
-			throw new IllegalStateException("Unsupported private key format");
-		}));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -179,7 +172,7 @@ final class PemPrivateKeyParser {
 	 * @param text the text to parse
 	 * @return the parsed private key
 	 */
-	static List<PrivateKey> parse(String text) {
+	static PrivateKey parse(String text) {
 		return parse(text, null);
 	}
 
@@ -190,23 +183,22 @@ final class PemPrivateKeyParser {
 	 * @param password the password used to decrypt an encrypted private key
 	 * @return the parsed private key
 	 */
-	static List<PrivateKey> parse(String text, String password) {
+	static PrivateKey parse(String text, String password) {
 		if (text == null) {
 			return null;
 		}
-		List<PrivateKey> keys = new ArrayList<>();
 		try {
 			for (PemParser pemParser : PEM_PARSERS) {
 				PrivateKey privateKey = pemParser.parse(text, password);
 				if (privateKey != null) {
-					keys.add(privateKey);
+					return privateKey;
 				}
 			}
+			throw new IllegalStateException("Unrecognized private key format");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Error loading private key file: " + ex.getMessage(), ex);
 		}
-		return List.copyOf(keys);
 	}
 
 	/**
@@ -247,7 +239,7 @@ final class PemPrivateKeyParser {
 				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
 				}
 			}
-			throw new IllegalStateException("Unrecognized private key format");
+			return null;
 		}
 
 	}

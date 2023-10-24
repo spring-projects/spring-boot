@@ -155,9 +155,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		if (pemContent == null) {
 			return null;
 		}
-		List<PrivateKey> privateKeys = pemContent.getPrivateKeys(details.privateKeyPassword());
-		Assert.state(!CollectionUtils.isEmpty(privateKeys), "Loaded private keys are empty");
-		return privateKeys.get(0);
+		return pemContent.getPrivateKeys(details.privateKeyPassword());
 	}
 
 	private static X509Certificate[] loadCertificates(PemSslStoreDetails details) {
