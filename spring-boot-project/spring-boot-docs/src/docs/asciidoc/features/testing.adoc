@@ -172,13 +172,16 @@ include::code:always/MyApplicationTests[]
 If your application uses component scanning (for example, if you use `@SpringBootApplication` or `@ComponentScan`), you may find top-level configuration classes that you created only for specific tests accidentally get picked up everywhere.
 
 As we <<features#features.testing.spring-boot-applications.detecting-configuration,have seen earlier>>, `@TestConfiguration` can be used on an inner class of a test to customize the primary configuration.
-When placed on a top-level class, `@TestConfiguration` indicates that classes in `src/test/java` should not be picked up by scanning.
-You can then import that class explicitly where it is required, as shown in the following example:
+`@TestConfiguration` can also be used on a top-level class. Doing so indicates that the class should not be picked up by scanning.
+You can then import the class explicitly where it is required, as shown in the following example:
 
 include::code:MyTests[]
 
 NOTE: If you directly use `@ComponentScan` (that is, not through `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it.
 See {spring-boot-module-api}/context/TypeExcludeFilter.html[the Javadoc] for details.
+
+NOTE: An imported `@TestConfiguration` is processed earlier than an inner-class `@TestConfiguration` and an imported `@TestConfiguration` will be processed before any configuration found through component scanning.
+Generally speaking, this difference in ordering has no noticeable effect but it is something to be aware of if you're relying on bean overriding.
 
 
 
