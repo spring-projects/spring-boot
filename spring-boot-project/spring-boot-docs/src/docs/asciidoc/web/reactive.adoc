@@ -232,6 +232,52 @@ By default, the embedded server listens for HTTP requests on port 8080.
 
 
 
+[[web.reactive.reactive-server.customizing]]
+==== Customizing Reactive Servers
+Common reactive web server settings can be configured by using Spring `Environment` properties.
+Usually, you would define the properties in your `application.properties` or `application.yaml` file.
+
+Common server settings include:
+
+* Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to `server.address`, and so on.
+* Error management: Location of the error page (`server.error.path`) and so on.
+* <<howto#howto.webserver.configure-ssl,SSL>>
+* <<howto#howto.webserver.enable-response-compression,HTTP compression>>
+
+Spring Boot tries as much as possible to expose common settings, but this is not always possible.
+For those cases, dedicated namespaces such as `server.netty.*` offer server-specific customizations.
+
+TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] class for a complete list.
+
+
+
+[[web.reactive.reactive-server.customizing.programmatic]]
+===== Programmatic Customization
+If you need to programmatically configure your reactive web server, you can register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
+`WebServerFactoryCustomizer` provides access to the `ConfigurableReactiveWebServerFactory`, which includes numerous customization setter methods.
+The following example shows programmatically setting the port:
+
+include::code:MyWebServerFactoryCustomizer[]
+
+`JettyReactiveWebServerFactory`, `NettyReactiveWebServerFactory`, `TomcatReactiveWebServerFactory`, and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableReactiveWebServerFactory` that have additional customization setter methods for Jetty, Reactor Netty, Tomcat, and Undertow respectively.
+The following example shows how to customize `NettyReactiveWebServerFactory` that provides access to Reactor Netty-specific configuration options:
+
+include::code:MyNettyWebServerFactoryCustomizer[]
+
+
+
+[[web.reactive.reactive-server.customizing.direct]]
+===== Customizing ConfigurableReactiveWebServerFactory Directly
+For more advanced use cases that require you to extend from `ReactiveWebServerFactory`, you can expose a bean of such type yourself.
+
+Setters are provided for many configuration options.
+Several protected method "`hooks`" are also provided should you need to do something more exotic.
+See the {spring-boot-module-api}/web/reactive/server/ConfigurableReactiveWebServerFactory.html[source code documentation] for details.
+
+NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
+
+
+
 [[web.reactive.reactive-server-resources-configuration]]
 === Reactive Server Resources Configuration
 When auto-configuring a Reactor Netty or Jetty server, Spring Boot will create specific beans that will provide HTTP resources to the server instance: `ReactorResourceFactory` or `JettyResourceFactory`.
@@ -244,3 +290,5 @@ By default, those resources will be also shared with the Reactor Netty and Jetty
 Developers can override the resource configuration for Jetty and Reactor Netty by providing a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to both clients and servers.
 
 You can learn more about the resource configuration on the client side in the <<io#io.rest-client.webclient.runtime, WebClient Runtime section>>.
+
+
