@@ -941,6 +941,13 @@ For example, the configuration property `my.service[0].other` would use an envir
 
 
 
+[[features.external-config.typesafe-configuration-properties.relaxed-binding.caching]]
+===== Caching
+Relaxed binding uses a cache to improve performance. By default, this caching is only applied to immutable property sources.
+To customize this behavior, for example to enable caching for mutable property sources, use `ConfigurationPropertyCaching`.
+
+
+
 [[features.external-config.typesafe-configuration-properties.merging-complex-types]]
 ==== Merging Complex Types
 When lists are configured in more than one place, overriding works by replacing the entire list.
