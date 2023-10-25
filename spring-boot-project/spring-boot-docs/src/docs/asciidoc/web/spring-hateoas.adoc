@@ -9,3 +9,6 @@ Note that doing so disables the `ObjectMapper` customization described earlier.
 
 WARNING: `spring-boot-starter-hateoas` is specific to Spring MVC and should not be combined with Spring WebFlux.
 In order to use Spring HATEOAS with Spring WebFlux, you can add a direct dependency on `org.springframework.hateoas:spring-hateoas` along with `spring-boot-starter-webflux`.
+
+By default, requests that accept `application/json` will receive an `application/hal+json` response.
+To disable this behavior set configprop:spring.hateoas.use-hal-as-default-json-media-type[] to `false` and define a `HypermediaMappingInformation` or `HalConfiguration` to configure Spring HATEOAS to meet the needs of your application and its clients.
