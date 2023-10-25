@@ -20,11 +20,13 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for configured smtp server(s).
  *
  * @author Johannes Edmeier
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class MailHealthIndicator extends AbstractHealthIndicator {
@@ -38,9 +40,15 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
+		String host = this.mailSender.getHost();
 		int port = this.mailSender.getPort();
-		builder.withDetail("location", (port != JavaMailSenderImpl.DEFAULT_PORT)
-				? this.mailSender.getHost() + ":" + this.mailSender.getPort() : this.mailSender.getHost());
+		StringBuilder location = new StringBuilder((host != null) ? host : "");
+		if (port != JavaMailSenderImpl.DEFAULT_PORT) {
+			location.append(":").append(port);
+		}
+		if (StringUtils.hasLength(location)) {
+			builder.withDetail("location", location.toString());
+		}
 		this.mailSender.testConnection();
 		builder.up();
 	}
