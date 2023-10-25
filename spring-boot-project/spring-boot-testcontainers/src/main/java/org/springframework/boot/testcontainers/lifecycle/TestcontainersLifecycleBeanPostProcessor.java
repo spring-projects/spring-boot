@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -62,7 +63,9 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	private final TestcontainersStartup startup;
 
-	private volatile boolean containersInitialized = false;
+	private final AtomicBoolean startablesInitialized = new AtomicBoolean();
+
+	private final AtomicBoolean containersInitialized = new AtomicBoolean();
 
 	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory,
 			TestcontainersStartup startup) {
@@ -72,38 +75,34 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (!this.containersInitialized && this.beanFactory.isConfigurationFrozen()) {
+		if (this.beanFactory.isConfigurationFrozen() && this.containersInitialized.compareAndSet(false, true)) {
 			initializeContainers();
+		}
+		if (bean instanceof Startable startableBean) {
+			if (this.startablesInitialized.compareAndSet(false, true)) {
+				initializeStartables(startableBean, beanName);
+			}
+			else {
+				startableBean.start();
+			}
 		}
 		return bean;
 	}
 
-	private void initializeContainers() {
-		Set<String> beanNames = new LinkedHashSet<>();
-		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false)));
-		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
-		initializeContainers(beanNames);
-	}
-
-	private void initializeContainers(Set<String> beanNames) {
-		List<Object> beans = new ArrayList<>(beanNames.size());
-		for (String beanName : beanNames) {
-			try {
-				beans.add(this.beanFactory.getBean(beanName));
-			}
-			catch (BeanCreationException ex) {
-				if (ex.contains(BeanCurrentlyInCreationException.class)) {
-					return;
-				}
-				throw ex;
-			}
+	private void initializeStartables(Startable startableBean, String startableBeanName) {
+		List<String> beanNames = new ArrayList<>(
+				List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
+		beanNames.remove(startableBeanName);
+		List<Object> beans = getBeans(beanNames);
+		if (beans == null) {
+			this.startablesInitialized.set(false);
+			return;
 		}
-		if (!this.containersInitialized) {
-			this.containersInitialized = true;
-			if (!beanNames.isEmpty()) {
-				logger.debug(LogMessage.format("Initialized container beans '%s'", beanNames));
-			}
-			start(beans);
+		beanNames.add(startableBeanName);
+		beans.add(startableBean);
+		start(beans);
+		if (!beanNames.isEmpty()) {
+			logger.debug(LogMessage.format("Initialized and started startable beans '%s'", beanNames));
 		}
 	}
 
@@ -113,6 +112,29 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 			.map(Startable.class::cast)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 		this.startup.start(startables);
+	}
+
+	private void initializeContainers() {
+		List<String> beanNames = List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false));
+		if (getBeans(beanNames) == null) {
+			this.containersInitialized.set(false);
+		}
+	}
+
+	private List<Object> getBeans(List<String> beanNames) {
+		List<Object> beans = new ArrayList<>(beanNames.size());
+		for (String beanName : beanNames) {
+			try {
+				beans.add(this.beanFactory.getBean(beanName));
+			}
+			catch (BeanCreationException ex) {
+				if (ex.contains(BeanCurrentlyInCreationException.class)) {
+					return null;
+				}
+				throw ex;
+			}
+		}
+		return beans;
 	}
 
 	@Override
