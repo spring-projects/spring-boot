@@ -13,13 +13,13 @@ tasks.named<BootJar>("bootJar") {
 // tag::docker-host[]
 tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
-		host = "unix://${System.getProperty("user.home")}/.colima/docker.sock"
+		host.set("unix://${System.getProperty("user.home")}/.colima/docker.sock")
 	}
 }
 // end::docker-host[]
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("host=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.host}")
+		println("host=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.host.get()}")
 	}
 }
