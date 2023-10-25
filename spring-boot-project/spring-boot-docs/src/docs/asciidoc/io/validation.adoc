@@ -1,6 +1,6 @@
 [[io.validation]]
 == Validation
-The method validation feature supported by Bean Validation 1.1 is automatically enabled as long as a JSR-303 implementation (such as Hibernate validator) is on the classpath.
+The method validation feature supported by https://beanvalidation.org/[Bean Validation Api] is automatically enabled as long as a JSR-303 implementation (such as https://hibernate.org/validator/[Hibernate validator]) is on the classpath.
 This lets bean methods be annotated with `jakarta.validation` constraints on their parameters and/or on their return value.
 Target classes with such annotated methods need to be annotated with the `@Validated` annotation at the type level for their methods to be searched for inline constraint annotations.
 
@@ -9,8 +9,20 @@ For instance, the following service triggers the validation of the first argumen
 include::code:MyBean[]
 
 The application's `MessageSource` is used when resolving `+{parameters}+` in constraint messages.
-This allows you to use <<features.adoc#features.internationalization,your application's `messages.properties` files>> for Bean Validation messages.
+This allows you to use your application's <<features.adoc#features.internationalization,`messages.properties`>> files for Bean Validation messages.
 Once the parameters have been resolved, message interpolation is completed using Bean Validation's default interpolator.
 
+[[io.validation.groups]]
+=== Validation Groups
+JSR-303's Validation Groups can be provided to the Validator in two ways.
+
+* Statically by including the Class references in a `@Validated` Annotation on the Parameter
+* Programmatically by direct usage of a `SmartValidator`
+
+NOTE: Out of the box Group integrations like Hibernate's https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#_groupsequenceprovider[`@GroupSequenceProvider`]
+usually work without additional configuration.
+
+[[io.validation.configuration]]
+=== ValidatorFactory Customization
 To customize the `Configuration` used to build the `ValidatorFactory`, define a `ValidationConfigurationCustomizer` bean.
 When multiple customizer beans are defined, they are called in order based on their `@Order` annotation or `Ordered` implementation.
