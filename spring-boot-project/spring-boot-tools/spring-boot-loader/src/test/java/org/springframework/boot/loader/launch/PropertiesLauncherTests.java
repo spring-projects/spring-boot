@@ -18,6 +18,7 @@ package org.springframework.boot.loader.launch;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.time.Duration;
@@ -26,7 +27,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.assertj.core.api.Condition;
 import org.awaitility.Awaitility;
@@ -309,8 +313,8 @@ class PropertiesLauncherTests {
 		assertThat(Arrays.asList(this.launcher.getArgs("bar"))).hasToString("[foo, bar]");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	void testLoadPathCustomizedUsingManifest() throws Exception {
 		System.setProperty("loader.home", this.tempDir.getAbsolutePath());
 		Manifest manifest = new Manifest();
@@ -362,6 +366,29 @@ class PropertiesLauncherTests {
 		URL resource = JarUrl.create(file, "nested.jar", "3.dat");
 		byte[] bytes = FileCopyUtils.copyToByteArray(resource.openStream());
 		assertThat(bytes).isNotEmpty();
+	}
+
+	@Test // gh-37992
+	void classPathWithoutLoaderPathDefaultsToJarLauncherIncludes() throws Exception {
+		File file = new File(this.tempDir, "test.jar");
+		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
+			try (JarFile in = new JarFile(new File("src/test/resources/jars/app.jar"))) {
+				out.putNextEntry(new ZipEntry("BOOT-INF/"));
+				out.putNextEntry(new ZipEntry("BOOT-INF/classes/"));
+				out.putNextEntry(new ZipEntry("BOOT-INF/classes/demo/"));
+				out.putNextEntry(new ZipEntry("BOOT-INF/classes/demo/Application.class"));
+				try (InputStream classIn = in.getInputStream(in.getEntry("demo/Application.class"))) {
+					classIn.transferTo(out);
+				}
+				out.closeEntry();
+			}
+		}
+		Archive archive = new JarFileArchive(file);
+		System.setProperty("loader.main", "demo.Application");
+		this.launcher = new PropertiesLauncher(archive);
+		this.launcher.launch(new String[0]);
+		waitFor("Hello World");
+
 	}
 
 	private void waitFor(String value) {
