@@ -515,6 +515,26 @@ include::../gradle/packaging/boot-build-image-docker-host-podman.gradle.kts[tags
 
 TIP: With the `podman` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
 
+[[build-image.examples.docker.colima]]
+==== Docker Configuration for Colima
+
+The plugin can communicate with the Docker daemon provided by https://github.com/abiosoft/colima[Colima].
+The `DOCKER_HOST` environment variable can be set by using the command `export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}').`
+
+The plugin can also be configured to use Colima daemon by providing connection details similar to those shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-docker-host-colima.gradle[tags=docker-host]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-docker-host-colima.gradle.kts[tags=docker-host]
+----
+
 [[build-image.examples.docker.auth]]
 ==== Docker Configuration for Authentication
 

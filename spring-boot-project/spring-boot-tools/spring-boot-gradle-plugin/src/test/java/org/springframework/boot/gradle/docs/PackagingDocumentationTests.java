@@ -300,6 +300,14 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
+	void bootBuildImageWithDockerHostColima() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-host-colima")
+			.build("bootBuildImageDocker");
+		assertThat(result.getOutput())
+			.contains("host=unix://" + System.getProperty("user.home") + "/.colima/docker.sock");
+	}
+
+	@TestTemplate
 	void bootBuildImageWithDockerUserAuth() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-auth-user")
 			.build("bootBuildImageDocker");
