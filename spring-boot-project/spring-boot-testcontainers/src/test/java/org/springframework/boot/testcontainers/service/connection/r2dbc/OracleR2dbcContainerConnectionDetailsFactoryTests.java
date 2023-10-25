@@ -19,12 +19,15 @@ package org.springframework.boot.testcontainers.service.connection.r2dbc;
 import java.time.Duration;
 
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
@@ -65,6 +68,13 @@ class OracleR2dbcContainerConnectionDetailsFactoryTests {
 			.first()
 			.block(Duration.ofSeconds(30));
 		assertThat(result).isEqualTo("Hello");
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new OracleR2dbcContainerConnectionDetailsFactory().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(ConnectionFactoryOptions.class)).accepts(hints);
 	}
 
 	@Configuration(proxyBeanMethods = false)

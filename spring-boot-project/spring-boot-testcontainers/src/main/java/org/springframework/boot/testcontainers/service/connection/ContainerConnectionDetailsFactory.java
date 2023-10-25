@@ -20,6 +20,8 @@ import java.util.Arrays;
 
 import org.testcontainers.containers.Container;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
@@ -42,7 +44,7 @@ import org.springframework.util.ObjectUtils;
  * @since 3.1.0
  */
 public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, D extends ConnectionDetails>
-		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D> {
+		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D>, RuntimeHintsRegistrar {
 
 	/**
 	 * Constant passed to the constructor when any connection name is accepted.
@@ -88,6 +90,12 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		catch (NoClassDefFoundError ex) {
 		}
 		return null;
+	}
+
+	@Override
+	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		Arrays.stream(this.requiredClassNames)
+			.forEach((clazz) -> hints.reflection().registerTypeIfPresent(classLoader, clazz));
 	}
 
 	private boolean hasRequiredClasses() {
