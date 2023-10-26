@@ -230,7 +230,7 @@ public class NestedJarFile extends JarFile {
 		}
 		ZipContent.Entry entry = getVersionedContentEntry(name);
 		if (entry != null) {
-			return false;
+			return true;
 		}
 		synchronized (this) {
 			ensureOpen();

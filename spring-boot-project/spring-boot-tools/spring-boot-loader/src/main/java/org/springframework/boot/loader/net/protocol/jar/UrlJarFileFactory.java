@@ -58,7 +58,12 @@ class UrlJarFileFactory {
 	}
 
 	private Runtime.Version getVersion(URL url) {
-		return "runtime".equals(url.getRef()) ? JarFile.runtimeVersion() : JarFile.baseVersion();
+		// The standard JDK handler uses #runtime to indicate that the runtime version
+		// should be used. This unfortunately doesn't work for us as
+		// jdk.internal.loaderURLClassPath only adds the runtime fragment when the URL
+		// is using the internal JDK handler. We need to flip the default to use
+		// the runtime version. See gh-38050
+		return "base".equals(url.getRef()) ? JarFile.baseVersion() : JarFile.runtimeVersion();
 	}
 
 	private boolean isLocalFileUrl(URL url) {
