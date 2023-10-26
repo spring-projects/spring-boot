@@ -201,7 +201,7 @@ You could take the JPA example from earlier and, assuming that `City` is now a M
 include::code:CityRepository[]
 
 Repositories and documents are found through scanning.
-By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableMongoRepositories` and `@EntityScan` respectively.
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {spring-data-mongodb}[reference documentation].
@@ -257,7 +257,7 @@ Spring Boot supports both classic and reactive Neo4j repositories, using the `Ne
 When Project Reactor is available on the classpath, the reactive style is also auto-configured.
 
 Repositories and entities are found through scanning.
-By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively.
 
 [NOTE]
@@ -369,7 +369,7 @@ In fact, both Spring Data JPA and Spring Data Elasticsearch share the same commo
 You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in the same way.
 
 Repositories and documents are found through scanning.
-By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableElasticsearchRepositories` and `@EntityScan` respectively.
 
 TIP: For complete details of Spring Data Elasticsearch, see the {spring-data-elasticsearch-docs}[reference documentation].
@@ -484,7 +484,7 @@ Spring Data includes basic repository support for Cassandra.
 Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
 
 Repositories and entities are found through scanning.
-By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and entities by using `@EnableCassandraRepositories` and `@EntityScan` respectively.
 
 TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
@@ -538,7 +538,7 @@ To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans ca
 Spring Data includes repository support for Couchbase.
 
 Repositories and documents are found through scanning.
-By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableCouchbaseRepositories` and `@EntityScan` respectively.
 
 For complete details of Spring Data Couchbase, see the {spring-data-couchbase-docs}[reference documentation].
@@ -608,7 +608,7 @@ Make sure to flag your customized `ContextSource` as `@Primary` so that the auto
 Spring Data includes repository support for LDAP.
 
 Repositories and documents are found through scanning.
-By default, the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) and all those below it are searched.
+By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableLdapRepositories` and `@EntityScan` respectively.
 
 For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
