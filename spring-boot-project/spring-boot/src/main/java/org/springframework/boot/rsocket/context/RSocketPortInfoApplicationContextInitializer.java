@@ -55,7 +55,7 @@ public class RSocketPortInfoApplicationContextInitializer
 
 		private static final String PROPERTY_NAME = "local.rsocket.server.port";
 
-		private static final String SERVER_PORTS = "server.ports";
+		private static final String PROPERTY_SOURCE_NAME = "server.ports";
 
 		private final ConfigurableApplicationContext applicationContext;
 
@@ -81,9 +81,9 @@ public class RSocketPortInfoApplicationContextInitializer
 
 		private void setPortProperty(ConfigurableEnvironment environment, int port) {
 			MutablePropertySources sources = environment.getPropertySources();
-			PropertySource<?> source = sources.get(SERVER_PORTS);
+			PropertySource<?> source = sources.get(PROPERTY_SOURCE_NAME);
 			if (source == null) {
-				source = new MapPropertySource(SERVER_PORTS, new HashMap<>());
+				source = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<>());
 				sources.addFirst(source);
 			}
 			setPortProperty(port, source);
