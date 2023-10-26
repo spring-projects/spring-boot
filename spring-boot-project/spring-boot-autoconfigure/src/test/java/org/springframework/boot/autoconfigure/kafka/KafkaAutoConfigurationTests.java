@@ -618,7 +618,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 					"spring.kafka.listener.immediate-stop=true", "spring.kafka.producer.transaction-id-prefix=foo",
 					"spring.kafka.jaas.login-module=foo", "spring.kafka.jaas.control-flag=REQUISITE",
-					"spring.kafka.jaas.options.useKeyTab=true", "spring.kafka.listener.async-acks=true")
+					"spring.kafka.jaas.options.useKeyTab=true", "spring.kafka.listener.async-acks=true",
+					"spring.kafka.template.observation-enabled=true", "spring.kafka.listener.observation-enabled=true")
 			.run((context) -> {
 				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
@@ -629,6 +630,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("producerFactory", producerFactory);
 				assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("transactionIdPrefix", "txOverride");
+				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("observationEnabled", true);
 				assertThat(kafkaListenerContainerFactory.getConsumerFactory()).isEqualTo(consumerFactory);
 				ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
 				assertThat(containerProperties.getAckMode()).isEqualTo(AckMode.MANUAL);
@@ -645,6 +647,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(containerProperties.isLogContainerConfig()).isTrue();
 				assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
 				assertThat(containerProperties.isStopImmediate()).isTrue();
+				assertThat(containerProperties.isObservationEnabled()).isTrue();
 				assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 				assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
 				assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue("autoStartup", true);
