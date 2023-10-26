@@ -121,4 +121,5 @@ record ZipLocalFileHeaderRecord(short versionNeededToExtract, short generalPurpo
 				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getShort(),
 				buffer.getShort());
 	}
+
 }

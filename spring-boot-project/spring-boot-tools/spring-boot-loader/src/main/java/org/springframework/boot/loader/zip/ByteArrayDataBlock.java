@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
  *
  * @author Phillip Webb
  */
-class ByteArrayDataBlock implements DataBlock {
+class ByteArrayDataBlock implements CloseableDataBlock {
 
 	private final byte[] bytes;
 
@@ -51,6 +51,10 @@ class ByteArrayDataBlock implements DataBlock {
 		int length = Math.min(this.bytes.length - pos, remaining);
 		dst.put(this.bytes, pos, length);
 		return length;
+	}
+
+	@Override
+	public void close() throws IOException {
 	}
 
 }

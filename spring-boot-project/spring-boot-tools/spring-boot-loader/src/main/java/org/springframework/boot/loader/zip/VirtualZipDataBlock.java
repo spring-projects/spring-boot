@@ -30,7 +30,7 @@ import java.util.List;
  */
 class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock {
 
-	private final FileChannelDataBlock data;
+	private final CloseableDataBlock data;
 
 	/**
 	 * Create a new {@link VirtualZipDataBlock} for the given entries.
@@ -40,7 +40,7 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	 * @param centralRecordPositions the record positions in the data block.
 	 * @throws IOException on I/O error
 	 */
-	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsetLookups nameOffsetLookups,
+	VirtualZipDataBlock(CloseableDataBlock data, NameOffsetLookups nameOffsetLookups,
 			ZipCentralDirectoryFileHeaderRecord[] centralRecords, long[] centralRecordPositions) throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
@@ -54,12 +54,14 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			DataBlock name = new DataPart(
 					centralRecordPos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
 					(centralRecord.fileNameLength() & 0xFFFF) - nameOffset);
-			ZipLocalFileHeaderRecord localRecord = ZipLocalFileHeaderRecord.load(this.data,
-					centralRecord.offsetToLocalHeader());
-			DataBlock content = new DataPart(centralRecord.offsetToLocalHeader() + localRecord.size(),
-					centralRecord.compressedSize());
+			long localRecordPos = centralRecord.offsetToLocalHeader() & 0xFFFFFFFF;
+			ZipLocalFileHeaderRecord localRecord = ZipLocalFileHeaderRecord.load(this.data, localRecordPos);
+			DataBlock content = new DataPart(localRecordPos + localRecord.size(), centralRecord.compressedSize());
+			boolean hasDescriptorRecord = ZipDataDescriptorRecord.isPresentBasedOnFlag(centralRecord);
+			ZipDataDescriptorRecord dataDescriptorRecord = (!hasDescriptorRecord) ? null
+					: ZipDataDescriptorRecord.load(data, localRecordPos + localRecord.size() + content.size());
 			sizeOfCentralDirectory += addToCentral(centralParts, centralRecord, centralRecordPos, name, (int) offset);
-			offset += addToLocal(parts, localRecord, name, content);
+			offset += addToLocal(parts, centralRecord, localRecord, dataDescriptorRecord, name, content);
 		}
 		parts.addAll(centralParts);
 		ZipEndOfCentralDirectoryRecord eocd = new ZipEndOfCentralDirectoryRecord((short) centralRecords.length,
@@ -83,14 +85,20 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 		return record.size();
 	}
 
-	private long addToLocal(List<DataBlock> parts, ZipLocalFileHeaderRecord originalRecord, DataBlock name,
+	private long addToLocal(List<DataBlock> parts, ZipCentralDirectoryFileHeaderRecord centralRecord,
+			ZipLocalFileHeaderRecord originalRecord, ZipDataDescriptorRecord dataDescriptorRecord, DataBlock name,
 			DataBlock content) throws IOException {
-		ZipLocalFileHeaderRecord record = originalRecord.withExtraFieldLength((short) 0)
-			.withFileNameLength((short) (name.size() & 0xFFFF));
+		ZipLocalFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF));
+		long originalRecordPos = centralRecord.offsetToLocalHeader() & 0xFFFFFFFF;
+		int extraFieldLength = originalRecord.extraFieldLength() & 0xFFFF;
 		parts.add(new ByteArrayDataBlock(record.asByteArray()));
 		parts.add(name);
+		parts.add(new DataPart(originalRecordPos + originalRecord.size() - extraFieldLength, extraFieldLength));
 		parts.add(content);
-		return record.size() + content.size();
+		if (dataDescriptorRecord != null) {
+			parts.add(new ByteArrayDataBlock(dataDescriptorRecord.asByteArray()));
+		}
+		return record.size() + content.size() + ((dataDescriptorRecord != null) ? dataDescriptorRecord.size() : 0);
 	}
 
 	@Override
