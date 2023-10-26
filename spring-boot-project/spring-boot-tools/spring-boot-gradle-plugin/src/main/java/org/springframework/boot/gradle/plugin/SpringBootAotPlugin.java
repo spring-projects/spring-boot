@@ -169,7 +169,6 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			.getByName(inputSourceSet.getRuntimeClasspathConfigurationName());
 		return project.getConfigurations().create(taskName + "Classpath", (classpath) -> {
 			classpath.setCanBeConsumed(false);
-			classpath.setCanBeResolved(true);
 			classpath.setDescription("Classpath of the " + taskName + " task.");
 			removeDevelopmentOnly(base.getExtendsFrom(), developmentOnlyConfigurationNames)
 				.forEach(classpath::extendsFrom);
