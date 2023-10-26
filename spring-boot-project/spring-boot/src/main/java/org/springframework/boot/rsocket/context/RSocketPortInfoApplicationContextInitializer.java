@@ -54,6 +54,7 @@ public class RSocketPortInfoApplicationContextInitializer
 	private static class Listener implements ApplicationListener<RSocketServerInitializedEvent> {
 
 		private static final String PROPERTY_NAME = "local.rsocket.server.port";
+
 		private static final String SERVER_PORTS = "server.ports";
 
 		private final ConfigurableApplicationContext applicationContext;
