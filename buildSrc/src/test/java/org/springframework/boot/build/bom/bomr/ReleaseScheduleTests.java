@@ -37,7 +37,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Andy Wilkinson
  */
-public class ReleaseScheduleTests {
+class ReleaseScheduleTests {
 
 	private final RestTemplate rest = new RestTemplate();
 
