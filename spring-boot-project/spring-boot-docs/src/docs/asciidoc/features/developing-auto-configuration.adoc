@@ -149,6 +149,8 @@ An auto-configuration can be affected by many factors: user configuration (`@Bea
 Concretely, each test should create a well defined `ApplicationContext` that represents a combination of those customizations.
 `ApplicationContextRunner` provides a great way to achieve that.
 
+WARNING: `ApplicationContextRunner` doesn't work when running the tests in a native image.
+
 `ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
 The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
 
