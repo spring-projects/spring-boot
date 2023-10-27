@@ -20,6 +20,8 @@ include::features/logging.adoc[]
 
 include::features/internationalization.adoc[]
 
+include::features/aop.adoc[]
+
 include::features/json.adoc[]
 
 include::features/task-execution-and-scheduling.adoc[]
