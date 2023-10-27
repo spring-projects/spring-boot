@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -237,8 +238,8 @@ class JarUrlConnectionTests {
 	}
 
 	@Test
-	void getInputStreamWhenHasNoEntryThrowsException() throws Exception {
-		JarUrlConnection connection = JarUrlConnection.open(this.url);
+	void getInputStreamWhenNotNestedAndHasNoEntryThrowsException() throws Exception {
+		JarUrlConnection connection = JarUrlConnection.open(JarUrl.create(this.file));
 		assertThatIOException().isThrownBy(() -> connection.getInputStream()).withMessage("no entry name specified");
 	}
 
@@ -269,6 +270,18 @@ class JarUrlConnectionTests {
 		JarUrlConnection connection = JarUrlConnection.open(JarUrl.create(this.file, "nested.jar", "missing.dat"));
 		assertThatExceptionOfType(FileNotFoundException.class).isThrownBy(connection::getInputStream)
 			.withMessageContaining("JAR entry missing.dat not found in");
+	}
+
+	@Test // gh-38047
+	void getInputStreamWhenNoEntryAndNestedReturnsFullJarInputStream() throws Exception {
+		JarUrlConnection connection = JarUrlConnection.open(JarUrl.create(this.file, "nested.jar"));
+		File outFile = new File(this.temp, "out.zip");
+		try (OutputStream out = new FileOutputStream(outFile)) {
+			connection.getInputStream().transferTo(out);
+		}
+		try (JarFile outJar = new JarFile(outFile)) {
+			assertThat(outJar.getEntry("3.dat")).isNotNull();
+		}
 	}
 
 	@Test

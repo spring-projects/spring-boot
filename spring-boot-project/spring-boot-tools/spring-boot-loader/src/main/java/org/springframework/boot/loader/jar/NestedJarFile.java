@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.File;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -141,6 +142,13 @@ public class NestedJarFile extends JarFile {
 		this.cleanup = cleaner.register(this, this.resources);
 		this.name = file.getPath() + ((nestedEntryName != null) ? "!/" + nestedEntryName : "");
 		this.version = (version != null) ? version.feature() : baseVersion().feature();
+	}
+
+	public InputStream getRawZipDataInputStream() throws IOException {
+		RawZipDataInputStream inputStream = new RawZipDataInputStream(
+				this.resources.zipContent().openRawZipData().asInputStream());
+		this.resources.addInputStream(inputStream);
+		return inputStream;
 	}
 
 	@Override
@@ -795,6 +803,29 @@ public class NestedJarFile extends JarFile {
 			super.close();
 			NestedJarFile.this.resources.removeInputStream(this);
 			this.cleanup.clean();
+		}
+
+	}
+
+	/**
+	 * {@link InputStream} for raw zip data.
+	 */
+	private class RawZipDataInputStream extends FilterInputStream {
+
+		private volatile boolean closed;
+
+		protected RawZipDataInputStream(InputStream in) {
+			super(in);
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (this.closed) {
+				return;
+			}
+			this.closed = true;
+			super.close();
+			NestedJarFile.this.resources.removeInputStream(this);
 		}
 
 	}

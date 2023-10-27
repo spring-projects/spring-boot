@@ -80,10 +80,6 @@ class UrlJarFileFactory {
 		return new UrlJarFile(new File(path), version, closeAction);
 	}
 
-	private boolean isNestedUrl(URL url) {
-		return url.getProtocol().equalsIgnoreCase("nested");
-	}
-
 	private JarFile createJarFileForNested(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		NestedLocation location = NestedLocation.fromUrl(url);
@@ -118,6 +114,10 @@ class UrlJarFileFactory {
 		catch (IOException ex) {
 			cause.addSuppressed(ex);
 		}
+	}
+
+	static boolean isNestedUrl(URL url) {
+		return url.getProtocol().equalsIgnoreCase("nested");
 	}
 
 }

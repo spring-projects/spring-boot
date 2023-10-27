@@ -175,11 +175,12 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (this.notFound != null) {
 			throwFileNotFound();
 		}
-		if (this.entryName == null) {
+		URL jarFileURL = getJarFileURL();
+		if (this.entryName == null && !UrlJarFileFactory.isNestedUrl(jarFileURL)) {
 			throw new IOException("no entry name specified");
 		}
-		if (!getUseCaches() && Optimizations.isEnabled(false)) {
-			JarFile cached = jarFiles.getCached(getJarFileURL());
+		if (!getUseCaches() && Optimizations.isEnabled(false) && this.entryName != null) {
+			JarFile cached = jarFiles.getCached(jarFileURL);
 			if (cached != null) {
 				if (cached.getEntry(this.entryName) != null) {
 					return emptyInputStream;
@@ -188,6 +189,12 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		}
 		connect();
 		if (this.jarEntry == null) {
+			if (this.jarFile instanceof NestedJarFile nestedJarFile) {
+				// In order to work with Tomcat's TLD scanning and WarURLConnection we
+				// return the raw zip data rather than failing because there is no entry.
+				// See gh-38047 for details.
+				return nestedJarFile.getRawZipDataInputStream();
+			}
 			throwFileNotFound();
 		}
 		return new ConnectionInputStream();
