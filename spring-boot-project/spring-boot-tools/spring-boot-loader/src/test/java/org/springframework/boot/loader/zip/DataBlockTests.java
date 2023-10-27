@@ -68,7 +68,7 @@ class DataBlockTests {
 	}
 
 	@Test
-	void asInputStreamReturnsDataBlockInputStream() {
+	void asInputStreamReturnsDataBlockInputStream() throws Exception {
 		DataBlock dataBlock = mock(DataBlock.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
 		assertThat(dataBlock.asInputStream()).isInstanceOf(DataBlockInputStream.class);
 	}

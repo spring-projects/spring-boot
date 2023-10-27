@@ -20,7 +20,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.zip.ZipException;
 
 /**
  * {@link InputStream} backed by a {@link DataBlock}.
@@ -35,10 +34,11 @@ class DataBlockInputStream extends InputStream {
 
 	private long remaining;
 
-	private volatile boolean closing;
+	private volatile boolean closed;
 
-	DataBlockInputStream(DataBlock dataBlock) {
+	DataBlockInputStream(DataBlock dataBlock) throws IOException {
 		this.dataBlock = dataBlock;
+		this.remaining = dataBlock.size();
 	}
 
 	@Override
@@ -49,7 +49,6 @@ class DataBlockInputStream extends InputStream {
 
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
-		int result;
 		ensureOpen();
 		ByteBuffer dst = ByteBuffer.wrap(b, off, len);
 		int count = this.dataBlock.read(dst, this.pos);
@@ -57,23 +56,15 @@ class DataBlockInputStream extends InputStream {
 			this.pos += count;
 			this.remaining -= count;
 		}
-		result = count;
-		if (this.remaining == 0) {
-			close();
-		}
-		return result;
+		return count;
 	}
 
 	@Override
 	public long skip(long n) throws IOException {
-		long result;
-		result = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
-		this.pos += result;
-		this.remaining -= result;
-		if (this.remaining == 0) {
-			close();
-		}
-		return result;
+		long count = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
+		this.pos += count;
+		this.remaining -= count;
+		return count;
 	}
 
 	private long maxForwardSkip(long n) {
@@ -87,21 +78,24 @@ class DataBlockInputStream extends InputStream {
 
 	@Override
 	public int available() {
+		if (this.closed) {
+			return 0;
+		}
 		return (this.remaining < Integer.MAX_VALUE) ? (int) this.remaining : Integer.MAX_VALUE;
 	}
 
-	private void ensureOpen() throws ZipException {
-		if (this.closing) {
-			throw new ZipException("InputStream closed");
+	private void ensureOpen() throws IOException {
+		if (this.closed) {
+			throw new IOException("InputStream closed");
 		}
 	}
 
 	@Override
 	public void close() throws IOException {
-		if (this.closing) {
+		if (this.closed) {
 			return;
 		}
-		this.closing = true;
+		this.closed = true;
 		if (this.dataBlock instanceof Closeable closeable) {
 			closeable.close();
 		}
