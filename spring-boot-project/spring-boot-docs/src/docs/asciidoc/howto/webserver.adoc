@@ -43,6 +43,18 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 
 NOTE: The version of the Jakarta Servlet API has been overridden as, unlike Tomcat 10 and Undertow 2.3, Jetty 11 does not support Servlet 6.0.
 
+[WARNING]
+====
+Downgrading the Servlet API to 5.0 breaks Spring Framework's Servlet-related mocks!
+
+As Jetty needs the Servlet API 5.0, this leaves you with two working arrangements:
+
+* Tests use the Servlet 5.0 API and avoid using Framework's Servlet mocks by only using a full-blown web environment
+* Tests use the Servlet 6.0 API and avoid starting Jetty by only using a mock web environment
+
+If a mixture of web environments is required by your application's tests, your test setup may require some structural changes to strictly separate the two web environments.
+====
+
 The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
 [source,gradle,indent=0,subs="verbatim"]
