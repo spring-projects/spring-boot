@@ -34,38 +34,8 @@ See also the section on "`<<web#web.servlet.spring-mvc.error-handling, Error Han
 
 
 
-[[howto.actuator.sanitize-sensitive-values]]
-=== Sanitize Sensitive Values
-Information returned by the `/env`, `/configprops` and `/quartz` endpoints can be somewhat sensitive.
-All values are sanitized by default (that is replaced by `+******+`).
-Viewing original values in the unsanitized form can be configured per endpoint using the `showValues` property for that endpoint.
-This property can be configured to have the following values:
-
-- `ALWAYS` - all values are shown in their unsanitized form to all users
-- `NEVER`  - all values are always sanitized (that is replaced by `+******+`)
-- `WHEN_AUTHORIZED` - all values are shown in their unsanitized form to authorized users
-
-For HTTP endpoints, a user is considered to be authorized if they have authenticated and have the roles configured by the endpoint's roles property.
-By default, any authenticated user is authorized.
-For JMX endpoints, all users are always authorized.
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	management:
-	  endpoint:
-	    env:
-	      show-values: WHEN_AUTHORIZED
-	      roles: "admin"
-----
-
-The configuration above enables the ability for all users with the `admin` role to view all values in their original form from the `/env` endpoint.
-
-NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitization applied by a `<<howto#howto.actuator.sanitize-sensitive-values.customizing-sanitization, SanitizingFunction>>` will still be applied.
-
-
-
-[[howto.actuator.sanitize-sensitive-values.customizing-sanitization]]
-==== Customizing Sanitization
+[[howto.actuator.customizing-sanitization]]
+=== Customizing Sanitization
 To take control over the sanitization, define a `SanitizingFunction` bean.
 The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.
 This allows you to, for example, sanitize every value that comes from a particular property source.

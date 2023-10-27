@@ -33,9 +33,11 @@ The following technology-agnostic endpoints are available:
 
 | `configprops`
 | Displays a collated list of all `@ConfigurationProperties`.
+Subject to <<actuator#actuator.endpoints.sanitization, sanitization>>.
 
 | `env`
 | Exposes properties from Spring's `ConfigurableEnvironment`.
+Subject to <<actuator#actuator.endpoints.sanitization, sanitization>>.
 
 | `flyway`
 | Shows any Flyway database migrations that have been applied.
@@ -70,6 +72,7 @@ The following technology-agnostic endpoints are available:
 
 |`quartz`
 |Shows information about Quartz Scheduler jobs.
+Subject to <<actuator#actuator.endpoints.sanitization, sanitization>>.
 
 | `scheduledtasks`
 | Displays the scheduled tasks in your application.
@@ -274,6 +277,36 @@ The following example sets the time-to-live of the `beans` endpoint's cache to 1
 ----
 
 NOTE: The `management.endpoint.<name>` prefix uniquely identifies the endpoint that is being configured.
+
+
+
+[[actuator.endpoints.sanitization]]
+=== Sanitize Sensitive Values
+Information returned by the `/env`, `/configprops` and `/quartz` endpoints can be somewhat sensitive.
+All values are sanitized by default (that is replaced by `+******+`).
+Viewing original values in the unsanitized form can be configured per endpoint using the `showValues` property for that endpoint.
+This property can be configured to have the following values:
+
+- `ALWAYS` - all values are shown in their unsanitized form to all users
+- `NEVER`  - all values are always sanitized (that is replaced by `+******+`)
+- `WHEN_AUTHORIZED` - all values are shown in their unsanitized form to authorized users
+
+For HTTP endpoints, a user is considered to be authorized if they have authenticated and have the roles configured by the endpoint's roles property.
+By default, any authenticated user is authorized.
+For JMX endpoints, all users are always authorized.
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoint:
+	    env:
+	      show-values: WHEN_AUTHORIZED
+	      roles: "admin"
+----
+
+The configuration above enables the ability for all users with the `admin` role to view all values in their original form from the `/env` endpoint.
+
+NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitization applied by a `<<howto#howto.actuator.customizing-sanitization, SanitizingFunction>>` will still be applied.
 
 
 
