@@ -17,7 +17,24 @@ This dependency management lets you omit `<version>` tags for those dependencies
 NOTE: Since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
 (You can override that by setting a Maven property called `resource.delimiter`.)
 
+[NOTE]
+====
+The `spring-boot-starter-parent` sets the `maven.compiler.release` property, which restricts the `--add-exports`, `--add-reads`, and `--patch-module` options https://openjdk.org/jeps/247[if they modify system modules].
+In case you need to use those options, unset `maven.compiler.release`:
 
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+<maven.compiler.release></maven.compiler.release>
+----
+
+and then configure the source and the target options instead:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+<maven.compiler.source>${java.version}</maven.compiler.source>
+<maven.compiler.target>${java.version}</maven.compiler.target>
+----
+====
 
 [[using.parent-pom]]
 == Inheriting the Starter Parent POM
