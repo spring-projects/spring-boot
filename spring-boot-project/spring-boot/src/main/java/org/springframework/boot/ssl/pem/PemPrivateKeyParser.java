@@ -194,11 +194,11 @@ final class PemPrivateKeyParser {
 					return privateKey;
 				}
 			}
-			throw new IllegalStateException("Unrecognized private key format");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Error loading private key file: " + ex.getMessage(), ex);
 		}
+		throw new IllegalStateException("Missing private key or unrecognized format");
 	}
 
 	/**

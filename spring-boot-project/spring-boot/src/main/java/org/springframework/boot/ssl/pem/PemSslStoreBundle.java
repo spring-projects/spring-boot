@@ -141,15 +141,15 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		throw new IllegalStateException("Private key matches none of the certificates");
 	}
 
-	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) {
+	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) throws IOException {
 		PemContent pemContent = PemContent.load(details.privateKey());
 		if (pemContent == null) {
 			return null;
 		}
-		return pemContent.getPrivateKeys(details.privateKeyPassword());
+		return pemContent.getPrivateKey(details.privateKeyPassword());
 	}
 
-	private static X509Certificate[] loadCertificates(PemSslStoreDetails details) {
+	private static X509Certificate[] loadCertificates(PemSslStoreDetails details) throws IOException {
 		PemContent pemContent = PemContent.load(details.certificate());
 		List<X509Certificate> certificates = pemContent.getCertificates();
 		Assert.state(!CollectionUtils.isEmpty(certificates), "Loaded certificates are empty");
