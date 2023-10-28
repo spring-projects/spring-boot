@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.security.cert.X509Certificate;
+
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -24,6 +28,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 
@@ -107,16 +112,39 @@ public final class PropertiesSslBundle implements SslBundle {
 	}
 
 	private static SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
-		PemSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore())
-			.withAlias(properties.getKey().getAlias());
-		PemSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore())
-			.withAlias(properties.getKey().getAlias());
-		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, properties.isVerifyKeys());
+		PemSslStore keyStore = asPemSslStore(properties.getKeystore(), properties.getKey().getAlias());
+		PemSslStore trustStore = asPemSslStore(properties.getTruststore(), properties.getKey().getAlias());
+		return new PemSslStoreBundle(keyStore, trustStore);
 	}
 
-	private static PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
-				properties.getPrivateKeyPassword());
+	private static PemSslStore asPemSslStore(PemSslBundleProperties.Store properties, String alias) {
+		try {
+			PemSslStoreDetails details = asStoreDetails(properties, alias);
+			PemSslStore pemSslStore = PemSslStore.load(details);
+			if (properties.isVerifyKeys()) {
+				verifyPemSslStoreKeys(pemSslStore);
+			}
+			return pemSslStore;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	private static void verifyPemSslStoreKeys(PemSslStore pemSslStore) {
+		KeyVerifier keyVerifier = new KeyVerifier();
+		for (X509Certificate certificate : pemSslStore.certificates()) {
+			KeyVerifier.Result result = keyVerifier.matches(pemSslStore.privateKey(), certificate.getPublicKey());
+			if (result == KeyVerifier.Result.YES) {
+				return;
+			}
+		}
+		throw new IllegalStateException("Private key matches none of the certificates in the chain");
+	}
+
+	private static PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties, String alias) {
+		return new PemSslStoreDetails(properties.getType(), alias, null, properties.getCertificate(),
+				properties.getPrivateKey(), properties.getPrivateKeyPassword());
 	}
 
 	private static SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {

@@ -51,8 +51,9 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
+	@SuppressWarnings("removal")
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails) {
-		this(keyStoreDetails, trustStoreDetails, null, false);
+		this(keyStoreDetails, trustStoreDetails, null);
 	}
 
 	/**
@@ -66,26 +67,9 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 */
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias) {
-		this(keyStoreDetails, trustStoreDetails, alias, false);
-	}
-
-	/**
-	 * Create a new {@link PemSslStoreBundle} instance.
-	 * @param keyStoreDetails the key store details
-	 * @param trustStoreDetails the trust store details
-	 * @param verifyKeys whether to verify that the private key matches the public key
-	 * @since 3.2.0
-	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
-			boolean verifyKeys) {
-		this(keyStoreDetails, trustStoreDetails, null, verifyKeys);
-	}
-
-	private PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
-			boolean verifyKeys) {
 		try {
-			this.keyStore = createKeyStore("key", PemSslStore.load(keyStoreDetails), alias, verifyKeys);
-			this.trustStore = createKeyStore("trust", PemSslStore.load(trustStoreDetails), alias, verifyKeys);
+			this.keyStore = createKeyStore("key", PemSslStore.load(keyStoreDetails), alias);
+			this.trustStore = createKeyStore("trust", PemSslStore.load(trustStoreDetails), alias);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -96,13 +80,15 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param pemKeyStore the PEM key store
 	 * @param pemTrustStore the PEM trust store
-	 * @param alias the alias to use or {@code null} to use a default alias
-	 * @param verifyKeys whether to verify that the private key matches the public key
 	 * @since 3.2.0
 	 */
-	public PemSslStoreBundle(PemSslStore pemKeyStore, PemSslStore pemTrustStore, String alias, boolean verifyKeys) {
-		this.keyStore = createKeyStore("key", pemKeyStore, alias, verifyKeys);
-		this.trustStore = createKeyStore("trust", pemTrustStore, alias, verifyKeys);
+	public PemSslStoreBundle(PemSslStore pemKeyStore, PemSslStore pemTrustStore) {
+		this(pemKeyStore, pemTrustStore, null);
+	}
+
+	private PemSslStoreBundle(PemSslStore pemKeyStore, PemSslStore pemTrustStore, String alias) {
+		this.keyStore = createKeyStore("key", pemKeyStore, alias);
+		this.trustStore = createKeyStore("trust", pemTrustStore, alias);
 	}
 
 	@Override
@@ -120,7 +106,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		return this.trustStore;
 	}
 
-	private static KeyStore createKeyStore(String name, PemSslStore pemSslStore, String alias, boolean verifyKeys) {
+	private static KeyStore createKeyStore(String name, PemSslStore pemSslStore, String alias) {
 		if (pemSslStore == null) {
 			return null;
 		}
@@ -132,9 +118,6 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			List<X509Certificate> certificates = pemSslStore.certificates();
 			PrivateKey privateKey = pemSslStore.privateKey();
 			if (privateKey != null) {
-				if (verifyKeys) {
-					verifyKeys(privateKey, certificates);
-				}
 				addPrivateKey(store, privateKey, alias, pemSslStore.password(), certificates);
 			}
 			else {
@@ -152,18 +135,6 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		KeyStore store = KeyStore.getInstance(StringUtils.hasText(type) ? type : KeyStore.getDefaultType());
 		store.load(null);
 		return store;
-	}
-
-	private static void verifyKeys(PrivateKey privateKey, List<X509Certificate> certificateChain) {
-		KeyVerifier keyVerifier = new KeyVerifier();
-		// Key should match one of the certificates
-		for (X509Certificate certificate : certificateChain) {
-			KeyVerifier.Result result = keyVerifier.matches(privateKey, certificate.getPublicKey());
-			if (result == KeyVerifier.Result.YES) {
-				return;
-			}
-		}
-		throw new IllegalStateException("Private key matches none of the certificates in the chain");
 	}
 
 	private static void addPrivateKey(KeyStore keyStore, PrivateKey privateKey, String alias, String keyPassword,

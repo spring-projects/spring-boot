@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link PemSslStoreBundle}.
@@ -207,42 +206,11 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void shouldVerifyKeysIfEnabled() {
-		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
-			.forCertificate("classpath:org/springframework/boot/ssl/pem/key1.crt")
-			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem")
-			.withAlias("test-alias")
-			.withPassword("keysecret");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, true);
-		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
-	}
-
-	@Test
-	void shouldVerifyKeysIfEnabledAndCertificateChainIsUsed() {
-		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
-			.forCertificates("classpath:org/springframework/boot/ssl/pem/key2-chain.crt")
-			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key2.pem")
-			.withAlias("test-alias")
-			.withPassword("keysecret");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, true);
-		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
-	}
-
-	@Test
-	void shouldFailIfVerifyKeysIsEnabledAndKeysDontMatch() {
-		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
-			.forCertificate("classpath:org/springframework/boot/ssl/pem/key2.crt")
-			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem");
-		assertThatIllegalStateException().isThrownBy(() -> new PemSslStoreBundle(keyStoreDetails, null, true))
-			.withMessageContaining("Private key matches none of the certificates");
-	}
-
-	@Test
 	void createWithPemSslStoreCreatesInstance() {
 		List<X509Certificate> certificates = PemContent.of(CERTIFICATE).getCertificates();
 		PrivateKey privateKey = PemContent.of(PRIVATE_KEY).getPrivateKey();
 		PemSslStore pemSslStore = PemSslStore.of(certificates, privateKey);
-		PemSslStoreBundle bundle = new PemSslStoreBundle(pemSslStore, pemSslStore, null, false);
+		PemSslStoreBundle bundle = new PemSslStoreBundle(pemSslStore, pemSslStore);
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ssl"));
 		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("ssl"));
 	}

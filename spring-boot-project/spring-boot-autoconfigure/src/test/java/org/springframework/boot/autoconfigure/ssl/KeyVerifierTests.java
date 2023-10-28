@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.pem;
+package org.springframework.boot.autoconfigure.ssl;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
@@ -33,7 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.springframework.boot.ssl.pem.KeyVerifier.Result;
+import org.springframework.boot.autoconfigure.ssl.KeyVerifier.Result;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.pem;
+package org.springframework.boot.autoconfigure.ssl;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
