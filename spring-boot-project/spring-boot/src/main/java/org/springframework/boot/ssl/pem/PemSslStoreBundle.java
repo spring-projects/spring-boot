@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  */
 public class PemSslStoreBundle implements SslStoreBundle {
 
-	private static final String DEFAULT_KEY_ALIAS = "ssl";
+	private static final String DEFAULT_ALIAS = "ssl";
 
 	private final KeyStore keyStore;
 
@@ -60,40 +60,39 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
-	 * @param keyAlias the key alias to use or {@code null} to use a default alias
+	 * @param alias the alias to use or {@code null} to use a default alias
 	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
-			String keyAlias) {
-		this(keyStoreDetails, trustStoreDetails, keyAlias, null);
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias) {
+		this(keyStoreDetails, trustStoreDetails, alias, null);
 	}
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
-	 * @param keyAlias the key alias to use or {@code null} to use a default alias
-	 * @param keyPassword the password to use for the key
+	 * @param alias the alias to use or {@code null} to use a default alias
+	 * @param keyPassword the password to protect the key (if one is added)
 	 * @since 3.2.0
 	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String keyAlias,
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
 			String keyPassword) {
-		this(keyStoreDetails, trustStoreDetails, keyAlias, keyPassword, false);
+		this(keyStoreDetails, trustStoreDetails, alias, keyPassword, false);
 	}
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
-	 * @param keyAlias the key alias to use or {@code null} to use a default alias
-	 * @param keyPassword the password to use for the key
+	 * @param alias the key alias to use or {@code null} to use a default alias
+	 * @param keyPassword the password to protect the key (if one is added)
 	 * @param verifyKeys whether to verify that the private key matches the public key
 	 * @since 3.2.0
 	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String keyAlias,
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
 			String keyPassword, boolean verifyKeys) {
-		this.keyStore = createKeyStore("key", keyStoreDetails, (keyAlias != null) ? keyAlias : DEFAULT_KEY_ALIAS,
-				keyPassword, verifyKeys);
-		this.trustStore = createKeyStore("trust", trustStoreDetails, (keyAlias != null) ? keyAlias : DEFAULT_KEY_ALIAS,
+		this.keyStore = createKeyStore("key", keyStoreDetails, (alias != null) ? alias : DEFAULT_ALIAS, keyPassword,
+				verifyKeys);
+		this.trustStore = createKeyStore("trust", trustStoreDetails, (alias != null) ? alias : DEFAULT_ALIAS,
 				keyPassword, verifyKeys);
 	}
 
@@ -112,7 +111,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		return this.trustStore;
 	}
 
-	private static KeyStore createKeyStore(String name, PemSslStoreDetails details, String keyAlias, String keyPassword,
+	private static KeyStore createKeyStore(String name, PemSslStoreDetails details, String alias, String keyPassword,
 			boolean verifyKeys) {
 		if (details == null || details.isEmpty()) {
 			return null;
@@ -126,10 +125,10 @@ public class PemSslStoreBundle implements SslStoreBundle {
 				if (verifyKeys) {
 					verifyKeys(privateKey, certificates);
 				}
-				addPrivateKey(store, privateKey, keyAlias, keyPassword, certificates);
+				addPrivateKey(store, privateKey, alias, keyPassword, certificates);
 			}
 			else {
-				addCertificates(store, certificates, keyAlias);
+				addCertificates(store, certificates, alias);
 			}
 			return store;
 		}
