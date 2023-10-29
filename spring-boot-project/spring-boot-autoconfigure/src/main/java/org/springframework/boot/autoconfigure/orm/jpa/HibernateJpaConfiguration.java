@@ -82,6 +82,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private static final String PROVIDER_DISABLES_AUTOCOMMIT = "hibernate.connection.provider_disables_autocommit";
 
+	private static final String PHYSICAL_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
+
 	/**
 	 * {@code NoJtaPlatform} implementations for various Hibernate versions.
 	 */
@@ -241,10 +243,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		@Override
 		public void customize(Map<String, Object> hibernateProperties) {
 			if (this.physicalNamingStrategy != null) {
-				hibernateProperties.put("hibernate.physical_naming_strategy", this.physicalNamingStrategy);
+				hibernateProperties.put(PHYSICAL_NAMING_STRATEGY, this.physicalNamingStrategy);
 			}
 			if (this.implicitNamingStrategy != null) {
-				hibernateProperties.put("hibernate.implicit_naming_strategy", this.implicitNamingStrategy);
+				hibernateProperties.put(PHYSICAL_NAMING_STRATEGY, this.implicitNamingStrategy);
 			}
 		}
 
