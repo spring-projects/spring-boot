@@ -1425,8 +1425,9 @@ class SpringApplicationTests {
 		this.context.close();
 		Awaitility.await()
 			.atMost(Duration.ofSeconds(30))
-			.untilAsserted(() -> assertThat(getCurrentThreads())
-				.filteredOn((thread) -> thread.getName().equals("keep-alive")));
+			.untilAsserted(
+					() -> assertThat(getCurrentThreads()).filteredOn((thread) -> thread.getName().equals("keep-alive"))
+						.isEmpty());
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
