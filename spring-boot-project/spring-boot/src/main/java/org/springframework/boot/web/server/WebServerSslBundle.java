@@ -62,10 +62,12 @@ public final class WebServerSslBundle implements SslBundle {
 
 	private static SslStoreBundle createPemStoreBundle(Ssl ssl) {
 		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails(ssl.getKeyStoreType(), ssl.getCertificate(),
-				ssl.getCertificatePrivateKey());
+				ssl.getCertificatePrivateKey())
+			.withAlias(ssl.getKeyAlias());
 		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
-				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey());
-		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, ssl.getKeyAlias());
+				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey())
+			.withAlias(ssl.getKeyAlias());
+		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
 	}
 
 	private static SslStoreBundle createJksStoreBundle(Ssl ssl) {

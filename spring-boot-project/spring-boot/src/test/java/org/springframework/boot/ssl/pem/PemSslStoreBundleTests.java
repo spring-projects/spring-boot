@@ -166,6 +166,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void whenHasKeyStoreDetailsAndTrustStoreDetailsAndAlias() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
@@ -190,21 +191,26 @@ class PemSslStoreBundleTests {
 	@Test
 	void whenHasKeyStoreDetailsAndTrustStoreDetailsAndKeyPassword() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
-			.withPrivateKey("classpath:test-key.pem");
+			.withPrivateKey("classpath:test-key.pem")
+			.withAlias("ksa")
+			.withPassword("kss");
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
-			.withPrivateKey("classpath:test-key.pem");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, "test-alias", "keysecret");
-		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
-		assertThat(bundle.getTrustStore())
-			.satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
+			.withPrivateKey("classpath:test-key.pem")
+			.withAlias("tsa")
+			.withPassword("tss");
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ksa", "kss".toCharArray()));
+		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("tsa", "tss".toCharArray()));
 	}
 
 	@Test
 	void shouldVerifyKeysIfEnabled() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
 			.forCertificate("classpath:org/springframework/boot/ssl/pem/key1.crt")
-			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, "test-alias", "keysecret", true);
+			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem")
+			.withAlias("test-alias")
+			.withPassword("keysecret");
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, true);
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
 	}
 
@@ -212,8 +218,10 @@ class PemSslStoreBundleTests {
 	void shouldVerifyKeysIfEnabledAndCertificateChainIsUsed() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
 			.forCertificate("classpath:org/springframework/boot/ssl/pem/key2-chain.crt")
-			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key2.pem");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, "test-alias", "keysecret", true);
+			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key2.pem")
+			.withAlias("test-alias")
+			.withPassword("keysecret");
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, null, true);
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
 	}
 
@@ -222,8 +230,7 @@ class PemSslStoreBundleTests {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
 			.forCertificate("classpath:org/springframework/boot/ssl/pem/key2.crt")
 			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem");
-		assertThatIllegalStateException()
-			.isThrownBy(() -> new PemSslStoreBundle(keyStoreDetails, null, null, null, true))
+		assertThatIllegalStateException().isThrownBy(() -> new PemSslStoreBundle(keyStoreDetails, null, true))
 			.withMessageContaining("Private key matches none of the certificates");
 	}
 

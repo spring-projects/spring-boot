@@ -107,10 +107,11 @@ public final class PropertiesSslBundle implements SslBundle {
 	}
 
 	private static SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
-		PemSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
-		PemSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
-		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, properties.getKey().getAlias(), null,
-				properties.isVerifyKeys());
+		PemSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore())
+			.withAlias(properties.getKey().getAlias());
+		PemSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore())
+			.withAlias(properties.getKey().getAlias());
+		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, properties.isVerifyKeys());
 	}
 
 	private static PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {

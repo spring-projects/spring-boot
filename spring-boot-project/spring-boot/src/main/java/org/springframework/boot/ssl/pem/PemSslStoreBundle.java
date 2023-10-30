@@ -26,7 +26,6 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.springframework.boot.ssl.SslStoreBundle;
-import org.springframework.boot.ssl.pem.KeyVerifier.Result;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -61,39 +60,31 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 * @param alias the alias to use or {@code null} to use a default alias
+	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
+	 * {@link PemSslStoreDetails#alias()} in the {@code keyStoreDetails} and
+	 * {@code trustStoreDetails}
 	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias) {
-		this(keyStoreDetails, trustStoreDetails, alias, null);
+		this(keyStoreDetails, trustStoreDetails, alias, false);
 	}
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
-	 * @param alias the alias to use or {@code null} to use a default alias
-	 * @param keyPassword the password to protect the key (if one is added)
-	 * @since 3.2.0
-	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
-			String keyPassword) {
-		this(keyStoreDetails, trustStoreDetails, alias, keyPassword, false);
-	}
-
-	/**
-	 * Create a new {@link PemSslStoreBundle} instance.
-	 * @param keyStoreDetails the key store details
-	 * @param trustStoreDetails the trust store details
-	 * @param alias the key alias to use or {@code null} to use a default alias
-	 * @param keyPassword the password to protect the key (if one is added)
 	 * @param verifyKeys whether to verify that the private key matches the public key
 	 * @since 3.2.0
 	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
-			String keyPassword, boolean verifyKeys) {
-		this.keyStore = createKeyStore("key", keyStoreDetails, (alias != null) ? alias : DEFAULT_ALIAS, keyPassword,
-				verifyKeys);
-		this.trustStore = createKeyStore("trust", trustStoreDetails, (alias != null) ? alias : DEFAULT_ALIAS,
-				keyPassword, verifyKeys);
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
+			boolean verifyKeys) {
+		this(keyStoreDetails, trustStoreDetails, null, verifyKeys);
+	}
+
+	private PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
+			boolean verifyKeys) {
+		this.keyStore = createKeyStore("key", keyStoreDetails, alias, verifyKeys);
+		this.trustStore = createKeyStore("trust", trustStoreDetails, alias, verifyKeys);
 	}
 
 	@Override
@@ -111,13 +102,14 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		return this.trustStore;
 	}
 
-	private static KeyStore createKeyStore(String name, PemSslStoreDetails details, String alias, String keyPassword,
-			boolean verifyKeys) {
+	private static KeyStore createKeyStore(String name, PemSslStoreDetails details, String alias, boolean verifyKeys) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
 		try {
 			Assert.notNull(details.certificate(), "Certificate content must not be null");
+			alias = (details.alias() != null) ? details.alias() : alias;
+			alias = (alias != null) ? alias : DEFAULT_ALIAS;
 			KeyStore store = createKeyStore(details);
 			X509Certificate[] certificates = loadCertificates(details);
 			PrivateKey privateKey = loadPrivateKey(details);
@@ -125,7 +117,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 				if (verifyKeys) {
 					verifyKeys(privateKey, certificates);
 				}
-				addPrivateKey(store, privateKey, alias, keyPassword, certificates);
+				addPrivateKey(store, privateKey, alias, details.password(), certificates);
 			}
 			else {
 				addCertificates(store, certificates, alias);
