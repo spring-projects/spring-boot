@@ -27,6 +27,9 @@ The main differences are:
 * There is no lazy class loading, everything shipped in the executables will be loaded in memory on startup.
 * There are some limitations around some aspects of Java applications that are not fully supported.
 
+On top of those differences, Spring uses a process called <<native-image#native-image.introducing-graalvm-native-images.understanding-aot-processing, Spring Ahead-of-Time processing>>, which imposes further limitations.
+Please make sure to read at least the beginning of the next section to learn about those.
+
 TIP: The {graal-native-image-docs}/metadata/Compatibility/[Native Image Compatibility Guide] section of the GraalVM reference documentation provides more details about GraalVM limitations.
 
 
@@ -39,9 +42,8 @@ In fact, the concept of Spring Boot auto-configuration depends heavily on reacti
 Although it would be possible to tell GraalVM about these dynamic aspects of the application, doing so would undo most of the benefit of static analysis.
 So instead, when using Spring Boot to create native images, a closed-world is assumed and the dynamic aspects of the application are restricted.
 
-A closed-world assumption implies the following restrictions:
+A closed-world assumption implies, besides <<native-image#native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments, the limitations created by GraalVM itself>>, the following restrictions:
 
-* The classpath is fixed and fully defined at build time
 * The beans defined in your application cannot change at runtime, meaning:
 - The Spring `@Profile` annotation and profile-specific configuration <<howto#howto.aot.conditions,have limitations>>.
 - Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
