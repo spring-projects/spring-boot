@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.boot.testsupport.compiler.TestCompiler.TestCompilationTask;
 import org.springframework.util.Assert;
@@ -56,19 +59,39 @@ public class TestProject {
 	 * Contains copies of the original source so we can modify it safely to test
 	 * incremental builds.
 	 */
-	private File sourceDirectory;
+	private final File sourceDirectory;
 
-	private TestCompiler compiler;
+	private final TestCompiler compiler;
 
-	private Set<File> sourceFiles = new LinkedHashSet<>();
+	private final Set<File> sourceFiles = new LinkedHashSet<>();
+
+	private final File classPathDirectory;
 
 	public TestProject(File tempDirectory, Class<?>... classes) throws IOException {
 		this.sourceDirectory = new File(tempDirectory, "src");
-		this.compiler = new TestCompiler(new File(tempDirectory, "build")) {
+		File outputDirectory = new File(tempDirectory, "build");
+		File testClasses = new BuildOutput(TestProject.class).getTestClassesLocation();
+		this.classPathDirectory = new File(tempDirectory, "classPath");
+		FileSystemUtils.copyRecursively(testClasses, this.classPathDirectory);
+		this.compiler = new TestCompiler(outputDirectory) {
 
 			@Override
 			protected File getSourceDirectory() {
 				return TestProject.this.sourceDirectory;
+			}
+
+			@Override
+			protected Iterable<? extends File> prepareClassPath(Iterable<? extends File> classPath) {
+				List<File> updatedClassPath = new ArrayList<>();
+				for (File entry : classPath) {
+					if (!entry.equals(testClasses)) {
+						updatedClassPath.add(entry);
+					}
+					else {
+						updatedClassPath.add(TestProject.this.classPathDirectory);
+					}
+				}
+				return updatedClassPath;
 			}
 
 		};
@@ -143,13 +166,17 @@ public class TestProject {
 	}
 
 	/**
-	 * Delete source file for given class from project.
+	 * Delete from the project the source {@code .java} file and any compiled
+	 * {@code .class} file for the given class.
 	 * @param type the class to delete
 	 */
 	public void delete(Class<?> type) {
 		File target = getSourceFile(type);
 		target.delete();
 		this.sourceFiles.remove(target);
+		String fileName = type.getName().replace(".", "/") + ".class";
+		new File(this.compiler.getOutputLocation(), fileName).delete();
+		new File(this.classPathDirectory, fileName).delete();
 	}
 
 	/**
