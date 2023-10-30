@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSe
 import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.KeyValueCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,8 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.CollectionUtils;
 
@@ -63,6 +66,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @author HaiTao Zhang
  * @author Mushtaq Ahmed
  * @author Roman Golovin
+ * @author Yan Kardziyaka
  */
 @Configuration(proxyBeanMethods = false)
 class OAuth2ResourceServerJwtConfiguration {
@@ -169,6 +173,33 @@ class OAuth2ResourceServerJwtConfiguration {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(withDefaults()));
 			return http.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(JwtAuthenticationConverter.class)
+	static class JwtConverterConfiguration {
+
+		private final OAuth2ResourceServerProperties.Jwt properties;
+
+		JwtConverterConfiguration(OAuth2ResourceServerProperties properties) {
+			this.properties = properties.getJwt();
+		}
+
+		@Bean
+		JwtAuthenticationConverter getJwtAuthenticationConverter() {
+			JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(this.properties.getAuthorityPrefix()).to(grantedAuthoritiesConverter::setAuthorityPrefix);
+			map.from(this.properties.getAuthoritiesClaimDelimiter())
+				.to(grantedAuthoritiesConverter::setAuthoritiesClaimDelimiter);
+			map.from(this.properties.getAuthoritiesClaimName())
+				.to(grantedAuthoritiesConverter::setAuthoritiesClaimName);
+			JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+			map.from(this.properties.getPrincipalClaimName()).to(jwtAuthenticationConverter::setPrincipalClaimName);
+			jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+			return jwtAuthenticationConverter;
 		}
 
 	}
