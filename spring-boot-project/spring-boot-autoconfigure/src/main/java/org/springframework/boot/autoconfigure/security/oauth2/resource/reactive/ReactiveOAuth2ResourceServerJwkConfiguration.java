@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.KeyValueCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,9 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder.JwkSetUriReactiveJwtDecoderBuilder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.util.CollectionUtils;
 
@@ -62,6 +66,7 @@ import org.springframework.util.CollectionUtils;
  * @author Anastasiia Losieva
  * @author Mushtaq Ahmed
  * @author Roman Golovin
+ * @author Yan Kardziyaka
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -157,6 +162,34 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 						getValidators(JwtValidators.createDefaultWithIssuer(this.properties.getIssuerUri())));
 				return jwtDecoder;
 			});
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(ReactiveJwtAuthenticationConverter.class)
+	static class JwtConverterConfiguration {
+
+		private final OAuth2ResourceServerProperties.Jwt properties;
+
+		JwtConverterConfiguration(OAuth2ResourceServerProperties properties) {
+			this.properties = properties.getJwt();
+		}
+
+		@Bean
+		ReactiveJwtAuthenticationConverter reactiveJwtAuthenticationConverter() {
+			JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(this.properties.getAuthorityPrefix()).to(grantedAuthoritiesConverter::setAuthorityPrefix);
+			map.from(this.properties.getAuthoritiesClaimDelimiter())
+				.to(grantedAuthoritiesConverter::setAuthoritiesClaimDelimiter);
+			map.from(this.properties.getAuthoritiesClaimName())
+				.to(grantedAuthoritiesConverter::setAuthoritiesClaimName);
+			ReactiveJwtAuthenticationConverter jwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
+			map.from(this.properties.getPrincipalClaimName()).to(jwtAuthenticationConverter::setPrincipalClaimName);
+			jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
+					new ReactiveJwtGrantedAuthoritiesConverterAdapter(grantedAuthoritiesConverter));
+			return jwtAuthenticationConverter;
 		}
 
 	}

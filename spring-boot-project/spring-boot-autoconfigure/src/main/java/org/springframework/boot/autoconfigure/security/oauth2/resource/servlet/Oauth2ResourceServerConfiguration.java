@@ -32,7 +32,8 @@ class Oauth2ResourceServerConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JwtDecoder.class)
 	@Import({ OAuth2ResourceServerJwtConfiguration.JwtDecoderConfiguration.class,
-			OAuth2ResourceServerJwtConfiguration.OAuth2SecurityFilterChainConfiguration.class })
+			OAuth2ResourceServerJwtConfiguration.OAuth2SecurityFilterChainConfiguration.class,
+			OAuth2ResourceServerJwtConfiguration.JwtConverterConfiguration.class })
 	static class JwtConfiguration {
 
 	}

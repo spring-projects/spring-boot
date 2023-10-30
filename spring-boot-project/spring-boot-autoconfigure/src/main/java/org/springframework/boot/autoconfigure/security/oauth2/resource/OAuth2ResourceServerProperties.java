@@ -26,6 +26,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -35,6 +36,7 @@ import org.springframework.util.StreamUtils;
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  * @author Mushtaq Ahmed
+ * @author Yan Kardziyaka
  * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
@@ -80,6 +82,28 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private List<String> audiences = new ArrayList<>();
 
+		/**
+		 * Prefix to use for {@link GrantedAuthority authorities} mapped from JWT.
+		 */
+		private String authorityPrefix;
+
+		/**
+		 * Regex to use for splitting the value of the authorities claim into
+		 * {@link GrantedAuthority authorities}.
+		 */
+		private String authoritiesClaimDelimiter;
+
+		/**
+		 * Name of token claim to use for mapping {@link GrantedAuthority authorities}
+		 * from JWT.
+		 */
+		private String authoritiesClaimName;
+
+		/**
+		 * JWT principal claim name.
+		 */
+		private String principalClaimName;
+
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
@@ -118,6 +142,38 @@ public class OAuth2ResourceServerProperties {
 
 		public void setAudiences(List<String> audiences) {
 			this.audiences = audiences;
+		}
+
+		public String getAuthorityPrefix() {
+			return this.authorityPrefix;
+		}
+
+		public void setAuthorityPrefix(String authorityPrefix) {
+			this.authorityPrefix = authorityPrefix;
+		}
+
+		public String getAuthoritiesClaimDelimiter() {
+			return this.authoritiesClaimDelimiter;
+		}
+
+		public void setAuthoritiesClaimDelimiter(String authoritiesClaimDelimiter) {
+			this.authoritiesClaimDelimiter = authoritiesClaimDelimiter;
+		}
+
+		public String getAuthoritiesClaimName() {
+			return this.authoritiesClaimName;
+		}
+
+		public void setAuthoritiesClaimName(String authoritiesClaimName) {
+			this.authoritiesClaimName = authoritiesClaimName;
+		}
+
+		public String getPrincipalClaimName() {
+			return this.principalClaimName;
+		}
+
+		public void setPrincipalClaimName(String principalClaimName) {
+			this.principalClaimName = principalClaimName;
 		}
 
 		public String readPublicKey() throws IOException {

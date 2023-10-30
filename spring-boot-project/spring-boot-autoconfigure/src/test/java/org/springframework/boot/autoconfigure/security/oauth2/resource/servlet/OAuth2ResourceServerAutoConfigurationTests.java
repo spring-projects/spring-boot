@@ -38,9 +38,12 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InOrder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.JwtConverterCustomizationsArgumentsProvider;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -51,9 +54,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -64,6 +69,7 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
@@ -84,6 +90,7 @@ import static org.mockito.Mockito.mock;
  * @author HaiTao Zhang
  * @author Mushtaq Ahmed
  * @author Roman Golovin
+ * @author Yan Kardziyaka
  */
 class OAuth2ResourceServerAutoConfigurationTests {
 
@@ -640,6 +647,45 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(SecurityFilterChain.class));
 	}
 
+	@ParameterizedTest(name = "{0}")
+	@ArgumentsSource(JwtConverterCustomizationsArgumentsProvider.class)
+	void autoConfigurationShouldConfigureResourceServerWithJwtConverterCustomizations(String[] properties, Jwt jwt,
+			String expectedPrincipal, String[] expectedAuthorities) {
+		this.contextRunner.withPropertyValues(properties).run((context) -> {
+			JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
+			AbstractAuthenticationToken token = converter.convert(jwt);
+			assertThat(token).isNotNull().extracting(AbstractAuthenticationToken::getName).isEqualTo(expectedPrincipal);
+			assertThat(token.getAuthorities()).extracting(GrantedAuthority::getAuthority)
+				.containsExactlyInAnyOrder(expectedAuthorities);
+			assertThat(context).hasSingleBean(JwtDecoder.class);
+			assertThat(getBearerTokenFilter(context)).isNotNull();
+		});
+	}
+
+	@Test
+	void jwtAuthenticationConverterByJwtConfigIsConditionalOnMissingBean() {
+		String propertiesPrincipalClaim = "principal_from_properties";
+		String propertiesPrincipalValue = "from_props";
+		String userConfigPrincipalValue = "from_user_config";
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.principal-claim-name=" + propertiesPrincipalClaim)
+			.withUserConfiguration(CustomJwtConverterConfig.class)
+			.run((context) -> {
+				JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
+				Jwt jwt = jwt().claim(propertiesPrincipalClaim, propertiesPrincipalValue)
+					.claim(CustomJwtConverterConfig.PRINCIPAL_CLAIM, userConfigPrincipalValue)
+					.build();
+				AbstractAuthenticationToken token = converter.convert(jwt);
+				assertThat(token).isNotNull()
+					.extracting(AbstractAuthenticationToken::getName)
+					.isEqualTo(userConfigPrincipalValue)
+					.isNotEqualTo(propertiesPrincipalValue);
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				assertThat(getBearerTokenFilter(context)).isNotNull();
+			});
+	}
+
 	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
@@ -791,6 +837,20 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		@Bean
 		JwtClaimValidator<String> customJwtClaimValidator() {
 			return new JwtClaimValidator<>("custom_claim", "custom_claim_value"::equals);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJwtConverterConfig {
+
+		static String PRINCIPAL_CLAIM = "principal_from_user_configuration";
+
+		@Bean
+		JwtAuthenticationConverter customJwtAuthenticationConverter() {
+			JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+			converter.setPrincipalClaimName(PRINCIPAL_CLAIM);
+			return converter;
 		}
 
 	}
