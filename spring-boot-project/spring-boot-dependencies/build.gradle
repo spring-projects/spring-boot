@@ -823,11 +823,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.23.0") {
-		prohibit {
-			versionRange "4.23.1"
-			because "it contains a regression (https://github.com/liquibase/liquibase/issues/4684)"
-		}
+	library("Liquibase", "4.24.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",

@@ -266,8 +266,12 @@ class LiquibaseAutoConfigurationTests {
 
 	@Test
 	void overrideClearChecksums() {
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase" + UUID.randomUUID();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.liquibase.clear-checksums:true")
+			.withPropertyValues("spring.liquibase.url:" + jdbcUrl)
+			.run((context) -> assertThat(context).hasNotFailed());
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.clear-checksums:true", "spring.liquibase.url:" + jdbcUrl)
 			.run(assertLiquibase((liquibase) -> assertThat(liquibase.isClearCheckSums()).isTrue()));
 	}
 
