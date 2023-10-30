@@ -230,7 +230,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 include::code:MyRandomPortWebTestClientTests[]
 
-TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
+TIP: `WebTestClient` can also used with a <<features#features.testing.spring-boot-applications.with-mock-environment, mock environment>>, removing the need for a running server, by annotating your test class with `@AutoConfigureWebTestClient`.
 
 This setup requires `spring-webflux` on the classpath.
 If you can not or will not add webflux, Spring Boot also provides a `TestRestTemplate` facility:
