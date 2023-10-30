@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ package org.springframework.boot.docs.web.reactive.webflux.errorhandling;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -34,9 +35,11 @@ import org.springframework.web.reactive.function.server.ServerResponse.BodyBuild
 @Component
 public class MyErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-	public MyErrorWebExceptionHandler(ErrorAttributes errorAttributes, Resources resources,
-			ApplicationContext applicationContext) {
-		super(errorAttributes, resources, applicationContext);
+	public MyErrorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties webProperties,
+			ApplicationContext applicationContext, ServerCodecConfigurer serverCodecConfigurer) {
+		super(errorAttributes, webProperties.getResources(), applicationContext);
+		setMessageReaders(serverCodecConfigurer.getReaders());
+		setMessageWriters(serverCodecConfigurer.getWriters());
 	}
 
 	@Override
