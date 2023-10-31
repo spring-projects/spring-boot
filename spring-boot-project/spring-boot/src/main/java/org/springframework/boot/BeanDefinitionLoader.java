@@ -265,7 +265,7 @@ class BeanDefinitionLoader {
 				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
 				String className = StringUtils.stripFilenameExtension(resource.getFilename());
-				load(Class.forName(source.toString() + "." + className));
+				load(Class.forName(source + "." + className));
 				break;
 			}
 		}
