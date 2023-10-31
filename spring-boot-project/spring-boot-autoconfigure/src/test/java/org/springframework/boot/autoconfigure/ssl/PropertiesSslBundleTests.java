@@ -66,10 +66,10 @@ class PropertiesSslBundleTests {
 		Certificate certificate = sslBundle.getStores().getKeyStore().getCertificate("alias");
 		assertThat(certificate).isNotNull();
 		assertThat(certificate.getType()).isEqualTo("X.509");
-		Key key = sslBundle.getStores().getKeyStore().getKey("alias", null);
+		Key key = sslBundle.getStores().getKeyStore().getKey("alias", "secret".toCharArray());
 		assertThat(key).isNotNull();
 		assertThat(key.getAlgorithm()).isEqualTo("RSA");
-		certificate = sslBundle.getStores().getTrustStore().getCertificate("alias");
+		certificate = sslBundle.getStores().getTrustStore().getCertificate("ssl");
 		assertThat(certificate).isNotNull();
 		assertThat(certificate.getType()).isEqualTo("X.509");
 	}

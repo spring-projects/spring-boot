@@ -65,8 +65,7 @@ public final class WebServerSslBundle implements SslBundle {
 				ssl.getCertificatePrivateKey())
 			.withAlias(ssl.getKeyAlias());
 		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
-				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey())
-			.withAlias(ssl.getKeyAlias());
+				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey());
 		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
 	}
 
