@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,13 +64,14 @@ public class JsonStream {
 	 */
 	public <T> void get(InputStream content, Class<T> type, Consumer<T> consumer) throws IOException {
 		JsonFactory jsonFactory = this.objectMapper.getFactory();
-		JsonParser parser = jsonFactory.createParser(content);
-		while (!parser.isClosed()) {
-			JsonToken token = parser.nextToken();
-			if (token != null && token != JsonToken.END_OBJECT) {
-				T node = read(parser, type);
-				if (node != null) {
-					consumer.accept(node);
+		try (JsonParser parser = jsonFactory.createParser(content)) {
+			while (!parser.isClosed()) {
+				JsonToken token = parser.nextToken();
+				if (token != null && token != JsonToken.END_OBJECT) {
+					T node = read(parser, type);
+					if (node != null) {
+						consumer.accept(node);
+					}
 				}
 			}
 		}
