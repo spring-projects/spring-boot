@@ -17,6 +17,9 @@
 package org.springframework.boot.ssl.pem;
 
 import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -94,7 +97,7 @@ class PemSslStoreBundleTests {
 	private static final char[] EMPTY_KEY_PASSWORD = new char[] {};
 
 	@Test
-	void whenNullStores() {
+	void createWithDetailsWhenNullStores() {
 		PemSslStoreDetails keyStoreDetails = null;
 		PemSslStoreDetails trustStoreDetails = null;
 		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
@@ -104,7 +107,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenStoresHaveNoValues() {
+	void createWithDetailsWhenStoresHaveNoValues() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(null);
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
 		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
@@ -114,7 +117,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenHasKeyStoreDetailsCertAndKey() {
+	void createWithDetailsWhenHasKeyStoreDetailsCertAndKey() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
 		PemSslStoreDetails trustStoreDetails = null;
@@ -124,7 +127,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenHasKeyStoreDetailsCertAndEncryptedKey() {
+	void createWithDetailsWhenHasKeyStoreDetailsCertAndEncryptedKey() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:ssl/pkcs8/key-rsa-encrypted.pem")
 			.withPrivateKeyPassword("test");
@@ -135,17 +138,17 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenHasKeyStoreDetailsAndTrustStoreDetailsWithoutKey() {
+	void createWithDetailsWhenHasKeyStoreDetailsAndTrustStoreDetailsWithoutKey() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem");
 		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ssl"));
-		assertThat(bundle.getTrustStore()).satisfies(storeContainingCert("ssl-0"));
+		assertThat(bundle.getTrustStore()).satisfies(storeContainingCert("ssl"));
 	}
 
 	@Test
-	void whenHasKeyStoreDetailsAndTrustStoreDetails() {
+	void createWithDetailsWhenHasKeyStoreDetailsAndTrustStoreDetails() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
@@ -156,7 +159,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenHasEmbeddedKeyStoreDetailsAndTrustStoreDetails() {
+	void createWithDetailsWhenHasEmbeddedKeyStoreDetailsAndTrustStoreDetails() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(CERTIFICATE).withPrivateKey(PRIVATE_KEY);
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(CERTIFICATE)
 			.withPrivateKey(PRIVATE_KEY);
@@ -167,7 +170,7 @@ class PemSslStoreBundleTests {
 
 	@Test
 	@SuppressWarnings("removal")
-	void whenHasKeyStoreDetailsAndTrustStoreDetailsAndAlias() {
+	void createWithDetailsWhenHasKeyStoreDetailsAndTrustStoreDetailsAndAlias() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
@@ -178,7 +181,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenHasStoreType() {
+	void createWithDetailsWhenHasStoreType() {
 		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails("PKCS12", "classpath:test-cert.pem",
 				"classpath:test-key.pem");
 		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails("PKCS12", "classpath:test-cert.pem",
@@ -189,7 +192,7 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	void whenHasKeyStoreDetailsAndTrustStoreDetailsAndKeyPassword() {
+	void createWithDetailsWhenHasKeyStoreDetailsAndTrustStoreDetailsAndKeyPassword() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem")
 			.withAlias("ksa")
@@ -217,7 +220,7 @@ class PemSslStoreBundleTests {
 	@Test
 	void shouldVerifyKeysIfEnabledAndCertificateChainIsUsed() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails
-			.forCertificate("classpath:org/springframework/boot/ssl/pem/key2-chain.crt")
+			.forCertificates("classpath:org/springframework/boot/ssl/pem/key2-chain.crt")
 			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key2.pem")
 			.withAlias("test-alias")
 			.withPassword("keysecret");
@@ -232,6 +235,16 @@ class PemSslStoreBundleTests {
 			.withPrivateKey("classpath:org/springframework/boot/ssl/pem/key1.pem");
 		assertThatIllegalStateException().isThrownBy(() -> new PemSslStoreBundle(keyStoreDetails, null, true))
 			.withMessageContaining("Private key matches none of the certificates");
+	}
+
+	@Test
+	void createWithPemSslStoreCreatesInstance() {
+		List<X509Certificate> certificates = PemContent.of(CERTIFICATE).getCertificates();
+		PrivateKey privateKey = PemContent.of(PRIVATE_KEY).getPrivateKey();
+		PemSslStore pemSslStore = PemSslStore.of(certificates, privateKey);
+		PemSslStoreBundle bundle = new PemSslStoreBundle(pemSslStore, pemSslStore, null, false);
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ssl"));
+		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("ssl"));
 	}
 
 	private Consumer<KeyStore> storeContainingCert(String keyAlias) {

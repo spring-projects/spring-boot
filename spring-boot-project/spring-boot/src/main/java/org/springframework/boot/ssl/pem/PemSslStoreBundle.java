@@ -17,6 +17,7 @@
 package org.springframework.boot.ssl.pem;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +28,6 @@ import java.util.List;
 
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -52,7 +52,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails) {
-		this(keyStoreDetails, trustStoreDetails, null);
+		this(keyStoreDetails, trustStoreDetails, null, false);
 	}
 
 	/**
@@ -83,8 +83,26 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias,
 			boolean verifyKeys) {
-		this.keyStore = createKeyStore("key", keyStoreDetails, alias, verifyKeys);
-		this.trustStore = createKeyStore("trust", trustStoreDetails, alias, verifyKeys);
+		try {
+			this.keyStore = createKeyStore("key", PemSslStore.load(keyStoreDetails), alias, verifyKeys);
+			this.trustStore = createKeyStore("trust", PemSslStore.load(trustStoreDetails), alias, verifyKeys);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	/**
+	 * Create a new {@link PemSslStoreBundle} instance.
+	 * @param pemKeyStore the PEM key store
+	 * @param pemTrustStore the PEM trust store
+	 * @param alias the alias to use or {@code null} to use a default alias
+	 * @param verifyKeys whether to verify that the private key matches the public key
+	 * @since 3.2.0
+	 */
+	public PemSslStoreBundle(PemSslStore pemKeyStore, PemSslStore pemTrustStore, String alias, boolean verifyKeys) {
+		this.keyStore = createKeyStore("key", pemKeyStore, alias, verifyKeys);
+		this.trustStore = createKeyStore("trust", pemTrustStore, alias, verifyKeys);
 	}
 
 	@Override
@@ -102,22 +120,22 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		return this.trustStore;
 	}
 
-	private static KeyStore createKeyStore(String name, PemSslStoreDetails details, String alias, boolean verifyKeys) {
-		if (details == null || details.isEmpty()) {
+	private static KeyStore createKeyStore(String name, PemSslStore pemSslStore, String alias, boolean verifyKeys) {
+		if (pemSslStore == null) {
 			return null;
 		}
 		try {
-			Assert.notNull(details.certificate(), "Certificate content must not be null");
-			alias = (details.alias() != null) ? details.alias() : alias;
+			Assert.notEmpty(pemSslStore.certificates(), "Certificates must not be empty");
+			alias = (pemSslStore.alias() != null) ? pemSslStore.alias() : alias;
 			alias = (alias != null) ? alias : DEFAULT_ALIAS;
-			KeyStore store = createKeyStore(details);
-			X509Certificate[] certificates = loadCertificates(details);
-			PrivateKey privateKey = loadPrivateKey(details);
+			KeyStore store = createKeyStore(pemSslStore.type());
+			List<X509Certificate> certificates = pemSslStore.certificates();
+			PrivateKey privateKey = pemSslStore.privateKey();
 			if (privateKey != null) {
 				if (verifyKeys) {
 					verifyKeys(privateKey, certificates);
 				}
-				addPrivateKey(store, privateKey, alias, details.password(), certificates);
+				addPrivateKey(store, privateKey, alias, pemSslStore.password(), certificates);
 			}
 			else {
 				addCertificates(store, certificates, alias);
@@ -129,50 +147,37 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		}
 	}
 
-	private static void verifyKeys(PrivateKey privateKey, X509Certificate[] certificates) {
-		KeyVerifier keyVerifier = new KeyVerifier();
-		// Key should match one of the certificates
-		for (X509Certificate certificate : certificates) {
-			Result result = keyVerifier.matches(privateKey, certificate.getPublicKey());
-			if (result == Result.YES) {
-				return;
-			}
-		}
-		throw new IllegalStateException("Private key matches none of the certificates");
-	}
-
-	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) throws IOException {
-		PemContent pemContent = PemContent.load(details.privateKey());
-		if (pemContent == null) {
-			return null;
-		}
-		return pemContent.getPrivateKey(details.privateKeyPassword());
-	}
-
-	private static X509Certificate[] loadCertificates(PemSslStoreDetails details) throws IOException {
-		PemContent pemContent = PemContent.load(details.certificate());
-		List<X509Certificate> certificates = pemContent.getCertificates();
-		Assert.state(!CollectionUtils.isEmpty(certificates), "Loaded certificates are empty");
-		return certificates.toArray(X509Certificate[]::new);
-	}
-
-	private static KeyStore createKeyStore(PemSslStoreDetails details)
+	private static KeyStore createKeyStore(String type)
 			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-		String type = StringUtils.hasText(details.type()) ? details.type() : KeyStore.getDefaultType();
-		KeyStore store = KeyStore.getInstance(type);
+		KeyStore store = KeyStore.getInstance(StringUtils.hasText(type) ? type : KeyStore.getDefaultType());
 		store.load(null);
 		return store;
 	}
 
-	private static void addPrivateKey(KeyStore keyStore, PrivateKey privateKey, String alias, String keyPassword,
-			X509Certificate[] certificates) throws KeyStoreException {
-		keyStore.setKeyEntry(alias, privateKey, (keyPassword != null) ? keyPassword.toCharArray() : null, certificates);
+	private static void verifyKeys(PrivateKey privateKey, List<X509Certificate> certificateChain) {
+		KeyVerifier keyVerifier = new KeyVerifier();
+		// Key should match one of the certificates
+		for (X509Certificate certificate : certificateChain) {
+			KeyVerifier.Result result = keyVerifier.matches(privateKey, certificate.getPublicKey());
+			if (result == KeyVerifier.Result.YES) {
+				return;
+			}
+		}
+		throw new IllegalStateException("Private key matches none of the certificates in the chain");
 	}
 
-	private static void addCertificates(KeyStore keyStore, X509Certificate[] certificates, String alias)
+	private static void addPrivateKey(KeyStore keyStore, PrivateKey privateKey, String alias, String keyPassword,
+			List<X509Certificate> certificateChain) throws KeyStoreException {
+		keyStore.setKeyEntry(alias, privateKey, (keyPassword != null) ? keyPassword.toCharArray() : null,
+				certificateChain.toArray(X509Certificate[]::new));
+	}
+
+	private static void addCertificates(KeyStore keyStore, List<X509Certificate> certificates, String alias)
 			throws KeyStoreException {
-		for (int index = 0; index < certificates.length; index++) {
-			keyStore.setCertificateEntry(alias + "-" + index, certificates[index]);
+		for (int index = 0; index < certificates.size(); index++) {
+			String entryAlias = alias + ((certificates.size() == 1) ? "" : "-" + index);
+			X509Certificate certificate = certificates.get(index);
+			keyStore.setCertificateEntry(entryAlias, certificate);
 		}
 	}
 
