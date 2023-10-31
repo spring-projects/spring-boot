@@ -67,7 +67,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -125,8 +124,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 		allEndpoints.addAll(webEndpoints);
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		return new CloudFoundryWebEndpointServletHandlerMapping(new EndpointMapping("/cloudfoundryapplication"),
-				webEndpoints, endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
+		return new CloudFoundryWebEndpointServletHandlerMapping(new EndpointMapping(BASE_PATH), webEndpoints,
+				endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
 	private CloudFoundrySecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
@@ -189,9 +188,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 				.forEach((path) -> requestMatchers.add(new AntPathRequestMatcher(path + "/**")));
 			requestMatchers.add(new AntPathRequestMatcher(BASE_PATH));
 			requestMatchers.add(new AntPathRequestMatcher(BASE_PATH + "/"));
-			if (!CollectionUtils.isEmpty(requestMatchers)) {
-				web.ignoring().requestMatchers(new OrRequestMatcher(requestMatchers));
-			}
+			web.ignoring().requestMatchers(new OrRequestMatcher(requestMatchers));
 		}
 
 	}
