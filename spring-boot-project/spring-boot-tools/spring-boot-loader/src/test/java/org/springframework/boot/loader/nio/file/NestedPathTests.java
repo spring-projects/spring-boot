@@ -78,7 +78,7 @@ class NestedPathTests {
 	}
 
 	@Test
-	void isAbsoluteRerturnsTrue() {
+	void isAbsoluteReturnsTrue() {
 		assertThat(this.path.isAbsolute()).isTrue();
 	}
 

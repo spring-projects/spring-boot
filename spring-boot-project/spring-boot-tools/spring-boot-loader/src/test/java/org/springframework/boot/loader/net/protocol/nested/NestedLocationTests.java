@@ -82,7 +82,7 @@ class NestedLocationTests {
 	}
 
 	@Test
-	void fromUrlWhenNoSeparatorThrowsExceptiuon() {
+	void fromUrlWhenNoSeparatorThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> NestedLocation.fromUrl(new URL("nested:test.jar!nested.jar")))
 			.withMessageContaining("'path' must contain '/!'");
@@ -110,7 +110,7 @@ class NestedLocationTests {
 	}
 
 	@Test
-	void fromUriWhenNoSeparatorThrowsExceptiuon() {
+	void fromUriWhenNoSeparatorThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> NestedLocation.fromUri(new URI("nested:test.jar!nested.jar")))
 			.withMessageContaining("'path' must contain '/!'");

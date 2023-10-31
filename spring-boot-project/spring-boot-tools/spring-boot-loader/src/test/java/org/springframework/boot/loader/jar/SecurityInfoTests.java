@@ -55,7 +55,7 @@ class SecurityInfoTests {
 	}
 
 	@Test
-	void getWhenHasSignatureFileButNoSecuityMaterialReturnsNone() throws Exception {
+	void getWhenHasSignatureFileButNoSecurityMaterialReturnsNone() throws Exception {
 		File file = new File(this.temp, "test.jar");
 		TestJar.create(file, false, true);
 		try (ZipContent content = ZipContent.open(file.toPath())) {

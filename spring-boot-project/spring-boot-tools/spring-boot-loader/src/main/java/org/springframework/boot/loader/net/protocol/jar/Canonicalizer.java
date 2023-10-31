@@ -41,7 +41,7 @@ final class Canonicalizer {
 
 	static String canonicalize(String path) {
 		path = removeEmbeddedSlashDotDotSlash(path);
-		path = removedEmbdeddedSlashDotSlash(path);
+		path = removeEmbeddedSlashDotSlash(path);
 		path = removeTrailingSlashDotDot(path);
 		path = removeTrailingSlashDot(path);
 		return path;
@@ -57,7 +57,7 @@ final class Canonicalizer {
 		return path;
 	}
 
-	private static String removedEmbdeddedSlashDotSlash(String path) {
+	private static String removeEmbeddedSlashDotSlash(String path) {
 		int index;
 		while ((index = path.indexOf("/./")) >= 0) {
 			String before = path.substring(0, index);

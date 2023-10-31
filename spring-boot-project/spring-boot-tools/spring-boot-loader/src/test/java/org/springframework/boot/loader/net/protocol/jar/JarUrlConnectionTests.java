@@ -255,7 +255,7 @@ class JarUrlConnectionTests {
 	}
 
 	@Test
-	void getInputStreamWhenNoEntryAndOptimzedThrowsException() throws Exception {
+	void getInputStreamWhenNoEntryAndOptimizedThrowsException() throws Exception {
 		JarUrlConnection setupConnection = JarUrlConnection.open(JarUrl.create(this.file, "nested.jar"));
 		setupConnection.connect();
 		assertThat(JarUrlConnection.jarFiles.getCached(setupConnection.getJarFileURL())).isNotNull();
@@ -266,7 +266,7 @@ class JarUrlConnectionTests {
 	}
 
 	@Test
-	void getInputStreamWhenNoEntryAndNotOptimzedThrowsException() throws Exception {
+	void getInputStreamWhenNoEntryAndNotOptimizedThrowsException() throws Exception {
 		JarUrlConnection connection = JarUrlConnection.open(JarUrl.create(this.file, "nested.jar", "missing.dat"));
 		assertThatExceptionOfType(FileNotFoundException.class).isThrownBy(connection::getInputStream)
 			.withMessageContaining("JAR entry missing.dat not found in");
@@ -475,7 +475,7 @@ class JarUrlConnectionTests {
 	}
 
 	@Test
-	void openWhenNestedAndInCachedWithoutEntryAndOptimzationsEnabledReturnsNoFoundConnection() throws Exception {
+	void openWhenNestedAndInCachedWithoutEntryAndOptimizationsEnabledReturnsNoFoundConnection() throws Exception {
 		JarUrlConnection setupConnection = JarUrlConnection.open(JarUrl.create(this.file, "nested.jar"));
 		setupConnection.connect();
 		assertThat(JarUrlConnection.jarFiles.getCached(setupConnection.getJarFileURL())).isNotNull();

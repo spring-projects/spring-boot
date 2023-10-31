@@ -220,7 +220,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHasActiveProfilesFromMultipleAdditionaLocationsWithOneSwitchedOffLoadsExpectedProperties() {
+	void runWhenHasActiveProfilesFromMultipleAdditionalLocationsWithOneSwitchedOffLoadsExpectedProperties() {
 		ConfigurableApplicationContext context = this.application.run(
 				"--spring.config.additional-location=classpath:enabletwoprofiles.properties,classpath:enableprofile.properties");
 		ConfigurableEnvironment environment = context.getEnvironment();
@@ -230,7 +230,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHaslocalFileLoadsWithLocalFileTakingPrecedenceOverClasspath() throws Exception {
+	void runWhenHasLocalFileLoadsWithLocalFileTakingPrecedenceOverClasspath() throws Exception {
 		File localFile = new File(new File("."), "application.properties");
 		assertThat(localFile).doesNotExist();
 		try {

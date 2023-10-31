@@ -242,7 +242,7 @@ class NestedJarFileTests {
 	}
 
 	@Test
-	void sizeWhenClosedThowsException() throws Exception {
+	void sizeWhenClosedThrowsException() throws Exception {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
 			assertThatIllegalStateException().isThrownBy(() -> jar.size()).withMessage("Zip file closed");
@@ -347,7 +347,7 @@ class NestedJarFileTests {
 	}
 
 	@Test
-	void streamStreamsEnties() throws IOException {
+	void streamStreamsEntries() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file, "multi-release.jar")) {
 			assertThat(jar.stream().map((entry) -> entry.getName() + ":" + entry.getRealName())).containsExactly(
 					"META-INF/:META-INF/", "META-INF/MANIFEST.MF:META-INF/MANIFEST.MF",

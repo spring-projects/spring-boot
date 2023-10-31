@@ -96,7 +96,7 @@ class DataBlockInputStreamTests {
 	}
 
 	@Test
-	void skipBackwardsPastBeginingSkipsBytes() throws Exception {
+	void skipBackwardsPastBeginningSkipsBytes() throws Exception {
 		assertThat(this.inputStream.skip(1)).isEqualTo(1);
 		assertThat(this.inputStream.skip(-100)).isEqualTo(-1);
 		assertThat(this.inputStream.read()).isEqualTo(0);
