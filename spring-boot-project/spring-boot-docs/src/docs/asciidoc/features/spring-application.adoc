@@ -129,11 +129,12 @@ The printed banner is registered as a singleton bean under the following name: `
 
 [NOTE]
 ====
-The `${application.version}` and `${application.formatted-version}` properties are only available if you are using Spring Boot launchers.
-The values will not be resolved if you are running an unpacked jar and starting it with `java -cp <classpath> <mainclass>`.
+The `application.title`, `application.version`, and `application.formatted-version` properties are only available if you are using `java -jar` or `java -cp` with Spring Boot launchers.
+The values will not be resolved if you are running an unpacked jar and starting it with `java -cp <classpath> <mainclass>`
+or running your application as a native image.
 
-This is why we recommend that you always launch unpacked jars using `java org.springframework.boot.loader.launch.JarLauncher`.
-This will initialize the `application.*` banner variables before building the classpath and launching your app.
+To use the `application.*` properties, launch your application as a packed jar using `java -jar` or as an unpacked jar using `java org.springframework.boot.loader.launch.JarLauncher`.
+This will initialize the `application.*` banner properties before building the classpath and launching your app.
 ====
 
 
