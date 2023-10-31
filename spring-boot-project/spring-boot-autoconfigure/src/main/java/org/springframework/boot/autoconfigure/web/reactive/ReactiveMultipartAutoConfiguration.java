@@ -62,7 +62,7 @@ public class ReactiveMultipartAutoConfiguration {
 					.asInt(DataSize::toBytes)
 					.to(defaultPartHttpMessageReader::setMaxHeadersSize);
 				map.from(multipartProperties::getMaxDiskUsagePerPart)
-					.asInt(DataSize::toBytes)
+					.as(DataSize::toBytes)
 					.to(defaultPartHttpMessageReader::setMaxDiskUsagePerPart);
 				map.from(multipartProperties::getMaxParts).to(defaultPartHttpMessageReader::setMaxParts);
 				map.from(multipartProperties::getFileStorageDirectory)
