@@ -106,7 +106,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	}
 
 	private boolean isSameFile(File ours, File other) {
-		return (ours != null) && (other != null) && ours.equals(other);
+		return (ours != null) && ours.equals(other);
 	}
 
 	@Override
@@ -119,9 +119,10 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	public String toString() {
 		if (this.resource instanceof FileSystemResource || this.resource instanceof FileUrlResource) {
 			try {
-				return "file [" + this.resource.getFile().toString() + "]";
+				return "file [" + this.resource.getFile() + "]";
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		return this.resource.toString();
@@ -131,11 +132,11 @@ public class StandardConfigDataResource extends ConfigDataResource {
 		try {
 			if (resource instanceof ClassPathResource || resource instanceof FileSystemResource
 					|| resource instanceof FileUrlResource) {
-				File file = resource.getFile();
-				return (file != null) ? file.getAbsoluteFile() : null;
+				return resource.getFile().getAbsoluteFile();
 			}
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 		return null;
 	}

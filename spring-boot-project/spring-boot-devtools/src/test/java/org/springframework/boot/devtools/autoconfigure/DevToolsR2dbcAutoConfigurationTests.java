@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,12 +152,12 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 	@Nested
 	@ClassPathExclusions("r2dbc-pool*.jar")
-	static class Embedded extends Common {
+	class Embedded extends Common {
 
 	}
 
 	@Nested
-	static class Pooled extends Common {
+	class Pooled extends Common {
 
 	}
 

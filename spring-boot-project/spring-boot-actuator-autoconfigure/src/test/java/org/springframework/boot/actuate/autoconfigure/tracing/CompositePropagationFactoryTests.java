@@ -65,7 +65,7 @@ class CompositePropagationFactoryTests {
 	}
 
 	@Nested
-	static class CompostePropagationTests {
+	class CompositePropagationTests {
 
 		@Test
 		void keys() {
