@@ -60,7 +60,7 @@ class ReactiveMultipartAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.webflux.multipart.streaming:true",
 					"spring.webflux.multipart.max-in-memory-size=1GB", "spring.webflux.multipart.max-headers-size=16KB",
-					"spring.webflux.multipart.max-disk-usage-per-part=100MB", "spring.webflux.multipart.max-parts=7",
+					"spring.webflux.multipart.max-disk-usage-per-part=3GB", "spring.webflux.multipart.max-parts=7",
 					"spring.webflux.multipart.headers-charset:UTF_16")
 			.run((context) -> {
 				CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
@@ -75,7 +75,7 @@ class ReactiveMultipartAutoConfigurationTests {
 				assertThat(partReader).hasFieldOrPropertyWithValue("maxInMemorySize",
 						Math.toIntExact(DataSize.ofGigabytes(1).toBytes()));
 				assertThat(partReader).hasFieldOrPropertyWithValue("maxDiskUsagePerPart",
-						DataSize.ofMegabytes(100).toBytes());
+						DataSize.ofGigabytes(3).toBytes());
 			});
 	}
 
