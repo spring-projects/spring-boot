@@ -28,6 +28,8 @@ Add the module dependency to your build, as shown in the following listings for 
 	}
 ----
 
+NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
+
 When this module is included as a dependency Spring Boot will do the following:
 
 * Search for a `compose.yml` and other common compose filenames in your application directory
@@ -35,7 +37,8 @@ When this module is included as a dependency Spring Boot will do the following:
 * Create service connection beans for each supported container
 * Call `docker compose stop` when the application is shutdown
 
-NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
+If the Docker Compose services are already running when starting the application, Spring Boot will only create the service connection beans for each supported container.
+It will not call `docker compose up` again and it will not call `docker compose stop` when the application is shutdown.
 
 NOTE: By default, Spring Boot's Docker Compose support is disabled when running tests.
 To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.

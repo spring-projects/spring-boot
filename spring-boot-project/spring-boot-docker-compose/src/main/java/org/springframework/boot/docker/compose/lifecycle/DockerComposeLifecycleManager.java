@@ -121,7 +121,9 @@ class DockerComposeLifecycleManager {
 		if (lifecycleManagement.shouldStart() && runningServices.isEmpty()) {
 			start.getCommand().applyTo(dockerCompose, start.getLogLevel());
 			runningServices = dockerCompose.getRunningServices();
-			wait = (wait != Wait.ONLY_IF_STARTED) ? wait : Wait.ALWAYS;
+			if (wait == Wait.ONLY_IF_STARTED) {
+				wait = Wait.ALWAYS;
+			}
 			if (lifecycleManagement.shouldStop()) {
 				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
 			}
