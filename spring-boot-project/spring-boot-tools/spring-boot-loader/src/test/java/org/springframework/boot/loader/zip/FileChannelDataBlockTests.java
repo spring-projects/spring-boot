@@ -19,9 +19,11 @@ package org.springframework.boot.loader.zip;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +71,28 @@ class FileChannelDataBlockTests {
 	void readReadsFile() throws IOException {
 		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
+			assertThat(block.read(buffer, 0)).isEqualTo(6);
+			assertThat(buffer.array()).containsExactly(CONTENT);
+		}
+	}
+
+	@Test
+	void readReadsFileWhenAnotherThreadHasBeenInterrupted() throws IOException, InterruptedException {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
+			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
+			AtomicReference<IOException> failure = new AtomicReference<>();
+			Thread thread = new Thread(() -> {
+				Thread.currentThread().interrupt();
+				try {
+					block.read(ByteBuffer.allocate(CONTENT.length), 0);
+				}
+				catch (IOException ex) {
+					failure.set(ex);
+				}
+			});
+			thread.start();
+			thread.join();
+			assertThat(failure.get()).isInstanceOf(ClosedByInterruptException.class);
 			assertThat(block.read(buffer, 0)).isEqualTo(6);
 			assertThat(buffer.array()).containsExactly(CONTENT);
 		}

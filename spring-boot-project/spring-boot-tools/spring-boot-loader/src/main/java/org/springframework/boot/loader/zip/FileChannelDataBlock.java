@@ -18,6 +18,7 @@ package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -179,7 +180,13 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			synchronized (this.lock) {
 				if (position < this.bufferPosition || position >= this.bufferPosition + this.bufferSize) {
 					this.buffer.clear();
-					this.bufferSize = this.fileChannel.read(this.buffer, position);
+					try {
+						this.bufferSize = this.fileChannel.read(this.buffer, position);
+					}
+					catch (ClosedByInterruptException ex) {
+						repairFileChannel();
+						throw ex;
+					}
 					this.bufferPosition = position;
 				}
 				if (this.bufferSize <= 0) {
@@ -190,6 +197,16 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				dst.put(dst.position(), this.buffer, offset, length);
 				dst.position(dst.position() + length);
 				return length;
+			}
+		}
+
+		private void repairFileChannel() throws IOException {
+			if (tracker != null) {
+				tracker.closedFileChannel(this.path, this.fileChannel);
+			}
+			this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
+			if (tracker != null) {
+				tracker.openedFileChannel(this.path, this.fileChannel);
 			}
 		}
 
@@ -231,7 +248,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
 			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
+				if (this.referenceCount == 0 || !this.fileChannel.isOpen()) {
 					throw exceptionSupplier.get();
 				}
 			}
