@@ -100,7 +100,7 @@ class BuildInfoTests {
 	}
 
 	@Test
-	void nameCanBeExludedRemovedFromProperties() {
+	void nameCanBeExcludedFromProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getExcludes().add("name");
 		assertThat(buildInfoProperties(task)).doesNotContainKey("build.name");

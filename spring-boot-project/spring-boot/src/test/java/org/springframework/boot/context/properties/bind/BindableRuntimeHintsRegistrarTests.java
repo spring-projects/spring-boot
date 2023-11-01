@@ -214,7 +214,7 @@ class BindableRuntimeHintsRegistrarTests {
 	}
 
 	@Test
-	void pregisterHintsWhenHasUnresolvedGeneric() {
+	void registerHintsWhenHasUnresolvedGeneric() {
 		RuntimeHints runtimeHints = registerHints(WithGeneric.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
 			.anySatisfy(javaBeanBinding(WithGeneric.class, "getGeneric"))
