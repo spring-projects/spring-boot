@@ -99,7 +99,35 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(PemSslBundleProperties properties) {
-		return new PropertiesSslBundle(asSslStoreBundle(properties), properties);
+		try {
+			PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore());
+			if (keyStore != null) {
+				keyStore = keyStore.withAlias(properties.getKey().getAlias())
+					.withPassword(properties.getKey().getPassword());
+			}
+			PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore());
+			SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
+			return new PropertiesSslBundle(storeBundle, properties);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties)
+			throws IOException {
+		PemSslStore pemSslStore = PemSslStore.load(asPemSslStoreDetails(properties));
+		if (properties.isVerifyKeys()) {
+			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
+			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
+					"Private key matches none of the certificates in the chain");
+		}
+		return pemSslStore;
+	}
+
+	private static PemSslStoreDetails asPemSslStoreDetails(PemSslBundleProperties.Store properties) {
+		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
+				properties.getPrivateKeyPassword());
 	}
 
 	/**
@@ -108,38 +136,8 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(JksSslBundleProperties properties) {
-		return new PropertiesSslBundle(asSslStoreBundle(properties), properties);
-	}
-
-	private static SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
-		PemSslStore keyStore = asPemSslStore(properties.getKeystore());
-		if (keyStore != null) {
-			keyStore = keyStore.withAlias(properties.getKey().getAlias())
-				.withPassword(properties.getKey().getPassword());
-		}
-		PemSslStore trustStore = asPemSslStore(properties.getTruststore());
-		return new PemSslStoreBundle(keyStore, trustStore);
-	}
-
-	private static PemSslStore asPemSslStore(PemSslBundleProperties.Store properties) {
-		try {
-			PemSslStoreDetails details = asStoreDetails(properties);
-			PemSslStore pemSslStore = PemSslStore.load(details);
-			if (properties.isVerifyKeys()) {
-				CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
-				Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
-						"Private key matches none of the certificates in the chain");
-			}
-			return pemSslStore;
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private static PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
-				properties.getPrivateKeyPassword());
+		SslStoreBundle storeBundle = asSslStoreBundle(properties);
+		return new PropertiesSslBundle(storeBundle, properties);
 	}
 
 	private static SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {

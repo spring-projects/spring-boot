@@ -106,7 +106,9 @@ class SslPropertiesBundleRegistrarTests {
 				""".strip());
 		this.properties.getBundle().getPem().put("bundle1", pem);
 		assertThatIllegalStateException().isThrownBy(() -> this.registrar.registerBundles(this.registry))
-			.withMessage("SSL bundle 'bundle1' 'keystore.certificate' is not a URL and can't be watched");
+			.withMessageContaining("Unable to register SSL bundle 'bundle1'")
+			.havingCause()
+			.withMessage("Unable to watch for reload on update");
 	}
 
 	@Test
@@ -121,7 +123,9 @@ class SslPropertiesBundleRegistrarTests {
 				""".strip());
 		this.properties.getBundle().getPem().put("bundle1", pem);
 		assertThatIllegalStateException().isThrownBy(() -> this.registrar.registerBundles(this.registry))
-			.withMessage("SSL bundle 'bundle1' 'keystore.private-key' is not a URL and can't be watched");
+			.withMessageContaining("Unable to register SSL bundle 'bundle1'")
+			.havingCause()
+			.withMessage("Unable to watch for reload on update");
 	}
 
 	@Test
@@ -145,7 +149,9 @@ class SslPropertiesBundleRegistrarTests {
 				""".strip());
 		this.properties.getBundle().getPem().put("bundle1", pem);
 		assertThatIllegalStateException().isThrownBy(() -> this.registrar.registerBundles(this.registry))
-			.withMessage("SSL bundle 'bundle1' 'truststore.certificate' is not a URL and can't be watched");
+			.withMessageContaining("Unable to register SSL bundle 'bundle1'")
+			.havingCause()
+			.withMessage("Unable to watch for reload on update");
 	}
 
 	@Test
@@ -160,7 +166,9 @@ class SslPropertiesBundleRegistrarTests {
 				""".strip());
 		this.properties.getBundle().getPem().put("bundle1", pem);
 		assertThatIllegalStateException().isThrownBy(() -> this.registrar.registerBundles(this.registry))
-			.withMessage("SSL bundle 'bundle1' 'truststore.private-key' is not a URL and can't be watched");
+			.withMessageContaining("Unable to register SSL bundle 'bundle1'")
+			.havingCause()
+			.withMessage("Unable to watch for reload on update");
 	}
 
 	private void pathEndingWith(Set<Path> paths, String... suffixes) {

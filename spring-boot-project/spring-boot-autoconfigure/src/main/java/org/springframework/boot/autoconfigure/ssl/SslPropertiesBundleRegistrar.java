@@ -16,20 +16,17 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.net.URL;
 import java.nio.file.Path;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Pattern;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
-import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A {@link SslBundleRegistrar} that registers SSL bundles based
@@ -40,8 +37,6 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  */
 class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
-
-	private static final Pattern PEM_CONTENT = Pattern.compile("-+BEGIN\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
 
 	private final SslProperties.Bundles properties;
 
@@ -54,70 +49,58 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 
 	@Override
 	public void registerBundles(SslBundleRegistry registry) {
-		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::getLocations);
-		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::getLocations);
+		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::watchedPemPaths);
+		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::watchedJksPaths);
 	}
 
 	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
-			Function<P, SslBundle> bundleFactory, Function<P, Set<Location>> locationsSupplier) {
+			Function<P, SslBundle> bundleFactory, Function<P, Set<Path>> watchedPaths) {
 		properties.forEach((bundleName, bundleProperties) -> {
-			SslBundle bundle = bundleFactory.apply(bundleProperties);
-			registry.registerBundle(bundleName, bundle);
-			if (bundleProperties.isReloadOnUpdate()) {
-				Set<Path> paths = locationsSupplier.apply(bundleProperties)
-					.stream()
-					.filter(Location::hasValue)
-					.map((location) -> toPath(bundleName, location))
-					.collect(Collectors.toSet());
-				this.fileWatcher.watch(paths,
-						() -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
+			Supplier<SslBundle> bundleSupplier = () -> bundleFactory.apply(bundleProperties);
+			try {
+				registry.registerBundle(bundleName, bundleSupplier.get());
+				if (bundleProperties.isReloadOnUpdate()) {
+					Supplier<Set<Path>> pathsSupplier = () -> watchedPaths.apply(bundleProperties);
+					watchForUpdates(registry, bundleName, pathsSupplier, bundleSupplier);
+				}
+			}
+			catch (IllegalStateException ex) {
+				throw new IllegalStateException("Unable to register SSL bundle '%s'".formatted(bundleName), ex);
 			}
 		});
 	}
 
-	private Set<Location> getLocations(JksSslBundleProperties properties) {
-		JksSslBundleProperties.Store keystore = properties.getKeystore();
-		JksSslBundleProperties.Store truststore = properties.getTruststore();
-		Set<Location> locations = new LinkedHashSet<>();
-		locations.add(new Location("keystore.location", keystore.getLocation()));
-		locations.add(new Location("truststore.location", truststore.getLocation()));
-		return locations;
-	}
-
-	private Set<Location> getLocations(PemSslBundleProperties properties) {
-		PemSslBundleProperties.Store keystore = properties.getKeystore();
-		PemSslBundleProperties.Store truststore = properties.getTruststore();
-		Set<Location> locations = new LinkedHashSet<>();
-		locations.add(new Location("keystore.private-key", keystore.getPrivateKey()));
-		locations.add(new Location("keystore.certificate", keystore.getCertificate()));
-		locations.add(new Location("truststore.private-key", truststore.getPrivateKey()));
-		locations.add(new Location("truststore.certificate", truststore.getCertificate()));
-		return locations;
-	}
-
-	private Path toPath(String bundleName, Location watchableLocation) {
-		String value = watchableLocation.value();
-		String field = watchableLocation.field();
-		Assert.state(!PEM_CONTENT.matcher(value).find(),
-				() -> "SSL bundle '%s' '%s' is not a URL and can't be watched".formatted(bundleName, field));
+	private void watchForUpdates(SslBundleRegistry registry, String bundleName, Supplier<Set<Path>> pathsSupplier,
+			Supplier<SslBundle> bundleSupplier) {
 		try {
-			URL url = ResourceUtils.getURL(value);
-			Assert.state("file".equalsIgnoreCase(url.getProtocol()),
-					() -> "SSL bundle '%s' '%s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
-			return Path.of(url.toURI()).toAbsolutePath();
+			this.fileWatcher.watch(pathsSupplier.get(), () -> registry.updateBundle(bundleName, bundleSupplier.get()));
 		}
-		catch (Exception ex) {
-			throw new RuntimeException(
-					"SSL bundle '%s' '%s' location '%s' cannot be watched".formatted(bundleName, field, value), ex);
+		catch (RuntimeException ex) {
+			throw new IllegalStateException("Unable to watch for reload on update", ex);
 		}
 	}
 
-	private record Location(String field, String value) {
+	private Set<Path> watchedJksPaths(JksSslBundleProperties properties) {
+		List<BundleContentProperty> watched = new ArrayList<>();
+		watched.add(new BundleContentProperty("keystore.location", properties.getKeystore().getLocation()));
+		watched.add(new BundleContentProperty("truststore.location", properties.getTruststore().getLocation()));
+		return watchedPaths(watched);
+	}
 
-		boolean hasValue() {
-			return StringUtils.hasText(this.value);
-		}
+	private Set<Path> watchedPemPaths(PemSslBundleProperties properties) {
+		List<BundleContentProperty> watched = new ArrayList<>();
+		watched.add(new BundleContentProperty("keystore.private-key", properties.getKeystore().getPrivateKey()));
+		watched.add(new BundleContentProperty("keystore.certificate", properties.getKeystore().getCertificate()));
+		watched.add(new BundleContentProperty("truststore.private-key", properties.getTruststore().getPrivateKey()));
+		watched.add(new BundleContentProperty("truststore.certificate", properties.getTruststore().getCertificate()));
+		return watchedPaths(watched);
+	}
 
+	private Set<Path> watchedPaths(List<BundleContentProperty> properties) {
+		return properties.stream()
+			.filter(BundleContentProperty::hasValue)
+			.map(BundleContentProperty::toWatchPath)
+			.collect(Collectors.toSet());
 	}
 
 }

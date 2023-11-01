@@ -18,7 +18,6 @@ package org.springframework.boot.ssl.pem;
 
 import java.security.KeyStore;
 
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -30,12 +29,12 @@ import org.springframework.util.StringUtils;
  * @param password the password used
  * {@link KeyStore#setKeyEntry(String, java.security.Key, char[], java.security.cert.Certificate[])
  * setting key entries} in the {@link KeyStore}
- * @param certificates the certificates content (either the PEM content itself or
- * something that can be loaded by {@link ResourceUtils#getURL}). When a
- * {@link #privateKey() private key} is present this value is treated as a certificate
- * chain, otherwise it is treated a list of certificates that should all be registered.
- * @param privateKey the private key content (either the PEM content itself or something
- * that can be loaded by {@link ResourceUtils#getURL})
+ * @param certificates the certificates content (either the PEM content itself or or a
+ * reference to the resource to load). When a {@link #privateKey() private key} is present
+ * this value is treated as a certificate chain, otherwise it is treated a list of
+ * certificates that should all be registered.
+ * @param privateKey the private key content (either the PEM content itself or a reference
+ * to the resource to load)
  * @param privateKeyPassword a password used to decrypt an encrypted private key
  * @author Scott Frederick
  * @author Phillip Webb
@@ -53,10 +52,10 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @param password the password used
 	 * {@link KeyStore#setKeyEntry(String, java.security.Key, char[], java.security.cert.Certificate[])
 	 * setting key entries} in the {@link KeyStore}
-	 * @param certificates the certificate content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
-	 * @param privateKey the private key content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
+	 * @param certificates the certificate content (either the PEM content itself or a
+	 * reference to the resource to load)
+	 * @param privateKey the private key content (either the PEM content itself or a
+	 * reference to the resource to load)
 	 * @param privateKeyPassword a password used to decrypt an encrypted private key
 	 * @since 3.2.0
 	 */
@@ -67,10 +66,10 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * Create a new {@link PemSslStoreDetails} instance.
 	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
 	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
-	 * @param certificate the certificate content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
-	 * @param privateKey the private key content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
+	 * @param certificate the certificate content (either the PEM content itself or a
+	 * reference to the resource to load)
+	 * @param privateKey the private key content (either the PEM content itself or a
+	 * reference to the resource to load)
 	 * @param privateKeyPassword a password used to decrypt an encrypted private key
 	 */
 	public PemSslStoreDetails(String type, String certificate, String privateKey, String privateKeyPassword) {
@@ -81,10 +80,10 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * Create a new {@link PemSslStoreDetails} instance.
 	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
 	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
-	 * @param certificate the certificate content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
-	 * @param privateKey the private key content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
+	 * @param certificate the certificate content (either the PEM content itself or a
+	 * reference to the resource to load)
+	 * @param privateKey the private key content (either the PEM content itself or a
+	 * reference to the resource to load)
 	 */
 	public PemSslStoreDetails(String type, String certificate, String privateKey) {
 		this(type, certificate, privateKey, null);
@@ -155,8 +154,8 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * certificate. <b>Note:</b> This method doesn't actually check if the provided value
 	 * only contains a single certificate. It is functionally equivalent to
 	 * {@link #forCertificates(String)}.
-	 * @param certificate the certificate content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
+	 * @param certificate the certificate content (either the PEM content itself or a
+	 * reference to the resource to load)
 	 * @return a new {@link PemSslStoreDetails} instance.
 	 */
 	public static PemSslStoreDetails forCertificate(String certificate) {
@@ -166,8 +165,8 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	/**
 	 * Factory method to create a new {@link PemSslStoreDetails} instance for the given
 	 * certificates.
-	 * @param certificates the certificates content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
+	 * @param certificates the certificates content (either the PEM content itself or a
+	 * reference to the resource to load)
 	 * @return a new {@link PemSslStoreDetails} instance.
 	 * @since 3.2.0
 	 */

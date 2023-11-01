@@ -58,7 +58,7 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		private String type;
 
 		/**
-		 * Location or content of the certificate in PEM format.
+		 * Location or content of the certificate or certificate chain in PEM format.
 		 */
 		private String certificate;
 
