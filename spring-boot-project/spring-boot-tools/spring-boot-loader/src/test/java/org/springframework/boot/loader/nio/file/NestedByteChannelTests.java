@@ -65,7 +65,7 @@ class NestedByteChannelTests {
 	}
 
 	@AfterEach
-	void cleanuo() throws Exception {
+	void cleanup() throws Exception {
 		this.channel.close();
 	}
 

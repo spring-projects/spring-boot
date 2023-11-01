@@ -58,7 +58,7 @@ class UrlJarManifestTests {
 	}
 
 	@Test
-	void getEntrtyAttributesWhenSuppliedManifestIsNullReturnsNull() throws Exception {
+	void getEntryAttributesWhenSuppliedManifestIsNullReturnsNull() throws Exception {
 		UrlJarManifest urlJarManifest = new UrlJarManifest(() -> null);
 		assertThat(urlJarManifest.getEntryAttributes(new JarEntry("test"))).isNull();
 	}

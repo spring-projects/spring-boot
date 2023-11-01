@@ -80,7 +80,7 @@ class JarFileArchiveTests {
 	}
 
 	@Test
-	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
+	void getClassPathUrlsWhenNoPredicatesReturnsUrls() throws Exception {
 		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES);
 		URL[] expected = TestJar.expectedEntries()
 			.stream()
