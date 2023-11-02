@@ -43,6 +43,7 @@ import org.springframework.util.ClassUtils;
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */
+@SuppressWarnings("removal")
 class OutputCapture implements CapturedOutput {
 
 	private final Deque<SystemCapture> systemCaptures = new ArrayDeque<>();
