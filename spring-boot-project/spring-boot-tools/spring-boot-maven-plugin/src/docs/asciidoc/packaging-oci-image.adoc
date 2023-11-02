@@ -392,9 +392,10 @@ and reference the properties in the XML configuration:
 include::../maven/packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
 ----
 
+
+
 [[build-image.examples.caches]]
 === Builder Cache Configuration
-
 The CNB builder caches layers that are used when building and launching an image.
 By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
 If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
@@ -406,12 +407,15 @@ The cache volumes can be configured to use alternative names to give more contro
 include::../maven/packaging-oci-image/caches-pom.xml[tags=caches]
 ----
 
+
+
 [[build-image.examples.docker]]
 === Docker Configuration
 
+
+
 [[build-image.examples.docker.minikube]]
 ==== Docker Configuration for minikube
-
 The plugin can communicate with the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube] instead of the default local connection.
 
 On Linux and macOS, environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
@@ -423,9 +427,10 @@ The plugin can also be configured to use the minikube daemon by providing connec
 include::../maven/packaging-oci-image/docker-minikube-pom.xml[tags=docker-minikube]
 ----
 
+
+
 [[build-image.examples.docker.podman]]
 ==== Docker Configuration for podman
-
 The plugin can communicate with a https://podman.io/[podman container engine].
 
 The plugin can be configured to use podman local connection by providing connection details similar to those shown in the following example:
@@ -437,9 +442,10 @@ include::../maven/packaging-oci-image/docker-podman-pom.xml[tags=docker-podman]
 
 TIP: With the `colima` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
 
+
+
 [[build-image.examples.docker.colima]]
 ==== Docker Configuration for Colima
-
 The plugin can communicate with the Docker daemon provided by https://github.com/abiosoft/colima[Colima].
 The `DOCKER_HOST` environment variable can be set by using the command `export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}').`
 
@@ -450,9 +456,10 @@ The plugin can also be configured to use Colima daemon by providing connection d
 include::../maven/packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
 ----
 
+
+
 [[build-image.examples.docker.auth]]
 ==== Docker Configuration for Authentication
-
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
