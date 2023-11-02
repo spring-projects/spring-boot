@@ -48,7 +48,7 @@ public interface PemSslStore {
 	String alias();
 
 	/**
-	 * the password used
+	 * The password used when
 	 * {@link KeyStore#setKeyEntry(String, java.security.Key, char[], java.security.cert.Certificate[])
 	 * setting key entries} in the {@link KeyStore}.
 	 * @return the password

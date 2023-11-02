@@ -134,7 +134,7 @@ class PropertiesSslBundleTests {
 		properties.getKeystore().setVerifyKeys(true);
 		properties.getKey().setAlias("test-alias");
 		assertThatIllegalStateException().isThrownBy(() -> PropertiesSslBundle.get(properties))
-			.withMessageContaining("Private key matches none of the certificates");
+			.withMessageContaining("Private key in keystore matches none of the certificates");
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias) {

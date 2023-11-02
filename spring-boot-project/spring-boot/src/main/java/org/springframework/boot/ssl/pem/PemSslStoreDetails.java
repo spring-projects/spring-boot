@@ -73,7 +73,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @param privateKeyPassword a password used to decrypt an encrypted private key
 	 */
 	public PemSslStoreDetails(String type, String certificate, String privateKey, String privateKeyPassword) {
-		this(type, null, null, certificate, privateKey, null);
+		this(type, null, null, certificate, privateKey, privateKeyPassword);
 	}
 
 	/**

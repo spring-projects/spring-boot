@@ -51,7 +51,6 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	@SuppressWarnings("removal")
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails) {
 		this(keyStoreDetails, trustStoreDetails, null);
 	}

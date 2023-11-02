@@ -154,13 +154,4 @@ class PemContentTests {
 		assertThat(PemContent.of("test")).hasToString("test");
 	}
 
-	@Test
-	void hashCodeAndEquals() {
-		PemContent a = PemContent.of("1");
-		PemContent b = PemContent.of("1");
-		PemContent c = PemContent.of("2");
-		assertThat(a.hashCode()).isEqualTo(b.hashCode());
-		assertThat(a).isEqualTo(a).isEqualTo(b).isNotEqualTo(c);
-	}
-
 }

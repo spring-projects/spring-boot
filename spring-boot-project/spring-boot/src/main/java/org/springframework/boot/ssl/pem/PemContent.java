@@ -48,7 +48,7 @@ public final class PemContent {
 
 	private static final Pattern PEM_FOOTER = Pattern.compile("-+END\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
 
-	private String text;
+	private final String text;
 
 	private PemContent(String text) {
 		this.text = text;

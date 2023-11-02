@@ -130,7 +130,7 @@ final class PemPrivateKeyParser {
 		}
 		Assert.state(parameters.isType(ValueType.ENCODED), "Key spec should contain encoded parameters");
 		DerElement contents = DerElement.of(parameters.getContents());
-		Assert.state(contents.isType(ValueType.PRIMITIVE, TagType.OBJECT_IDENTIFIER),
+		Assert.state(contents != null && contents.isType(ValueType.PRIMITIVE, TagType.OBJECT_IDENTIFIER),
 				"Key spec parameters should contain object identifier");
 		return getEcParameters(contents.getContents());
 	}
@@ -237,6 +237,7 @@ final class PemPrivateKeyParser {
 					return keyFactory.generatePrivate(keySpec);
 				}
 				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+					// Ignore
 				}
 			}
 			return null;
@@ -262,10 +263,6 @@ final class PemPrivateKeyParser {
 
 		void octetString(byte[] bytes) throws IOException {
 			codeLengthBytes(0x04, bytes);
-		}
-
-		void sequence(int... elements) throws IOException {
-			sequence(bytes(elements));
 		}
 
 		void sequence(byte[] bytes) throws IOException {

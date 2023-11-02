@@ -26,6 +26,8 @@ import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.util.Assert;
+
 /**
  * Helper used to match certificates against a {@link PrivateKey}.
  *
@@ -48,14 +50,16 @@ class CertificateMatcher {
 	private final byte[] generatedSignature;
 
 	CertificateMatcher(PrivateKey privateKey) {
+		Assert.notNull(privateKey, "Private key must not be null");
 		this.privateKey = privateKey;
 		this.signature = createSignature(privateKey);
+		Assert.notNull(this.signature, "Failed to create signature");
 		this.generatedSignature = sign(this.signature, privateKey);
 	}
 
 	private Signature createSignature(PrivateKey privateKey) {
 		try {
-			String algorithm = getSignatureAlgorithm(this.privateKey);
+			String algorithm = getSignatureAlgorithm(privateKey);
 			return (algorithm != null) ? Signature.getInstance(algorithm) : null;
 		}
 		catch (NoSuchAlgorithmException ex) {
