@@ -34,7 +34,6 @@ The jar contains a `classpath.idx` file which is used by the `JarLauncher` when 
 
 [[deployment.efficient.aot]]
 === Using Ahead-of-time Processing With the JVM
-
 It's beneficial for the startup time to run your application using the AOT generated initialization code.
 First, you need to ensure that the jar you are building includes AOT generated code.
 
@@ -51,9 +50,9 @@ When the JAR has been built, run it with `spring.aot.enabled` system property se
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-    $ java -Dspring.aot.enabled=true -jar myapplication.jar
+	$ java -Dspring.aot.enabled=true -jar myapplication.jar
 
-    ........ Starting AOT-processed MyApplication ...
+	........ Starting AOT-processed MyApplication ...
 ----
 
 Beware that using the ahead-of-time processing has drawbacks.
@@ -66,10 +65,11 @@ It implies the following restrictions:
 
 To learn more about ahead-of-time processing, please see the <<native-image#native-image.introducing-graalvm-native-images.understanding-aot-processing,Understanding Spring Ahead-of-Time Processing section>>.
 
+
+
 [[deployment.efficient.checkpoint-restore]]
 === Checkpoint and Restore With the JVM
-
-https://wiki.openjdk.org/display/crac/Main[CRaC] is an OpenJDK project that defines a new Java API to allow you to checkpoint and restore an application on the HotSpot JVM.
+https://wiki.openjdk.org/display/crac/Main[Coordinated Restore at Checkpoint] (CRaC) is an OpenJDK project that defines a new Java API to allow you to checkpoint and restore an application on the HotSpot JVM.
 It is based on https://github.com/checkpoint-restore/criu[CRIU], a project that implements checkpoint/restore functionality on Linux.
 
 The principle is the following: you start your application almost as usual but with a CRaC enabled version of the JDK like https://www.azul.com/downloads/?package=jdk-crac#zulu[the one provided by Azul].
