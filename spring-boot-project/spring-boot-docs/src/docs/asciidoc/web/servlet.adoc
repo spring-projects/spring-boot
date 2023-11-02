@@ -611,6 +611,7 @@ For example, adding the following bean will automatically apply a `SameSite` of 
 include::code:MySameSiteConfiguration[]
 
 
+
 [[web.servlet.embedded-container.customizing.encoding]]
 ===== Character Encoding
 The character encoding behavior of the embedded servlet container for request and response handling can be configured using the `server.servlet.encoding.*` configuration properties.
