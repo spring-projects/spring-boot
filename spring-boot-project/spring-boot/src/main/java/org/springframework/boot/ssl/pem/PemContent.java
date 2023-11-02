@@ -127,19 +127,6 @@ public final class PemContent {
 	}
 
 	/**
-	 * Load {@link PemContent} from the given {@link URL}.
-	 * @param url the URL to load content from
-	 * @return the loaded PEM content
-	 * @throws IOException on IO error
-	 */
-	public static PemContent load(URL url) throws IOException {
-		Assert.notNull(url, "Url must not be null");
-		try (InputStream in = url.openStream()) {
-			return load(in);
-		}
-	}
-
-	/**
 	 * Load {@link PemContent} from the given {@link Path}.
 	 * @param path a path to load the content from
 	 * @return the loaded PEM content
@@ -148,6 +135,13 @@ public final class PemContent {
 	public static PemContent load(Path path) throws IOException {
 		Assert.notNull(path, "Path must not be null");
 		try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ)) {
+			return load(in);
+		}
+	}
+
+	private static PemContent load(URL url) throws IOException {
+		Assert.notNull(url, "Url must not be null");
+		try (InputStream in = url.openStream()) {
 			return load(in);
 		}
 	}

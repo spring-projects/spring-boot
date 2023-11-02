@@ -74,7 +74,7 @@ class BundleContentPropertyTests {
 	void toWatchPathWhenNotPathThrowsException() {
 		BundleContentProperty property = new BundleContentProperty("name", PEM_TEXT);
 		assertThatIllegalStateException().isThrownBy(property::toWatchPath)
-			.withMessage("Unable to convert 'name' property to a path");
+			.withMessage("Unable to convert value of property 'name' to a path");
 	}
 
 	@Test
