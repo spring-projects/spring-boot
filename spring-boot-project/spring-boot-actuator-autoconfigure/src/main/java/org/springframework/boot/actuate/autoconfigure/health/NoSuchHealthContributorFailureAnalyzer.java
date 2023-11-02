@@ -30,8 +30,8 @@ class NoSuchHealthContributorFailureAnalyzer extends AbstractFailureAnalyzer<NoS
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchHealthContributorException cause) {
-		return new FailureAnalysis(cause.getMessage(),
-				"Update your application to correct the invalid configuration.\nYou can also set 'management.endpoint.health.validate-group-membership' to false to disable the validation.",
+		return new FailureAnalysis(cause.getMessage(), "Update your application to correct the invalid configuration.\n"
+				+ "You can also set 'management.endpoint.health.validate-group-membership' to false to disable the validation.",
 				cause);
 	}
 
