@@ -1812,10 +1812,6 @@
       "defaultValue": "required"
     },
     {
-      "name": "spring.kafka.listener.observation-enabled",
-      "defaultValue": false
-    },
-    {
       "name": "spring.kafka.listener.only-log-record-metadata",
       "type": "java.lang.Boolean",
       "defaultValue": true,
@@ -1908,10 +1904,6 @@
         "replacement": "spring.kafka.streams.cache-max-size-buffering",
         "level": "error"
       }
-    },
-    {
-      "name": "spring.kafka.template.observation-enabled",
-      "defaultValue": false
     },
     {
       "name": "spring.liquibase.check-change-log-location",
