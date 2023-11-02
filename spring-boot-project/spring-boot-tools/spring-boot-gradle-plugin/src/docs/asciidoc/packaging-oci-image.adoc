@@ -397,9 +397,10 @@ The publish option can be specified on the command line as well, as shown in thi
 	$ gradle bootBuildImage --imageName=docker.example.com/library/my-app:v1 --publishImage
 ----
 
+
+
 [[build-image.examples.caches]]
 === Builder Cache Configuration
-
 The CNB builder caches layers that are used when building and launching an image.
 By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
 If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
@@ -418,12 +419,15 @@ include::../gradle/packaging/boot-build-image-caches.gradle[tags=caches]
 include::../gradle/packaging/boot-build-image-caches.gradle.kts[tags=caches]
 ----
 
+
+
 [[build-image.examples.docker]]
 === Docker Configuration
 
+
+
 [[build-image.examples.docker.minikube]]
 ==== Docker Configuration for minikube
-
 The plugin can communicate with the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube] instead of the default local connection.
 
 On Linux and macOS, environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
@@ -442,9 +446,10 @@ include::../gradle/packaging/boot-build-image-docker-host.gradle[tags=docker-hos
 include::../gradle/packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
 ----
 
+
+
 [[build-image.examples.docker.podman]]
 ==== Docker Configuration for podman
-
 The plugin can communicate with a https://podman.io/[podman container engine].
 
 The plugin can be configured to use podman local connection by providing connection details similar to those shown in the following example:
@@ -463,9 +468,10 @@ include::../gradle/packaging/boot-build-image-docker-host-podman.gradle.kts[tags
 
 TIP: With the `podman` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
 
+
+
 [[build-image.examples.docker.colima]]
 ==== Docker Configuration for Colima
-
 The plugin can communicate with the Docker daemon provided by https://github.com/abiosoft/colima[Colima].
 The `DOCKER_HOST` environment variable can be set by using the command `export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}').`
 
@@ -483,9 +489,10 @@ include::../gradle/packaging/boot-build-image-docker-host-colima.gradle[tags=doc
 include::../gradle/packaging/boot-build-image-docker-host-colima.gradle.kts[tags=docker-host]
 ----
 
+
+
 [[build-image.examples.docker.auth]]
 ==== Docker Configuration for Authentication
-
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` properties as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
