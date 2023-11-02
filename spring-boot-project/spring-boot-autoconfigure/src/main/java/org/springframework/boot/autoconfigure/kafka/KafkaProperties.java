@@ -984,6 +984,11 @@ public class KafkaProperties {
 		 */
 		private String transactionIdPrefix;
 
+		/**
+		 * Whether to enable observation.
+		 */
+		private boolean observationEnabled;
+
 		public String getDefaultTopic() {
 			return this.defaultTopic;
 		}
@@ -998,6 +1003,14 @@ public class KafkaProperties {
 
 		public void setTransactionIdPrefix(String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
+		}
+
+		public boolean getObservationEnabled() {
+			return this.observationEnabled;
+		}
+
+		public void setObservationEnabled(boolean observationEnabled) {
+			this.observationEnabled = observationEnabled;
 		}
 
 	}
@@ -1116,6 +1129,11 @@ public class KafkaProperties {
 		 * initialization.
 		 */
 		private Boolean changeConsumerThreadName;
+
+		/**
+		 * Whether to enable observation.
+		 */
+		private boolean observationEnabled;
 
 		public Type getType() {
 			return this.type;
@@ -1259,6 +1277,14 @@ public class KafkaProperties {
 
 		public void setChangeConsumerThreadName(Boolean changeConsumerThreadName) {
 			this.changeConsumerThreadName = changeConsumerThreadName;
+		}
+
+		public boolean getObservationEnabled() {
+			return this.observationEnabled;
+		}
+
+		public void setObservationEnabled(boolean observationEnabled) {
+			this.observationEnabled = observationEnabled;
 		}
 
 	}
