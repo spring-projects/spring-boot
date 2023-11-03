@@ -26,12 +26,18 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.AssertingSpringExtension;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.ContainerConfig;
+import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.TestApplicationListenerConfig;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.TestConfig;
+import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.TestLoadTimeWeaverAwareConfig;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.weaving.LoadTimeWeaverAware;
+import org.springframework.instrument.classloading.LoadTimeWeaver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -43,9 +49,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * and destroy events happen in the correct order.
  *
  * @author Phillip Webb
+ * @author Wang Zhiyang
  */
 @ExtendWith(AssertingSpringExtension.class)
-@ContextConfiguration(classes = { TestConfig.class, ContainerConfig.class })
+@ContextConfiguration(classes = { TestApplicationListenerConfig.class, TestLoadTimeWeaverAwareConfig.class,
+		TestConfig.class, ContainerConfig.class })
 @DirtiesContext
 @DisabledIfDockerUnavailable
 class TestcontainersLifecycleOrderIntegrationTests {
@@ -54,7 +62,8 @@ class TestcontainersLifecycleOrderIntegrationTests {
 
 	@Test
 	void eventsAreOrderedCorrectlyAfterStartup() {
-		assertThat(events).containsExactly("start-container", "create-bean");
+		assertThat(events).containsExactly("start-container", "create-listener-bean", "create-time-weaver-bean",
+				"create-bean");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -83,12 +92,62 @@ class TestcontainersLifecycleOrderIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class TestApplicationListenerConfig implements ApplicationListener<ApplicationEvent> {
+
+		@Bean
+		TestApplicationListenerBean testApplicationListenerBean() {
+			events.add("create-listener-bean");
+			return new TestApplicationListenerBean();
+		}
+
+		@Override
+		public void onApplicationEvent(ApplicationEvent event) {
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestLoadTimeWeaverAwareConfig implements LoadTimeWeaverAware {
+
+		@Bean
+		TestLoadTimeWeaverAwareBean testLoadTimeWeaverAwareBean() {
+			events.add("create-time-weaver-bean");
+			return new TestLoadTimeWeaverAwareBean();
+		}
+
+		@Override
+		public void setLoadTimeWeaver(LoadTimeWeaver loadTimeWeaver) {
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfig {
 
 		@Bean
 		TestBean testBean() {
 			events.add("create-bean");
 			return new TestBean();
+		}
+
+	}
+
+	static class TestApplicationListenerBean implements AutoCloseable {
+
+		@Override
+		public void close() throws Exception {
+			events.add("destroy-listener-bean");
+		}
+
+	}
+
+	static class TestLoadTimeWeaverAwareBean implements AutoCloseable {
+
+		@Override
+		public void close() throws Exception {
+			events.add("destroy-time-weaver-bean");
 		}
 
 	}
@@ -107,7 +166,9 @@ class TestcontainersLifecycleOrderIntegrationTests {
 		@Override
 		public void afterAll(ExtensionContext context) throws Exception {
 			super.afterAll(context);
-			assertThat(events).containsExactly("start-container", "create-bean", "destroy-bean", "stop-container");
+			assertThat(events).containsExactly("start-container", "create-listener-bean", "create-time-weaver-bean",
+					"create-bean", "destroy-bean", "destroy-time-weaver-bean", "destroy-listener-bean",
+					"stop-container");
 		}
 
 	}
