@@ -640,14 +640,23 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void testRabbitListenerContainerFactoryConfigurersAreAvailable() {
+	void testSimpleRabbitListenerContainerFactoryConfigurersAreAvailable() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.simple.concurrency:5",
-					"spring.rabbitmq.listener.simple.maxConcurrency:10", "spring.rabbitmq.listener.simple.prefetch:40",
-					"spring.rabbitmq.listener.direct.consumers-per-queue:5",
-					"spring.rabbitmq.listener.direct.prefetch:40")
+					"spring.rabbitmq.listener.simple.maxConcurrency:10", "spring.rabbitmq.listener.simple.prefetch:40")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
+				assertThat(context).doesNotHaveBean(DirectRabbitListenerContainerFactoryConfigurer.class);
+			});
+	}
+
+	@Test
+	void testDirectRabbitListenerContainerFactoryConfigurersAreAvailable() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.listener.direct.consumers-per-queue:5",
+					"spring.rabbitmq.listener.direct.prefetch:40", "spring.rabbitmq.listener.type:direct")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
 				assertThat(context).hasSingleBean(DirectRabbitListenerContainerFactoryConfigurer.class);
 			});
 	}
@@ -686,7 +695,7 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.direct.consumers-per-queue:5",
 					"spring.rabbitmq.listener.direct.prefetch:40",
-					"spring.rabbitmq.listener.direct.de-batching-enabled:false")
+					"spring.rabbitmq.listener.direct.de-batching-enabled:false", "spring.rabbitmq.listener.type:direct")
 			.run((context) -> {
 				DirectRabbitListenerContainerFactoryConfigurer configurer = context
 					.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);

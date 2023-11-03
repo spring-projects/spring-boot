@@ -67,6 +67,8 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "simple",
+			matchIfMissing = true)
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurer() {
 		return simpleListenerConfigurer();
 	}
@@ -74,6 +76,8 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean(name = "simpleRabbitListenerContainerFactoryConfigurer")
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "simple",
+			matchIfMissing = true)
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurerVirtualThreads() {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = simpleListenerConfigurer();
 		configurer.setTaskExecutor(new VirtualThreadTaskExecutor());
@@ -96,6 +100,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "direct")
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurer() {
 		return directListenerConfigurer();
 	}
@@ -103,6 +108,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean(name = "directRabbitListenerContainerFactoryConfigurer")
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "direct")
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurerVirtualThreads() {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = directListenerConfigurer();
 		configurer.setTaskExecutor(new VirtualThreadTaskExecutor());
