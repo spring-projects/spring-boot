@@ -168,6 +168,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Tadaya Tsuyukubo
+ * @author Yanming Zhou
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -436,6 +437,12 @@ public class SpringApplication {
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
 			if (aotInitializers.isEmpty()) {
 				String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
+				if (!ClassUtils.isPresent(initializerClassName, getClassLoader())) {
+					throw new IllegalArgumentException(
+							"You are starting application with AOT mode but not AOT-processed,"
+									+ " please build your application with AOT first."
+									+ " Or remove system property 'spring.aot.enabled=true' to run as regular mode.");
+				}
 				aotInitializers.add(AotApplicationContextInitializer.forInitializerClasses(initializerClassName));
 			}
 			initializers.removeAll(aotInitializers);
