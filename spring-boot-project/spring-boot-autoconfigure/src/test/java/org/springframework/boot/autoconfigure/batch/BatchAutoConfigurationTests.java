@@ -42,6 +42,7 @@ import org.springframework.batch.core.configuration.support.DefaultBatchConfigur
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
@@ -113,8 +114,11 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(JobRepository.class);
 				assertThat(context).hasSingleBean(JobLauncher.class);
 				assertThat(context).hasSingleBean(JobExplorer.class);
+				assertThat(context).hasSingleBean(JobRegistry.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 				assertThat(new JdbcTemplate(context.getBean(DataSource.class))
