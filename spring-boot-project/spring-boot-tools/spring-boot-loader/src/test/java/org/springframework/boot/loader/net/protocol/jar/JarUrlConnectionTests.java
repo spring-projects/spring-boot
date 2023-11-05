@@ -27,6 +27,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.Permission;
+import java.time.Instant;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -488,6 +490,24 @@ class JarUrlConnectionTests {
 	void openReturnsConnection() throws Exception {
 		JarUrlConnection connection = JarUrlConnection.open(this.url);
 		assertThat(connection).isNotNull();
+	}
+
+	@Test // gh-38204
+	void getLastModifiedReturnsFileModifiedTime() throws Exception {
+		JarUrlConnection connection = JarUrlConnection.open(this.url);
+		assertThat(connection.getLastModified()).isEqualTo(this.file.lastModified());
+	}
+
+	@Test // gh-38204
+	void getLastModifiedHeaderReturnsFileModifiedTime() throws IOException {
+		JarUrlConnection connection = JarUrlConnection.open(this.url);
+		URLConnection fileConnection = this.file.toURI().toURL().openConnection();
+		assertThat(connection.getHeaderFieldDate("last-modified", 0)).isEqualTo(withoutNanos(this.file.lastModified()))
+			.isEqualTo(fileConnection.getHeaderFieldDate("last-modified", 0));
+	}
+
+	private long withoutNanos(long epochMilli) {
+		return Instant.ofEpochMilli(epochMilli).with(ChronoField.NANO_OF_SECOND, 0).toEpochMilli();
 	}
 
 }

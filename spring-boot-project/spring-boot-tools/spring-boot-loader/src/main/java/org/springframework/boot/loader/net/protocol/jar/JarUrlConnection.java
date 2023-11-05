@@ -155,6 +155,11 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
+	public long getLastModified() {
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getLastModified() : super.getLastModified();
+	}
+
+	@Override
 	public String getHeaderField(String name) {
 		return (this.jarFileConnection != null) ? this.jarFileConnection.getHeaderField(name) : null;
 	}

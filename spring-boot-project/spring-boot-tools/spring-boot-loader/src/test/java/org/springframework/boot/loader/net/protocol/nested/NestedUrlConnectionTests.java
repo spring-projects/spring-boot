@@ -18,11 +18,15 @@ package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.File;
 import java.io.FilePermission;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.Cleaner.Cleanable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.Permission;
+import java.time.Instant;
+import java.time.temporal.ChronoField;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,6 +150,25 @@ class NestedUrlConnectionTests {
 		ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
 		then(cleaner).should().register(any(), actionCaptor.capture());
 		actionCaptor.getValue().run();
+	}
+
+	@Test // gh-38204
+	void getLastModifiedReturnsFileModifiedTime() throws Exception {
+		NestedUrlConnection connection = new NestedUrlConnection(this.url);
+		assertThat(connection.getLastModified()).isEqualTo(this.jarFile.lastModified());
+	}
+
+	@Test // gh-38204
+	void getLastModifiedHeaderReturnsFileModifiedTime() throws IOException {
+		NestedUrlConnection connection = new NestedUrlConnection(this.url);
+		URLConnection fileConnection = this.jarFile.toURI().toURL().openConnection();
+		assertThat(connection.getHeaderFieldDate("last-modified", 0))
+			.isEqualTo(withoutNanos(this.jarFile.lastModified()))
+			.isEqualTo(fileConnection.getHeaderFieldDate("last-modified", 0));
+	}
+
+	private long withoutNanos(long epochMilli) {
+		return Instant.ofEpochMilli(epochMilli).with(ChronoField.NANO_OF_SECOND, 0).toEpochMilli();
 	}
 
 }
