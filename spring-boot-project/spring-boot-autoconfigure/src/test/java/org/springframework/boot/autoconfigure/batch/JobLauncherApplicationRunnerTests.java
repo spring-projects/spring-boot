@@ -172,48 +172,6 @@ class JobLauncherApplicationRunnerTests {
 		});
 	}
 
-	@Test
-	void retryFailedExecutionWithNonIdentifyingParameters_previousParamsAreMerged() {
-		this.contextRunner.run((context) -> {
-			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
-			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
-			Job job = jobLauncherContext.jobBuilder()
-				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-				.incrementer(new RunIdIncrementer())
-				.build();
-			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
-				.addLong("foo", 2L, false)
-				.toJobParameters();
-			jobLauncherContext.runner.execute(job, jobParameters);
-			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
-
-			// try to re-run a failed execution with non identifying parameters
-			// identifying parameter 'run.id' is used to find the failed execution.
-			// non-identifying parameter 'id' is copied form the previous execution.
-			// non-identifying parameter 'foo' is replaced with a new value.
-			jobLauncherContext.runner.execute(job,
-					new JobParametersBuilder().addLong("run.id", 1L).addLong("foo", 3L, false).toJobParameters());
-
-			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
-
-			JobExecution initialExecution = jobLauncherContext.jobExplorer.getJobExecution(1L);
-			assertThat(initialExecution).isNotNull();
-			JobParameters initialParams = initialExecution.getJobParameters();
-			assertThat(initialParams.getParameters()).hasSize(3);
-			assertThat(initialParams.getLong("id")).isEqualTo(1L);
-			assertThat(initialParams.getLong("foo")).isEqualTo(2L);
-			assertThat(initialParams.getLong("run.id")).isEqualTo(1L);
-
-			JobExecution retryExecution = jobLauncherContext.jobExplorer.getJobExecution(2L);
-			assertThat(retryExecution).isNotNull();
-			JobParameters retryParams = retryExecution.getJobParameters();
-			assertThat(retryParams.getParameters()).hasSize(3);
-			assertThat(retryParams.getLong("id")).isEqualTo(1L);
-			assertThat(retryParams.getLong("foo")).isEqualTo(3L);
-			assertThat(retryParams.getLong("run.id")).isEqualTo(1L);
-		});
-	}
-
 	private Tasklet throwingTasklet() {
 		return (contribution, chunkContext) -> {
 			throw new RuntimeException("Planned");

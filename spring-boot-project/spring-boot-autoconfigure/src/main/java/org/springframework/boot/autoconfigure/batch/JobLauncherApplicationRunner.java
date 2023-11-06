@@ -229,7 +229,9 @@ public class JobLauncherApplicationRunner
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
-			return merge(lastExecution.getJobParameters(), jobParameters);
+			JobParameters previousIdentifyingParameters = new JobParameters(
+					lastExecution.getJobParameters().getIdentifyingParameters());
+			return merge(previousIdentifyingParameters, jobParameters);
 		}
 		return jobParameters;
 	}
