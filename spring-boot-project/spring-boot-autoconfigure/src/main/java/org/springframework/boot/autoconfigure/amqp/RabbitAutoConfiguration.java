@@ -84,8 +84,7 @@ public class RabbitAutoConfiguration {
 
 		private final RabbitProperties properties;
 
-		protected RabbitConnectionFactoryCreator(RabbitProperties properties,
-				ObjectProvider<RabbitConnectionDetails> connectionDetails) {
+		protected RabbitConnectionFactoryCreator(RabbitProperties properties) {
 			this.properties = properties;
 		}
 
