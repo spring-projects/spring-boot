@@ -95,7 +95,7 @@ class OpenTelemetryAutoConfigurationTests {
 		this.runner.run((context) -> {
 			Resource resource = context.getBean(Resource.class);
 			assertThat(resource.getAttributes().asMap())
-				.contains(entry(ResourceAttributes.SERVICE_NAME, "application"));
+				.contains(entry(ResourceAttributes.SERVICE_NAME, "unknown_service"));
 		});
 	}
 

@@ -51,7 +51,7 @@ public class OpenTelemetryAutoConfiguration {
 	/**
 	 * Default value for application name if {@code spring.application.name} is not set.
 	 */
-	private static final String DEFAULT_APPLICATION_NAME = "application";
+	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
 	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
 
