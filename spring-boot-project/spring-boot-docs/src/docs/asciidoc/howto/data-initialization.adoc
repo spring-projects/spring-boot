@@ -65,6 +65,8 @@ This will defer data source initialization until after any `EntityManagerFactory
 If you are using a <<howto#howto.data-initialization.migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
 
+If you need to initialize test data using a higher-level database migration tool, please see the sections about <<howto#howto.data-initialization.migration-tool.flyway-tests, Flyway>> and <<howto#howto.data-initialization.migration-tool.liquibase-tests, Liquibase>>.
+
 
 
 [[howto.data-initialization.batch]]
@@ -182,6 +184,55 @@ Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient t
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`LiquibaseProperties`] for details about available settings such as contexts, the default schema, and others.
+
+
+
+[[howto.data-initialization.migration-tool.flyway-tests]]
+==== Use Flyway for test-only migrations
+If you want to create Flyway migrations which populate your test database, place them in `src/test/resources/db/migration`.
+A file named, for example, `src/test/resources/db/migration/V9999__test-data.sql` will be executed after your production migrations and only if you're running the tests.
+You can use this file to create the needed test data.
+This file will not be packaged in your uber jar or your container.
+
+
+
+[[howto.data-initialization.migration-tool.liquibase-tests]]
+==== Use Liquibase for test-only migrations
+If you want to create Liquibase migrations which populate your test database, you have to create a test changelog which also includes the production changelog.
+
+First, you need to configure Liquibase to use a different changelog when running the tests.
+One way to do this is to create a Spring Boot `test` profile and put the Liquibase properties in there.
+For that, create a file named `src/test/resources/application-test.properties` and put the following property in there:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+  spring:
+    liquibase:
+      change-log: "classpath:/db/changelog/db.changelog-test.yaml"
+----
+
+This configures Liquibase to use a different changelog when running in the `test` profile.
+
+Now create the changelog file at `src/test/resources/db/changelog/db.changelog-test.yaml`:
+
+[source,yaml,indent=0,subs="verbatim"]
+----
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/db.changelog-master.yaml
+  - changeSet:
+      runOrder: "last"
+      id: "test"
+      changes:
+        # Insert your changes here
+----
+
+This changelog will be used when the tests are run and it will not be packaged in your uber jar or your container.
+It includes the production changelog and then declares a new changeset, whose `runOrder: last` setting specifies that it runs after all the production changesets have been run.
+You can now use for example the https://docs.liquibase.com/change-types/insert.html[insert changeset] to insert data or the https://docs.liquibase.com/change-types/sql.html[sql changeset] to execute SQL directly.
+
+The last thing to do is to configure Spring Boot to activate the `test` profile when running tests.
+To do this, you can add the `@ActiveProfiles("test")` annotation to your `@SpringBootTest` annotated test classes.
 
 
 
