@@ -24,6 +24,8 @@ import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -191,11 +193,12 @@ class JavaPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
-	void productionRuntimeClasspathIsConfiguredWithAttributes() {
-		assertThat(this.gradleBuild.build("build").getOutput()).contains("3 productionRuntimeClasspath attributes:")
-			.contains("org.gradle.usage: java-runtime")
-			.contains("org.gradle.libraryelements: jar")
-			.contains("org.gradle.dependency.bundling: external");
+	void productionRuntimeClasspathIsConfiguredWithAttributesThatMatchRuntimeClasspath() {
+		String output = this.gradleBuild.build("build").getOutput();
+		Matcher matcher = Pattern.compile("runtimeClasspath: (\\[.*\\])").matcher(output);
+		assertThat(matcher.find()).as("%s found in %s", matcher, output).isTrue();
+		String attributes = matcher.group(1);
+		assertThat(output).contains("productionRuntimeClasspath: " + attributes);
 	}
 
 	@TestTemplate

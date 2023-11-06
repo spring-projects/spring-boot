@@ -1,0 +1,22 @@
+def collectAttributes(String configurationName) {
+	def attributes = configurations.findByName(configurationName).attributes
+	def keys = new TreeSet<>((a1, a2) -> a1.name.compareTo(a2.name))
+	keys.addAll(attributes.keySet())
+	keys.collect { key -> "${key}: ${attributes.getAttribute(key)}" }
+}
+
+plugins {
+	id 'org.springframework.boot' version '{version}'
+	id 'java'
+}
+
+springBoot {
+	mainClass = "com.example.Main"
+}
+
+gradle.taskGraph.whenReady {
+	def runtimeClasspathAttributes = collectAttributes("runtimeClasspath")
+	def productionRuntimeClasspathAttributes = collectAttributes("productionRuntimeClasspath")
+	println("runtimeClasspath: ${runtimeClasspathAttributes}")
+	println("productionRuntimeClasspath: ${productionRuntimeClasspathAttributes}")
+}
