@@ -36,6 +36,7 @@ import static org.mockito.BDDMockito.then;
  * Tests for {@link EncodePasswordCommand}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 @ExtendWith(MockitoExtension.class)
 class EncodePasswordCommandTests {
@@ -56,6 +57,17 @@ class EncodePasswordCommandTests {
 	void encodeWithNoAlgorithmShouldUseBcrypt() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("boot");
+		then(this.log).should().info(assertArg((message) -> {
+			assertThat(message).startsWith("{bcrypt}");
+			assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder().matches("boot", message)).isTrue();
+		}));
+		assertThat(status).isEqualTo(ExitStatus.OK);
+	}
+
+	@Test
+	void encodeWithDefaultShouldUseBcrypt() throws Exception {
+		EncodePasswordCommand command = new EncodePasswordCommand();
+		ExitStatus status = command.run("-a", "default", "boot");
 		then(this.log).should().info(assertArg((message) -> {
 			assertThat(message).startsWith("{bcrypt}");
 			assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder().matches("boot", message)).isTrue();
