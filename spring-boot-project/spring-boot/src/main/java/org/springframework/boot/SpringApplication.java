@@ -437,12 +437,10 @@ public class SpringApplication {
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
 			if (aotInitializers.isEmpty()) {
 				String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
-				if (!ClassUtils.isPresent(initializerClassName, getClassLoader())) {
-					throw new IllegalArgumentException(
-							"You are starting application with AOT mode but not AOT-processed,"
-									+ " please build your application with AOT first."
-									+ " Or remove system property 'spring.aot.enabled=true' to run as regular mode.");
-				}
+				Assert.state(ClassUtils.isPresent(initializerClassName, getClassLoader()),
+						"You are starting the application with AOT mode enabled but AOT processing hasn't happened. "
+								+ "Please build your application with enabled AOT processing first, "
+								+ "or remove the system property 'spring.aot.enabled' to run the application in regular mode");
 				aotInitializers.add(AotApplicationContextInitializer.forInitializerClasses(initializerClassName));
 			}
 			initializers.removeAll(aotInitializers);

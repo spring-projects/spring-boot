@@ -1383,8 +1383,8 @@ class SpringApplicationTests {
 		application.setMainApplicationClass(TestSpringApplication.class);
 		System.setProperty(AotDetector.AOT_ENABLED, "true");
 		try {
-			assertThatIllegalArgumentException().isThrownBy(application::run)
-				.withMessageContaining(AotDetector.AOT_ENABLED);
+			assertThatIllegalStateException().isThrownBy(application::run)
+				.withMessageContaining("but AOT processing hasn't happened");
 		}
 		finally {
 			System.clearProperty(AotDetector.AOT_ENABLED);
