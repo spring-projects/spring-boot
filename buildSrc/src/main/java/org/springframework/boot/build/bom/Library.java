@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.VersionRange;
 
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -139,6 +140,16 @@ public class Library {
 
 		public String getReason() {
 			return this.reason;
+		}
+
+		public boolean isProhibited(String candidate) {
+			boolean result = false;
+			result = result
+					|| (this.range != null && this.range.containsVersion(new DefaultArtifactVersion(candidate)));
+			result = result || this.startsWith.stream().anyMatch(candidate::startsWith);
+			result = result || this.endsWith.stream().anyMatch(candidate::endsWith);
+			result = result || this.contains.stream().anyMatch(candidate::contains);
+			return result;
 		}
 
 	}
