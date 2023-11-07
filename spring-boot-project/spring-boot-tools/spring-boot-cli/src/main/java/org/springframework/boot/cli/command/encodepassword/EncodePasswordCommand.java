@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * {@link Command} to encode passwords for use with Spring Security.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public class EncodePasswordCommand extends OptionParsingCommand {
@@ -70,8 +71,8 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 	@Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
-		examples
-			.add(new HelpExample("To encode a password with the default encoder", "spring encodepassword mypassword"));
+		examples.add(new HelpExample("To encode a password with the default (bcrypt) encoder",
+				"spring encodepassword mypassword"));
 		examples.add(new HelpExample("To encode a password with pbkdf2", "spring encodepassword -a pbkdf2 mypassword"));
 		return examples;
 	}
@@ -82,12 +83,16 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 
 		@Override
 		protected void options() {
-			this.algorithm = option(Arrays.asList("algorithm", "a"), "The algorithm to use").withRequiredArg()
+			this.algorithm = option(Arrays.asList("algorithm", "a"),
+					"The algorithm to use. Supported algorithms: "
+							+ StringUtils.collectionToDelimitedString(ENCODERS.keySet(), ", ")
+							+ ". The default algorithm uses bcrypt")
+				.withRequiredArg()
 				.defaultsTo("default");
 		}
 
 		@Override
-		protected ExitStatus run(OptionSet options) throws Exception {
+		protected ExitStatus run(OptionSet options) {
 			if (options.nonOptionArguments().size() != 1) {
 				Log.error("A single password option must be provided");
 				return ExitStatus.ERROR;
