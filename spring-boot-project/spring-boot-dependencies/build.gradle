@@ -123,9 +123,7 @@ bom {
 				"java-driver-bom"
 			]
 			modules = [
-				"java-driver-core" {
-					exclude group: "org.slf4j", module: "jcl-over-slf4j"
-				}
+				"java-driver-core"
 			]
 		}
 	}

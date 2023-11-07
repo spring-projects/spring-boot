@@ -33,8 +33,6 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
@@ -48,7 +46,6 @@ import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.bomr.github.GitHub;
 import org.springframework.boot.build.bom.bomr.github.GitHubRepository;
 import org.springframework.boot.build.bom.bomr.github.Issue;
@@ -246,17 +243,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private boolean isNotProhibited(Library library, DependencyVersion candidate) {
 		return !library.getProhibitedVersions()
 			.stream()
-			.anyMatch((prohibited) -> isProhibited(prohibited, candidate.toString()));
-	}
-
-	private boolean isProhibited(ProhibitedVersion prohibited, String candidate) {
-		boolean result = false;
-		VersionRange range = prohibited.getRange();
-		result = result || (range != null && range.containsVersion(new DefaultArtifactVersion(candidate)));
-		result = result || prohibited.getStartsWith().stream().anyMatch(candidate::startsWith);
-		result = result || prohibited.getStartsWith().stream().anyMatch(candidate::endsWith);
-		result = result || prohibited.getStartsWith().stream().anyMatch(candidate::contains);
-		return result;
+			.anyMatch((prohibited) -> prohibited.isProhibited(candidate.toString()));
 	}
 
 	private List<Library> matchingLibraries() {
