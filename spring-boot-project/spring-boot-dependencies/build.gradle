@@ -35,9 +35,7 @@ bom {
 				"activemq-jms-pool",
 				"activemq-kahadb-store",
 				"activemq-karaf",
-				"activemq-leveldb-store" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
+				"activemq-leveldb-store",
 				"activemq-log4j-appender",
 				"activemq-mqtt",
 				"activemq-openwire-generator",
@@ -86,22 +84,15 @@ bom {
 				"artemis-commons" {
 					exclude group: "commons-logging", module: "commons-logging"
 				},
-				"artemis-core-client" {
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
+				"artemis-core-client",
 				"artemis-jdbc-store",
-				"artemis-jms-client" {
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
-				"artemis-jms-server" {
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
+				"artemis-jms-client",
+				"artemis-jms-server",
 				"artemis-journal",
 				"artemis-quorum-api",
 				"artemis-selector",
 				"artemis-server" {
 					exclude group: "commons-logging", module: "commons-logging"
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
 				},
 				"artemis-service-extensions"
 			]
@@ -197,9 +188,7 @@ bom {
 				"java-driver-bom"
 			]
 			modules = [
-				"java-driver-core" {
-					exclude group: "org.slf4j", module: "jcl-over-slf4j"
-				}
+				"java-driver-core"
 			]
 		}
 	}
