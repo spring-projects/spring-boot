@@ -79,6 +79,7 @@ import org.springframework.core.env.Environment;
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass({ Tracer.class, BraveTracer.class })
 @EnableConfigurationProperties(TracingProperties.class)
+@ConditionalOnEnabledTracing
 public class BraveAutoConfiguration {
 
 	private static final BraveBaggageManager BRAVE_BAGGAGE_MANAGER = new BraveBaggageManager();
