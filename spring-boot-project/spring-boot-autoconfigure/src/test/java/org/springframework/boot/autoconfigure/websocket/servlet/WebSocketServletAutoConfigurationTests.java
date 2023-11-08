@@ -108,11 +108,20 @@ class WebSocketServletAutoConfigurationTests {
 
 	@Test
 	@Servlet5ClassPathOverrides
-	void jettyWebSocketUpgradeFilterIsAddedToServletContext() {
+	void jettyWebSocketUpgradeFilterIsAddedToServletContextOfJettyServer() {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				JettyConfiguration.class, WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class)) {
 			assertThat(context.getServletContext().getFilterRegistration(WebSocketUpgradeFilter.class.getName()))
 				.isNotNull();
+		}
+	}
+
+	@Test
+	void jettyWebSocketUpgradeFilterIsNotAddedToServletContextOfTomcatServer() {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				TomcatConfiguration.class, WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class)) {
+			assertThat(context.getServletContext().getFilterRegistration(WebSocketUpgradeFilter.class.getName()))
+				.isNull();
 		}
 	}
 
