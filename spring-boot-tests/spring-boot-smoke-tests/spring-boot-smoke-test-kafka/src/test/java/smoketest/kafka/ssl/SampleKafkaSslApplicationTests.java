@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class },
 		properties = { "spring.kafka.security.protocol=SSL", "spring.kafka.bootstrap-servers=localhost:9093",
 				"spring.kafka.ssl.bundle=client",
