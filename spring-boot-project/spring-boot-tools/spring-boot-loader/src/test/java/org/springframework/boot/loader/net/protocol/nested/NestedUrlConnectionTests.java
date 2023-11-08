@@ -162,9 +162,14 @@ class NestedUrlConnectionTests {
 	void getLastModifiedHeaderReturnsFileModifiedTime() throws IOException {
 		NestedUrlConnection connection = new NestedUrlConnection(this.url);
 		URLConnection fileConnection = this.jarFile.toURI().toURL().openConnection();
-		assertThat(connection.getHeaderFieldDate("last-modified", 0))
-			.isEqualTo(withoutNanos(this.jarFile.lastModified()))
-			.isEqualTo(fileConnection.getHeaderFieldDate("last-modified", 0));
+		try {
+			assertThat(connection.getHeaderFieldDate("last-modified", 0))
+				.isEqualTo(withoutNanos(this.jarFile.lastModified()))
+				.isEqualTo(fileConnection.getHeaderFieldDate("last-modified", 0));
+		}
+		finally {
+			fileConnection.getInputStream().close();
+		}
 	}
 
 	private long withoutNanos(long epochMilli) {

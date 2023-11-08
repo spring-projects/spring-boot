@@ -502,8 +502,14 @@ class JarUrlConnectionTests {
 	void getLastModifiedHeaderReturnsFileModifiedTime() throws IOException {
 		JarUrlConnection connection = JarUrlConnection.open(this.url);
 		URLConnection fileConnection = this.file.toURI().toURL().openConnection();
-		assertThat(connection.getHeaderFieldDate("last-modified", 0)).isEqualTo(withoutNanos(this.file.lastModified()))
-			.isEqualTo(fileConnection.getHeaderFieldDate("last-modified", 0));
+		try {
+			assertThat(connection.getHeaderFieldDate("last-modified", 0))
+				.isEqualTo(withoutNanos(this.file.lastModified()))
+				.isEqualTo(fileConnection.getHeaderFieldDate("last-modified", 0));
+		}
+		finally {
+			fileConnection.getInputStream().close();
+		}
 	}
 
 	private long withoutNanos(long epochMilli) {
