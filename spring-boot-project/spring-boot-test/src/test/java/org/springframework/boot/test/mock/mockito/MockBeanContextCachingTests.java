@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 class MockBeanContextCachingTests {
 
-	private final DefaultContextCache contextCache = new DefaultContextCache();
+	private final DefaultContextCache contextCache = new DefaultContextCache(2);
 
 	private final DefaultCacheAwareContextLoaderDelegate delegate = new DefaultCacheAwareContextLoaderDelegate(
 			this.contextCache);
