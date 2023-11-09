@@ -1726,7 +1726,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.9") {
+	library("Spring Batch", "4.3.10-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			versionRange "[5.0.0-M1,)"
