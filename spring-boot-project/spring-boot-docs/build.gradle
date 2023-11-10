@@ -297,10 +297,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 			String formatted = version.split("\\.").take(2).join('.')
 			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
 		}
-		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
-		if (securityVersion.endsWith("-SNAPSHOT")) {
-			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
-		}
 		attributes  "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
 					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
@@ -322,7 +318,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
-					"spring-security-version": securityVersion,
+					"spring-security-version-antora": toAntoraVersion(versionConstraints["org.springframework.security:spring-security-core"]),
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
 					"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
 					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
