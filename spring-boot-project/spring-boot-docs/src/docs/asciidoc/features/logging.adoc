@@ -443,7 +443,7 @@ Profile sections are supported anywhere within the `<configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
 The `<springProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
+Check the {spring-framework-docs}/core/beans/environment.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
 The following listing shows three sample profiles:
 
 [source,xml,subs="verbatim",indent=0]
@@ -508,7 +508,7 @@ Profile sections are supported anywhere within the `<Configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
 The `<SpringProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
+Check the {spring-framework-docs}/core/beans/environment.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
 The following listing shows three sample profiles:
 
 [source,xml,subs="verbatim",indent=0]

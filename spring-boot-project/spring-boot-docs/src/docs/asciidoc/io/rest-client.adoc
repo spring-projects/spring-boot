@@ -69,7 +69,7 @@ include::code:MyService[]
 === WebClient
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
 Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
-You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web-reactive.html#webflux-client[section in the Spring Framework docs].
+You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
 
 Spring Boot creates and pre-configures a `WebClient.Builder` for you.
 It is strongly advised to inject it in your components and use it to create `WebClient` instances.
@@ -101,7 +101,7 @@ Developers can override the resource configuration for Jetty and Reactor Netty b
 
 If you wish to override that choice for the client, you can define your own `ClientHttpConnector` bean and have full control over the client configuration.
 
-You can learn more about the {spring-framework-docs}/web-reactive.html#webflux-client-builder[`WebClient` configuration options in the Spring Framework reference documentation].
+You can learn more about the {spring-framework-docs}/web/webflux-webclient/client-builder.html[`WebClient` configuration options in the Spring Framework reference documentation].
 
 
 
