@@ -22,16 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader.FailureHandler;
 import org.springframework.core.log.LogMessage;
-import org.springframework.util.StringUtils;
 
 /**
  * Utility to trigger {@link FailureAnalyzer} and {@link FailureAnalysisReporter}
@@ -61,39 +58,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 
 	FailureAnalyzers(ConfigurableApplicationContext context, SpringFactoriesLoader springFactoriesLoader) {
 		this.springFactoriesLoader = springFactoriesLoader;
-		this.analyzers = loadFailureAnalyzers(context, this.springFactoriesLoader);
-	}
-
-	private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
-			SpringFactoriesLoader springFactoriesLoader) {
-		List<FailureAnalyzer> analyzers = springFactoriesLoader.load(FailureAnalyzer.class,
-				getArgumentResolver(context), FailureHandler.logging(logger));
-		List<FailureAnalyzer> awareAnalyzers = analyzers.stream()
-			.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
-			.toList();
-		if (!awareAnalyzers.isEmpty()) {
-			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(
-					awareAnalyzers.stream().map((analyzer) -> analyzer.getClass().getName()).toList());
-			logger.warn(LogMessage.format(
-					"FailureAnalyzers [%s] implement BeanFactoryAware or EnvironmentAware. "
-							+ "Support for these interfaces on FailureAnalyzers is deprecated, "
-							+ "and will be removed in a future release. "
-							+ "Instead provide a constructor that accepts BeanFactory or Environment parameters.",
-					awareAnalyzerNames));
-			if (context == null) {
-				logger.trace(LogMessage.format("Skipping [%s] due to missing context", awareAnalyzerNames));
-				return analyzers.stream().filter((analyzer) -> !awareAnalyzers.contains(analyzer)).toList();
-			}
-			awareAnalyzers.forEach((analyzer) -> {
-				if (analyzer instanceof BeanFactoryAware beanFactoryAware) {
-					beanFactoryAware.setBeanFactory(context.getBeanFactory());
-				}
-				if (analyzer instanceof EnvironmentAware environmentAware) {
-					environmentAware.setEnvironment(context.getEnvironment());
-				}
-			});
-		}
-		return analyzers;
+		this.analyzers = springFactoriesLoader.load(FailureAnalyzer.class, getArgumentResolver(context),
+				FailureHandler.logging(logger));
 	}
 
 	private static ArgumentResolver getArgumentResolver(ConfigurableApplicationContext context) {

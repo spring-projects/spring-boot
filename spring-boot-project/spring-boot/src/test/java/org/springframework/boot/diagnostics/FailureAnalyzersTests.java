@@ -21,16 +21,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -45,20 +42,13 @@ import static org.mockito.Mockito.times;
 @ExtendWith(OutputCaptureExtension.class)
 class FailureAnalyzersTests {
 
-	private static AwareFailureAnalyzer failureAnalyzer;
+	private static FailureAnalyzer failureAnalyzer;
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@BeforeEach
 	void configureMock() {
-		failureAnalyzer = mock(AwareFailureAnalyzer.class);
-	}
-
-	@Test
-	void analyzersAreLoadedAndCalled() {
-		RuntimeException failure = new RuntimeException();
-		analyzeAndReport(failure, BasicFailureAnalyzer.class, StandardAwareFailureAnalyzer.class);
-		then(failureAnalyzer).should(times(2)).analyze(failure);
+		failureAnalyzer = mock(FailureAnalyzer.class);
 	}
 
 	@Test
@@ -75,22 +65,6 @@ class FailureAnalyzersTests {
 		analyzeAndReport(failure, BasicFailureAnalyzer.class, EnvironmentConstructorFailureAnalyzer.class);
 		then(failureAnalyzer).should(times(2)).analyze(failure);
 		assertThat(output).doesNotContain("implement BeanFactoryAware or EnvironmentAware");
-	}
-
-	@Test
-	void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers(CapturedOutput output) {
-		RuntimeException failure = new RuntimeException();
-		analyzeAndReport(failure, BasicFailureAnalyzer.class, StandardAwareFailureAnalyzer.class);
-		then(failureAnalyzer).should().setBeanFactory(same(this.context.getBeanFactory()));
-		assertThat(output).contains("FailureAnalyzers [" + StandardAwareFailureAnalyzer.class.getName()
-				+ "] implement BeanFactoryAware or EnvironmentAware.");
-	}
-
-	@Test
-	void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
-		RuntimeException failure = new RuntimeException();
-		analyzeAndReport(failure, BasicFailureAnalyzer.class, StandardAwareFailureAnalyzer.class);
-		then(failureAnalyzer).should().setEnvironment(same(this.context.getEnvironment()));
 	}
 
 	@Test
@@ -166,24 +140,6 @@ class FailureAnalyzersTests {
 
 		EnvironmentConstructorFailureAnalyzer(Environment environment) {
 			assertThat(environment).isNotNull();
-		}
-
-	}
-
-	interface AwareFailureAnalyzer extends BeanFactoryAware, EnvironmentAware, FailureAnalyzer {
-
-	}
-
-	static class StandardAwareFailureAnalyzer extends BasicFailureAnalyzer implements AwareFailureAnalyzer {
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			failureAnalyzer.setEnvironment(environment);
-		}
-
-		@Override
-		public void setBeanFactory(BeanFactory beanFactory) {
-			failureAnalyzer.setBeanFactory(beanFactory);
 		}
 
 	}
