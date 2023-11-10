@@ -5,7 +5,7 @@ At its core, the abstraction applies caching to methods, thus reducing the numbe
 The caching logic is applied transparently, without any interference to the invoker.
 Spring Boot auto-configures the cache infrastructure as long as caching support is enabled by using the `@EnableCaching` annotation.
 
-NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section] of the Spring Framework reference for more details.
+NOTE: Check the {spring-framework-docs}/integration/cache.html[relevant section] of the Spring Framework reference for more details.
 
 In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
@@ -26,7 +26,7 @@ When you have made up your mind about the cache provider to use, please make sur
 Nearly all providers require you to explicitly configure every cache that you use in the application.
 Some offer a way to customize the default caches defined by the configprop:spring.cache.cache-names[] property.
 
-TIP: It is also possible to transparently {spring-framework-docs}/integration.html#cache-annotations-put[update] or {spring-framework-docs}/integration.html#cache-annotations-evict[evict] data from the cache.
+TIP: It is also possible to transparently {spring-framework-docs}/integration/cache/annotations.html#cache-annotations-put[update] or {spring-framework-docs}/integration/cache/annotations.html#cache-annotations-evict[evict] data from the cache.
 
 
 

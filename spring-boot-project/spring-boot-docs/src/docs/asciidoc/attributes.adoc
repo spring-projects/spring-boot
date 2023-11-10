@@ -82,7 +82,7 @@
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/org/springframework
-:spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference/html
+:spring-framework-docs: https://docs.spring.io/spring-framework/reference/{spring-framework-version-antora}
 :spring-graphql: https://spring.io/projects/spring-graphql
 :spring-graphql-api: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/api/
 :spring-graphql-docs: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/reference/html/

@@ -293,6 +293,10 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
+		def toAntoraVersion = version -> {
+			String formatted = version.split("\\.").take(2).join('.')
+			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
+		}
 		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
 		if (securityVersion.endsWith("-SNAPSHOT")) {
 			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
@@ -314,6 +318,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
+					"spring-framework-version-antora": toAntoraVersion(versionConstraints["org.springframework:spring-core"]),
 					"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],

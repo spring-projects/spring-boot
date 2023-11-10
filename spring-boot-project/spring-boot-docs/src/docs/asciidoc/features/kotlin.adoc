@@ -3,7 +3,7 @@
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing {kotlin-docs}java-interop.html[interoperability] with existing libraries written in Java.
 
 Spring Boot provides Kotlin support by leveraging the support in other Spring projects such as Spring Framework, Spring Data, and Reactor.
-See the {spring-framework-docs}/languages.html#kotlin[Spring Framework Kotlin support documentation] for more information.
+See the {spring-framework-docs}/languages/kotlin.html[Spring Framework Kotlin support documentation] for more information.
 
 The easiest way to start with Spring Boot and Kotlin is to follow https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial].
 You can create new Kotlin projects by using https://start.spring.io/#!language=kotlin[start.spring.io].
