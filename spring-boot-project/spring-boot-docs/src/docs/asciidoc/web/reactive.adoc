@@ -12,13 +12,15 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 
 include::code:MyRestController[]
 
+WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web/webflux.html[reference documentation].
+
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
 include::code:MyRoutingConfiguration[]
 
 include::code:MyUserHandler[]
 
-WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
+"`WebFlux.fn`" is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web/webflux-functional.html[reference documentation].
 
 TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
 Beans can be ordered if you need to apply a precedence.
@@ -40,7 +42,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (described <<web#web.reactive.webflux.httpcodecs,later in this document>>).
 * Support for serving static resources, including support for WebJars (described <<web#web.servlet.spring-mvc.static-content,later in this document>>).
 
-If you want to keep Spring Boot WebFlux features and you want to add additional {spring-framework-docs}/web-reactive.html#webflux-config[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
+If you want to keep Spring Boot WebFlux features and you want to add additional {spring-framework-docs}/web/webflux/config.html[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
 
 If you want to take complete control of Spring WebFlux, you can add your own `@Configuration` annotated with `@EnableWebFlux`.
 
@@ -160,7 +162,7 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error handler that renders the same data in HTML format.
 You can also provide your own HTML templates to display errors (see the <<web#web.reactive.webflux.error-handling.error-pages,next section>>).
 
-Before customizing error handling in Spring Boot directly, you can leverage the {spring-framework-docs}/web-reactive.html#webflux-ann-rest-exceptions[RFC 7807 Problem Details] support in Spring WebFlux.
+Before customizing error handling in Spring Boot directly, you can leverage the {spring-framework-docs}/web/webflux/ann-rest-exceptions.html[RFC 7807 Problem Details] support in Spring WebFlux.
 Spring WebFlux can produce custom error messages with the `application/problem+json` media type, like:
 
 [source,json,indent=0,subs="verbatim"]

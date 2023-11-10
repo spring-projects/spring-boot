@@ -755,7 +755,7 @@ Auto-configuration enables the instrumentation of all requests handled by Spring
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
-See the {spring-framework-docs}/integration.html#integration.observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
+See the {spring-framework-docs}/integration/observability.html#observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
 
 To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.observation` package.
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
@@ -775,7 +775,7 @@ Auto-configuration enables the instrumentation of all requests handled by Spring
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
-See the {spring-framework-docs}/integration.html#integration.observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
+See the {spring-framework-docs}/integration/observability.html#observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
 
 To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.reactive.observation` package.
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
@@ -830,7 +830,7 @@ You can also manually apply the customizers responsible for this instrumentation
 By default, metrics are generated with the name, `http.client.requests`.
 You can customize the name by setting the configprop:management.observations.http.client.requests.name[] property.
 
-See the {spring-framework-docs}/integration.html#integration.observability.http-client[Spring Framework reference documentation for more information on produced observations].
+See the {spring-framework-docs}/integration/observability.html#observability.http-client[Spring Framework reference documentation for more information on produced observations].
 
 To customize the tags when using `RestTemplate`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
 To customize the tags when using `WebClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.web.reactive.function.client` package.

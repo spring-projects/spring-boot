@@ -5,7 +5,7 @@ It enables symmetric interaction models through async message passing over a sin
 
 
 The `spring-messaging` module of the Spring Framework provides support for RSocket requesters and responders, both on the client and on the server side.
-See the {spring-framework-docs}/web-reactive.html#rsocket-spring[RSocket section] of the Spring Framework reference for more details, including an overview of the RSocket protocol.
+See the {spring-framework-docs}/rsocket.html#rsocket-spring[RSocket section] of the Spring Framework reference for more details, including an overview of the RSocket protocol.
 
 
 
