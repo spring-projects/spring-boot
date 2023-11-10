@@ -249,7 +249,7 @@ To use Spring Data Envers, make sure your repository extends from `RevisionRepos
 
 include::code:CountryRepository[]
 
-NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers reference documentation].
+NOTE: For more details, check the {spring-data-jpa-docs}/#envers[Spring Data Envers reference documentation].
 
 
 
