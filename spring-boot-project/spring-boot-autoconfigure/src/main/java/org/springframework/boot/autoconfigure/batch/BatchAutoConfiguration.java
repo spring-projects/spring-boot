@@ -18,14 +18,10 @@ package org.springframework.boot.autoconfigure.batch;
 
 import javax.sql.DataSource;
 
-import org.springframework.batch.core.configuration.ListableJobLocator;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
-import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
@@ -90,20 +86,6 @@ public class BatchAutoConfiguration {
 	@ConditionalOnMissingBean(ExitCodeGenerator.class)
 	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(JobOperator.class)
-	public SimpleJobOperator jobOperator(ObjectProvider<JobParametersConverter> jobParametersConverter,
-			JobExplorer jobExplorer, JobLauncher jobLauncher, ListableJobLocator jobRegistry,
-			JobRepository jobRepository) throws Exception {
-		SimpleJobOperator factory = new SimpleJobOperator();
-		factory.setJobExplorer(jobExplorer);
-		factory.setJobLauncher(jobLauncher);
-		factory.setJobRegistry(jobRegistry);
-		factory.setJobRepository(jobRepository);
-		jobParametersConverter.ifAvailable(factory::setJobParametersConverter);
-		return factory;
 	}
 
 	@Configuration(proxyBeanMethods = false)
