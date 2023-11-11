@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class ReactiveMultipartProperties {
 
 	/**
 	 * Maximum amount of memory allowed per part before it's written to disk. Set to -1 to
-	 * store all contents in memory. Ignored when streaming is enabled.
+	 * store all contents in memory.
 	 */
 	private DataSize maxInMemorySize = DataSize.ofKilobytes(256);
 
@@ -49,7 +49,7 @@ public class ReactiveMultipartProperties {
 
 	/**
 	 * Maximum amount of disk space allowed per part. Default is -1 which enforces no
-	 * limits. Ignored when streaming is enabled.
+	 * limits.
 	 */
 	private DataSize maxDiskUsagePerPart = DataSize.ofBytes(-1);
 
@@ -62,7 +62,7 @@ public class ReactiveMultipartProperties {
 	/**
 	 * Directory used to store file parts larger than 'maxInMemorySize'. Default is a
 	 * directory named 'spring-multipart' created under the system temporary directory.
-	 * Ignored when streaming is enabled.
+	 * Ignored when using the PartEvent streaming support.
 	 */
 	private String fileStorageDirectory;
 

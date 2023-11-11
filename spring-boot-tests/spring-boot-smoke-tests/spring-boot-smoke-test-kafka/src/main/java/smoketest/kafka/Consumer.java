@@ -23,7 +23,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-class Consumer {
+public class Consumer {
 
 	private final List<SampleMessage> messages = new CopyOnWriteArrayList<>();
 
@@ -33,7 +33,7 @@ class Consumer {
 		System.out.println("Received sample message [" + message + "]");
 	}
 
-	List<SampleMessage> getMessages() {
+	public List<SampleMessage> getMessages() {
 		return this.messages;
 	}
 

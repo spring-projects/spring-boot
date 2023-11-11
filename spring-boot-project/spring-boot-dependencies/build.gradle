@@ -159,9 +159,7 @@ bom {
 				"java-driver-bom"
 			]
 			modules = [
-				"java-driver-core" {
-					exclude group: "org.slf4j", module: "jcl-over-slf4j"
-				}
+				"java-driver-core"
 			]
 		}
 	}
@@ -990,7 +988,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.12.0-RC1") {
+	library("Micrometer", "1.12.0-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1003,7 +1001,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.2.0-RC1") {
+	library("Micrometer Tracing", "1.2.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Tracing"
 		group("io.micrometer") {
@@ -1318,7 +1316,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2023.0.0-RC1") {
+	library("Reactor Bom", "2023.0.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
@@ -1486,7 +1484,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "3.1.0-RC1") {
+	library("Spring AMQP", "3.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			imports = [
@@ -1494,7 +1492,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Authorization Server", "1.2.0-RC1") {
+	library("Spring Authorization Server", "1.2.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			modules = [
@@ -1502,7 +1500,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "5.1.0-RC1") {
+	library("Spring Batch", "5.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.batch") {
 			imports = [
@@ -1510,7 +1508,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2023.1.0-RC1") {
+	library("Spring Data Bom", "2023.1.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
@@ -1528,7 +1526,7 @@ bom {
 			]
 		}
 	}
-	library("Spring GraphQL", "1.2.3") {
+	library("Spring GraphQL", "1.2.4-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
@@ -1537,7 +1535,7 @@ bom {
 			]
 		}
 	}
-	library("Spring HATEOAS", "2.2.0-RC1") {
+	library("Spring HATEOAS", "2.2.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
@@ -1545,7 +1543,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "6.2.0-RC1") {
+	library("Spring Integration", "6.2.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.integration") {
 			imports = [
@@ -1553,7 +1551,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "3.1.0-RC1") {
+	library("Spring Kafka", "3.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
@@ -1562,7 +1560,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "3.2.0-RC1") {
+	library("Spring LDAP", "3.2.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
@@ -1599,7 +1597,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "6.2.0-RC2") {
+	library("Spring Security", "6.2.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			imports = [
@@ -1607,7 +1605,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session", "3.2.0-RC1") {
+	library("Spring Session", "3.2.0-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
@@ -1619,7 +1617,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.7") {
+	library("Spring WS", "4.0.8-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.ws") {
 			imports = [

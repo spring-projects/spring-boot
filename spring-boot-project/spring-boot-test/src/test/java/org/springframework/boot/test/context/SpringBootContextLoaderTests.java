@@ -26,12 +26,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -246,6 +248,13 @@ class SpringBootContextLoaderTests {
 			.withMessage("UseMainMethod.ALWAYS cannot be used with @ContextHierarchy tests");
 	}
 
+	@Test
+	void whenSubclassProvidesCustomApplicationContextFactory() {
+		TestContext testContext = new ExposedTestContextManager(CustomApplicationContextTest.class)
+			.getExposedTestContext();
+		assertThat(testContext.getApplicationContext()).isInstanceOf(CustomAnnotationConfigApplicationContext.class);
+	}
+
 	private String[] getActiveProfiles(Class<?> testClass) {
 		TestContext testContext = new ExposedTestContextManager(testClass).getExposedTestContext();
 		ApplicationContext applicationContext = testContext.getApplicationContext();
@@ -367,6 +376,25 @@ class SpringBootContextLoaderTests {
 	@ContextHierarchy({ @ContextConfiguration(classes = ConfigWithMain.class),
 			@ContextConfiguration(classes = AnotherConfigWithMain.class) })
 	static class UseMainMethodWithContextHierarchy {
+
+	}
+
+	@SpringBootTest
+	@ContextConfiguration(classes = Config.class, loader = CustomApplicationContextSpringBootContextLoader.class)
+	static class CustomApplicationContextTest {
+
+	}
+
+	static class CustomApplicationContextSpringBootContextLoader extends SpringBootContextLoader {
+
+		@Override
+		protected ApplicationContextFactory getApplicationContextFactory(MergedContextConfiguration mergedConfig) {
+			return (webApplicationType) -> new CustomAnnotationConfigApplicationContext();
+		}
+
+	}
+
+	static class CustomAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext {
 
 	}
 

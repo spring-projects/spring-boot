@@ -103,7 +103,7 @@ This is quite useful for retrieving information from an HTTP request header and 
 With Spring Boot, you can declare a `WebInterceptor` bean to have it registered with the web transport.
 
 
-{spring-framework-docs}/web.html#mvc-cors[Spring MVC] and {spring-framework-docs}/web-reactive.html#webflux-cors[Spring WebFlux] support CORS (Cross-Origin Resource Sharing) requests.
+{spring-framework-docs}/web/webmvc-cors.html[Spring MVC] and {spring-framework-docs}/web/webflux-cors.html[Spring WebFlux] support CORS (Cross-Origin Resource Sharing) requests.
 CORS is a critical part of the web config for GraphQL applications that are accessed from browsers using different domains.
 
 Spring Boot supports many configuration properties under the `spring.graphql.cors.*` namespace; here's a short configuration sample:

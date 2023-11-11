@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.liquibase;
 import java.io.File;
 import java.util.Map;
 
+import liquibase.UpdateSummaryEnum;
+import liquibase.UpdateSummaryOutputEnum;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -134,6 +136,18 @@ public class LiquibaseProperties {
 	 * with that tag.
 	 */
 	private String tag;
+
+	/**
+	 * Whether to print a summary of the update operation. Values can be 'off', 'summary'
+	 * (default), 'verbose'
+	 */
+	private UpdateSummaryEnum showSummary;
+
+	/**
+	 * Where to print a summary of the update operation. Values can be 'log' (default),
+	 * 'console', or 'all'.
+	 */
+	private UpdateSummaryOutputEnum showSummaryOutput;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -286,6 +300,22 @@ public class LiquibaseProperties {
 
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+
+	public UpdateSummaryEnum getShowSummary() {
+		return this.showSummary;
+	}
+
+	public void setShowSummary(UpdateSummaryEnum showSummary) {
+		this.showSummary = showSummary;
+	}
+
+	public UpdateSummaryOutputEnum getShowSummaryOutput() {
+		return this.showSummaryOutput;
+	}
+
+	public void setShowSummaryOutput(UpdateSummaryOutputEnum showSummaryOutput) {
+		this.showSummaryOutput = showSummaryOutput;
 	}
 
 }

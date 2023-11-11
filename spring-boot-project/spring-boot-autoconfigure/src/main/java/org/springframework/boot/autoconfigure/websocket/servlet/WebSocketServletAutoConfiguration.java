@@ -34,7 +34,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeplo
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -91,13 +92,15 @@ public class WebSocketServletAutoConfiguration {
 		@Bean
 		@ConditionalOnNotWarDeployment
 		@Order(Ordered.LOWEST_PRECEDENCE)
-		@ConditionalOnMissingBean(name = "websocketUpgradeFilterServletContextInitializer")
-		ServletContextInitializer websocketUpgradeFilterServletContextInitializer() {
-			return (servletContext) -> {
-				Dynamic registration = servletContext.addFilter(WebSocketUpgradeFilter.class.getName(),
-						new WebSocketUpgradeFilter());
-				registration.setAsyncSupported(true);
-				registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+		@ConditionalOnMissingBean(name = "websocketUpgradeFilterWebServerCustomizer")
+		WebServerFactoryCustomizer<JettyServletWebServerFactory> websocketUpgradeFilterWebServerCustomizer() {
+			return (factory) -> {
+				factory.addInitializers((servletContext) -> {
+					Dynamic registration = servletContext.addFilter(WebSocketUpgradeFilter.class.getName(),
+							new WebSocketUpgradeFilter());
+					registration.setAsyncSupported(true);
+					registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+				});
 			};
 		}
 

@@ -163,6 +163,7 @@ import static org.mockito.Mockito.spy;
  * @author Sebastien Deleuze
  * @author Moritz Halbritter
  * @author Tadaya Tsuyukubo
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -1369,6 +1370,21 @@ class SpringApplicationTests {
 		try {
 			ApplicationContext context = application.run();
 			assertThat(context.getBean("test")).isEqualTo("test");
+		}
+		finally {
+			System.clearProperty(AotDetector.AOT_ENABLED);
+		}
+	}
+
+	@Test
+	void shouldReportFriendlyErrorIfAotInitializerNotFound() {
+		SpringApplication application = new SpringApplication(TestSpringApplication.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setMainApplicationClass(TestSpringApplication.class);
+		System.setProperty(AotDetector.AOT_ENABLED, "true");
+		try {
+			assertThatIllegalStateException().isThrownBy(application::run)
+				.withMessageContaining("but AOT processing hasn't happened");
 		}
 		finally {
 			System.clearProperty(AotDetector.AOT_ENABLED);

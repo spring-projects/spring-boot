@@ -78,6 +78,10 @@ public class ReactiveMultipartAutoConfiguration {
 				map.from(multipartProperties::getMaxHeadersSize)
 					.asInt(DataSize::toBytes)
 					.to(partEventHttpMessageReader::setMaxHeadersSize);
+				map.from(multipartProperties::getMaxDiskUsagePerPart)
+					.as(DataSize::toBytes)
+					.to(partEventHttpMessageReader::setMaxPartSize);
+				map.from(multipartProperties::getMaxParts).to(partEventHttpMessageReader::setMaxParts);
 				map.from(multipartProperties::getHeadersCharset).to(partEventHttpMessageReader::setHeadersCharset);
 			}
 		});

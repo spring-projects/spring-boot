@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.core;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +69,33 @@ class DockerJsonTests {
 		assertThat(response).containsExactly(new TestResponse(1), new TestResponse(2));
 	}
 
+	@Test
+	void shouldBeLocaleAgnostic() {
+		// Turkish locale lower cases the 'I' to a 'ı', not to an 'i'
+		withLocale(Locale.forLanguageTag("tr-TR"), () -> {
+			String json = """
+					{ "INTEGER": 42 }
+					""";
+			TestLowercaseResponse response = DockerJson.deserialize(json, TestLowercaseResponse.class);
+			assertThat(response.integer()).isEqualTo(42);
+		});
+	}
+
+	private void withLocale(Locale locale, Runnable runnable) {
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(locale);
+			runnable.run();
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
+	}
+
 	record TestResponse(int value) {
+	}
+
+	record TestLowercaseResponse(int integer) {
 	}
 
 }

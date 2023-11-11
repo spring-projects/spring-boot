@@ -1,0 +1,30 @@
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,SSL://localhost:9093
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_SSL_KEYSTORE_FILENAME: '/certs/test-server.p12'
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: '/certs/credentials'
+      KAFKA_SSL_KEY_CREDENTIALS: '/certs/credentials'
+      KAFKA_SSL_TRUSTSTORE_FILENAME: '/certs/test-ca.p12'
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: '/certs/credentials'
+    volumes:
+      - ./ssl/:/etc/kafka/secrets/certs

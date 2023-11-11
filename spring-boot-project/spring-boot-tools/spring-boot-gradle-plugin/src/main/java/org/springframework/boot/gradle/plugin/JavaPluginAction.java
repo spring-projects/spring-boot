@@ -26,12 +26,9 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.AttributeContainer;
-import org.gradle.api.attributes.Bundling;
-import org.gradle.api.attributes.LibraryElements;
-import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.ExtensionContainer;
@@ -39,6 +36,7 @@ import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -275,18 +273,21 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void configureProductionRuntimeClasspathConfiguration(Project project) {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		AttributeContainer attributes = productionRuntimeClasspath.getAttributes();
-		ObjectFactory objectFactory = project.getObjects();
-		attributes.attribute(Usage.USAGE_ATTRIBUTE, objectFactory.named(Usage.class, Usage.JAVA_RUNTIME));
-		attributes.attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
-		attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
-				objectFactory.named(LibraryElements.class, LibraryElements.JAR));
 		productionRuntimeClasspath.setVisible(false);
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		productionRuntimeClasspath.attributes((attributes) -> {
+			ProviderFactory providers = project.getProviders();
+			AttributeContainer sourceAttributes = runtimeClasspath.getAttributes();
+			for (Attribute attribute : sourceAttributes.keySet()) {
+				attributes.attributeProvider(attribute,
+						providers.provider(() -> sourceAttributes.getAttribute(attribute)));
+			}
+		});
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
 		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
 		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());

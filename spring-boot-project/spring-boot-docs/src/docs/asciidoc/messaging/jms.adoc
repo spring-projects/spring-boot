@@ -2,7 +2,7 @@
 == JMS
 The `jakarta.jms.ConnectionFactory` interface provides a standard method of creating a `jakarta.jms.Connection` for interacting with a JMS broker.
 Although Spring needs a `ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
-(See the {spring-framework-docs}/integration.html#jms[relevant section] of the Spring Framework reference documentation for details.)
+(See the {spring-framework-docs}/integration/jms.html[relevant section] of the Spring Framework reference documentation for details.)
 Spring Boot also auto-configures the necessary infrastructure to send and receive messages.
 
 

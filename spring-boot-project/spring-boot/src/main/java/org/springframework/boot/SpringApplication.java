@@ -168,6 +168,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Tadaya Tsuyukubo
+ * @author Yanming Zhou
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -305,7 +306,7 @@ public class SpringApplication {
 	public ConfigurableApplicationContext run(String... args) {
 		Startup startup = Startup.create();
 		if (this.registerShutdownHook) {
-			SpringApplication.shutdownHook.enableShutdowHookAddition();
+			SpringApplication.shutdownHook.enableShutdownHookAddition();
 		}
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
@@ -436,6 +437,10 @@ public class SpringApplication {
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
 			if (aotInitializers.isEmpty()) {
 				String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
+				Assert.state(ClassUtils.isPresent(initializerClassName, getClassLoader()),
+						"You are starting the application with AOT mode enabled but AOT processing hasn't happened. "
+								+ "Please build your application with enabled AOT processing first, "
+								+ "or remove the system property 'spring.aot.enabled' to run the application in regular mode");
 				aotInitializers.add(AotApplicationContextInitializer.forInitializerClasses(initializerClassName));
 			}
 			initializers.removeAll(aotInitializers);
@@ -1684,8 +1689,10 @@ public class SpringApplication {
 		}
 
 		static Startup create() {
-			return (!ClassUtils.isPresent("jdk.crac.management.CRaCMXBean", Startup.class.getClassLoader()))
-					? new StandardStartup() : new CoordinatedRestoreAtCheckpointStartup();
+			ClassLoader classLoader = Startup.class.getClassLoader();
+			return (ClassUtils.isPresent("jdk.crac.management.CRaCMXBean", classLoader)
+					&& ClassUtils.isPresent("org.crac.management.CRaCMXBean", classLoader))
+							? new CoordinatedRestoreAtCheckpointStartup() : new StandardStartup();
 		}
 
 	}

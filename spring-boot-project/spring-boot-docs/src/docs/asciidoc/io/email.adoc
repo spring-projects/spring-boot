@@ -2,7 +2,7 @@
 == Sending Email
 The Spring Framework provides an abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
 
-TIP: See the {spring-framework-docs}/integration.html#mail[reference documentation] for a detailed explanation of how you can use `JavaMailSender`.
+TIP: See the {spring-framework-docs}/integration/email.html[reference documentation] for a detailed explanation of how you can use `JavaMailSender`.
 
 If `spring.mail.host` and the relevant libraries (as defined by `spring-boot-starter-mail`) are available, a default `JavaMailSender` is created if none exists.
 The sender can be further customized by configuration items from the `spring.mail` namespace.

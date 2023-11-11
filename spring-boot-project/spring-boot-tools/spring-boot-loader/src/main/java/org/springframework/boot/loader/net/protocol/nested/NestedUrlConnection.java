@@ -28,6 +28,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.security.Permission;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.boot.loader.ref.Cleaner;
 
@@ -39,6 +48,9 @@ import org.springframework.boot.loader.ref.Cleaner;
  */
 class NestedUrlConnection extends URLConnection {
 
+	private static final DateTimeFormatter RFC_1123_DATE_TIME = DateTimeFormatter.RFC_1123_DATE_TIME
+		.withZone(ZoneId.of("GMT"));
+
 	private static final String CONTENT_TYPE = "x-java/jar";
 
 	private final NestedUrlConnectionResources resources;
@@ -48,6 +60,8 @@ class NestedUrlConnection extends URLConnection {
 	private long lastModified = -1;
 
 	private FilePermission permission;
+
+	private Map<String, List<String>> headerFields;
 
 	NestedUrlConnection(URL url) throws MalformedURLException {
 		this(url, Cleaner.instance);
@@ -67,6 +81,60 @@ class NestedUrlConnection extends URLConnection {
 		catch (IllegalArgumentException ex) {
 			throw new MalformedURLException(ex.getMessage());
 		}
+	}
+
+	@Override
+	public String getHeaderField(String name) {
+		List<String> values = getHeaderFields().get(name);
+		return (values != null && !values.isEmpty()) ? values.get(0) : null;
+	}
+
+	@Override
+	public String getHeaderField(int n) {
+		Entry<String, List<String>> entry = getHeaderEntry(n);
+		List<String> values = (entry != null) ? entry.getValue() : null;
+		return (values != null && !values.isEmpty()) ? values.get(0) : null;
+	}
+
+	@Override
+	public String getHeaderFieldKey(int n) {
+		Entry<String, List<String>> entry = getHeaderEntry(n);
+		return (entry != null) ? entry.getKey() : null;
+	}
+
+	private Entry<String, List<String>> getHeaderEntry(int n) {
+		Iterator<Entry<String, List<String>>> iterator = getHeaderFields().entrySet().iterator();
+		Entry<String, List<String>> entry = null;
+		for (int i = 0; i < n; i++) {
+			entry = (!iterator.hasNext()) ? null : iterator.next();
+		}
+		return entry;
+	}
+
+	@Override
+	public Map<String, List<String>> getHeaderFields() {
+		try {
+			connect();
+		}
+		catch (IOException ex) {
+			return Collections.emptyMap();
+		}
+		Map<String, List<String>> headerFields = this.headerFields;
+		if (headerFields == null) {
+			headerFields = new LinkedHashMap<>();
+			long contentLength = getContentLengthLong();
+			long lastModified = getLastModified();
+			if (contentLength > 0) {
+				headerFields.put("content-length", List.of(String.valueOf(contentLength)));
+			}
+			if (getLastModified() > 0) {
+				headerFields.put("last-modified",
+						List.of(RFC_1123_DATE_TIME.format(Instant.ofEpochMilli(lastModified))));
+			}
+			headerFields = Collections.unmodifiableMap(headerFields);
+			this.headerFields = headerFields;
+		}
+		return headerFields;
 	}
 
 	@Override

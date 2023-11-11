@@ -196,8 +196,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
-		application.setApplicationContextFactory(
-				(webApplicationType) -> getApplicationContextFactory(mergedConfig, webApplicationType));
+		application.setApplicationContextFactory(getApplicationContextFactory(mergedConfig));
 		if (mergedConfig.getParent() != null) {
 			application.setBannerMode(Banner.Mode.OFF);
 		}
@@ -212,17 +211,26 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 	}
 
-	private ConfigurableApplicationContext getApplicationContextFactory(MergedContextConfiguration mergedConfig,
-			WebApplicationType webApplicationType) {
-		if (webApplicationType != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
-			if (webApplicationType == WebApplicationType.REACTIVE) {
-				return new GenericReactiveWebApplicationContext();
+	/**
+	 * Return the {@link ApplicationContextFactory} that should be used for the test. By
+	 * default this method will return a factory that will create an appropriate
+	 * {@link ApplicationContext} for the {@link WebApplicationType}.
+	 * @param mergedConfig the merged context configuration
+	 * @return the application context factory to use
+	 * @since 3.2.0
+	 */
+	protected ApplicationContextFactory getApplicationContextFactory(MergedContextConfiguration mergedConfig) {
+		return (webApplicationType) -> {
+			if (webApplicationType != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
+				if (webApplicationType == WebApplicationType.REACTIVE) {
+					return new GenericReactiveWebApplicationContext();
+				}
+				if (webApplicationType == WebApplicationType.SERVLET) {
+					return new GenericWebApplicationContext();
+				}
 			}
-			if (webApplicationType == WebApplicationType.SERVLET) {
-				return new GenericWebApplicationContext();
-			}
-		}
-		return ApplicationContextFactory.DEFAULT.create(webApplicationType);
+			return ApplicationContextFactory.DEFAULT.create(webApplicationType);
+		};
 	}
 
 	private void prepareEnvironment(MergedContextConfiguration mergedConfig, SpringApplication application,

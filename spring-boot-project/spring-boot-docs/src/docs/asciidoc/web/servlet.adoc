@@ -6,7 +6,7 @@ If you want to build servlet-based web applications, you can take advantage of S
 
 [[web.servlet.spring-mvc]]
 === The "`Spring Web MVC Framework`"
-The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as "`Spring MVC`") is a rich "`model view controller`" web framework.
+The {spring-framework-docs}/web/webmvc.html[Spring Web MVC framework] (often referred to as "`Spring MVC`") is a rich "`model view controller`" web framework.
 Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
@@ -20,7 +20,7 @@ include::code:MyRoutingConfiguration[]
 
 include::code:MyUserHandler[]
 
-Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
+Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web/webmvc.html[reference documentation].
 There are also several guides that cover Spring MVC available at https://spring.io/guides.
 
 TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
@@ -42,7 +42,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 * Static `index.html` support.
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<features#web.servlet.spring-mvc.binding-initializer,later in this document>>).
 
-If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
+If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web/webmvc.html[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
 
 If you want to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
 The custom instances will be subject to further initialization and configuration by Spring MVC.
@@ -186,7 +186,7 @@ See {spring-boot-autoconfigure-module-code}/web/WebProperties.java[`WebPropertie
 
 [TIP]
 ====
-This feature has been thoroughly described in a dedicated https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post] and in Spring Framework's {spring-framework-docs}/web.html#mvc-config-static-resources[reference documentation].
+This feature has been thoroughly described in a dedicated https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post] and in Spring Framework's {spring-framework-docs}/web/webmvc/mvc-config/static-resources.html[reference documentation].
 ====
 
 
@@ -226,7 +226,7 @@ If such a file is present, it is automatically used as the favicon of the applic
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
 
 Spring Boot chooses to disable suffix pattern matching by default, which means that requests like `"GET /projects/spring-boot.json"` will not be matched to `@GetMapping("/projects/spring-boot")` mappings.
-This is considered as a {spring-framework-docs}/web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice for Spring MVC applications].
+This is considered as a {spring-framework-docs}/web/webmvc/mvc-controller/ann-requestmapping.html#mvc-ann-requestmapping-suffix-pattern-match[best practice for Spring MVC applications].
 This feature was mainly useful in the past for HTTP clients which did not send proper "Accept" request headers; we needed to make sure to send the correct Content Type to the client.
 Nowadays, Content Negotiation is much more reliable.
 
@@ -266,7 +266,7 @@ Most standard media types are supported out-of-the-box, but you can also define 
 As of Spring Framework 5.3, Spring MVC supports two strategies for matching request paths to controllers.
 By default, Spring Boot uses the `PathPatternParser` strategy.
 `PathPatternParser` is an https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[optimized implementation] but comes with some restrictions compared to the `AntPathMatcher` strategy.
-`PathPatternParser` restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path pattern variants].
+`PathPatternParser` restricts usage of {spring-framework-docs}/web/webmvc/mvc-controller/ann-requestmapping.html#mvc-ann-requestmapping-uri-templates[some path pattern variants].
 It is also incompatible with configuring the `DispatcherServlet` with a path prefix (configprop:spring.mvc.servlet.path[]).
 
 The strategy can be configured using the configprop:spring.mvc.pathmatch.matching-strategy[] configuration property, as shown in the following example:
@@ -333,7 +333,7 @@ TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorC
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
 To do so, extend `BasicErrorController`, add a public method with a `@RequestMapping` that has a `produces` attribute, and create a bean of your new type.
 
-As of Spring Framework 6.0, {spring-framework-docs}/web.html#mvc-ann-rest-exceptions[RFC 7807 Problem Details] is supported.
+As of Spring Framework 6.0, {spring-framework-docs}/web/webmvc/mvc-ann-rest-exceptions.html[RFC 7807 Problem Details] is supported.
 Spring MVC can produce custom error messages with the `application/problem+json` media type, like:
 
 [source,json,indent=0,subs="verbatim"]
@@ -402,7 +402,7 @@ For more complex mappings, you can also add beans that implement the `ErrorViewR
 
 include::code:MyErrorViewResolver[]
 
-You can also use regular Spring MVC features such as {spring-framework-docs}/web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}/web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
+You can also use regular Spring MVC features such as {spring-framework-docs}/web/webmvc/mvc-servlet/exceptionhandlers.html[`@ExceptionHandler` methods] and {spring-framework-docs}/web/webmvc/mvc-controller/ann-advice.html[`@ControllerAdvice`].
 The `ErrorController` then picks up any unhandled exceptions.
 
 
@@ -438,9 +438,9 @@ You should disable this behavior by setting `com.ibm.ws.webcontainer.invokeFlush
 ==== CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible way what kind of cross-domain requests are authorized, instead of using some less secure and less powerful approaches such as IFRAME or JSONP.
 
-As of version 4.2, Spring MVC {spring-framework-docs}/web.html#mvc-cors[supports CORS].
-Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
-{spring-framework-docs}/web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
+As of version 4.2, Spring MVC {spring-framework-docs}/web/webmvc-cors.html[supports CORS].
+Using {spring-framework-docs}/web/webmvc-cors.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
+{spring-framework-docs}/web/webmvc-cors.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
 include::code:MyCorsConfiguration[]
 

@@ -70,7 +70,7 @@ class SpringApplicationShutdownHook implements Runnable {
 		return this.handlers;
 	}
 
-	void enableShutdowHookAddition() {
+	void enableShutdownHookAddition() {
 		this.shutdownHookAdditionEnabled = true;
 	}
 
