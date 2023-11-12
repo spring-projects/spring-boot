@@ -218,7 +218,7 @@ public class IntegrationProperties {
 		/**
 		 * Database schema initialization mode.
 		 */
-		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
+		private DatabaseInitializationMode databaseInitializationMode = DatabaseInitializationMode.EMBEDDED;
 
 		public String getSchema() {
 			return this.schema;
@@ -236,12 +236,12 @@ public class IntegrationProperties {
 			this.platform = platform;
 		}
 
-		public DatabaseInitializationMode getInitializeSchema() {
-			return this.initializeSchema;
+		public DatabaseInitializationMode getMode() {
+			return this.databaseInitializationMode;
 		}
 
-		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-			this.initializeSchema = initializeSchema;
+		public void setDatabaseInitializationMode(DatabaseInitializationMode databaseInitializationMode) {
+			this.databaseInitializationMode = databaseInitializationMode;
 		}
 
 	}

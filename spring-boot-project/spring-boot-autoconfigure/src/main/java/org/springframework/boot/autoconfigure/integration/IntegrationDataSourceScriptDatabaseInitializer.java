@@ -71,7 +71,7 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 	static DatabaseInitializationSettings getSettings(DataSource dataSource, IntegrationProperties.Jdbc properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
-		settings.setMode(properties.getInitializeSchema());
+		settings.setMode(properties.getMode());
 		settings.setContinueOnError(true);
 		return settings;
 	}

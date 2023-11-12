@@ -179,7 +179,7 @@ class IntegrationAutoConfigurationTests {
 					"spring.integration.jdbc.initialize-schema=always")
 			.run((context) -> {
 				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				assertThat(properties.getJdbc().getMode()).isEqualTo(DatabaseInitializationMode.ALWAYS);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
@@ -199,7 +199,7 @@ class IntegrationAutoConfigurationTests {
 					"spring.integration.jdbc.initialize-schema=always")
 			.run((context) -> {
 				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				assertThat(properties.getJdbc().getMode()).isEqualTo(DatabaseInitializationMode.ALWAYS);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
@@ -219,7 +219,7 @@ class IntegrationAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class);
 				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
+				assertThat(properties.getJdbc().getMode()).isEqualTo(DatabaseInitializationMode.NEVER);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThatExceptionOfType(BadSqlGrammarException.class)
 					.isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
@@ -234,7 +234,7 @@ class IntegrationAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
 			.run((context) -> {
 				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.EMBEDDED);
+				assertThat(properties.getJdbc().getMode()).isEqualTo(DatabaseInitializationMode.EMBEDDED);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 			});
