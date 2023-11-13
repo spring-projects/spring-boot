@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.launch
+package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.test;
 
-import org.springframework.boot.fromApplication
+import org.springframework.boot.SpringApplication;
 
-fun main(args: Array<String>) {
-	fromApplication<MyApplication>().run(*args)
+public class TestMyApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.from(MyApplication::main).with(MyContainersConfiguration.class).run(args);
+	}
+
 }

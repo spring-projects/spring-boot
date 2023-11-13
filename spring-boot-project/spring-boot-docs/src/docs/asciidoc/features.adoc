@@ -30,6 +30,8 @@ include::features/testing.adoc[]
 
 include::features/docker-compose.adoc[]
 
+include::features/testcontainers.adoc[]
+
 include::features/developing-auto-configuration.adoc[]
 
 include::features/kotlin.adoc[]
