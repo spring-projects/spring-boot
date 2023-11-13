@@ -31,6 +31,8 @@ import java.util.Optional;
 import kotlin.reflect.KFunction;
 import kotlin.reflect.KParameter;
 import kotlin.reflect.jvm.ReflectJvmMapping;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -43,6 +45,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.convert.ConversionException;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -54,6 +57,8 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  */
 class ValueObjectBinder implements DataObjectBinder {
+
+	private static final Log logger = LogFactory.getLog(ValueObjectBinder.class);
 
 	private final BindConstructorProvider constructorProvider;
 
@@ -261,15 +266,31 @@ class ValueObjectBinder implements DataObjectBinder {
 
 		private final List<ConstructorParameter> constructorParameters;
 
-		private DefaultValueObject(Constructor<T> constructor, ResolvableType type) {
+		private DefaultValueObject(Constructor<T> constructor, List<ConstructorParameter> constructorParameters) {
 			super(constructor);
-			this.constructorParameters = parseConstructorParameters(constructor, type);
+			this.constructorParameters = constructorParameters;
+		}
+
+		@Override
+		List<ConstructorParameter> getConstructorParameters() {
+			return this.constructorParameters;
+		}
+
+		@SuppressWarnings("unchecked")
+		static <T> ValueObject<T> get(Constructor<?> bindConstructor, ResolvableType type) {
+			String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(bindConstructor);
+			if (names == null) {
+				logger.debug(LogMessage.format(
+						"Unable to use value object binding with %s as parameter names cannot be discovered",
+						bindConstructor));
+				return null;
+			}
+			List<ConstructorParameter> constructorParameters = parseConstructorParameters(bindConstructor, type, names);
+			return new DefaultValueObject<>((Constructor<T>) bindConstructor, constructorParameters);
 		}
 
 		private static List<ConstructorParameter> parseConstructorParameters(Constructor<?> constructor,
-				ResolvableType type) {
-			String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
-			Assert.state(names != null, () -> "Failed to extract parameter names for " + constructor);
+				ResolvableType type, String[] names) {
 			Parameter[] parameters = constructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.length);
 			for (int i = 0; i < parameters.length; i++) {
@@ -283,16 +304,6 @@ class ValueObjectBinder implements DataObjectBinder {
 				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
-		}
-
-		@Override
-		List<ConstructorParameter> getConstructorParameters() {
-			return this.constructorParameters;
-		}
-
-		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Constructor<?> bindConstructor, ResolvableType type) {
-			return new DefaultValueObject<>((Constructor<T>) bindConstructor, type);
 		}
 
 	}
