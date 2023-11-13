@@ -221,7 +221,7 @@ bom {
 			]
 		}
 	}
-	library("Dependency Management Plugin", "1.1.3") {
+	library("Dependency Management Plugin", "1.1.4") {
 		group("io.spring.gradle") {
 			modules = [
 				"dependency-management-plugin"
