@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.test
+package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.test;
 
-import org.testcontainers.containers.Neo4jContainer
+import org.testcontainers.containers.Neo4jContainer;
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 
 @TestConfiguration(proxyBeanMethods = false)
-class MyContainersConfiguration {
+public class MyContainersConfiguration {
 
 	@Bean
 	@ServiceConnection
-	fun neo4jContainer(): Neo4jContainer<*> {
-		return Neo4jContainer("neo4j:5")
+	public Neo4jContainer<?> neo4jContainer() {
+		return new Neo4jContainer<>("neo4j:5");
 	}
 
 }

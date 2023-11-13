@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -230,7 +229,8 @@ public class JobLauncherApplicationRunner
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
-			JobParameters previousIdentifyingParameters = getGetIdentifying(lastExecution.getJobParameters());
+			JobParameters previousIdentifyingParameters = new JobParameters(
+					lastExecution.getJobParameters().getIdentifyingParameters());
 			return merge(previousIdentifyingParameters, jobParameters);
 		}
 		return jobParameters;
@@ -239,16 +239,6 @@ public class JobLauncherApplicationRunner
 	private boolean isStoppedOrFailed(JobExecution execution) {
 		BatchStatus status = (execution != null) ? execution.getStatus() : null;
 		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
-	}
-
-	private JobParameters getGetIdentifying(JobParameters parameters) {
-		HashMap<String, JobParameter<?>> nonIdentifying = new LinkedHashMap<>(parameters.getParameters().size());
-		parameters.getParameters().forEach((key, value) -> {
-			if (value.isIdentifying()) {
-				nonIdentifying.put(key, value);
-			}
-		});
-		return new JobParameters(nonIdentifying);
 	}
 
 	private JobParameters merge(JobParameters parameters, JobParameters additionals) {

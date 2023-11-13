@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.dynamicproperties;
+package org.springframework.boot.docs.features.testing.testcontainers.serviceconnections
 
-import org.testcontainers.containers.MongoDBContainer;
-
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.DynamicPropertyRegistry;
+import org.testcontainers.containers.GenericContainer
 
 @TestConfiguration(proxyBeanMethods = false)
-public class MyContainersConfiguration {
+class MyRedisConfiguration {
 
 	@Bean
-	public MongoDBContainer mongoDbContainer(DynamicPropertyRegistry properties) {
-		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
-		properties.add("spring.data.mongodb.host", container::getHost);
-		properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
-		return container;
+	@ServiceConnection(name = "redis")
+	fun redisContainer(): GenericContainer<*> {
+		return GenericContainer("redis:7")
 	}
 
 }

@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.devtools
 
-import org.springframework.boot.devtools.restart.RestartScope
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.MongoDBContainer
+package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.test;
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyContainersConfiguration {
+public class MyApplication {
 
-	@Bean
-	@RestartScope
-	@ServiceConnection
-	fun monogDbContainer(): MongoDBContainer {
-		return MongoDBContainer("mongo:5.0")
+	public static void main(String[] args) {
 	}
 
 }

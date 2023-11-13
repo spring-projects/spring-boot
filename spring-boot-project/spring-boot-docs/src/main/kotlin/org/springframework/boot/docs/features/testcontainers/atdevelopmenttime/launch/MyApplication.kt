@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.importingcontainerdeclarations;
+package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.launch
 
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.docs.features.springapplication.MyApplication
+import org.springframework.boot.runApplication
 
-public interface MyContainers {
+@SpringBootApplication
+class MyApplication
 
-	@Container
-	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
-
-	@Container
-	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
-
+fun main(args: Array<String>) {
+	runApplication<MyApplication>(*args)
 }

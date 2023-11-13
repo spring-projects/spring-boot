@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.test
+package org.springframework.boot.docs.features.testing.testcontainers.serviceconnections;
 
-import org.springframework.boot.fromApplication
-import org.springframework.boot.with
+import org.testcontainers.containers.GenericContainer;
 
-fun main(args: Array<String>) {
-	fromApplication<MyApplication>().with(MyContainersConfiguration::class).run(*args)
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Bean;
+
+@TestConfiguration(proxyBeanMethods = false)
+public class MyRedisConfiguration {
+
+	@Bean
+	@ServiceConnection(name = "redis")
+	public GenericContainer<?> redisContainer() {
+		return new GenericContainer<>("redis:7");
+	}
+
 }
