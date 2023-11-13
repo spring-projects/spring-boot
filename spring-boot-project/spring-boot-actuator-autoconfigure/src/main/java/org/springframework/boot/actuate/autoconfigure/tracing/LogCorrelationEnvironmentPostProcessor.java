@@ -20,6 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.ClassUtils;
@@ -45,7 +46,7 @@ class LogCorrelationEnvironmentPostProcessor implements EnvironmentPostProcessor
 	/**
 	 * Log correlation {@link PropertySource}.
 	 */
-	private static class LogCorrelationPropertySource extends PropertySource<Object> {
+	private static class LogCorrelationPropertySource extends EnumerablePropertySource<Object> {
 
 		private static final String NAME = "logCorrelation";
 
@@ -54,6 +55,11 @@ class LogCorrelationEnvironmentPostProcessor implements EnvironmentPostProcessor
 		LogCorrelationPropertySource(Object source, Environment environment) {
 			super(NAME, source);
 			this.environment = environment;
+		}
+
+		@Override
+		public String[] getPropertyNames() {
+			return new String[] { LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY };
 		}
 
 		@Override

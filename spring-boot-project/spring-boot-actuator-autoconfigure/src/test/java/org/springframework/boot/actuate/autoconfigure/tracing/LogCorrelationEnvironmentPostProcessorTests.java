@@ -23,6 +23,8 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +64,15 @@ class LogCorrelationEnvironmentPostProcessorTests {
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false))
 			.isFalse();
+	}
+
+	@Test
+	void postProcessEnvironmentAddsEnumerablePropertySource() {
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		PropertySource<?> propertySource = this.environment.getPropertySources().get("logCorrelation");
+		assertThat(propertySource).isInstanceOf(EnumerablePropertySource.class);
+		assertThat(((EnumerablePropertySource<?>) propertySource).getPropertyNames())
+			.containsExactly(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY);
 	}
 
 }
