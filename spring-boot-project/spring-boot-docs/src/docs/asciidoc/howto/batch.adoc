@@ -55,6 +55,17 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 
 
 
+[[howto.batch.restarting-a-failed-job]]
+=== Restarting a stopped or failed Job
+
+To restart a failed `Job`, all parameters (identifying and non-identifying) must be re-specified on the command line.
+Non-identifying parameters are *not* copied from the previous execution.
+This allows them to be modified or removed.
+
+NOTE: When you're using a custom `JobParametersIncrementer`, you have to gather all parameters managed by the incrementer to restart a failed execution.
+
+
+
 [[howto.batch.storing-job-repository]]
 === Storing the Job Repository
 Spring Batch requires a data store for the `Job` repository.
