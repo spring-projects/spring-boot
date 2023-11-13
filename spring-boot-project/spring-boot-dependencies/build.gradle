@@ -962,7 +962,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.0.12-SNAPSHOT") {
+	library("Micrometer Tracing", "1.0.12") {
 		considerSnapshots()
 		calendarName = "Tracing"
 		group("io.micrometer") {
