@@ -76,8 +76,7 @@ To do so, add the `@ImportTestcontainers` annotation to your test configuration 
 
 include::code:MyContainersConfiguration[]
 
-TIP: You can use the `@ServiceConnection` annotation on `Container` fields to establish service connections.
-You can also add <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotated methods>> to your declaration class.
+TIP: If you don't intend to use the <<features#features.testing.testcontainers.service-connections, service connections feature>> but want to use <<features#features.testing.testcontainers.dynamic-properties, `@DynamicPropertySource`>> instead, remove the `@ServiceConnection` annotation from the `Container` fields.
 
 
 
