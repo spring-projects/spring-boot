@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.dynamicproperties;
+package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.dynamicproperties
 
-import org.testcontainers.containers.MongoDBContainer;
-
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.testcontainers.containers.MongoDBContainer
 
 @TestConfiguration(proxyBeanMethods = false)
-public class MyContainersConfiguration {
+class MyContainersConfiguration {
 
 	@Bean
-	public MongoDBContainer mongoDbContainer(DynamicPropertyRegistry properties) {
-		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
+	fun monogDbContainer(properties: DynamicPropertyRegistry): MongoDBContainer {
+		var container = MongoDBContainer("mongo:5.0")
 		properties.add("spring.data.mongodb.host", container::getHost);
 		properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
-		return container;
+		return container
 	}
 
 }
