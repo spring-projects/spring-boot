@@ -674,7 +674,7 @@ with the `key` listed in the following table:
 | Checks for low disk space.
 
 | `elasticsearch`
-| {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchRestHealthIndicator.java[`ElasticsearchRestHealthIndicator`]
+| {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchRestClientHealthIndicator.java[`ElasticsearchRestClientHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
 | `hazelcast`
