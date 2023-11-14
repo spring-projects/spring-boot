@@ -48,3 +48,7 @@ The configuration differs, depending on the web server in use.
 For Tomcat, you can add the following configuration:
 
 include::code:MyCloudFoundryConfiguration[]
+
+If you're using a Webflux based application, you can use the following configuration:
+
+include::code:MyReactiveCloudFoundryConfiguration[]
