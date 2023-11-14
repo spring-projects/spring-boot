@@ -15,4 +15,5 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:kafka")
 }
