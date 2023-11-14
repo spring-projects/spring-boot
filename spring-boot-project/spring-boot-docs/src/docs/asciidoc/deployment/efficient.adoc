@@ -72,7 +72,7 @@ To learn more about ahead-of-time processing, please see the <<native-image#nati
 https://wiki.openjdk.org/display/crac/Main[Coordinated Restore at Checkpoint] (CRaC) is an OpenJDK project that defines a new Java API to allow you to checkpoint and restore an application on the HotSpot JVM.
 It is based on https://github.com/checkpoint-restore/criu[CRIU], a project that implements checkpoint/restore functionality on Linux.
 
-The principle is the following: you start your application almost as usual but with a CRaC enabled version of the JDK like https://www.azul.com/downloads/?package=jdk-crac#zulu[the one provided by Azul].
+The principle is the following: you start your application almost as usual but with a CRaC enabled version of the JDK like https://bell-sw.com/pages/downloads/?package=jdk-crac[Bellsoft Liberica JDK with CRaC] or https://www.azul.com/downloads/?package=jdk-crac#zulu[Azul Zulu JDK with CRaC].
 Then at some point, potentially after some workloads that will warm up your JVM by executing all common code paths, you trigger a checkpoint using an API call, a `jcmd` command, an HTTP endpoint, or a different mechanism.
 
 A memory representation of the running JVM, including its warmness, is then serialized to disk, allowing a fast restoration at a later point, potentially on another machine with a similar operating system and CPU architecture.
