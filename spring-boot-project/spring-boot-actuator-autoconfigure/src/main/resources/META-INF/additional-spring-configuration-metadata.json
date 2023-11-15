@@ -310,6 +310,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.info.process.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable process info.",
+      "defaultValue": false
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",

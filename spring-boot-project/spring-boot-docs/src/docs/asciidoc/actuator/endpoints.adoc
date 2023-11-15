@@ -1087,12 +1087,17 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 | Exposes Operating System information.
 | None.
 
+| `process`
+| {spring-boot-actuator-module-code}/info/ProcessInfoContributor.java[`ProcessInfoContributor`]
+| Exposes process information.
+| None.
+
 |===
 
 Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prerequisites to indicate that they should be enabled, the `env`, `java`, and `os` contributors are disabled by default.
+With no prerequisites to indicate that they should be enabled, the `env`, `java`, `os`, and `process` contributors are disabled by default.
 Each can be enabled by setting its `management.info.<id>.enabled` property to `true`.
 
 The `build` and `git` info contributors are enabled by default.
@@ -1187,6 +1192,12 @@ The `info` endpoint publishes information about your Java runtime environment, s
 [[actuator.endpoints.info.os-information]]
 ==== OS Information
 The `info` endpoint publishes information about your Operating System, see {spring-boot-module-api}/info/OsInfo.html[`OsInfo`] for more details.
+
+
+
+[[actuator.endpoints.info.process-information]]
+==== Process Information
+The `info` endpoint publishes information about your process, see {spring-boot-module-api}/info/ProcessInfo.html[`Process`] for more details.
 
 
 
