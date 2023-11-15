@@ -174,3 +174,11 @@ For the example above, setting this property to `baggage1` results in an HTTP he
 
 If you want to propagate the baggage to the MDC, use the configprop:management.tracing.baggage.correlation.fields[] configuration property.
 For the example above, setting this property to `baggage1` results in an MDC entry named `baggage1`.
+
+
+
+[[actuator.micrometer-tracing.tests]]
+=== Tests
+
+Tracing is not auto-configured when using `@SpringBootTest`.
+See <<features#features.testing.spring-boot-applications.tracing, the testing section>> for more details.
