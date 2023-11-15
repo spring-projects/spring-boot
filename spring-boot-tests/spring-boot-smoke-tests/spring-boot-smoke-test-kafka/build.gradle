@@ -10,9 +10,11 @@ dependencies {
 	implementation("org.springframework.kafka:spring-kafka")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.springframework.kafka:spring-kafka-test") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:kafka")
 }
