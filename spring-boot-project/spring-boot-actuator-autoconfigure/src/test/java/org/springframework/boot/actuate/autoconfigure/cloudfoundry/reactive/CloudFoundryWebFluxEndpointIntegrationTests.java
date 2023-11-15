@@ -75,22 +75,23 @@ import static org.mockito.Mockito.mock;
  */
 class CloudFoundryWebFluxEndpointIntegrationTests {
 
-	private static final ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
+	private final ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
 
-	private static final ReactiveCloudFoundrySecurityService securityService = mock(
-			ReactiveCloudFoundrySecurityService.class);
+	private final ReactiveCloudFoundrySecurityService securityService = mock(ReactiveCloudFoundrySecurityService.class);
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
 		.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
 				ReactiveWebServerFactoryAutoConfiguration.class))
 		.withUserConfiguration(TestEndpointConfiguration.class)
+		.withBean(ReactiveTokenValidator.class, () -> this.tokenValidator)
+		.withBean(ReactiveCloudFoundrySecurityService.class, () -> this.securityService)
 		.withPropertyValues("server.port=0");
 
 	@Test
 	void operationWithSecurityInterceptorForbidden() {
-		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
+		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
 		this.contextRunner.run(withWebTestClient((client) -> client.get()
 			.uri("/cfApplication/test")
 			.accept(MediaType.APPLICATION_JSON)
@@ -102,8 +103,8 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	@Test
 	void operationWithSecurityInterceptorSuccess() {
-		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
+		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
 		this.contextRunner.run(withWebTestClient((client) -> client.get()
 			.uri("/cfApplication/test")
 			.accept(MediaType.APPLICATION_JSON)
@@ -131,8 +132,8 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	@Test
 	void linksToOtherEndpointsWithFullAccess() {
-		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
+		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
 		this.contextRunner.run(withWebTestClient((client) -> client.get()
 			.uri("/cfApplication")
 			.accept(MediaType.APPLICATION_JSON)
@@ -169,7 +170,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
-		willThrow(exception).given(tokenValidator).validate(any());
+		willThrow(exception).given(this.tokenValidator).validate(any());
 		this.contextRunner.run(withWebTestClient((client) -> client.get()
 			.uri("/cfApplication")
 			.accept(MediaType.APPLICATION_JSON)
@@ -181,8 +182,8 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	@Test
 	void linksToOtherEndpointsWithRestrictedAccess() {
-		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
+		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
 		this.contextRunner.run(withWebTestClient((client) -> client.get()
 			.uri("/cfApplication")
 			.accept(MediaType.APPLICATION_JSON)
@@ -232,7 +233,8 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class CloudFoundryReactiveConfiguration {
 
 		@Bean
-		CloudFoundrySecurityInterceptor interceptor() {
+		CloudFoundrySecurityInterceptor interceptor(ReactiveTokenValidator tokenValidator,
+				ReactiveCloudFoundrySecurityService securityService) {
 			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
