@@ -41,8 +41,7 @@ import static org.hamcrest.Matchers.not;
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class },
 		properties = { "spring.kafka.security.protocol=SSL",
-				"spring.kafka.properties.ssl.endpoint.identification.algorithm=",
-				"spring.kafka.ssl.bundle=client",
+				"spring.kafka.properties.ssl.endpoint.identification.algorithm=", "spring.kafka.ssl.bundle=client",
 				"spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
 				"spring.ssl.bundle.jks.client.keystore.password=password",
 				"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
@@ -51,22 +50,26 @@ class SampleKafkaSslApplicationTests {
 
 	@Container
 	public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
-			.withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "PLAINTEXT:SSL,BROKER:PLAINTEXT")
-			.withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
-			.withEnv("KAFKA_SSL_CLIENT_AUTH", "required")
-			.withEnv("KAFKA_SSL_KEYSTORE_LOCATION", "/etc/kafka/secrets/certs/test-server.p12")
-			.withEnv("KAFKA_SSL_KEYSTORE_PASSWORD", "password")
-			.withEnv("KAFKA_SSL_KEY_PASSWORD", "password")
-			.withEnv("KAFKA_SSL_TRUSTSTORE_LOCATION", "/etc/kafka/secrets/certs/test-ca.p12")
-			.withEnv("KAFKA_SSL_TRUSTSTORE_PASSWORD", "password")
-			.withEnv("KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM", "")
-			.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/test-server.p12"), "/etc/kafka/secrets/certs/test-server.p12")
-			.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/credentials"), "/etc/kafka/secrets/certs/credentials")
-			.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/test-ca.p12"), "/etc/kafka/secrets/certs/test-ca.p12");
+		.withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "PLAINTEXT:SSL,BROKER:PLAINTEXT")
+		.withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
+		.withEnv("KAFKA_SSL_CLIENT_AUTH", "required")
+		.withEnv("KAFKA_SSL_KEYSTORE_LOCATION", "/etc/kafka/secrets/certs/test-server.p12")
+		.withEnv("KAFKA_SSL_KEYSTORE_PASSWORD", "password")
+		.withEnv("KAFKA_SSL_KEY_PASSWORD", "password")
+		.withEnv("KAFKA_SSL_TRUSTSTORE_LOCATION", "/etc/kafka/secrets/certs/test-ca.p12")
+		.withEnv("KAFKA_SSL_TRUSTSTORE_PASSWORD", "password")
+		.withEnv("KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM", "")
+		.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/test-server.p12"),
+				"/etc/kafka/secrets/certs/test-server.p12")
+		.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/credentials"),
+				"/etc/kafka/secrets/certs/credentials")
+		.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/test-ca.p12"),
+				"/etc/kafka/secrets/certs/test-ca.p12");
 
 	@DynamicPropertySource
 	static void kafkaProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.kafka.bootstrap-servers", () -> String.format("%s:%s", kafka.getHost(), kafka.getMappedPort(9093)));
+		registry.add("spring.kafka.bootstrap-servers",
+				() -> String.format("%s:%s", kafka.getHost(), kafka.getMappedPort(9093)));
 	}
 
 	@Autowired
