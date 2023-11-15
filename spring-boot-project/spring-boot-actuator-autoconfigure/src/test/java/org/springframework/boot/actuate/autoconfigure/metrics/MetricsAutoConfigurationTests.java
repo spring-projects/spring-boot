@@ -16,15 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.List;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration.MeterRegistryLifecycle;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link MetricsAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class MetricsAutoConfigurationTests {
 
@@ -70,6 +75,21 @@ class MetricsAutoConfigurationTests {
 			then((MeterBinder) context.getBean("meterBinder")).should().bindTo(meterRegistry);
 			then(context.getBean(MeterRegistryCustomizer.class)).should().customize(meterRegistry);
 		});
+	}
+
+	@Test
+	void shouldSupplyMeterRegistryLifecycle() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MeterRegistryLifecycle.class));
+	}
+
+	@Test
+	void meterRegistryLifecycleShouldCloseRegistryOnShutdown() {
+		MeterRegistry meterRegistry = new CompositeMeterRegistry();
+		assertThat(meterRegistry.isClosed()).isFalse();
+		MeterRegistryLifecycle lifecycle = new MeterRegistryLifecycle(List.of(meterRegistry));
+		lifecycle.start();
+		lifecycle.stop();
+		assertThat(meterRegistry.isClosed()).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)

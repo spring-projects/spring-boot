@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.List;
+
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 
@@ -28,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 
@@ -36,6 +40,8 @@ import org.springframework.core.annotation.Order;
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
+ * @author Phil Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class)
@@ -62,6 +68,47 @@ public class MetricsAutoConfiguration {
 	@Order(0)
 	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
 		return new PropertiesMeterFilter(properties);
+	}
+
+	@Bean
+	MeterRegistryLifecycle meterRegistryLifecycle(ObjectProvider<MeterRegistry> meterRegistries) {
+		return new MeterRegistryLifecycle(meterRegistries.orderedStream().toList());
+	}
+
+	/**
+	 * Ensures that {@link MeterRegistry meter registries} are closed early in the
+	 * shutdown process.
+	 */
+	static class MeterRegistryLifecycle implements SmartLifecycle {
+
+		private volatile boolean running;
+
+		private final List<MeterRegistry> meterRegistries;
+
+		MeterRegistryLifecycle(List<MeterRegistry> meterRegistries) {
+			this.meterRegistries = meterRegistries;
+		}
+
+		@Override
+		public void start() {
+			this.running = true;
+		}
+
+		@Override
+		public void stop() {
+			this.running = false;
+			this.meterRegistries.forEach((registry) -> {
+				if (!registry.isClosed()) {
+					registry.close();
+				}
+			});
+		}
+
+		@Override
+		public boolean isRunning() {
+			return this.running;
+		}
+
 	}
 
 }
