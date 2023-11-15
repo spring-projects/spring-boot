@@ -202,5 +202,5 @@ For the example above, setting this property to `baggage1` results in an MDC ent
 [[actuator.micrometer-tracing.tests]]
 === Tests
 
-Tracing is not auto-configured when using `@SpringBootTest`.
+Tracing components which are reporting data are not auto-configured when using `@SpringBootTest`.
 See <<features#features.testing.spring-boot-applications.tracing, the testing section>> for more details.

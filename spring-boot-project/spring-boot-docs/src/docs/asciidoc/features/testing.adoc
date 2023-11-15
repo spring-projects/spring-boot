@@ -266,9 +266,11 @@ If you need to export metrics to a different backend as part of an integration t
 
 [[features.testing.spring-boot-applications.tracing]]
 ==== Using Tracing
-Regardless of your classpath, tracing is not auto-configured when using `@SpringBootTest`.
+Regardless of your classpath, tracing components which are reporting data are not auto-configured when using `@SpringBootTest`.
 
-If you need tracing as part of an integration test, annotate it with `@AutoConfigureObservability`.
+If you need those components as part of an integration test, annotate the test with `@AutoConfigureObservability`.
+
+If you have created your own reporting components (e.g. a custom `SpanExporter` or `SpanHandler`) and you don't want them to be active in tests, you can use the `@ConditionalOnEnabledTracing` annotation to disable them.
 
 
 
