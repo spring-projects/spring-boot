@@ -230,6 +230,8 @@ If tags with the same key are specified with Micrometer, they overwrite the defa
 In Micrometer 1.9.x, this was fixed by introducing Dynatrace-specific summary instruments.
 Setting this toggle to `false` forces Micrometer to fall back to the behavior that was the default before 1.9.x.
 It should only be used when encountering problems while migrating from Micrometer 1.8.x to 1.9.x.
+* Export meter metadata: Starting from Micrometer 1.12.0, the Dynatrace exporter will also export meter metadata, such as unit and description by default.
+Use the `export-meter-metadata` toggle to turn this feature off.
 
 It is possible to not specify a URI and API token, as shown in the following example.
 In this scenario, the automatically configured endpoint is used:
@@ -248,6 +250,7 @@ In this scenario, the automatically configured endpoint is used:
 	            key1: "value1"
 	            key2: "value2"
 	          use-dynatrace-summary-instruments: true # (default: true)
+	          export-meter-metadata: true             # (default: true)
 ----
 
 
