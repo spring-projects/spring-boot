@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 import smoketest.kafka.Consumer;
 import smoketest.kafka.Producer;
@@ -31,6 +30,7 @@ import smoketest.kafka.SampleMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -38,6 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 
+/**
+ * Smoke tests for Apache Kafka with SSL.
+ *
+ * @author Scott Frederick
+ * @author Eddú Meléndez
+ */
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class },
 		properties = { "spring.kafka.security.protocol=SSL",
@@ -49,7 +55,7 @@ import static org.hamcrest.Matchers.not;
 class SampleKafkaSslApplicationTests {
 
 	@Container
-	public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
+	public static KafkaContainer kafka = new KafkaContainer(DockerImageNames.kafka())
 		.withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "PLAINTEXT:SSL,BROKER:PLAINTEXT")
 		.withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
 		.withEnv("KAFKA_SSL_CLIENT_AUTH", "required")
