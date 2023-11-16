@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.List;
+
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 
@@ -28,7 +31,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -36,6 +41,7 @@ import org.springframework.core.annotation.Order;
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class)
@@ -62,6 +68,34 @@ public class MetricsAutoConfiguration {
 	@Order(0)
 	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
 		return new PropertiesMeterFilter(properties);
+	}
+
+	@Bean
+	MeterRegistryCloser meterRegistryCloser(ObjectProvider<MeterRegistry> meterRegistries) {
+		return new MeterRegistryCloser(meterRegistries.orderedStream().toList());
+	}
+
+	/**
+	 * Ensures that {@link MeterRegistry meter registries} are closed early in the
+	 * shutdown process.
+	 */
+	static class MeterRegistryCloser implements ApplicationListener<ContextClosedEvent> {
+
+		private final List<MeterRegistry> meterRegistries;
+
+		MeterRegistryCloser(List<MeterRegistry> meterRegistries) {
+			this.meterRegistries = meterRegistries;
+		}
+
+		@Override
+		public void onApplicationEvent(ContextClosedEvent event) {
+			for (MeterRegistry meterRegistry : this.meterRegistries) {
+				if (!meterRegistry.isClosed()) {
+					meterRegistry.close();
+				}
+			}
+		}
+
 	}
 
 }
