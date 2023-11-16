@@ -32,7 +32,8 @@ interface HotelRepository extends Repository<Hotel, Long> {
 
 	Hotel findByCityAndName(City city, String name);
 
-	@Query("select h.city as city, h.name as name " + "from Hotel h  where h.city = ?1 group by h")
+	@Query("select h.city as city, h.name as name, avg(cast(r.rating as Integer)) as averageRating "
+			+ "from Hotel h left outer join h.reviews r where h.city = ?1 group by h")
 	Page<HotelSummary> findByCity(City city, Pageable pageable);
 
 	@Query("select r.rating as rating, count(r) as count "
