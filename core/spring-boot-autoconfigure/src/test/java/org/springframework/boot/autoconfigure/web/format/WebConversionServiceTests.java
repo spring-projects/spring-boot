@@ -29,7 +29,11 @@ import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -178,10 +182,27 @@ class WebConversionServiceTests {
 		assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isOne();
 	}
 
+	@Test
+	void embeddedValueResolverIsAppliedToAnnotationPattern() throws Exception {
+		WebConversionService conversionService = new WebConversionService(
+				(value) -> value.replace("${my.date.format}", "yyyy-MM-dd"), new DateTimeFormatters());
+		TypeDescriptor dateType = new TypeDescriptor(FormattedDate.class.getDeclaredField("date"));
+		Date date = Date.from(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC")).toInstant());
+		assertThat(conversionService.convert(date, dateType, TypeDescriptor.valueOf(String.class)))
+			.isEqualTo("2000-01-02");
+	}
+
 	private void customDateFormat(Object input) {
 		WebConversionService conversionService = new WebConversionService(
 				new DateTimeFormatters().dateFormat("dd*MM*yyyy"));
 		assertThat(conversionService.convert(input, String.class)).isEqualTo("01*01*2018");
+	}
+
+	static class FormattedDate {
+
+		@DateTimeFormat(pattern = "${my.date.format}")
+		@Nullable Date date;
+
 	}
 
 }
