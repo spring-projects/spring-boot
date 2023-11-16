@@ -48,13 +48,6 @@ bom {
 			]
 		}
 	}
-	library("Crac", "1.4.0") {
-		group("org.crac") {
-			modules = [
-				"crac"
-			]
-		}
-	}
 	library("Jakarta Inject", "2.0.1") {
 		group("jakarta.inject") {
 			modules = [

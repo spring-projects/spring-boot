@@ -214,6 +214,13 @@ bom {
 			]
 		}
 	}
+	library("Crac", "1.4.0") {
+		group("org.crac") {
+			modules = [
+				"crac"
+			]
+		}
+	}
 	library("DB2 JDBC", "11.5.8.0") {
 		group("com.ibm.db2") {
 			modules = [
