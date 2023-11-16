@@ -106,6 +106,15 @@ class DefaultSslBundleRegistryTests {
 	}
 
 	@Test
+	void getBundlesReturnsBundles() {
+		this.registry.registerBundle("test1", this.bundle1);
+		this.registry.registerBundle("test2", this.bundle2);
+		assertThat(this.registry.getBundles()).hasSize(2)
+			.containsEntry("test1", this.bundle1)
+			.containsEntry("test2", this.bundle2);
+	}
+
+	@Test
 	void updateBundleShouldNotifyUpdateHandlers() {
 		AtomicReference<SslBundle> updatedBundle = new AtomicReference<>();
 		this.registry.registerBundle("test1", this.bundle1);

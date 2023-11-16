@@ -228,6 +228,18 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.ssl.certificate-validity-warning-threshold",
+      "type": "java.time.Duration",
+      "description": "If an SSL Certificate will be invalid within the time span defined by this threshold, it should trigger a warning.",
+      "defaultValue": "14d"
+    },
+    {
+      "name": "management.health.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable SSL Certificate health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.httpexchanges.recording.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response exchange recording.",
@@ -281,6 +293,12 @@
       "name": "management.info.process.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable process info.",
+      "defaultValue": false
+    },
+    {
+      "name": "management.info.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable SSL Certificate info.",
       "defaultValue": false
     },
     {

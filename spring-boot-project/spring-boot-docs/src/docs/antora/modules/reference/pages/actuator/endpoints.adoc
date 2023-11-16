@@ -648,9 +648,17 @@ with the `key` listed in the following table:
 | `redis`
 | javadoc:org.springframework.boot.actuate.data.redis.RedisHealthIndicator[]
 | Checks that a Redis server is up.
+
+| `ssl`
+| javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]
+| Checks that SSL Cerificates are ok.
 |===
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
+
+TIP: The `ssl` `HealthIndicator` has a "warning threshold" property. If an SSL Certificate will be invalid within the time span defined by this threshold, the `HealthIndicator` will warn you but it will still return HTTP 200 to not disrupt the application. You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate. See the `management.health.ssl.certificate-validity-warning-threshold` property.
+
+
 
 Additional `HealthIndicators` are available but are not enabled by default:
 
@@ -1110,12 +1118,17 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 | Exposes process information.
 | None.
 
+| `ssl`
+| javadoc:org.springframework.boot.actuate.info.SslInfoContributor[]
+| Exposes SSL Certificate information.
+| An xref:features/ssl.adoc#features.ssl.bundles[SSL Bundle] configured.
+
 |===
 
 Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prerequisites to indicate that they should be enabled, the `env`, `java`, `os`, and `process` contributors are disabled by default.
+With no prerequisites to indicate that they should be enabled, the `env`, `java`, `os`, and `process` contributors are disabled by default. The `ssl` contributor has a prerequisite of having an xref:features/ssl.adoc#features.ssl.bundles[SSL Bundle] configured but it is disabled by default.
 Each can be enabled by setting its `management.info.<id>.enabled` property to `true`.
 
 The `build` and `git` info contributors are enabled by default.
@@ -1222,6 +1235,13 @@ The `info` endpoint publishes information about your Operating System, see javad
 === Process Information
 
 The `info` endpoint publishes information about your process, see javadoc:org.springframework.boot.info.ProcessInfo[] for more details.
+
+
+
+[[actuator.endpoints.info.ssl-information]]
+=== SSL Information
+
+The `info` endpoint publishes information about your SSL Certificates (that are configured through xref:features/ssl.adoc#features.ssl.bundles[SSL Bundles]), see javadoc:org.springframework.boot.info.SslInfo[] for more details. This endpoint reuses the "warning threshold" property of javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]: if an SSL Certificate will be invalid within the time span defined by this threshold, it will trigger a warning. See the `management.health.ssl.certificate-validity-warning-threshold` property.
 
 
 
