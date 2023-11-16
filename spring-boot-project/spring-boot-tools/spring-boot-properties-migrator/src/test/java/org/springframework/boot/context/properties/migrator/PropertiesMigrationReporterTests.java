@@ -76,6 +76,14 @@ class PropertiesMigrationReporterTests {
 	}
 
 	@Test
+	void testDashReplacement() throws IOException {
+		this.environment.getPropertySources()
+			.addFirst(loadPropertySource("test", "config/config-warnings-dash-replacement.properties"));
+		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
+		assertThat(report).isNull();
+	}
+
+	@Test
 	void warningReport() throws IOException {
 		this.environment.getPropertySources().addFirst(loadPropertySource("test", "config/config-warnings.properties"));
 		this.environment.getPropertySources().addFirst(loadPropertySource("ignore", "config/config-error.properties"));

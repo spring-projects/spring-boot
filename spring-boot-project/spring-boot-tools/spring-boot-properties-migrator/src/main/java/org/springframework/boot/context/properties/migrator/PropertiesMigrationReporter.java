@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.PropertyMappers;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -117,18 +118,26 @@ class PropertiesMigrationReporter {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter).toList();
 		getPropertySourcesAsMap().forEach((propertySourceName, propertySource) -> candidates.forEach((metadata) -> {
-			ConfigurationPropertyName metadataName = ConfigurationPropertyName.isValid(metadata.getId())
-					? ConfigurationPropertyName.of(metadata.getId())
+			boolean isValid = ConfigurationPropertyName.isValid(metadata.getId());
+			ConfigurationPropertyName metadataName = isValid ? ConfigurationPropertyName.of(metadata.getId())
 					: ConfigurationPropertyName.adapt(metadata.getId(), '.');
-			// Direct match
 			ConfigurationProperty match = propertySource.getConfigurationProperty(metadataName);
+			// Direct match
 			if (match != null) {
-				result.add(propertySourceName,
-						new PropertyMigration(match, metadata, determineReplacementMetadata(metadata), false));
+				// dash match
+				boolean dashMatch = true;
+				if (!isMapType(metadata) && isValid
+						&& propertySource.getUnderlyingSource() instanceof PropertySource<?> source) {
+					String name = PropertyMappers.map(source, metadataName);
+					dashMatch = name != null;
+				}
+				if (dashMatch) {
+					result.add(propertySourceName,
+							new PropertyMigration(match, metadata, determineReplacementMetadata(metadata), false));
+				}
 			}
 			// Prefix match for maps
-			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource) {
-				IterableConfigurationPropertySource iterableSource = (IterableConfigurationPropertySource) propertySource;
+			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource iterableSource) {
 				iterableSource.stream()
 					.filter(metadataName::isAncestorOf)
 					.map(propertySource::getConfigurationProperty)

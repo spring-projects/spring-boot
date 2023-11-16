@@ -9,6 +9,17 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>"
     },
     {
+      "name": "test.key-store-password",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "test.keystore-password",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "test.key-store-password"
+      }
+    },
+    {
       "name": "wrong.one",
       "deprecation": {
         "reason": "This is no longer supported.",
