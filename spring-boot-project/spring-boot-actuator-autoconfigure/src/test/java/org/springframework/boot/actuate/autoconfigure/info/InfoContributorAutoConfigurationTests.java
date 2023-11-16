@@ -16,11 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.ssl.SslHealthIndicatorProperties;
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -29,12 +31,16 @@ import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
 import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.actuate.info.ProcessInfoContributor;
+import org.springframework.boot.actuate.info.SslInfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.info.JavaInfo;
 import org.springframework.boot.info.OsInfo;
 import org.springframework.boot.info.ProcessInfo;
+import org.springframework.boot.info.SslInfo;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +66,8 @@ class InfoContributorAutoConfigurationTests {
 
 	@Test
 	void defaultInfoContributorsEnabled() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfoContributor.class));
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(InfoContributor.class).doesNotHaveBean(SslInfo.class));
 	}
 
 	@Test
@@ -176,6 +183,54 @@ class InfoContributorAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void sslInfoContributor() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues("management.info.ssl.enabled=true", "server.ssl.bundle=ssltest",
+					"spring.ssl.bundle.jks.ssltest.keystore.location=classpath:test.jks")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SslInfoContributor.class);
+				assertThat(context).hasSingleBean(SslInfo.class);
+				Map<String, Object> content = invokeContributor(context.getBean(SslInfoContributor.class));
+				assertThat(content).containsKey("ssl");
+				assertThat(content.get("ssl")).isInstanceOf(SslInfo.class);
+			});
+	}
+
+	@Test
+	void sslInfoContributorWithWarningThreshold() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues("management.info.ssl.enabled=true", "server.ssl.bundle=ssltest",
+					"spring.ssl.bundle.jks.ssltest.keystore.location=classpath:test.jks",
+					"management.health.ssl.certificate-validity-warning-threshold=1d")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SslInfoContributor.class);
+				assertThat(context).hasSingleBean(SslInfo.class);
+				assertThat(context).hasSingleBean(SslHealthIndicatorProperties.class);
+				assertThat(context.getBean(SslHealthIndicatorProperties.class).getCertificateValidityWarningThreshold())
+					.isEqualTo(Duration.ofDays(1));
+				Map<String, Object> content = invokeContributor(context.getBean(SslInfoContributor.class));
+				assertThat(content).containsKey("ssl");
+				assertThat(content.get("ssl")).isInstanceOf(SslInfo.class);
+			});
+	}
+
+	@Test
+	void customSslInfo() {
+		this.contextRunner.withUserConfiguration(CustomSslInfoConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues("management.info.ssl.enabled=true", "server.ssl.bundle=ssltest",
+					"spring.ssl.bundle.jks.ssltest.keystore.location=classpath:test.jks")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SslInfoContributor.class);
+				assertThat(context).hasSingleBean(SslInfo.class);
+				assertThat(context.getBean(SslInfo.class)).isSameAs(context.getBean("customSslInfo"));
+				Map<String, Object> content = invokeContributor(context.getBean(SslInfoContributor.class));
+				assertThat(content).containsKey("ssl");
+				assertThat(content.get("ssl")).isInstanceOf(SslInfo.class);
+			});
+	}
+
 	private Map<String, Object> invokeContributor(InfoContributor contributor) {
 		Info.Builder builder = new Info.Builder();
 		contributor.contribute(builder);
@@ -237,6 +292,16 @@ class InfoContributorAutoConfigurationTests {
 		@Bean
 		BuildInfoContributor customBuildInfoContributor() {
 			return new BuildInfoContributor(new BuildProperties(new Properties()));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomSslInfoConfiguration {
+
+		@Bean
+		SslInfo customSslInfo(SslBundles sslBundles) {
+			return new SslInfo(sslBundles, Duration.ofDays(7));
 		}
 
 	}
