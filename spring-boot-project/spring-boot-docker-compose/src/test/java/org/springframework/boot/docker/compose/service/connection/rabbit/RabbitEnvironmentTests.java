@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class RabbitEnvironmentTests {
 
@@ -45,6 +46,12 @@ class RabbitEnvironmentTests {
 	}
 
 	@Test
+	void getUsernameWhenHasRabbitmqUsername() {
+		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_USERNAME", "me"));
+		assertThat(environment.getUsername()).isEqualTo("me");
+	}
+
+	@Test
 	void getUsernameWhenNoRabbitmqDefaultPass() {
 		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
 		assertThat(environment.getPassword()).isEqualTo("guest");
@@ -53,6 +60,12 @@ class RabbitEnvironmentTests {
 	@Test
 	void getUsernameWhenHasRabbitmqDefaultPass() {
 		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_DEFAULT_PASS", "secret"));
+		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getUsernameWhenHasRabbitmqPassword() {
+		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 

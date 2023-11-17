@@ -1,0 +1,9 @@
+services:
+  elasticsearch:
+    image: '{imageName}'
+    environment:
+      - 'ELASTIC_PASSWORD=secret'
+      - 'ES_JAVA_OPTS=-Xmx1024m'
+    ports:
+      - '9200'
+      - '9300'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class PostgresEnvironment {
 
@@ -37,14 +38,14 @@ class PostgresEnvironment {
 	private final String database;
 
 	PostgresEnvironment(Map<String, String> env) {
-		this.username = env.getOrDefault("POSTGRES_USER", "postgres");
+		this.username = env.getOrDefault("POSTGRES_USER", env.getOrDefault("POSTGRESQL_USER", "postgres"));
 		this.password = extractPassword(env);
-		this.database = env.getOrDefault("POSTGRES_DB", this.username);
+		this.database = env.getOrDefault("POSTGRES_DB", env.getOrDefault("POSTGRESQL_DB", this.username));
 	}
 
 	private String extractPassword(Map<String, String> env) {
-		String password = env.get("POSTGRES_PASSWORD");
-		Assert.state(StringUtils.hasLength(password), "No POSTGRES_PASSWORD defined");
+		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
+		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
 		return password;
 	}
 

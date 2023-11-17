@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,18 @@ import org.neo4j.driver.AuthTokens;
  * Neo4j environment details.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class Neo4jEnvironment {
 
 	private final AuthToken authToken;
 
 	Neo4jEnvironment(Map<String, String> env) {
-		this.authToken = parse(env.get("NEO4J_AUTH"));
+		AuthToken authToken = parse(env.get("NEO4J_AUTH"));
+		if (authToken == null && env.containsKey("NEO4J_PASSWORD")) {
+			authToken = parse("neo4j/" + env.get("NEO4J_PASSWORD"));
+		}
+		this.authToken = authToken;
 	}
 
 	private AuthToken parse(String neo4jAuth) {

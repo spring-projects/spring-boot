@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class RabbitEnvironment {
 
@@ -32,8 +33,8 @@ class RabbitEnvironment {
 	private final String password;
 
 	RabbitEnvironment(Map<String, String> env) {
-		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", "guest");
-		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", "guest");
+		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", env.getOrDefault("RABBITMQ_USERNAME", "guest"));
+		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", env.getOrDefault("RABBITMQ_PASSWORD", "guest"));
 	}
 
 	String getUsername() {

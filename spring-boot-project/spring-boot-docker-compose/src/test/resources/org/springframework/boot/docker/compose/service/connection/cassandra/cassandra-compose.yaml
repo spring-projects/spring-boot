@@ -9,4 +9,4 @@ services:
       - 'HEAP_NEWSIZE=128M'
       - 'MAX_HEAP_SIZE=1024M'
       - 'CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch'
-      - 'CASSANDRA_DC=dc1'
+      - 'CASSANDRA_DC=testdc1'

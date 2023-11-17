@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MongoEnvironment {
 
@@ -40,8 +41,8 @@ class MongoEnvironment {
 				"MONGO_INITDB_ROOT_USERNAME_FILE is not supported");
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_PASSWORD_FILE"),
 				"MONGO_INITDB_ROOT_PASSWORD_FILE is not supported");
-		this.username = env.get("MONGO_INITDB_ROOT_USERNAME");
-		this.password = env.get("MONGO_INITDB_ROOT_PASSWORD");
+		this.username = env.getOrDefault("MONGO_INITDB_ROOT_USERNAME", env.get("MONGO_ROOT_USERNAME"));
+		this.password = env.getOrDefault("MONGO_INITDB_ROOT_PASSWORD", env.get("MONGO_ROOT_PASSWORD"));
 		this.database = env.get("MONGO_INITDB_DATABASE");
 	}
 

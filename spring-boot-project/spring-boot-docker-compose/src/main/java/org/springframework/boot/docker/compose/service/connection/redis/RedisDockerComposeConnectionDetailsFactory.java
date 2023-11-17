@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,16 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<RedisConnectionDetails> {
+
+	private static final String[] REDIS_CONTAINER_NAMES = { "redis", "bitnami/redis" };
 
 	private static final int REDIS_PORT = 6379;
 
 	RedisDockerComposeConnectionDetailsFactory() {
-		super("redis");
+		super(REDIS_CONTAINER_NAMES);
 	}
 
 	@Override

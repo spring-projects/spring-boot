@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Jinseong Hwang
+ * @author Scott Frederick
  */
 class MariaDbEnvironmentTests {
 
@@ -128,6 +129,13 @@ class MariaDbEnvironmentTests {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MYSQL_ROOT_PASSWORD", "donttell", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getPasswordWhenHasNoPasswordAndAllowEmptyPassword() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(
+				Map.of("ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
+		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test

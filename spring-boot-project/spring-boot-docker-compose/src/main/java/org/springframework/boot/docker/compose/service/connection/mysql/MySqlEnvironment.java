@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MySqlEnvironment {
 
@@ -44,7 +45,7 @@ class MySqlEnvironment {
 
 	private String extractPassword(Map<String, String> env) {
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
-		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD");
+		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MYSQL_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_ROOT_PASSWORD");
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MySQL password found");

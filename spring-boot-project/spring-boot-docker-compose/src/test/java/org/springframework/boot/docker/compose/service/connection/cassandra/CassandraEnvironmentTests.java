@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,15 @@ class CassandraEnvironmentTests {
 	}
 
 	@Test
+	void getDatacenterWhenDcIsSet() {
+		CassandraEnvironment environment = new CassandraEnvironment(Map.of("CASSANDRA_DC", "testdc1"));
+		assertThat(environment.getDatacenter()).isEqualTo("testdc1");
+	}
+
+	@Test
 	void getDatacenterWhenDatacenterIsSet() {
-		CassandraEnvironment environment = new CassandraEnvironment(Map.of("CASSANDRA_DC", "dc1"));
-		assertThat(environment.getDatacenter()).isEqualTo("dc1");
+		CassandraEnvironment environment = new CassandraEnvironment(Map.of("CASSANDRA_DATACENTER", "testdc1"));
+		assertThat(environment.getDatacenter()).isEqualTo("testdc1");
 	}
 
 }

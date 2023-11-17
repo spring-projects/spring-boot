@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link Neo4jEnvironment}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class Neo4jEnvironmentTests {
 
 	@Test
-	void whenNeo4jAuthIsNullThenAuthTokenIsNull() {
+	void whenNeo4jAuthAndPasswordAreNullThenAuthTokenIsNull() {
 		Neo4jEnvironment environment = new Neo4jEnvironment(Collections.emptyMap());
 		assertThat(environment.getAuthToken()).isNull();
 	}
@@ -54,6 +55,12 @@ class Neo4jEnvironmentTests {
 	void whenNeo4jAuthIsNeitherNoneNorNeo4jSlashPasswordEnvironmentCreationThrows() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new Neo4jEnvironment(Map.of("NEO4J_AUTH", "graphdb/custom-password")));
+	}
+
+	@Test
+	void whenNeo4jPasswordIsProvidedThenAuthTokenIsBasic() {
+		Neo4jEnvironment environment = new Neo4jEnvironment(Map.of("NEO4J_PASSWORD", "custom-password"));
+		assertThat(environment.getAuthToken()).isEqualTo(AuthTokens.basic("neo4j", "custom-password"));
 	}
 
 }
