@@ -53,6 +53,7 @@ public final class LoggingFailureAnalysisReporter implements FailureAnalysisRepo
 			builder.append(String.format("%nAction:%n%n"));
 			builder.append(String.format("%s%n", failureAnalysis.getAction()));
 		}
+		builder.append(String.format("%nYou can get more information by adjusting the debug level log%n"));
 		return builder.toString();
 	}
 
