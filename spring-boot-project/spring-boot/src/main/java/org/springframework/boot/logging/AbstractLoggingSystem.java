@@ -121,7 +121,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	protected abstract String[] getStandardConfigLocations();
 
 	/**
-	 * Return the spring config locations for this system. By default this method returns
+	 * Return the spring config locations for this system. By default, this method returns
 	 * a set of locations based on {@link #getStandardConfigLocations()}.
 	 * @return the spring config locations
 	 * @see #getSpringInitializationConfig()
@@ -186,7 +186,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 */
 	protected Function<String, String> getDefaultValueResolver(Environment environment) {
 		String defaultLogCorrelationPattern = getDefaultLogCorrelationPattern();
-		return (name) -> {
+		return name -> {
 			if (StringUtils.hasLength(defaultLogCorrelationPattern)
 					&& LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName().equals(name)
 					&& environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false)) {
