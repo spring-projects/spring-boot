@@ -68,7 +68,7 @@ class RestTemplateAutoConfigurationTests {
 
 	@Test
 	void shouldFailOnCustomRestTemplateBuilderConfigurer() {
-		this.contextRunner.withUserConfiguration(RestTemplateCustomConfigurerConfig.class)
+		this.contextRunner.withUserConfiguration(RestTemplateBuilderConfigurerConfig.class)
 			.run((context) -> assertThat(context).getFailure()
 				.isInstanceOf(BeanDefinitionOverrideException.class)
 				.hasMessageContaining("with name 'restTemplateBuilderConfigurer'"));
@@ -273,7 +273,7 @@ class RestTemplateAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class RestTemplateCustomConfigurerConfig {
+	static class RestTemplateBuilderConfigurerConfig {
 
 		@Bean
 		RestTemplateBuilderConfigurer restTemplateBuilderConfigurer() {

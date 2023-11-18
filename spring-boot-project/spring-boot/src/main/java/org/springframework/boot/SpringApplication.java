@@ -1300,7 +1300,8 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Whether to keep the application alive even if there are no more non-daemon threads.
+	 * Set whether to keep the application alive even if there are no more non-daemon
+	 * threads.
 	 * @param keepAlive whether to keep the application alive even if there are no more
 	 * non-daemon threads
 	 * @since 3.2.0

@@ -12,7 +12,7 @@ If you have Spring WebFlux on your classpath we recommend that you use `WebClien
 The `WebClient` interface provides a functional style API and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
 
-TIP: If you are not writing a reactive Spring WebFlux application you can use the a <<io#io.rest-client.restclient,`RestClient`>> instead of a `WebClient`.
+TIP: If you are not writing a reactive Spring WebFlux application you can use the <<io#io.rest-client.restclient,`RestClient`>> instead of a `WebClient`.
 This provides a similar functional API, but is blocking rather than reactive.
 
 Spring Boot creates and pre-configures a prototype `WebClient.Builder` bean for you.

@@ -75,7 +75,7 @@ These features are described in several enums (in Jackson) that map onto propert
 | `true`, `false`
 
 | `com.fasterxml.jackson.databind.cfg.JsonNodeFeature`
-| `spring.jackson.datatype.jsonnode.<feature_name>`
+| `spring.jackson.datatype.json-node.<feature_name>`
 | `true`, `false`
 
 | `com.fasterxml.jackson.databind.DeserializationFeature`
