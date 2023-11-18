@@ -304,7 +304,7 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void disableJsonNodeFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.datatype.jsonnode.write-null-properties:false")
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.json-node.write-null-properties:false")
 			.run((context) -> {
 				ObjectMapper mapper = context.getBean(ObjectMapper.class);
 				assertThat(JsonNodeFeature.WRITE_NULL_PROPERTIES.enabledByDefault()).isTrue();

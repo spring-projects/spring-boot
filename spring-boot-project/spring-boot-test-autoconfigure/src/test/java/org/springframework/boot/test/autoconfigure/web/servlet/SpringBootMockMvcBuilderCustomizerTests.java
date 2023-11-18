@@ -210,9 +210,4 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 	}
 
-	static record RegisteredFilter(Filter filter, Map<String, String> initParameters,
-			EnumSet<DispatcherType> dispatcherTypes) {
-
-	}
-
 }

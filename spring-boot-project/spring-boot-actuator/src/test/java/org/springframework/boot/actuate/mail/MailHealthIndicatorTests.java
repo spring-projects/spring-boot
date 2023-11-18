@@ -81,7 +81,7 @@ class MailHealthIndicatorTests {
 		assertThat(health.getDetails()).doesNotContainKey("location");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class MailHealthIndicatorTests {
 		assertThat(health.getDetails().get("location")).isEqualTo(":1234");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test
@@ -125,7 +125,7 @@ class MailHealthIndicatorTests {
 		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test

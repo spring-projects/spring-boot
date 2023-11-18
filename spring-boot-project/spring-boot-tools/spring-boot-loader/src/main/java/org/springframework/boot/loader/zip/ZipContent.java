@@ -40,8 +40,8 @@ import org.springframework.boot.loader.log.DebugLogger;
  * contains. Unlike {@link java.util.zip.ZipFile}, this implementation can load content
  * from a zip file nested inside another file as long as the entry is not compressed.
  * <p>
- * In order to reduce memory consumption, this implementation stores only the the hash of
- * the entry names, the central directory offsets and the original positions. Entries are
+ * In order to reduce memory consumption, this implementation stores only the hash of the
+ * entry names, the central directory offsets and the original positions. Entries are
  * stored internally in {@code hashCode} order so that a binary search can be used to
  * quickly find an entry by name or determine if the zip file doesn't have a given entry.
  * <p>
