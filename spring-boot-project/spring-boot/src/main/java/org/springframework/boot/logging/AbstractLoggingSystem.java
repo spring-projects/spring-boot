@@ -186,7 +186,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 */
 	protected Function<String, String> getDefaultValueResolver(Environment environment) {
 		String defaultLogCorrelationPattern = getDefaultLogCorrelationPattern();
-		return name -> {
+		return (name) -> {
 			if (StringUtils.hasLength(defaultLogCorrelationPattern)
 					&& LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName().equals(name)
 					&& environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false)) {

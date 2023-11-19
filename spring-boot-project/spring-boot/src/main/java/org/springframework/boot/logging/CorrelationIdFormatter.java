@@ -97,7 +97,7 @@ public final class CorrelationIdFormatter {
 	 * @param appendable the appendable for the formatted correlation id
 	 */
 	public void formatTo(UnaryOperator<String> resolver, Appendable appendable) {
-		Predicate<Part> canResolve = part -> StringUtils.hasLength(resolver.apply(part.name()));
+		Predicate<Part> canResolve = (part) -> StringUtils.hasLength(resolver.apply(part.name()));
 		try {
 			if (this.parts.stream().anyMatch(canResolve)) {
 				appendable.append('[');

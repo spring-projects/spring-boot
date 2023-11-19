@@ -58,7 +58,6 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.boot.logging.LoggingSystemProperties;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -474,7 +473,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link LogbackLoggingSystem} if possible.
 	 */
-	@Order()
+	@Order
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils.isPresent("ch.qos.logback.classic.LoggerContext",
