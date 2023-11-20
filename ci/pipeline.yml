@@ -1,6 +1,6 @@
 anchors:
   git-repo-resource-source: &git-repo-resource-source
-    uri: ((github-repo))
+    uri: ((github-repository-uri))
     username: ((github-username))
     password: ((github-ci-release-token))
     branch: ((branch))
@@ -22,8 +22,8 @@ anchors:
     DOCKER_HUB_PASSWORD: ((docker-hub-password))
     DOCKER_HUB_AUTH: ((docker-hub-auth))
   github-task-params: &github-task-params
-    GITHUB_REPO: spring-boot
-    GITHUB_ORGANIZATION: spring-projects
+    GITHUB_REPO: ((github-repository-name))
+    GITHUB_ORGANIZATION: ((github-organization-name))
     GITHUB_PASSWORD: ((github-ci-release-token))
     GITHUB_USERNAME: ((github-username))
     MILESTONE: ((milestone))
@@ -143,8 +143,8 @@ resources:
   type: github-release
   icon: briefcase-download-outline
   source:
-    owner: spring-projects
-    repository: spring-boot
+    owner: ((github-organization-name))
+    repository: ((github-repository-name))
     access_token: ((github-ci-release-token))
     pre_release: true
     release: false
@@ -152,15 +152,15 @@ resources:
   type: github-release
   icon: briefcase-download
   source:
-    owner: spring-projects
-    repository: spring-boot
+    owner: ((github-organization-name))
+    repository: ((github-repository-name))
     access_token: ((github-ci-release-token))
     pre_release: false
 - name: ci-images-git-repo
   type: git
   icon: github
   source:
-    uri: ((github-repo))
+    uri: ((github-repository-uri))
     branch: ((branch))
     paths: ["ci/images/*"]
 - name: ci-image
@@ -168,25 +168,25 @@ resources:
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: ((docker-hub-organization))/spring-boot-ci
+    repository: ((docker-hub-organization))/((docker-hub-repository-prefix))-ci
 - name: ci-image-jdk11
   type: registry-image
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: ((docker-hub-organization))/spring-boot-ci-jdk11
+    repository: ((docker-hub-organization))/((docker-hub-repository-prefix))-ci-jdk11
 - name: ci-image-jdk17
   type: registry-image
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: ((docker-hub-organization))/spring-boot-ci-jdk17
+    repository: ((docker-hub-organization))/((docker-hub-repository-prefix))-ci-jdk17
 - name: ci-image-jdk21
   type: registry-image
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: ((docker-hub-organization))/spring-boot-ci-jdk21
+    repository: ((docker-hub-organization))/((docker-hub-repository-prefix))-ci-jdk21
 - name: paketo-builder-base-image
   type: registry-image
   icon: docker
@@ -207,7 +207,7 @@ resources:
   type: github-status-resource
   icon: eye-check-outline
   source:
-    repository: ((github-repo-name))
+    repository: ((github-organization-name))/((github-repository-name))
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: build
@@ -215,7 +215,7 @@ resources:
   type: github-status-resource
   icon: eye-check-outline
   source:
-    repository: ((github-repo-name))
+    repository: ((github-organization-name))/((github-repository-name))
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk11-build
@@ -223,7 +223,7 @@ resources:
   type: github-status-resource
   icon: eye-check-outline
   source:
-    repository: ((github-repo-name))
+    repository: ((github-organization-name))/((github-repository-name))
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk17-build
@@ -231,7 +231,7 @@ resources:
   type: github-status-resource
   icon: eye-check-outline
   source:
-    repository: ((github-repo-name))
+    repository: ((github-organization-name))/((github-repository-name))
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk21-build
