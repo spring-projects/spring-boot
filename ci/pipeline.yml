@@ -402,6 +402,7 @@ jobs:
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/stage.yml
     params:
+      FINAL_RELEASE: ((final-release))
       RELEASE_TYPE: M
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
@@ -425,6 +426,7 @@ jobs:
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/stage.yml
     params:
+      FINAL_RELEASE: ((final-release))
       RELEASE_TYPE: RC
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
@@ -448,6 +450,7 @@ jobs:
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/stage.yml
     params:
+      FINAL_RELEASE: ((final-release))
       RELEASE_TYPE: RELEASE
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params

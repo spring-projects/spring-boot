@@ -38,7 +38,7 @@ git tag -a "v$stageVersion" -m"Release v$stageVersion" > /dev/null
 ./gradlew --no-daemon --max-workers=4 -PdeploymentRepository=${repository} build publishAllPublicationsToDeploymentRepository
 
 git reset --hard HEAD^ > /dev/null
-if [[ $nextVersion != $snapshotVersion ]]; then
+if [[ $FINAL_RELEASE != true && $nextVersion != $snapshotVersion ]]; then
 	echo "Setting next development version (v$nextVersion)"
 	sed -i "s/version=$snapshotVersion/version=$nextVersion/" gradle.properties
 	git add gradle.properties > /dev/null
