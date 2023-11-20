@@ -58,7 +58,7 @@ anchors:
   artifactory-repo-put-params: &artifactory-repo-put-params
     signing_key: ((signing-key))
     signing_passphrase: ((signing-passphrase))
-    repo: libs-snapshot-local
+    repo: ((artifactory-snapshot-repository))
     folder: distribution-repository
     build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
     build_number: "${BUILD_JOB_NAME}-${BUILD_NAME}"
@@ -525,7 +525,7 @@ jobs:
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
-      repo: libs-staging-local
+      repo: ((artifactory-staging-repository))
     get_params:
       threads: 8
   - put: git-repo
@@ -548,7 +548,7 @@ jobs:
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
-      repo: libs-staging-local
+      repo: ((artifactory-staging-repository))
     get_params:
       threads: 8
   - put: git-repo
@@ -571,7 +571,7 @@ jobs:
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
-      repo: libs-staging-local
+      repo: ((artifactory-staging-repository))
     get_params:
       threads: 8
   - put: git-repo
