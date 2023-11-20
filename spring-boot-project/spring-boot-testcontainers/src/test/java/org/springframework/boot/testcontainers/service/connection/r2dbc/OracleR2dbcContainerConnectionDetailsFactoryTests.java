@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
@@ -72,8 +73,7 @@ class OracleR2dbcContainerConnectionDetailsFactoryTests {
 
 	@Test
 	void shouldRegisterHints() {
-		RuntimeHints hints = new RuntimeHints();
-		new OracleR2dbcContainerConnectionDetailsFactory().registerHints(hints, getClass().getClassLoader());
+		RuntimeHints hints = ContainerConnectionDetailsFactoryHints.getRegisteredHints(getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(ConnectionFactoryOptions.class)).accepts(hints);
 	}
 

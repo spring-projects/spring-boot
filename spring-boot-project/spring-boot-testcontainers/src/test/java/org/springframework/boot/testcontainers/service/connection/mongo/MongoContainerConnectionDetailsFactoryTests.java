@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,8 +34,7 @@ class MongoContainerConnectionDetailsFactoryTests {
 
 	@Test
 	void shouldRegisterHints() {
-		RuntimeHints hints = new RuntimeHints();
-		new MongoContainerConnectionDetailsFactory().registerHints(hints, getClass().getClassLoader());
+		RuntimeHints hints = ContainerConnectionDetailsFactoryHints.getRegisteredHints(getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(ConnectionString.class)).accepts(hints);
 	}
 
