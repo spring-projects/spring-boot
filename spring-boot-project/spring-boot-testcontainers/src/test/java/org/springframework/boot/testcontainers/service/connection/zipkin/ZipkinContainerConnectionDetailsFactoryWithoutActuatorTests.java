@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.testcontainers.service.connection.zipkin;
 
-import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SqlServerR2dbcContainerConnectionDetailsFactory}.
+ * Tests for {@link ZipkinContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  */
-class SqlServerR2dbcContainerConnectionDetailsFactoryTests {
+@ClassPathExclusions("spring-boot-actuator-*")
+class ZipkinContainerConnectionDetailsFactoryWithoutActuatorTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints hints = ContainerConnectionDetailsFactoryHints.getRegisteredHints(getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(ConnectionFactoryOptions.class)).accepts(hints);
+		assertThat(hints).isNotNull();
 	}
 
 }

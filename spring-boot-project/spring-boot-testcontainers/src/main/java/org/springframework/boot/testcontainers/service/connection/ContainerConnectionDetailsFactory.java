@@ -17,7 +17,10 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.Container;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -28,6 +31,8 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.FailureHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -44,7 +49,7 @@ import org.springframework.util.ObjectUtils;
  * @since 3.1.0
  */
 public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, D extends ConnectionDetails>
-		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D>, RuntimeHintsRegistrar {
+		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D> {
 
 	/**
 	 * Constant passed to the constructor when any connection name is accepted.
@@ -90,12 +95,6 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		catch (NoClassDefFoundError ex) {
 		}
 		return null;
-	}
-
-	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		Arrays.stream(this.requiredClassNames)
-			.forEach((clazz) -> hints.reflection().registerTypeIfPresent(classLoader, clazz));
 	}
 
 	private boolean hasRequiredClasses() {
@@ -157,6 +156,27 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		@Override
 		public Origin getOrigin() {
 			return this.source.getOrigin();
+		}
+
+	}
+
+	static class ContainerConnectionDetailsFactoriesRuntimeHints implements RuntimeHintsRegistrar {
+
+		private static final Log logger = LogFactory.getLog(ContainerConnectionDetailsFactoriesRuntimeHints.class);
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			SpringFactoriesLoader.forDefaultResourceLocation(classLoader)
+				.load(ConnectionDetailsFactory.class, FailureHandler.logging(logger))
+				.stream()
+				.flatMap(this::requiredClassNames)
+				.forEach((requiredClassName) -> hints.reflection()
+					.registerTypeIfPresent(classLoader, requiredClassName));
+		}
+
+		private Stream<String> requiredClassNames(ConnectionDetailsFactory<?, ?> connectionDetailsFactory) {
+			return (connectionDetailsFactory instanceof ContainerConnectionDetailsFactory<?, ?> containerConnectionDetailsFactory)
+					? Stream.of(containerConnectionDetailsFactory.requiredClassNames) : Stream.empty();
 		}
 
 	}
