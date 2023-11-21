@@ -49,10 +49,10 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 			JsonNode tree = codec.readTree(jp);
 			return deserializeObject(jp, ctxt, codec, tree);
 		}
+		catch (IOException ioException) {
+			throw ioException;
+		}
 		catch (Exception ex) {
-			if (ex instanceof IOException ioException) {
-				throw ioException;
-			}
 			throw new JsonMappingException(jp, "Object deserialize error", ex);
 		}
 	}
@@ -75,11 +75,12 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 	/**
 	 * Helper method to extract a value from the given {@code jsonNode} or return
 	 * {@code null} when the node itself is {@code null}.
+	 *
 	 * @param jsonNode the source node (may be {@code null})
-	 * @param type the data type. May be {@link String}, {@link Boolean}, {@link Long},
-	 * {@link Integer}, {@link Short}, {@link Double}, {@link Float}, {@link BigDecimal}
-	 * or {@link BigInteger}.
-	 * @param <D> the data type requested
+	 * @param type     the data type. May be {@link String}, {@link Boolean},
+	 *                 {@link Long}, {@link Integer}, {@link Short}, {@link Double},
+	 *                 {@link Float}, {@link BigDecimal} or {@link BigInteger}.
+	 * @param <D>      the data type requested
 	 * @return the node value or {@code null}
 	 */
 	@SuppressWarnings({ "unchecked" })

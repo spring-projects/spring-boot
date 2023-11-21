@@ -19,6 +19,8 @@ package org.springframework.boot.jackson;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import org.springframework.util.Assert;
+
 /**
  * Spring Bean and Jackson {@link Module} to find and
  * {@link SimpleModule#setMixInAnnotation(Class, Class) register}
@@ -31,13 +33,22 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class JsonMixinModule extends SimpleModule {
 
+	/*
+	 * For lazy initialization of mixins
+	 * */
+	private boolean mixinsRegistered = false;
+
 	/**
 	 * Register the specified {@link JsonMixinModuleEntries entries}.
 	 * @param entries the entries to register to this instance
 	 * @param classLoader the classloader to use
 	 */
 	public void registerEntries(JsonMixinModuleEntries entries, ClassLoader classLoader) {
-		entries.doWithEntry(classLoader, this::setMixInAnnotation);
+		Assert.notNull(entries, "Mixin module entries must not be null");
+		if (!this.mixinsRegistered) {
+			entries.doWithEntry(classLoader, this::setMixInAnnotation);
+			this.mixinsRegistered = true;
+		}
 	}
 
 }
