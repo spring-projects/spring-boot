@@ -214,7 +214,7 @@ bom {
 			]
 		}
 	}
-	library("DB2 JDBC", "11.5.8.0") {
+	library("DB2 JDBC", "11.5.9.0") {
 		group("com.ibm.db2") {
 			modules = [
 				"jcc"
