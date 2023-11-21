@@ -362,7 +362,7 @@ For instance, the following settings log access on Tomcat with a {tomcat-docs}/c
 	    basedir: "my-tomcat"
 	    accesslog:
 	      enabled: true
-	      pattern: "%t %a %r %s (%D ms)"
+	      pattern: "%t %a %r %s (%D microseconds)"
 ----
 
 NOTE: The default location for logs is a `logs` directory relative to the Tomcat base directory.
@@ -377,7 +377,7 @@ Access logging for Undertow can be configured in a similar fashion, as shown in 
 	  undertow:
 	    accesslog:
 	      enabled: true
-	      pattern: "%t %a %r %s (%D ms)"
+	      pattern: "%t %a %r %s (%D milliseconds)"
 	    options:
 	      server:
 	        record-request-start-time: true
