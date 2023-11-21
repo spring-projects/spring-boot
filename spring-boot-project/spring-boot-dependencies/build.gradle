@@ -375,7 +375,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JAXB", "2.3.8") {
+	library("Glassfish JAXB", "2.3.9") {
 		prohibit {
 			versionRange "[3.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
