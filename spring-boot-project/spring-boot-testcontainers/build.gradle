@@ -29,6 +29,7 @@ dependencies {
 	optional("org.testcontainers:mysql")
 	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:oracle-xe")
+	optional("org.testcontainers:oracle-free")
 	optional("org.testcontainers:postgresql")
 	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:rabbitmq")

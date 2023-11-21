@@ -17,8 +17,8 @@
 package org.springframework.boot.testcontainers.service.connection.r2dbc;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.OracleContainer;
-import org.testcontainers.containers.OracleR2DBCDatabaseContainer;
+import org.testcontainers.oracle.OracleContainer;
+import org.testcontainers.oracle.OracleR2DBCDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -31,10 +31,10 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  *
  * @author Eddú Meléndez
  */
-class OracleR2dbcContainerConnectionDetailsFactory
+class OracleFreeR2dbcContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
 
-	OracleR2dbcContainerConnectionDetailsFactory() {
+	OracleFreeR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 

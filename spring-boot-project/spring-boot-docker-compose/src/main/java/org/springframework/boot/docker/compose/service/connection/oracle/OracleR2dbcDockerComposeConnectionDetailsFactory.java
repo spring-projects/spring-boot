@@ -36,7 +36,7 @@ class OracleR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
 	OracleR2dbcDockerComposeConnectionDetailsFactory() {
-		super("gvenzl/oracle-xe", "io.r2dbc.spi.ConnectionFactoryOptions");
+		super(OracleEnvironment.CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override

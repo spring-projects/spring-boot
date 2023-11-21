@@ -74,7 +74,14 @@ class ConnectionNamePredicateTests {
 			.accepts(sourceOf("internalhost:8080/libs/libs/mzipkin", "openzipkin/zipkin"));
 	}
 
-	private Predicate<DockerComposeConnectionSource> predicateOf(String required) {
+	@Test
+	void multiple() {
+		assertThat(predicateOf("elasticsearch1", "elasticsearch2")).accepts(sourceOf("elasticsearch1"))
+			.accepts(sourceOf("elasticsearch2"));
+
+	}
+
+	private Predicate<DockerComposeConnectionSource> predicateOf(String... required) {
 		return new ConnectionNamePredicate(required);
 	}
 

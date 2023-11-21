@@ -22,9 +22,9 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
-import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.oracle.OracleContainer;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -43,7 +43,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OracleR2dbcContainerConnectionDetailsFactory}.
+ * Tests for {@link OracleFreeR2dbcContainerConnectionDetailsFactory}.
  *
  * @author Andy Wilkinson
  */
@@ -51,11 +51,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The Oracle image has no ARM support")
-class OracleR2dbcContainerConnectionDetailsFactoryTests {
+class OracleFreeR2dbcContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final OracleContainer oracle = new OracleContainer(DockerImageNames.oracleXe())
+	static final OracleContainer oracle = new OracleContainer(DockerImageNames.oracleFree())
 		.withStartupTimeout(Duration.ofMinutes(2));
 
 	@Autowired

@@ -28,6 +28,8 @@ import org.springframework.util.StringUtils;
  */
 class OracleEnvironment {
 
+	static final String[] CONTAINER_NAMES = { "gvenzl/oracle-xe", "gvenzl/oracle-free" };
+
 	private final String username;
 
 	private final String password;

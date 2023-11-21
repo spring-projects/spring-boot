@@ -16,54 +16,51 @@
 
 package org.springframework.boot.docker.compose.service.connection.oracle;
 
-import java.sql.Driver;
 import java.time.Duration;
 
+import io.r2dbc.spi.ConnectionFactories;
+import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.util.ClassUtils;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OracleJdbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link OracleR2dbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The Oracle image has no ARM support")
-class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class OracleXeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
-	OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
+	OracleXeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
 		super("oracle-compose.yaml", DockerImageNames.oracleXe());
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws Exception {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
-		assertThat(connectionDetails.getUsername()).isEqualTo("app_user");
-		assertThat(connectionDetails.getPassword()).isEqualTo("app_user_secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/xepdb1");
-		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-		dataSource.setUrl(connectionDetails.getJdbcUrl());
-		dataSource.setUsername(connectionDetails.getUsername());
-		dataSource.setPassword(connectionDetails.getPassword());
-		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
-				getClass().getClassLoader()));
+	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() {
+		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
+		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
+		assertThat(connectionFactoryOptions.toString()).contains("database=xepdb1", "driver=oracle",
+				"password=REDACTED", "user=app_user");
+		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD))
+			.isEqualTo("app_user_secret");
 		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
-			JdbcTemplate template = new JdbcTemplate(dataSource);
-			assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
-				.isEqualTo("Hello");
+			Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
+				.sql(DatabaseDriver.ORACLE.getValidationQuery())
+				.map((row, metadata) -> row.get(0))
+				.first()
+				.block(Duration.ofSeconds(30));
+			assertThat(result).isEqualTo("Hello");
 		});
 	}
 

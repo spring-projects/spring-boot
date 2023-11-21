@@ -48,6 +48,8 @@ public final class DockerImageNames {
 
 	private static final String NEO4J_VERSION = "4.4.11";
 
+	private static final String ORACLE_FREE_VERSION = "23.3-slim";
+
 	private static final String ORACLE_XE_VERSION = "18.4.0-slim";
 
 	private static final String OPENTELEMETRY_VERSION = "0.75.0";
@@ -147,6 +149,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName neo4j() {
 		return DockerImageName.parse("neo4j").withTag(NEO4J_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running the Oracle database.
+	 * @return a docker image name for running the Oracle database
+	 */
+	public static DockerImageName oracleFree() {
+		return DockerImageName.parse("gvenzl/oracle-free").withTag(ORACLE_FREE_VERSION);
 	}
 
 	/**

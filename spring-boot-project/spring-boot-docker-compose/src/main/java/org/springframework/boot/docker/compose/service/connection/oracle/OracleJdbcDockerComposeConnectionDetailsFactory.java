@@ -34,7 +34,7 @@ class OracleJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
 	protected OracleJdbcDockerComposeConnectionDetailsFactory() {
-		super("gvenzl/oracle-xe");
+		super(OracleEnvironment.CONTAINER_NAMES);
 	}
 
 	@Override

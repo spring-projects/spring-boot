@@ -74,7 +74,7 @@ The following service connections are currently supported:
 | Containers named "elasticsearch"
 
 | `JdbcConnectionDetails`
-| Containers named "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
+| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | `MongoConnectionDetails`
 | Containers named "mongo"
@@ -92,7 +92,7 @@ The following service connections are currently supported:
 | Containers named "apachepulsar/pulsar"
 
 | `R2dbcConnectionDetails`
-| Containers named "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
+| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | `RabbitConnectionDetails`
 | Containers named "rabbitmq"

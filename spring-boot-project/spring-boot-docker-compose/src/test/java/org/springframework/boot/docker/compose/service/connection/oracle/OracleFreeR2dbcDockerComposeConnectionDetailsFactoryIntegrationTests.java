@@ -40,10 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The Oracle image has no ARM support")
-class OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class OracleFreeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
+		extends AbstractDockerComposeIntegrationTests {
 
-	OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("oracle-compose.yaml", DockerImageNames.oracleXe());
+	OracleFreeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
+		super("oracle-compose.yaml", DockerImageNames.oracleFree());
 	}
 
 	@Test

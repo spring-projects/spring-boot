@@ -24,7 +24,8 @@ org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryTra
 org.springframework.boot.testcontainers.service.connection.pulsar.PulsarContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.OracleR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.OracleFreeR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.OracleXeR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
