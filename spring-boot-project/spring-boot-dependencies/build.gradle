@@ -1708,7 +1708,7 @@ bom {
 			]
 		}
 	}
-	library("Versions Maven Plugin", "2.16.1") {
+	library("Versions Maven Plugin", "2.16.2") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"versions-maven-plugin"
