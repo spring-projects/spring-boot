@@ -1578,7 +1578,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Pulsar", "1.0.0-RC1") {
+	library("Spring Pulsar", "1.0.0") {
 		group("org.springframework.pulsar") {
 			modules = [
 				"spring-pulsar",
