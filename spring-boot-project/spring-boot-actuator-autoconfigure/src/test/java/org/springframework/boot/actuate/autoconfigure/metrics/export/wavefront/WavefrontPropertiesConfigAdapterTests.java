@@ -66,7 +66,7 @@ class WavefrontPropertiesConfigAdapterTests extends
 	protected void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
 		WavefrontProperties properties = new WavefrontProperties();
 		properties.getSender().setBatchSize(10042);
-		assertThat(createConfigAdapter(properties.getMetrics().getExport()).batchSize()).isEqualTo(10042);
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).batchSize()).isEqualTo(10042);
 	}
 
 	@Test
