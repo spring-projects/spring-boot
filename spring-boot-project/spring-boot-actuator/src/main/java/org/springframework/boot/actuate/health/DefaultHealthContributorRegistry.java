@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 /**
  * Default {@link HealthContributorRegistry} implementation.
