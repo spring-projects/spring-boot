@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -29,9 +29,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 
-	private final Function<String, String> pathFactory;
+	private final UnaryOperator<String> pathFactory;
 
-	public AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
+	public AntPathRequestMatcherProvider(UnaryOperator<String> pathFactory) {
 		this.pathFactory = pathFactory;
 	}
 

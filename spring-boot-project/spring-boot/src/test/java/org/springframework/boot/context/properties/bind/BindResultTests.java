@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +48,7 @@ class BindResultTests {
 	private Consumer<String> consumer;
 
 	@Mock
-	private Function<String, String> mapper;
+	private UnaryOperator<String> mapper;
 
 	@Mock
 	private Supplier<String> supplier;

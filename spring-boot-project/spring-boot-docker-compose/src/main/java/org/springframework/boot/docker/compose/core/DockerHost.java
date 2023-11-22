@@ -18,8 +18,8 @@ package org.springframework.boot.docker.compose.core;
 
 import java.net.URI;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import org.springframework.util.StringUtils;
 
@@ -81,7 +81,7 @@ final class DockerHost {
 	 * {@link DockerCliContextResponse}
 	 * @return a new docker host instance
 	 */
-	static DockerHost get(String host, Function<String, String> systemEnv,
+	static DockerHost get(String host, UnaryOperator<String> systemEnv,
 			Supplier<List<DockerCliContextResponse>> contextsSupplier) {
 		host = (StringUtils.hasText(host)) ? host : fromServicesHostEnv(systemEnv);
 		host = (StringUtils.hasText(host)) ? host : fromDockerHostEnv(systemEnv);
@@ -90,11 +90,11 @@ final class DockerHost {
 		return new DockerHost(host);
 	}
 
-	private static String fromServicesHostEnv(Function<String, String> systemEnv) {
+	private static String fromServicesHostEnv(UnaryOperator<String> systemEnv) {
 		return systemEnv.apply("SERVICES_HOST");
 	}
 
-	private static String fromDockerHostEnv(Function<String, String> systemEnv) {
+	private static String fromDockerHostEnv(UnaryOperator<String> systemEnv) {
 		return fromEndpoint(systemEnv.apply("DOCKER_HOST"));
 	}
 

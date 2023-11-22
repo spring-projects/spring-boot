@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
@@ -111,7 +111,7 @@ class RabbitStreamConfiguration {
 		return builder;
 	}
 
-	private static Function<String, String> withFallback(Supplier<String> fallback) {
+	private static UnaryOperator<String> withFallback(Supplier<String> fallback) {
 		return (value) -> (value != null) ? value : fallback.get();
 	}
 

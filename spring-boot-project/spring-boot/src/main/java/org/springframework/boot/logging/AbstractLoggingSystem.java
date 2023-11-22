@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -184,7 +185,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @return the default value resolver
 	 * @since 3.2.0
 	 */
-	protected Function<String, String> getDefaultValueResolver(Environment environment) {
+	protected UnaryOperator<String> getDefaultValueResolver(Environment environment) {
 		String defaultLogCorrelationPattern = getDefaultLogCorrelationPattern();
 		return (name) -> {
 			if (StringUtils.hasLength(defaultLogCorrelationPattern)

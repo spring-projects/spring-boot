@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Locale;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Generate a sensible health indicator name based on its bean name.
@@ -26,7 +26,7 @@ import java.util.function.Function;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class HealthContributorNameFactory implements Function<String, String> {
+public class HealthContributorNameFactory implements UnaryOperator<String> {
 
 	private static final String[] SUFFIXES = { "healthindicator", "healthcontributor" };
 
