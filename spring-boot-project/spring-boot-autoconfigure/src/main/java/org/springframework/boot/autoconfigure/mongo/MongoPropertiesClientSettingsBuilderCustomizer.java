@@ -34,7 +34,7 @@ import org.springframework.util.CollectionUtils;
  * @author Scott Frederick
  * @author Safeer Ansari
  * @since 2.4.0
- * @deprecated since 3.1.0 in favor of
+ * @deprecated since 3.1.0 for removal in 3.3.0 in favor of
  * {@link StandardMongoClientSettingsBuilderCustomizer}
  */
 @Deprecated(since = "3.1.0", forRemoval = true)
