@@ -18,7 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 
 import ch.qos.logback.core.util.FileSize;
 
@@ -116,7 +116,7 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 * properties
 	 * @since 3.2.0
 	 */
-	public LogbackLoggingSystemProperties(Environment environment, UnaryOperator<String> defaultValueResolver,
+	public LogbackLoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
 			BiConsumer<String, String> setter) {
 		super(environment, defaultValueResolver, setter);
 	}

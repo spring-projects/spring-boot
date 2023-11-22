@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 
 import org.springframework.util.Assert;
 
@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  */
 class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 
-	private final UnaryOperator<String> nameFactory;
+	private final Function<String, String> nameFactory;
 
 	private final Object monitor = new Object();
 
@@ -49,7 +49,7 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 		this(contributors, HealthContributorNameFactory.INSTANCE);
 	}
 
-	DefaultContributorRegistry(Map<String, C> contributors, UnaryOperator<String> nameFactory) {
+	DefaultContributorRegistry(Map<String, C> contributors, Function<String, String> nameFactory) {
 		Assert.notNull(contributors, "Contributors must not be null");
 		Assert.notNull(nameFactory, "NameFactory must not be null");
 		this.nameFactory = nameFactory;

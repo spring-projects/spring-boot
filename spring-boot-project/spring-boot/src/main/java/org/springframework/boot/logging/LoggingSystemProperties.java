@@ -19,7 +19,7 @@ package org.springframework.boot.logging;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -163,7 +163,7 @@ public class LoggingSystemProperties {
 
 	private final Environment environment;
 
-	private final UnaryOperator<String> defaultValueResolver;
+	private final Function<String, String> defaultValueResolver;
 
 	private final BiConsumer<String, String> setter;
 
@@ -194,7 +194,7 @@ public class LoggingSystemProperties {
 	 * properties
 	 * @since 3.2.0
 	 */
-	public LoggingSystemProperties(Environment environment, UnaryOperator<String> defaultValueResolver,
+	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
 			BiConsumer<String, String> setter) {
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;

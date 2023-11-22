@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
@@ -36,7 +37,7 @@ public class DefaultHealthContributorRegistry extends DefaultContributorRegistry
 	}
 
 	public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors,
-			UnaryOperator<String> nameFactory) {
+			Function<String, String> nameFactory) {
 		super(contributors, nameFactory);
 	}
 

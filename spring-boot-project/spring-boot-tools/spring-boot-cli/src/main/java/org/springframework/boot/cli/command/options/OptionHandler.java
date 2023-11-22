@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;
@@ -50,7 +50,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  */
 public class OptionHandler {
 
-	private final UnaryOperator<String> argumentProcessor;
+	private final Function<String, String> argumentProcessor;
 
 	private OptionParser parser;
 
@@ -62,7 +62,7 @@ public class OptionHandler {
 	 * Create a new {@link OptionHandler} instance.
 	 */
 	public OptionHandler() {
-		this(UnaryOperator.identity());
+		this(Function.identity());
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class OptionHandler {
 	 * @param argumentProcessor strategy that can be used to manipulate arguments before
 	 * they are used.
 	 */
-	public OptionHandler(UnaryOperator<String> argumentProcessor) {
+	public OptionHandler(Function<String, String> argumentProcessor) {
 		this.argumentProcessor = argumentProcessor;
 	}
 

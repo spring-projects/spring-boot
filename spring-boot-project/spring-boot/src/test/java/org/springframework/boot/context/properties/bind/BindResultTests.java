@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.bind;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
