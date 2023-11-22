@@ -271,7 +271,7 @@ Usually, you would define the properties in your `application.properties` or `ap
 
 Common server settings include:
 
-* Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to `server.address`, and so on.
+* Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to (`server.address`), and so on.
 * Error management: Location of the error page (`server.error.path`) and so on.
 * <<howto#howto.webserver.configure-ssl,SSL>>
 * <<howto#howto.webserver.enable-response-compression,HTTP compression>>
@@ -291,7 +291,7 @@ The following example shows programmatically setting the port:
 
 include::code:MyWebServerFactoryCustomizer[]
 
-`JettyReactiveWebServerFactory`, `NettyReactiveWebServerFactory`, `TomcatReactiveWebServerFactory`, and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableReactiveWebServerFactory` that have additional customization setter methods for Jetty, Reactor Netty, Tomcat, and Undertow respectively.
+`JettyReactiveWebServerFactory`, `NettyReactiveWebServerFactory`, `TomcatReactiveWebServerFactory`, and `UndertowReactiveWebServerFactory` are dedicated variants of `ConfigurableReactiveWebServerFactory` that have additional customization setter methods for Jetty, Reactor Netty, Tomcat, and Undertow respectively.
 The following example shows how to customize `NettyReactiveWebServerFactory` that provides access to Reactor Netty-specific configuration options:
 
 include::code:MyNettyWebServerFactoryCustomizer[]
