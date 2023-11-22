@@ -34,7 +34,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OracleR2dbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link OracleXeR2dbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */

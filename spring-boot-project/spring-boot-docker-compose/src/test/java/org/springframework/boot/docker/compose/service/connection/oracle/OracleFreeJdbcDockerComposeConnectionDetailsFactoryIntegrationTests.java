@@ -35,7 +35,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OracleJdbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link OracleFreeJdbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */
@@ -54,7 +54,7 @@ class OracleFreeJdbcDockerComposeConnectionDetailsFactoryIntegrationTests
 		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
 		assertThat(connectionDetails.getUsername()).isEqualTo("app_user");
 		assertThat(connectionDetails.getPassword()).isEqualTo("app_user_secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/xepdb1");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/freepdb1");
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());

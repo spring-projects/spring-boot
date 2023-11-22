@@ -28,18 +28,16 @@ import org.springframework.util.StringUtils;
  */
 class OracleEnvironment {
 
-	static final String[] CONTAINER_NAMES = { "gvenzl/oracle-xe", "gvenzl/oracle-free" };
-
 	private final String username;
 
 	private final String password;
 
 	private final String database;
 
-	OracleEnvironment(Map<String, String> env) {
+	OracleEnvironment(Map<String, String> env, String defaultDatabase) {
 		this.username = env.getOrDefault("APP_USER", "system");
 		this.password = extractPassword(env);
-		this.database = env.getOrDefault("ORACLE_DATABASE", "xepdb1");
+		this.database = env.getOrDefault("ORACLE_DATABASE", defaultDatabase);
 	}
 
 	private String extractPassword(Map<String, String> env) {

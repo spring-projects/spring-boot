@@ -34,7 +34,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OracleR2dbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link OracleFreeR2dbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */
@@ -51,7 +51,7 @@ class OracleFreeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
 	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() {
 		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
-		assertThat(connectionFactoryOptions.toString()).contains("database=xepdb1", "driver=oracle",
+		assertThat(connectionFactoryOptions.toString()).contains("database=freepdb1", "driver=oracle",
 				"password=REDACTED", "user=app_user");
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD))
 			.isEqualTo("app_user_secret");

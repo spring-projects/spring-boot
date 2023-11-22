@@ -35,7 +35,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OracleJdbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link OracleXeJdbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */
