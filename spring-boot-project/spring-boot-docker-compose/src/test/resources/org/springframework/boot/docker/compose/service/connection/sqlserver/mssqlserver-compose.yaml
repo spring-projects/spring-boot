@@ -1,9 +1,0 @@
-services:
-  database:
-    image: '{imageName}'
-    ports:
-      - '1433'
-    environment:
-      - 'MSSQL_PID=express'
-      - 'MSSQL_SA_PASSWORD=verYs3cret'
-      - 'ACCEPT_EULA=yes'

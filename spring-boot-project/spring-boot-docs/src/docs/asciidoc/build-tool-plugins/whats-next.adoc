@@ -1,6 +1,0 @@
-[[build-tool-plugins.whats-next]]
-== What to Read Next
-If you are interested in how the build tool plugins work, you can look at the {spring-boot-code}/spring-boot-project/spring-boot-tools[`spring-boot-tools`] module on GitHub.
-More technical details of the executable jar format are covered in <<executable-jar#appendix.executable-jar,the appendix>>.
-
-If you have specific build-related questions, see the "`<<howto#howto, how-to>>`" guides.

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
-	<SpringProfile name="production">
-		<Loggers>
-			<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
-		</Loggers>
-	</SpringProfile>
-</Configuration>

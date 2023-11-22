@@ -1,2 +1,0 @@
-org.springframework.boot.testcontainers.properties.TestcontainersPropertySourceAutoConfiguration
-org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

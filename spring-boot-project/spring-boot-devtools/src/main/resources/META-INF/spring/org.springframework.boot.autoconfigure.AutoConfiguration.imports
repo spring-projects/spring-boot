@@ -1,4 +1,0 @@
-org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration
-org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration
-org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration
-org.springframework.boot.devtools.autoconfigure.RemoteDevToolsAutoConfiguration
