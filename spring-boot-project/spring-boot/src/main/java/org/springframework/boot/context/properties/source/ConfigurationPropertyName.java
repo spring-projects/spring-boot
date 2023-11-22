@@ -493,7 +493,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 		int length = elements.getLength(element);
 		do {
-			char c = Character.toLowerCase(elements.charAt(element, index++));
+			char c = elements.charAt(element, index++);
 			if (c != '-') {
 				return false;
 			}
