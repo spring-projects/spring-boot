@@ -62,6 +62,9 @@ While we do not recommend using multiple data source initialization technologies
 This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
 `schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
+NOTE: The initialization scripts support `--` for single line comments and `/++*++ ++*++/` for block comments.
+Other comment formats are not supported.
+
 If you are using a <<howto#howto.data-initialization.migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
 
