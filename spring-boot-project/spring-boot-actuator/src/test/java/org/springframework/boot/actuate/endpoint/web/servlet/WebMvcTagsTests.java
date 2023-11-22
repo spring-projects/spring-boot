@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,6 +176,20 @@ class WebMvcTagsTests {
 	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
 		this.response.setStatus(701);
 		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	void methodTagIsWellKnownHttpMethod() {
+		this.request.setMethod("GET");
+		Tag tag = WebMvcTags.method(this.request);
+		assertThat(tag.getValue()).isEqualTo("GET");
+	}
+
+	@Test
+	void methodTagForUnknownHttpMethods() {
+		this.request.setMethod("TEST");
+		Tag tag = WebMvcTags.method(this.request);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.boot.actuate.metrics.http.Outcome;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.StringUtils;
@@ -53,6 +54,8 @@ public final class WebFluxTags {
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
+	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
+
 	private static final Pattern FORWARD_SLASHES_PATTERN = Pattern.compile("//+");
 
 	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
@@ -70,7 +73,11 @@ public final class WebFluxTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(ServerWebExchange exchange) {
-		return Tag.of("method", exchange.getRequest().getMethodValue());
+		HttpMethod httpMethod = exchange.getRequest().getMethod();
+		if (httpMethod != null) {
+			return Tag.of("method", httpMethod.name());
+		}
+		return METHOD_UNKNOWN;
 	}
 
 	/**
