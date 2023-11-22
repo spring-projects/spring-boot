@@ -28,11 +28,13 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -126,6 +128,19 @@ class ConditionalOnBeanTests {
 		this.contextRunner
 			.withUserConfiguration(FactoryBeanConfiguration.class, OnAnnotationWithFactoryBeanConfiguration.class)
 			.run((context) -> {
+				assertThat(context).hasBean("bar");
+				assertThat(context).hasSingleBean(ExampleBean.class);
+			});
+	}
+
+	@Test
+	void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation2() {
+		this.contextRunner
+			.withUserConfiguration(EarlyInitializationFactoryBeanConfiguration.class,
+					EarlyInitializationOnAnnotationFactoryBeanConfiguration.class)
+			.run((context) -> {
+				assertThat(EarlyInitializationFactoryBeanConfiguration.calledWhenNoFrozen).as("calledWhenNoFrozen")
+					.isFalse();
 				assertThat(context).hasBean("bar");
 				assertThat(context).hasSingleBean(ExampleBean.class);
 			});
@@ -352,6 +367,35 @@ class ConditionalOnBeanTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	static class EarlyInitializationFactoryBeanConfiguration {
+
+		static boolean calledWhenNoFrozen;
+
+		@Bean
+		@TestAnnotation
+		static FactoryBean<?> exampleBeanFactoryBean(ApplicationContext applicationContext) {
+			// NOTE: must be static and return raw FactoryBean and not the subclass so
+			// Spring can't guess type
+			ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) applicationContext)
+				.getBeanFactory();
+			calledWhenNoFrozen = calledWhenNoFrozen || !beanFactory.isConfigurationFrozen();
+			return new ExampleFactoryBean();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(annotation = TestAnnotation.class)
+	static class EarlyInitializationOnAnnotationFactoryBeanConfiguration {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
+
+	}
+
 	static class WithPropertyPlaceholderClassNameRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
@@ -518,7 +562,7 @@ class ConditionalOnBeanTests {
 
 	}
 
-	@Target(ElementType.TYPE)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface TestAnnotation {
