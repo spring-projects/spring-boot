@@ -814,7 +814,7 @@ public class NestedJarFile extends JarFile {
 
 		private volatile boolean closed;
 
-		protected RawZipDataInputStream(InputStream in) {
+		RawZipDataInputStream(InputStream in) {
 			super(in);
 		}
 

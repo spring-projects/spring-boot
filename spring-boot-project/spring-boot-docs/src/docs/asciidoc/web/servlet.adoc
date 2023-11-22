@@ -624,7 +624,7 @@ include::code:MySameSiteConfiguration[]
 The character encoding behavior of the embedded servlet container for request and response handling can be configured using the `server.servlet.encoding.*` configuration properties.
 
 When a request's `Accept-Language` header indicates a locale for the request it will be automatically mapped to a charset by the servlet container.
-Each containers providers default locale to charset mappings and you should verify that they meet your application's needs.
+Each container provides default locale to charset mappings and you should verify that they meet your application's needs.
 When they do not, use the configprop:server.servlet.encoding.mapping[] configuration property to customize the mappings, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
