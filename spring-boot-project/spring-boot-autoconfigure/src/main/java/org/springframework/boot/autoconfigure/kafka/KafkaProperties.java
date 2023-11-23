@@ -1005,7 +1005,7 @@ public class KafkaProperties {
 			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
-		public boolean getObservationEnabled() {
+		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
 
@@ -1279,7 +1279,7 @@ public class KafkaProperties {
 			this.changeConsumerThreadName = changeConsumerThreadName;
 		}
 
-		public boolean getObservationEnabled() {
+		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
 

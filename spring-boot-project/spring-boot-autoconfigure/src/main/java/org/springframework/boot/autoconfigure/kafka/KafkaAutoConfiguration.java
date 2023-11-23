@@ -98,7 +98,7 @@ public class KafkaAutoConfiguration {
 		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);
 		map.from(this.properties.getTemplate().getDefaultTopic()).to(kafkaTemplate::setDefaultTopic);
 		map.from(this.properties.getTemplate().getTransactionIdPrefix()).to(kafkaTemplate::setTransactionIdPrefix);
-		map.from(this.properties.getTemplate().getObservationEnabled()).to(kafkaTemplate::setObservationEnabled);
+		map.from(this.properties.getTemplate().isObservationEnabled()).to(kafkaTemplate::setObservationEnabled);
 		return kafkaTemplate;
 	}
 
