@@ -32,6 +32,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 class ConfigDataProperties {
 
@@ -118,14 +119,14 @@ class ConfigDataProperties {
 			if (activationContext == null) {
 				return false;
 			}
-			boolean activate = true;
-			activate = activate && isActive(activationContext.getCloudPlatform());
+			boolean activate = isActive(activationContext.getCloudPlatform());
 			activate = activate && isActive(activationContext.getProfiles());
 			return activate;
 		}
 
 		private boolean isActive(CloudPlatform cloudPlatform) {
-			return this.onCloudPlatform == null || this.onCloudPlatform == cloudPlatform;
+			return this.onCloudPlatform == null || this.onCloudPlatform == CloudPlatform.NONE && cloudPlatform == null
+					|| this.onCloudPlatform == cloudPlatform;
 		}
 
 		private boolean isActive(Profiles profiles) {
