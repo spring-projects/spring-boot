@@ -142,6 +142,15 @@ class HandlerTests {
 		assertThat(url.toExternalForm()).isEqualTo("jar:file:example.jar!/entry.txt#runtime");
 	}
 
+	@Test // gh-38524
+	void parseUrlWhenSpecIsEmpty() throws MalformedURLException {
+		URL url = createJarUrl("nested:gh-38524.jar/!BOOT-INF/classes/!/");
+		String spec = "";
+		this.handler.parseURL(url, spec, 0, 0);
+		assertThat(url.toExternalForm()).isEqualTo("jar:nested:gh-38524.jar/!BOOT-INF/classes/!/");
+
+	}
+
 	@Test
 	void hashCodeGeneratesHashCode() throws MalformedURLException {
 		URL url = createJarUrl("file:example.jar!/entry.txt");

@@ -89,7 +89,7 @@ public class Handler extends URLStreamHandler {
 
 	private String extractContextPath(URL url, String spec, int start) {
 		String contextPath = url.getPath();
-		if (spec.charAt(start) == '/') {
+		if (spec.regionMatches(false, start, "/", 0, 1)) {
 			int indexOfContextPathSeparator = indexOfSeparator(contextPath);
 			if (indexOfContextPathSeparator == -1) {
 				throw new IllegalStateException("malformed context url:%s: no !/".formatted(url));
