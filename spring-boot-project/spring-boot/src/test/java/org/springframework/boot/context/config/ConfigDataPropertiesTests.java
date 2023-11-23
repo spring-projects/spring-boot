@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 class ConfigDataPropertiesTests {
 
@@ -96,6 +97,13 @@ class ConfigDataPropertiesTests {
 				new Activate(CloudPlatform.KUBERNETES, null));
 		ConfigDataActivationContext context = new ConfigDataActivationContext(CloudPlatform.HEROKU, NULL_PROFILES);
 		assertThat(properties.isActive(context)).isFalse();
+	}
+
+	@Test
+	void isActiveWhenSpecificNoneCloudPlatformAgainstNullCloudPlatform() {
+		ConfigDataProperties properties = new ConfigDataProperties(NO_IMPORTS, new Activate(CloudPlatform.NONE, null));
+		ConfigDataActivationContext context = new ConfigDataActivationContext(NULL_CLOUD_PLATFORM, NULL_PROFILES);
+		assertThat(properties.isActive(context)).isTrue();
 	}
 
 	@Test
