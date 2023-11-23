@@ -822,20 +822,21 @@ To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
 
 [[actuator.metrics.supported.http-clients]]
 ==== HTTP Client Metrics
-Spring Boot Actuator manages the instrumentation of both `RestTemplate` and `WebClient`.
+Spring Boot Actuator manages the instrumentation of `RestTemplate`, `WebClient` and `RestClient`.
 For that, you have to inject the auto-configured builder and use it to create instances:
 
 * `RestTemplateBuilder` for `RestTemplate`
 * `WebClient.Builder` for `WebClient`
+* `RestClient.Builder` for `RestClient`
 
-You can also manually apply the customizers responsible for this instrumentation, namely `ObservationRestTemplateCustomizer` and `ObservationWebClientCustomizer`.
+You can also manually apply the customizers responsible for this instrumentation, namely `ObservationRestTemplateCustomizer`, `ObservationWebClientCustomizer` and `ObservationRestClientCustomizer`.
 
 By default, metrics are generated with the name, `http.client.requests`.
 You can customize the name by setting the configprop:management.observations.http.client.requests.name[] property.
 
 See the {spring-framework-docs}/integration/observability.html#observability.http-client[Spring Framework reference documentation for more information on produced observations].
 
-To customize the tags when using `RestTemplate`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
+To customize the tags when using `RestTemplate` or `RestClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
 To customize the tags when using `WebClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.web.reactive.function.client` package.
 
 

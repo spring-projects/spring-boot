@@ -20,34 +20,34 @@ import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
-import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer;
+import org.springframework.boot.actuate.metrics.web.client.ObservationRestClientCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
- * Configure the instrumentation of {@link RestTemplate}.
+ * Configure the instrumentation of {@link RestClient}.
  *
- * @author Brian Clozel
+ * @author Moritz Halbritter
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(RestTemplate.class)
-@ConditionalOnBean(RestTemplateBuilder.class)
-class RestTemplateObservationConfiguration {
+@ConditionalOnClass(RestClient.class)
+@ConditionalOnBean(RestClient.Builder.class)
+class RestClientObservationConfiguration {
 
 	@Bean
-	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
+	RestClientCustomizer observationRestClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {
 		String name = observationProperties.getHttp().getClient().getRequests().getName();
 		ClientRequestObservationConvention observationConvention = customConvention
 			.getIfAvailable(() -> new DefaultClientRequestObservationConvention(name));
-		return new ObservationRestTemplateCustomizer(observationRegistry, observationConvention);
+		return new ObservationRestClientCustomizer(observationRegistry, observationConvention);
 	}
 
 }
