@@ -12,4 +12,4 @@ milestone: "3.1.x"
 build-name: "spring-boot"
 concourse-url: "https://ci.spring.io"
 task-timeout: 2h00m
-final-release: true
+final-release: false
