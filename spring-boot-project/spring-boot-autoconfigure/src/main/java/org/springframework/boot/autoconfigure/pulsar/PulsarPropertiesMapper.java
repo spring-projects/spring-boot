@@ -18,17 +18,23 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
+import org.apache.pulsar.client.api.Authentication;
+import org.apache.pulsar.client.api.AuthenticationFactory;
+import org.apache.pulsar.client.api.AutoClusterFailoverBuilder;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.ProducerBuilder;
 import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticationException;
 import org.apache.pulsar.client.api.ReaderBuilder;
+import org.apache.pulsar.client.api.ServiceUrlProvider;
+import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuilderImpl;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
@@ -40,6 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Swamy Mavuri
  */
 final class PulsarPropertiesMapper {
 
@@ -57,6 +64,41 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
 		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
+		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrlProvider, properties, connectionDetails);
+	}
+
+	private void customizeServiceUrlProviderBuilder(Consumer<ServiceUrlProvider> serviceUrlProviderConsumer,
+			PulsarProperties.Client properties, PulsarConnectionDetails connectionDetails) {
+		PulsarProperties.Failover failoverProperties = properties.getFailover();
+		if (!failoverProperties.getBackupClusters().isEmpty()) {
+			Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
+			failoverProperties.getBackupClusters().forEach((cluster) ->
+					secondaryAuths.put(cluster.getServiceUrl(), populateAuthenticationForFailoverClusters(cluster.getAuthentication()))
+			);
+			AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
+			map.from(new ArrayList<>(secondaryAuths.keySet())).to(autoClusterFailoverBuilder::secondary);
+			map.from(failoverProperties::getFailoverPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
+			map.from(failoverProperties::getFailOverDelay).to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
+			map.from(failoverProperties::getSwitchBackDelay).to(timeoutProperty(autoClusterFailoverBuilder::switchBackDelay));
+			map.from(failoverProperties::getCheckInterval).to(timeoutProperty(autoClusterFailoverBuilder::checkInterval));
+			map.from(secondaryAuths).to(autoClusterFailoverBuilder::secondaryAuthentication);
+
+			serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
+		}
+	}
+
+	private Authentication populateAuthenticationForFailoverClusters(PulsarProperties.Authentication authenticationProperties) {
+		if (StringUtils.hasText(authenticationProperties.getPluginClassName())) {
+			try {
+				return AuthenticationFactory.create(authenticationProperties.getPluginClassName(), authenticationProperties.getParam());
+			}
+			catch (UnsupportedAuthenticationException ex) {
+				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
+			}
+		}
+		return null;
 	}
 
 	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {

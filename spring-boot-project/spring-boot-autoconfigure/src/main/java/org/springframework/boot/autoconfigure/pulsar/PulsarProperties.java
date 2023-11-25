@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.pulsar.client.api.AutoClusterFailoverBuilder.FailoverPolicy;
 import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.HashingScheme;
 import org.apache.pulsar.client.api.MessageRoutingMode;
@@ -42,6 +44,7 @@ import org.springframework.util.Assert;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Swamy Mavuri
  * @since 3.2.0
  */
 @ConfigurationProperties("spring.pulsar")
@@ -128,6 +131,11 @@ public class PulsarProperties {
 		 */
 		private final Authentication authentication = new Authentication();
 
+		/**
+		 * Failover settings.
+		 */
+		private final Failover failover = new Failover();
+
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
@@ -164,6 +172,9 @@ public class PulsarProperties {
 			return this.authentication;
 		}
 
+		public Failover getFailover() {
+			return this.failover;
+		}
 	}
 
 	public static class Admin {
@@ -885,6 +896,102 @@ public class PulsarProperties {
 			this.param = param;
 		}
 
+	}
+
+	public static class Failover {
+
+		/**
+		 * Cluster Failover Policy.
+		 * Order in which we mentioned in the {@link BackupCluster} List
+		 */
+		private FailoverPolicy failoverPolicy = FailoverPolicy.ORDER;
+
+		/**
+		 * Delay before the Pulsar client switches from the primary cluster to the backup cluster.
+		 */
+		private Duration failOverDelay;
+
+		/**
+		 * Delay before the Pulsar client switches from the backup cluster to the primary cluster.
+		 */
+		private Duration switchBackDelay;
+
+		/**
+		 * Frequency of performing a probe task.
+		 */
+		private Duration checkInterval;
+
+		/**
+		 * List of backupClusters
+		 * The backup cluster is chosen in the sequence of the given list.
+		 * If all backup clusters are available, the Pulsar client chooses the first backup cluster.
+		 */
+		private List<BackupCluster> backupClusters = new LinkedList<>();
+
+		public FailoverPolicy getFailoverPolicy() {
+			return this.failoverPolicy;
+		}
+
+		public void setFailoverPolicy(FailoverPolicy failoverPolicy) {
+			this.failoverPolicy = failoverPolicy;
+		}
+
+		public Duration getFailOverDelay() {
+			return this.failOverDelay;
+		}
+
+		public void setFailOverDelay(Duration failOverDelay) {
+			this.failOverDelay = failOverDelay;
+		}
+
+		public Duration getSwitchBackDelay() {
+			return this.switchBackDelay;
+		}
+
+		public void setSwitchBackDelay(Duration switchBackDelay) {
+			this.switchBackDelay = switchBackDelay;
+		}
+
+		public Duration getCheckInterval() {
+			return this.checkInterval;
+		}
+
+		public void setCheckInterval(Duration checkInterval) {
+			this.checkInterval = checkInterval;
+		}
+
+		public List<BackupCluster> getBackupClusters() {
+			return this.backupClusters;
+		}
+
+		public void setBackupClusters(List<BackupCluster> backupClusters) {
+			this.backupClusters = backupClusters;
+		}
+
+		public static class BackupCluster {
+
+			/**
+			 * Pulsar service URL in the format '(pulsar|pulsar+ssl)://host:port'.
+			 */
+			private String serviceUrl = "pulsar://localhost:6650";
+
+			/**
+			 * Authentication settings.
+			 */
+			private final Authentication authentication = new Authentication();
+
+			public String getServiceUrl() {
+				return this.serviceUrl;
+			}
+
+			public void setServiceUrl(String serviceUrl) {
+				this.serviceUrl = serviceUrl;
+			}
+
+			public Authentication getAuthentication() {
+				return this.authentication;
+			}
+		}
 	}
 
 }
