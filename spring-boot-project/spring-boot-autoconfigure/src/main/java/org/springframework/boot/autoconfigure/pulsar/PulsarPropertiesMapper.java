@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -25,11 +26,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
+import org.apache.pulsar.client.api.Authentication;
+import org.apache.pulsar.client.api.AuthenticationFactory;
+import org.apache.pulsar.client.api.AutoClusterFailoverBuilder;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.ProducerBuilder;
 import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticationException;
 import org.apache.pulsar.client.api.ReaderBuilder;
+import org.apache.pulsar.client.api.ServiceUrlProvider;
+import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuilderImpl;
 import org.apache.pulsar.common.util.ObjectMapperFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -42,6 +48,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Swamy Mavuri
  */
 final class PulsarPropertiesMapper {
 
@@ -54,11 +61,50 @@ final class PulsarPropertiesMapper {
 	void customizeClientBuilder(ClientBuilder clientBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Client properties = this.properties.getClient();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(connectionDetails::getBrokerUrl).to(clientBuilder::serviceUrl);
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
 		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
+		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrl, clientBuilder::serviceUrlProvider, properties,
+				connectionDetails);
+	}
+
+	private void customizeServiceUrlProviderBuilder(Consumer<String> serviceUrlConsumer,
+			Consumer<ServiceUrlProvider> serviceUrlProviderConsumer, PulsarProperties.Client properties,
+			PulsarConnectionDetails connectionDetails) {
+		PulsarProperties.Failover failoverProperties = properties.getFailover();
+		if (!failoverProperties.getBackupClusters().isEmpty()) {
+			Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
+			failoverProperties.getBackupClusters().forEach((cluster) -> {
+				PulsarProperties.Authentication authentication = cluster.getAuthentication();
+				if (authentication.getPluginClassName() != null) {
+					customizeAuthentication((authPluginClassName, authParams) -> secondaryAuths
+						.put(cluster.getServiceUrl(), AuthenticationFactory.create(authPluginClassName, authParams)),
+							authentication);
+				}
+				else {
+					secondaryAuths.put(cluster.getServiceUrl(), null);
+				}
+			});
+
+			AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
+			map.from(new ArrayList<>(secondaryAuths.keySet())).to(autoClusterFailoverBuilder::secondary);
+			map.from(failoverProperties::getFailoverPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
+			map.from(failoverProperties::getFailOverDelay)
+				.to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
+			map.from(failoverProperties::getSwitchBackDelay)
+				.to(timeoutProperty(autoClusterFailoverBuilder::switchBackDelay));
+			map.from(failoverProperties::getCheckInterval)
+				.to(timeoutProperty(autoClusterFailoverBuilder::checkInterval));
+			map.from(secondaryAuths).to(autoClusterFailoverBuilder::secondaryAuthentication);
+
+			serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
+		}
+		else {
+			serviceUrlConsumer.accept(connectionDetails.getBrokerUrl());
+		}
 	}
 
 	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
