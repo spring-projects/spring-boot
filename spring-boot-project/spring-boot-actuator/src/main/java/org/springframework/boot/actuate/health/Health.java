@@ -145,7 +145,7 @@ public final class Health extends HealthComponent {
 	 * @param ex the exception
 	 * @return a new {@link Builder} instance
 	 */
-	public static Builder down(Exception ex) {
+	public static Builder down(Throwable ex) {
 		return down().withException(ex);
 	}
 
