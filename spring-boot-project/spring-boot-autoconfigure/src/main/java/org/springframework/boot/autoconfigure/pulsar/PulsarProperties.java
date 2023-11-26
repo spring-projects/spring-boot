@@ -175,6 +175,7 @@ public class PulsarProperties {
 		public Failover getFailover() {
 			return this.failover;
 		}
+
 	}
 
 	public static class Admin {
@@ -901,18 +902,20 @@ public class PulsarProperties {
 	public static class Failover {
 
 		/**
-		 * Cluster Failover Policy.
-		 * Order in which we mentioned in the {@link BackupCluster} List
+		 * Cluster Failover Policy. Order in which we mentioned in the
+		 * {@link BackupCluster} List
 		 */
 		private FailoverPolicy failoverPolicy = FailoverPolicy.ORDER;
 
 		/**
-		 * Delay before the Pulsar client switches from the primary cluster to the backup cluster.
+		 * Delay before the Pulsar client switches from the primary cluster to the backup
+		 * cluster.
 		 */
 		private Duration failOverDelay;
 
 		/**
-		 * Delay before the Pulsar client switches from the backup cluster to the primary cluster.
+		 * Delay before the Pulsar client switches from the backup cluster to the primary
+		 * cluster.
 		 */
 		private Duration switchBackDelay;
 
@@ -922,9 +925,9 @@ public class PulsarProperties {
 		private Duration checkInterval;
 
 		/**
-		 * List of backupClusters
-		 * The backup cluster is chosen in the sequence of the given list.
-		 * If all backup clusters are available, the Pulsar client chooses the first backup cluster.
+		 * List of backupClusters The backup cluster is chosen in the sequence of the
+		 * given list. If all backup clusters are available, the Pulsar client chooses the
+		 * first backup cluster.
 		 */
 		private List<BackupCluster> backupClusters = new LinkedList<>();
 
@@ -991,7 +994,9 @@ public class PulsarProperties {
 			public Authentication getAuthentication() {
 				return this.authentication;
 			}
+
 		}
+
 	}
 
 }

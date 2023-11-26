@@ -140,13 +140,13 @@ class PulsarConfigurationTests {
 					ClientBuilder target = mock(ClientBuilder.class);
 					BiConsumer<PulsarClientBuilderCustomizer, ClientBuilder> customizeAction = PulsarClientBuilderCustomizer::customize;
 					PulsarClientBuilderCustomizer pulsarClientBuilderCustomizer = (PulsarClientBuilderCustomizer) ReflectionTestUtils
-							.getField(clientFactory, "customizer");
+						.getField(clientFactory, "customizer");
 					customizeAction.accept(pulsarClientBuilderCustomizer, target);
 					InOrder ordered = inOrder(target);
 					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
 
 					Customizers<PulsarClientBuilderCustomizer, ClientBuilder> customizers = Customizers
-							.of(ClientBuilder.class, PulsarClientBuilderCustomizer::customize);
+						.of(ClientBuilder.class, PulsarClientBuilderCustomizer::customize);
 
 					assertThat(customizers.fromField(clientFactory, "customizer"))
 						.callsInOrder(ClientBuilder::serviceUrl, "connectiondetails");

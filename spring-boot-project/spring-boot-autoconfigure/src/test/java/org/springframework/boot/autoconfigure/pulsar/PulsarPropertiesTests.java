@@ -94,10 +94,12 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.client.failover.switch-back-delay", "15s");
 			map.put("spring.pulsar.client.failover.check-interval", "1s");
 			map.put("spring.pulsar.client.failover.backup-clusters[0].service-url", "backup-service-url-1");
-			map.put("spring.pulsar.client.failover.backup-clusters[0].authentication.plugin-class-name", "com.example.MyAuth1");
+			map.put("spring.pulsar.client.failover.backup-clusters[0].authentication.plugin-class-name",
+					"com.example.MyAuth1");
 			map.put("spring.pulsar.client.failover.backup-clusters[0].authentication.param.token", "1234");
 			map.put("spring.pulsar.client.failover.backup-clusters[1].service-url", "backup-service-url-2");
-			map.put("spring.pulsar.client.failover.backup-clusters[1].authentication.plugin-class-name", "com.example.MyAuth2");
+			map.put("spring.pulsar.client.failover.backup-clusters[1].authentication.plugin-class-name",
+					"com.example.MyAuth2");
 			map.put("spring.pulsar.client.failover.backup-clusters[1].authentication.param.token", "5678");
 			PulsarProperties.Client properties = bindPropeties(map).getClient();
 			Failover failoverProperties = properties.getFailover();
@@ -210,8 +212,8 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].message-type", TestMessage.class.getName());
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type", String.class.getName());
 			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindPropeties(map))
-					.havingRootCause()
-					.withMessageContaining("schemaType must not be null");
+				.havingRootCause()
+				.withMessageContaining("schemaType must not be null");
 		}
 
 		@Test
@@ -220,8 +222,8 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].message-type", TestMessage.class.getName());
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "NONE");
 			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindPropeties(map))
-					.havingRootCause()
-					.withMessageContaining("schemaType 'NONE' not supported");
+				.havingRootCause()
+				.withMessageContaining("schemaType 'NONE' not supported");
 		}
 
 		@Test
@@ -231,8 +233,8 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "JSON");
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type", String.class.getName());
 			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindPropeties(map))
-					.havingRootCause()
-					.withMessageContaining("messageKeyType can only be set when schemaType is KEY_VALUE");
+				.havingRootCause()
+				.withMessageContaining("messageKeyType can only be set when schemaType is KEY_VALUE");
 		}
 
 		record TestMessage(String value) {

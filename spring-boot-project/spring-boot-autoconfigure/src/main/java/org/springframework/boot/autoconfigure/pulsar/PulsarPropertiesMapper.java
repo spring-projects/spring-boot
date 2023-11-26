@@ -72,27 +72,32 @@ final class PulsarPropertiesMapper {
 		PulsarProperties.Failover failoverProperties = properties.getFailover();
 		if (!failoverProperties.getBackupClusters().isEmpty()) {
 			Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
-			failoverProperties.getBackupClusters().forEach((cluster) ->
-					secondaryAuths.put(cluster.getServiceUrl(), populateAuthenticationForFailoverClusters(cluster.getAuthentication()))
-			);
+			failoverProperties.getBackupClusters()
+				.forEach((cluster) -> secondaryAuths.put(cluster.getServiceUrl(),
+						populateAuthenticationForFailoverClusters(cluster.getAuthentication())));
 			AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
 			map.from(new ArrayList<>(secondaryAuths.keySet())).to(autoClusterFailoverBuilder::secondary);
 			map.from(failoverProperties::getFailoverPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
-			map.from(failoverProperties::getFailOverDelay).to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
-			map.from(failoverProperties::getSwitchBackDelay).to(timeoutProperty(autoClusterFailoverBuilder::switchBackDelay));
-			map.from(failoverProperties::getCheckInterval).to(timeoutProperty(autoClusterFailoverBuilder::checkInterval));
+			map.from(failoverProperties::getFailOverDelay)
+				.to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
+			map.from(failoverProperties::getSwitchBackDelay)
+				.to(timeoutProperty(autoClusterFailoverBuilder::switchBackDelay));
+			map.from(failoverProperties::getCheckInterval)
+				.to(timeoutProperty(autoClusterFailoverBuilder::checkInterval));
 			map.from(secondaryAuths).to(autoClusterFailoverBuilder::secondaryAuthentication);
 
 			serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
 		}
 	}
 
-	private Authentication populateAuthenticationForFailoverClusters(PulsarProperties.Authentication authenticationProperties) {
+	private Authentication populateAuthenticationForFailoverClusters(
+			PulsarProperties.Authentication authenticationProperties) {
 		if (StringUtils.hasText(authenticationProperties.getPluginClassName())) {
 			try {
-				return AuthenticationFactory.create(authenticationProperties.getPluginClassName(), authenticationProperties.getParam());
+				return AuthenticationFactory.create(authenticationProperties.getPluginClassName(),
+						authenticationProperties.getParam());
 			}
 			catch (UnsupportedAuthenticationException ex) {
 				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
