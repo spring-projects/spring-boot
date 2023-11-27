@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -67,7 +68,9 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.aot.AotApplicationContextInitializer;
+import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
@@ -417,9 +420,7 @@ public class SpringApplication {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
 		if (this.keepAlive) {
-			KeepAlive keepAlive = new KeepAlive();
-			keepAlive.start();
-			context.addApplicationListener(keepAlive);
+			context.addApplicationListener(new KeepAlive());
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
 		if (!AotDetector.useGeneratedArtifacts()) {
@@ -1635,31 +1636,47 @@ public class SpringApplication {
 	}
 
 	/**
-	 * A non-daemon thread to keep the JVM alive. Reacts to {@link ContextClosedEvent} to
-	 * stop itself when the application context is closed.
+	 * Starts a non-daemon thread to keep the JVM alive on {@link ContextRefreshedEvent}.
+	 * Stops the thread on {@link ContextClosedEvent}.
 	 */
-	private static final class KeepAlive extends Thread implements ApplicationListener<ContextClosedEvent> {
+	private static final class KeepAlive implements ApplicationListener<ApplicationContextEvent> {
 
-		KeepAlive() {
-			setName("keep-alive");
-			setDaemon(false);
-		}
+		private final AtomicReference<Thread> thread = new AtomicReference<>();
 
 		@Override
-		public void onApplicationEvent(ContextClosedEvent event) {
-			interrupt();
-		}
-
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					Thread.sleep(Long.MAX_VALUE);
-				}
-				catch (InterruptedException ex) {
-					break;
-				}
+		public void onApplicationEvent(ApplicationContextEvent event) {
+			if (event instanceof ContextRefreshedEvent) {
+				startKeepAliveThread();
 			}
+			else if (event instanceof ContextClosedEvent) {
+				stopKeepAliveThread();
+			}
+		}
+
+		private void startKeepAliveThread() {
+			Thread thread = new Thread(() -> {
+				while (true) {
+					try {
+						Thread.sleep(Long.MAX_VALUE);
+					}
+					catch (InterruptedException ex) {
+						break;
+					}
+				}
+			});
+			if (this.thread.compareAndSet(null, thread)) {
+				thread.setDaemon(false);
+				thread.setName("keep-alive");
+				thread.start();
+			}
+		}
+
+		private void stopKeepAliveThread() {
+			Thread thread = this.thread.getAndSet(null);
+			if (thread == null) {
+				return;
+			}
+			thread.interrupt();
 		}
 
 	}
