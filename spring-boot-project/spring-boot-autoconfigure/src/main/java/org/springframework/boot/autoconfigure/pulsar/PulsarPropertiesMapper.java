@@ -59,12 +59,14 @@ final class PulsarPropertiesMapper {
 	void customizeClientBuilder(ClientBuilder clientBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Client properties = this.properties.getClient();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(connectionDetails::getBrokerUrl).to(clientBuilder::serviceUrl);
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
 		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
 		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrlProvider, properties, connectionDetails);
+		if (properties.getFailover().getBackupClusters().isEmpty()) {
+			map.from(connectionDetails::getBrokerUrl).to(clientBuilder::serviceUrl);
+		}
 	}
 
 	private void customizeServiceUrlProviderBuilder(Consumer<ServiceUrlProvider> serviceUrlProviderConsumer,
