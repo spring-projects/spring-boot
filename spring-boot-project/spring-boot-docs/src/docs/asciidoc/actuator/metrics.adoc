@@ -757,7 +757,7 @@ TIP: In some cases, exceptions handled in web controllers are not recorded as re
 Applications can opt in and record exceptions by <<web#web.servlet.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
 
 By default, all requests are handled.
-To customize the filter, provide a `@Bean` that implements `FilterRegistrationBean<WebMvcMetricsFilter>`.
+To customize the filter, provide a `@Bean` that implements `FilterRegistrationBean<ServerHttpObservationFilter>`.
 
 
 
