@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFacto
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerGracefulShutdownLifecycle;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -82,6 +83,9 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 
 	@Override
 	public void start() {
+		if (!(this.parentContext instanceof WebServerApplicationContext)) {
+			return;
+		}
 		if (this.managementContext == null) {
 			ConfigurableApplicationContext managementContext = createManagementContext();
 			registerBeans(managementContext);
