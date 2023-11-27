@@ -18,20 +18,23 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
-import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
@@ -41,6 +44,7 @@ import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DefaultDSLContext;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -52,9 +56,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
@@ -90,7 +91,6 @@ import org.springframework.stereotype.Component;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -112,6 +112,253 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(OutputCaptureExtension.class)
 class FlywayAutoConfigurationTests {
 
+	@Nested
+	class FlywayInstanceTests {
+
+		private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.withPropertyValues("spring.flyway.instances.schema1.enabled=true")
+				.withPropertyValues("spring.flyway.instances.schema2.enabled=true");
+
+		@Test
+		void testFlywayConnectionDetails() {
+			BiConsumer<Flyway, String> assertFlywayConnectionDetails = (flyway, instance) -> {
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
+				assertThat(simpleDriverDataSource.getUrl())
+						.isEqualTo("jdbc:postgresql://database.example.com:12345/database-" + instance);
+				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("user-" + instance);
+				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("secret-" + instance);
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(Driver.class);
+			};
+
+			this.contextRunner
+					.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayConnectionDetailsConfiguration.class,
+							MockFlywayMigrationStrategy.class)
+					.run((context) -> {
+						assertFlywayConnectionDetails.accept(context.getBean("flyway-schema1", Flyway.class), "global");
+						assertFlywayConnectionDetails.accept(context.getBean("flyway-schema2", Flyway.class), "schema2");
+					});
+		}
+
+		@Test
+		void testFlywayDataSources() {
+			BiConsumer<Flyway, String> assertFlywayDataSource = (flyway, instance) -> {
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(((HikariDataSource) dataSource).getJdbcUrl())
+						.isEqualTo("jdbc:hsqldb:mem:" + instance);
+			};
+
+			this.contextRunner
+					.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class)
+					.run((context) -> {
+						assertFlywayDataSource.accept(context.getBean("flyway-schema1", Flyway.class), "global");
+						assertFlywayDataSource.accept(context.getBean("flyway-schema2", Flyway.class), "schema2");
+					});
+		}
+
+		@Test
+		void testFlywayConfigurationCustomizers() {
+			this.contextRunner
+					.withUserConfiguration(EmbeddedDataSourceConfiguration.class, ConfigurationCustomizerConfiguration.class)
+					.run((context) -> {
+						Flyway flywaySchema1 = context.getBean("flyway-schema1", Flyway.class);
+						assertThat(flywaySchema1.getConfiguration().getConnectRetries()).isEqualTo(10);
+						assertThat(flywaySchema1.getConfiguration().getBaselineDescription()).isEqualTo("<< Global baseline >>");
+
+						Flyway flywaySchema2 = context.getBean("flyway-schema2", Flyway.class);
+						assertThat(flywaySchema2.getConfiguration().getConnectRetries()).isEqualTo(5);
+						assertThat(flywaySchema2.getConfiguration().getBaselineDescription()).isEqualTo("<< Custom baseline schema2 >>");
+						assertThat(flywaySchema2.getConfiguration().getPlaceholders()).containsEntry("instance", "schema2-overwrite");
+					});
+		}
+
+		@Test
+		void testCallbacks() {
+			this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CallbackConfiguration.class)
+					.run((context) -> {
+						Flyway flywaySchema1 = context.getBean("flyway-schema1", Flyway.class);
+						assertThat(flywaySchema1.getConfiguration().getCallbacks()).hasSize(1);
+
+						Flyway flywaySchema2 = context.getBean("flyway-schema2", Flyway.class);
+						assertThat(flywaySchema2.getConfiguration().getCallbacks()).hasSize(3);
+
+						Callback globalCallback = context.getBean("globalCallback", Callback.class);
+						Callback schema2CallbackOne = context.getBean("schema2CallbackOne", Callback.class);
+						Callback schema2CallbackTwo = context.getBean("schema2CallbackTwo", Callback.class);
+						InOrder orderedCallbacks = inOrder(globalCallback, schema2CallbackOne, schema2CallbackTwo);
+
+						orderedCallbacks.verify(globalCallback).handle(any(Event.class), any(Context.class));
+						orderedCallbacks.verify(schema2CallbackTwo).handle(any(Event.class), any(Context.class));
+						orderedCallbacks.verify(schema2CallbackOne).handle(any(Event.class), any(Context.class));
+					});
+		}
+
+		@Test
+		void flywayJavaMigrations() {
+			this.contextRunner
+					.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayJavaMigrationsConfiguration.class)
+					.run((context) -> {
+						Flyway flywaySchema1 = context.getBean("flyway-schema1", Flyway.class);
+						assertThat(flywaySchema1.getConfiguration().getJavaMigrations()).isEmpty();
+
+						Flyway flywaySchema2 = context.getBean("flyway-schema2", Flyway.class);
+						assertThat(flywaySchema2.getConfiguration().getJavaMigrations()).hasSize(1);
+						JavaMigration schema2Migration = context.getBean("schema2Migration", JavaMigration.class);
+						assertThat(flywaySchema2.getConfiguration().getJavaMigrations()).containsExactly(schema2Migration);
+					});
+		}
+
+		@Test
+		void testFlywayMigrationStrategy() {
+			this.contextRunner
+					.withUserConfiguration(EmbeddedDataSourceConfiguration.class, Schema2FlywayMigrationStrategy.class)
+					.withPropertyValues("spring.flyway.instances.schema2.defaultSchema=SCHEMA2")
+					.run((context) -> {
+						assertThat(context.getBean(Schema2FlywayMigrationStrategy.class).getDefaultSchemas()).containsExactly("SCHEMA2");
+					});
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class FlywayConnectionDetailsConfiguration {
+
+			@Bean
+			FlywayConnectionDetails globalFlywayConnectionDetails() {
+				return createFlywayConnectionDetails("global");
+			}
+
+			@Bean
+			@FlywayInstance("schema2")
+			FlywayConnectionDetails schema2FlywayConnectionDetails() {
+				return createFlywayConnectionDetails("schema2");
+			}
+
+			private static FlywayConnectionDetails createFlywayConnectionDetails(String instance) {
+				return new FlywayConnectionDetails() {
+
+					@Override
+					public String getJdbcUrl() {
+						return "jdbc:postgresql://database.example.com:12345/database-" + instance;
+					}
+
+					@Override
+					public String getUsername() {
+						return "user-" + instance;
+					}
+
+					@Override
+					public String getPassword() {
+						return "secret-" + instance;
+					}
+
+				};
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class FlywayDataSourceConfiguration {
+
+			@FlywayDataSource
+			@Bean
+			DataSource globalFlywayDataSource() {
+				return DataSourceBuilder.create().url("jdbc:hsqldb:mem:global").username("sa").build();
+			}
+
+			@FlywayDataSource
+			@Bean
+			@FlywayInstance("schema2")
+			DataSource schema2flywayDataSource() {
+				return DataSourceBuilder.create().url("jdbc:hsqldb:mem:schema2").username("sa").build();
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class ConfigurationCustomizerConfiguration {
+
+			@Bean
+			@Order(2)
+			@FlywayInstance("schema2")
+			FlywayConfigurationCustomizer customizerOne() {
+				return (configuration) -> configuration.placeholders(Map.of("instance", "schema2-overwrite"));
+			}
+
+			@Bean
+			@Order(1)
+			@FlywayInstance("schema2")
+			FlywayConfigurationCustomizer customizerTwo() {
+				return (configuration) -> configuration.connectRetries(5).placeholders(Map.of("instance", "schema2")).baselineDescription("<< Custom baseline schema2 >>");
+			}
+
+			@Bean
+			@Order(0)
+			FlywayConfigurationCustomizer globalCustomizer() {
+				return (configuration) -> configuration.connectRetries(10).baselineDescription("<< Global baseline >>");
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class CallbackConfiguration {
+
+			@Bean
+			@FlywayInstance("schema2")
+			Callback schema2CallbackOne() {
+				return mockCallback("schema2-a");
+			}
+
+			@Bean
+			@FlywayInstance("schema2")
+			Callback schema2CallbackTwo() {
+				return mockCallback("schema2-b");
+			}
+
+			@Bean
+			Callback globalCallback() {
+				return mockCallback("global");
+			}
+
+			private Callback mockCallback(String name) {
+				Callback callback = mock(Callback.class);
+				given(callback.supports(any(Event.class), any(Context.class))).willReturn(true);
+				given(callback.getCallbackName()).willReturn(name);
+				return callback;
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class FlywayJavaMigrationsConfiguration {
+
+			@Bean
+			@FlywayInstance("schema2")
+			TestMigration schema2Migration() {
+				return new TestMigration("2", "SCHEMA2");
+			}
+
+		}
+
+		@Component
+		@FlywayInstance("schema2")
+		static class Schema2FlywayMigrationStrategy implements FlywayMigrationStrategy {
+
+			private List<String> defaultSchemas = new ArrayList<>();
+
+			@Override
+			public void migrate(Flyway flyway) {
+				this.defaultSchemas.add(flyway.getConfiguration().getDefaultSchema());
+			}
+
+			public List<String> getDefaultSchemas() {
+				return this.defaultSchemas;
+			}
+		}
+
+	}
+	
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 		.withPropertyValues("spring.datasource.generate-unique-name=true");
@@ -610,13 +857,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void oracleExtensionIsNotLoadedByDefault() {
-		FluentConfiguration configuration = mock(FluentConfiguration.class);
-		new OracleFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
-		then(configuration).shouldHaveNoInteractions();
-	}
-
-	@Test
 	void oracleSqlplusIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle.sqlplus=true")
@@ -785,13 +1025,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void postgresqlExtensionIsNotLoadedByDefault() {
-		FluentConfiguration configuration = mock(FluentConfiguration.class);
-		new PostgresqlFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
-		then(configuration).shouldHaveNoInteractions();
-	}
-
-	@Test
 	void postgresqlTransactionalLockIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.postgresql.transactional-lock=false")
@@ -800,13 +1033,6 @@ class FlywayAutoConfigurationTests {
 				.getPluginRegister()
 				.getPlugin(PostgreSQLConfigurationExtension.class)
 				.isTransactionalLock()).isFalse());
-	}
-
-	@Test
-	void sqlServerExtensionIsNotLoadedByDefault() {
-		FluentConfiguration configuration = mock(FluentConfiguration.class);
-		new SqlServerFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
-		then(configuration).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -1237,7 +1463,7 @@ class FlywayAutoConfigurationTests {
 
 		private final String description;
 
-		private TestMigration(String version, String description) {
+		TestMigration(String version, String description) {
 			this.version = MigrationVersion.fromVersion(version);
 			this.description = description;
 		}
