@@ -286,7 +286,7 @@ final class ZipString {
 	}
 
 	private static int getCodePointSize(byte[] bytes, int i) {
-		int b = bytes[i] & 0xFF;
+		int b = Byte.toUnsignedInt(bytes[i]);
 		if ((b & 0b1_0000000) == 0b0_0000000) {
 			return 1;
 		}
@@ -300,7 +300,7 @@ final class ZipString {
 	}
 
 	private static int getCodePoint(byte[] bytes, int i, int codePointSize) {
-		int codePoint = bytes[i] & 0xFF;
+		int codePoint = Byte.toUnsignedInt(bytes[i]);
 		codePoint &= INITIAL_BYTE_BITMASK[codePointSize - 1];
 		for (int j = 1; j < codePointSize; j++) {
 			codePoint = (codePoint << 6) + (bytes[i + j] & SUBSEQUENT_BYTE_BITMASK);

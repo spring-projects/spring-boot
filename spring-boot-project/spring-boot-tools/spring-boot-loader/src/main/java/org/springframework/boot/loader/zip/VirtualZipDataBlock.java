@@ -53,8 +53,8 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			long centralRecordPos = centralRecordPositions[i];
 			DataBlock name = new DataPart(
 					centralRecordPos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
-					(centralRecord.fileNameLength() & 0xFFFF) - nameOffset);
-			long localRecordPos = centralRecord.offsetToLocalHeader() & 0xFFFFFFFF;
+					Short.toUnsignedLong(centralRecord.fileNameLength()) - nameOffset);
+			long localRecordPos = Integer.toUnsignedLong(centralRecord.offsetToLocalHeader());
 			ZipLocalFileHeaderRecord localRecord = ZipLocalFileHeaderRecord.load(this.data, localRecordPos);
 			DataBlock content = new DataPart(localRecordPos + localRecord.size(), centralRecord.compressedSize());
 			boolean hasDescriptorRecord = ZipDataDescriptorRecord.isPresentBasedOnFlag(centralRecord);
@@ -74,8 +74,8 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			long originalRecordPos, DataBlock name, int offsetToLocalHeader) throws IOException {
 		ZipCentralDirectoryFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF))
 			.withOffsetToLocalHeader(offsetToLocalHeader);
-		int originalExtraFieldLength = originalRecord.extraFieldLength() & 0xFFFF;
-		int originalFileCommentLength = originalRecord.fileCommentLength() & 0xFFFF;
+		int originalExtraFieldLength = Short.toUnsignedInt(originalRecord.extraFieldLength());
+		int originalFileCommentLength = Short.toUnsignedInt(originalRecord.fileCommentLength());
 		DataBlock extraFieldAndComment = new DataPart(
 				originalRecordPos + originalRecord.size() - originalExtraFieldLength - originalFileCommentLength,
 				originalExtraFieldLength + originalFileCommentLength);
@@ -89,8 +89,8 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			ZipLocalFileHeaderRecord originalRecord, ZipDataDescriptorRecord dataDescriptorRecord, DataBlock name,
 			DataBlock content) throws IOException {
 		ZipLocalFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF));
-		long originalRecordPos = centralRecord.offsetToLocalHeader() & 0xFFFFFFFF;
-		int extraFieldLength = originalRecord.extraFieldLength() & 0xFFFF;
+		long originalRecordPos = Integer.toUnsignedLong(centralRecord.offsetToLocalHeader());
+		int extraFieldLength = Short.toUnsignedInt(originalRecord.extraFieldLength());
 		parts.add(new ByteArrayDataBlock(record.asByteArray()));
 		parts.add(name);
 		parts.add(new DataPart(originalRecordPos + originalRecord.size() - extraFieldLength, extraFieldLength));

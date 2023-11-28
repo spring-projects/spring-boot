@@ -556,13 +556,16 @@ public final class ZipContent implements Closeable {
 			Zip64EndOfCentralDirectoryRecord zip64Eocd = Zip64EndOfCentralDirectoryRecord.load(data, zip64Locator);
 			data = data.slice(getStartOfZipContent(data, eocd, zip64Eocd));
 			long centralDirectoryPos = (zip64Eocd != null) ? zip64Eocd.offsetToStartOfCentralDirectory()
-					: eocd.offsetToStartOfCentralDirectory();
+					: Integer.toUnsignedLong(eocd.offsetToStartOfCentralDirectory());
 			long numberOfEntries = (zip64Eocd != null) ? zip64Eocd.totalNumberOfCentralDirectoryEntries()
-					: eocd.totalNumberOfCentralDirectoryEntries();
-			if (numberOfEntries > 0xFFFFFFFFL) {
+					: Short.toUnsignedInt(eocd.totalNumberOfCentralDirectoryEntries());
+			if (numberOfEntries < 0) {
+				throw new IllegalStateException("Invalid number of zip entries in " + source);
+			}
+			if (numberOfEntries > Integer.MAX_VALUE) {
 				throw new IllegalStateException("Too many zip entries in " + source);
 			}
-			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) (numberOfEntries & 0xFFFFFFFFL));
+			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) numberOfEntries);
 			ByteBuffer signatureNameSuffixBuffer = ByteBuffer.allocate(SIGNATURE_SUFFIX.length);
 			boolean hasJarSignatureFile = false;
 			long pos = centralDirectoryPos;

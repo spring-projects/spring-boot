@@ -83,14 +83,14 @@ record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNee
 	 * @throws IOException on I/O error
 	 */
 	void copyTo(DataBlock dataBlock, long pos, ZipEntry zipEntry) throws IOException {
-		int fileNameLength = fileNameLength() & 0xFFFF;
-		int extraLength = extraFieldLength() & 0xFFFF;
-		int commentLength = fileCommentLength() & 0xFFFF;
-		zipEntry.setMethod(compressionMethod() & 0xFFFF);
+		int fileNameLength = Short.toUnsignedInt(fileNameLength());
+		int extraLength = Short.toUnsignedInt(extraFieldLength());
+		int commentLength = Short.toUnsignedInt(fileCommentLength());
+		zipEntry.setMethod(Short.toUnsignedInt(compressionMethod()));
 		zipEntry.setTime(decodeMsDosFormatDateTime(lastModFileDate(), lastModFileTime()));
-		zipEntry.setCrc(crc32() & 0xFFFFFFFFL);
-		zipEntry.setCompressedSize(compressedSize() & 0xFFFFFFFFL);
-		zipEntry.setSize(uncompressedSize() & 0xFFFFFFFFL);
+		zipEntry.setCrc(Integer.toUnsignedLong(crc32()));
+		zipEntry.setCompressedSize(Integer.toUnsignedLong(compressedSize()));
+		zipEntry.setSize(Integer.toUnsignedLong(uncompressedSize()));
 		if (extraLength > 0) {
 			long extraPos = pos + MINIMUM_SIZE + fileNameLength;
 			ByteBuffer buffer = ByteBuffer.allocate(extraLength);
