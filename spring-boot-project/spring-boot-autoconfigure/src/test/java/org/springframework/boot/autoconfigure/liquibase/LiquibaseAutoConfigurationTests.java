@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
+import liquibase.command.core.helpers.ShowSummaryArgument;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -119,9 +120,6 @@ class LiquibaseAutoConfigurationTests {
 				assertThat(liquibase.getDefaultSchema()).isNull();
 				assertThat(liquibase.isDropFirst()).isFalse();
 				assertThat(liquibase.isClearCheckSums()).isFalse();
-				UpdateSummaryOutputEnum showSummaryOutput = (UpdateSummaryOutputEnum) ReflectionTestUtils
-					.getField(liquibase, "showSummaryOutput");
-				assertThat(showSummaryOutput).isEqualTo(UpdateSummaryOutputEnum.LOG);
 			}));
 	}
 
@@ -225,6 +223,9 @@ class LiquibaseAutoConfigurationTests {
 				assertThat(liquibase.isDropFirst()).isEqualTo(properties.isDropFirst());
 				assertThat(liquibase.isClearCheckSums()).isEqualTo(properties.isClearChecksums());
 				assertThat(liquibase.isTestRollbackOnUpdate()).isEqualTo(properties.isTestRollbackOnUpdate());
+				assertThat(liquibase).extracting("showSummary").isNull();
+				assertThat(ShowSummaryArgument.SHOW_SUMMARY.getDefaultValue()).isEqualTo(UpdateSummaryEnum.SUMMARY);
+				assertThat(liquibase).extracting("showSummaryOutput").isEqualTo(UpdateSummaryOutputEnum.LOG);
 			}));
 	}
 

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import javax.sql.DataSource;
 
+import liquibase.UpdateSummaryEnum;
+import liquibase.UpdateSummaryOutputEnum;
 import liquibase.change.DatabaseChange;
 import liquibase.integration.spring.SpringLiquibase;
 
@@ -113,8 +115,13 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setRollbackFile(properties.getRollbackFile());
 			liquibase.setTestRollbackOnUpdate(properties.isTestRollbackOnUpdate());
 			liquibase.setTag(properties.getTag());
-			liquibase.setShowSummary(properties.getShowSummary());
-			liquibase.setShowSummaryOutput(properties.getShowSummaryOutput());
+			if (properties.getShowSummary() != null) {
+				liquibase.setShowSummary(UpdateSummaryEnum.valueOf(properties.getShowSummary().name()));
+			}
+			if (properties.getShowSummaryOutput() != null) {
+				liquibase
+					.setShowSummaryOutput(UpdateSummaryOutputEnum.valueOf(properties.getShowSummaryOutput().name()));
+			}
 			return liquibase;
 		}
 

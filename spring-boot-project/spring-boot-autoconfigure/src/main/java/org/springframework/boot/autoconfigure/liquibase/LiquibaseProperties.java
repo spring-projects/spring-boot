@@ -138,16 +138,14 @@ public class LiquibaseProperties {
 	private String tag;
 
 	/**
-	 * Whether to print a summary of the update operation. Values can be 'off', 'summary'
-	 * (default), 'verbose'
+	 * Whether to print a summary of the update operation.
 	 */
-	private UpdateSummaryEnum showSummary;
+	private ShowSummary showSummary;
 
 	/**
-	 * Where to print a summary of the update operation. Values can be 'log' (default),
-	 * 'console', or 'all'.
+	 * Where to print a summary of the update operation.
 	 */
-	private UpdateSummaryOutputEnum showSummaryOutput;
+	private ShowSummaryOutput showSummaryOutput;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -302,20 +300,72 @@ public class LiquibaseProperties {
 		this.tag = tag;
 	}
 
-	public UpdateSummaryEnum getShowSummary() {
+	public ShowSummary getShowSummary() {
 		return this.showSummary;
 	}
 
-	public void setShowSummary(UpdateSummaryEnum showSummary) {
+	public void setShowSummary(ShowSummary showSummary) {
 		this.showSummary = showSummary;
 	}
 
-	public UpdateSummaryOutputEnum getShowSummaryOutput() {
+	public ShowSummaryOutput getShowSummaryOutput() {
 		return this.showSummaryOutput;
 	}
 
-	public void setShowSummaryOutput(UpdateSummaryOutputEnum showSummaryOutput) {
+	public void setShowSummaryOutput(ShowSummaryOutput showSummaryOutput) {
 		this.showSummaryOutput = showSummaryOutput;
+	}
+
+	/**
+	 * Enumeration of types of summary to show. Values are the same as those on
+	 * {@link UpdateSummaryEnum}. To maximize backwards compatibility, the Liquibase enum
+	 * is not used directly.
+	 *
+	 * @since 3.2.1
+	 */
+	public enum ShowSummary {
+
+		/**
+		 * Do not show a summary.
+		 */
+		OFF,
+
+		/**
+		 * Show a summary.
+		 */
+		SUMMARY,
+
+		/**
+		 * Show a verbose summary.
+		 */
+		VERBOSE
+
+	}
+
+	/**
+	 * Enumeration of destinations to which the summary should be output. Values are the
+	 * same as those on {@link UpdateSummaryOutputEnum}. To maximize backwards
+	 * compatibility, the Liquibase enum is not used directly.
+	 *
+	 * @since 3.2.1
+	 */
+	public enum ShowSummaryOutput {
+
+		/**
+		 * Log the summary.
+		 */
+		LOG,
+
+		/**
+		 * Output the summary to the console.
+		 */
+		CONSOLE,
+
+		/**
+		 * Log the summary and output it to the console.
+		 */
+		ALL
+
 	}
 
 }
