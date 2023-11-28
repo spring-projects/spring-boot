@@ -81,11 +81,16 @@ class NestedByteChannel implements SeekableByteChannel {
 	@Override
 	public int read(ByteBuffer dst) throws IOException {
 		assertNotClosed();
-		int count = this.resources.getData().read(dst, this.position);
-		if (count > 0) {
+		int total = 0;
+		while (dst.remaining() > 0) {
+			int count = this.resources.getData().read(dst, this.position);
+			if (count <= 0) {
+				return (total != 0) ? 0 : count;
+			}
+			total += count;
 			this.position += count;
 		}
-		return count;
+		return total;
 	}
 
 	@Override

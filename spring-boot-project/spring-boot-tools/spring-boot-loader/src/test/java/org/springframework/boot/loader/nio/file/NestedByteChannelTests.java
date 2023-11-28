@@ -17,11 +17,16 @@
 package org.springframework.boot.loader.nio.file;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonWritableChannelException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +37,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
+import org.springframework.boot.loader.zip.FileChannelDataBlockManagedFileChannel;
 import org.springframework.boot.loader.zip.ZipContent;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -115,6 +121,36 @@ class NestedByteChannelTests {
 		this.channel.read(dst);
 		assertThat(this.channel.position()).isEqualTo(10L);
 		assertThat(dst.array()).isNotEqualTo(ByteBuffer.allocate(10).array());
+	}
+
+	@Test // gh-38592
+	void readReadsAsManyBytesAsPossible() throws Exception {
+		// ZipFileSystem checks that the number of bytes read matches an expected value
+		// ...if (readFullyAt(cen, 0, cen.length, cenpos) != end.cenlen + ENDHDR)
+		// but the readFullyAt assumes that all remaining bytes are attempted to be read
+		// This doesn't seem to exactly match the contract of ReadableByteChannel.read
+		// which states "A read operation might not fill the buffer, and in fact it might
+		// not read any bytes at all", but we need to match ZipFileSystem's expectations
+		int size = FileChannelDataBlockManagedFileChannel.BUFFER_SIZE * 2;
+		byte[] data = new byte[size];
+		this.file = new File(this.temp, "testread.jar");
+		FileOutputStream fileOutputStream = new FileOutputStream(this.file);
+		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
+			JarEntry nestedEntry = new JarEntry("data");
+			nestedEntry.setSize(size);
+			nestedEntry.setCompressedSize(size);
+			CRC32 crc32 = new CRC32();
+			crc32.update(data);
+			nestedEntry.setCrc(crc32.getValue());
+			nestedEntry.setMethod(ZipEntry.STORED);
+			jarOutputStream.putNextEntry(nestedEntry);
+			jarOutputStream.write(data);
+			jarOutputStream.closeEntry();
+		}
+		this.channel = new NestedByteChannel(this.file.toPath(), null);
+		ByteBuffer buffer = ByteBuffer.allocate((int) this.file.length());
+		assertThat(this.channel.read(buffer)).isEqualTo(buffer.capacity());
+		assertThat(this.file).binaryContent().isEqualTo(buffer.array());
 	}
 
 	@Test
