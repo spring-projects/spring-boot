@@ -31,7 +31,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.OkHttpClient;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -42,7 +41,6 @@ import org.apache.hc.core5.http.io.SocketConfig;
 import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
 import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -56,6 +54,9 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+
+import okhttp3.OkHttpClient;
+
 
 /**
  * Utility class that can be used to create {@link ClientHttpRequestFactory} instances
@@ -212,7 +213,7 @@ public final class ClientHttpRequestFactories {
 						options.getEnabledProtocols(), options.getCiphers(), new DefaultHostnameVerifier());
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
-			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
+			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.useSystemProperties().build();
 			return HttpClientBuilder.create().useSystemProperties().setConnectionManager(connectionManager).build();
 		}
 
