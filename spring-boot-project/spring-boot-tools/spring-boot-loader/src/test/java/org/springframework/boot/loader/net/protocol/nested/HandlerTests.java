@@ -63,12 +63,6 @@ class HandlerTests {
 	}
 
 	@Test
-	void assertUrlIsNotMalformedWhenUrlIsMalformedThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> Handler.assertUrlIsNotMalformed("nested:bad"))
-			.withMessageContaining("'path' must contain '/!'");
-	}
-
-	@Test
 	void assertUrlIsNotMalformedWhenUrlIsValidDoesNotThrowException() {
 		String url = "nested:" + this.temp.getAbsolutePath() + "/!nested.jar";
 		assertThatNoException().isThrownBy(() -> Handler.assertUrlIsNotMalformed(url));

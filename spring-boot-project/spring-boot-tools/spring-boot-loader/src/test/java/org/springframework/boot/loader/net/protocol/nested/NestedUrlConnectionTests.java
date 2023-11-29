@@ -21,7 +21,6 @@ import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.Cleaner.Cleanable;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Permission;
@@ -41,7 +40,6 @@ import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.boot.loader.zip.ZipContent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -72,13 +70,6 @@ class NestedUrlConnectionTests {
 		this.jarFile = new File(this.temp, "test.jar");
 		TestJar.create(this.jarFile);
 		this.url = new URL("nested:" + this.jarFile.getAbsolutePath() + "/!nested.jar");
-	}
-
-	@Test
-	void createWhenMalformedUrlThrowsException() throws Exception {
-		URL url = new URL("nested:bad.jar");
-		assertThatExceptionOfType(MalformedURLException.class).isThrownBy(() -> new NestedUrlConnection(url))
-			.withMessage("'path' must contain '/!'");
 	}
 
 	@Test

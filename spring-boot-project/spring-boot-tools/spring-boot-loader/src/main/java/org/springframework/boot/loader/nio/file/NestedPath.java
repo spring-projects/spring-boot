@@ -49,11 +49,11 @@ final class NestedPath implements Path {
 	private volatile Boolean entryExists;
 
 	NestedPath(NestedFileSystem fileSystem, String nestedEntryName) {
-		if (fileSystem == null || nestedEntryName == null || nestedEntryName.isBlank()) {
-			throw new IllegalArgumentException("'filesSystem' and 'nestedEntryName' are required");
+		if (fileSystem == null) {
+			throw new IllegalArgumentException("'filesSystem' must not be null");
 		}
 		this.fileSystem = fileSystem;
-		this.nestedEntryName = nestedEntryName;
+		this.nestedEntryName = (nestedEntryName != null && !nestedEntryName.isBlank()) ? nestedEntryName : null;
 	}
 
 	Path getJarPath() {
@@ -138,8 +138,11 @@ final class NestedPath implements Path {
 	@Override
 	public URI toUri() {
 		try {
-			String jarFilePath = this.fileSystem.getJarPath().toUri().getPath();
-			return new URI("nested:" + jarFilePath + "/!" + this.nestedEntryName);
+			String uri = "nested:" + this.fileSystem.getJarPath().toUri().getPath();
+			if (this.nestedEntryName != null) {
+				uri += "/!" + this.nestedEntryName;
+			}
+			return new URI(uri);
 		}
 		catch (URISyntaxException ex) {
 			throw new IOError(ex);
@@ -187,7 +190,11 @@ final class NestedPath implements Path {
 
 	@Override
 	public String toString() {
-		return this.fileSystem.getJarPath() + this.fileSystem.getSeparator() + this.nestedEntryName;
+		String string = this.fileSystem.getJarPath().toString();
+		if (this.nestedEntryName != null) {
+			string += this.fileSystem.getSeparator() + this.nestedEntryName;
+		}
+		return string;
 	}
 
 	void assertExists() throws NoSuchFileException {

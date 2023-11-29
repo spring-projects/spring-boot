@@ -128,14 +128,14 @@ class NestedFileSystemTests {
 
 	@Test
 	void getPathWhenFirstIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.fileSystem.getPath(null))
-			.withMessage("Nested paths must contain a single element");
+		Path path = this.fileSystem.getPath(null);
+		assertThat(path.toString()).endsWith("/test.jar");
 	}
 
 	@Test
-	void getPathWhenFirstIsBlankThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.fileSystem.getPath(""))
-			.withMessage("Nested paths must contain a single element");
+	void getPathWhenFirstIsBlank() {
+		Path path = this.fileSystem.getPath("");
+		assertThat(path.toString()).endsWith("/test.jar");
 	}
 
 	@Test

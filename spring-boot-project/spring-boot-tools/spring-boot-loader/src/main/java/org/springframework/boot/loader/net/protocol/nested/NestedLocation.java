@@ -26,8 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.boot.loader.net.util.UrlDecoder;
 
 /**
- * A location obtained from a {@code nested:} {@link URL} consisting of a jar file and a
- * nested entry.
+ * A location obtained from a {@code nested:} {@link URL} consisting of a jar file and an
+ * optional nested entry.
  * <p>
  * The syntax of a nested JAR URL is: <pre>
  * nestedjar:&lt;path&gt;/!{entry}
@@ -54,13 +54,12 @@ public record NestedLocation(Path path, String nestedEntryName) {
 
 	private static final Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
 
-	public NestedLocation {
+	public NestedLocation(Path path, String nestedEntryName) {
 		if (path == null) {
 			throw new IllegalArgumentException("'path' must not be null");
 		}
-		if (nestedEntryName == null || nestedEntryName.trim().isEmpty()) {
-			throw new IllegalArgumentException("'nestedEntryName' must not be empty");
-		}
+		this.path = path;
+		this.nestedEntryName = (nestedEntryName != null && !nestedEntryName.isEmpty()) ? nestedEntryName : null;
 	}
 
 	/**
@@ -94,20 +93,17 @@ public record NestedLocation(Path path, String nestedEntryName) {
 			throw new IllegalArgumentException("'path' must not be empty");
 		}
 		int index = path.lastIndexOf("/!");
-		if (index == -1) {
-			throw new IllegalArgumentException("'path' must contain '/!'");
-		}
 		return cache.computeIfAbsent(path, (l) -> create(index, l));
 	}
 
 	private static NestedLocation create(int index, String location) {
-		String locationPath = location.substring(0, index);
+		String locationPath = (index != -1) ? location.substring(0, index) : location;
 		if (isWindows()) {
 			while (locationPath.startsWith("/")) {
 				locationPath = locationPath.substring(1, locationPath.length());
 			}
 		}
-		String nestedEntryName = location.substring(index + 2);
+		String nestedEntryName = (index != -1) ? location.substring(index + 2) : null;
 		return new NestedLocation((!locationPath.isEmpty()) ? Path.of(locationPath) : null, nestedEntryName);
 	}
 

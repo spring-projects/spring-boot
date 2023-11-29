@@ -23,6 +23,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -72,6 +73,24 @@ class NestedFileSystemZipFileSystemIntegrationTests {
 		URI uri = JarUrl.create(file, "nested.jar", "3.dat").toURI();
 		Path path = Path.of(uri);
 		assertThat(Files.readAllBytes(path)).containsExactly(0x3);
+	}
+
+	@Test // gh-38592
+	void nestedZipSplitAndRestore() throws Exception {
+		File file = new File(this.temp, "test.jar");
+		TestJar.create(file);
+		URI uri = JarUrl.create(file, "nested.jar", "3.dat").toURI();
+		String[] components = uri.toString().split("!");
+		System.out.println(List.of(components));
+		try (FileSystem rootFs = FileSystems.newFileSystem(URI.create(components[0]), Collections.emptyMap())) {
+			Path childPath = rootFs.getPath(components[1]);
+			try (FileSystem childFs = FileSystems.newFileSystem(childPath)) {
+				Path nestedRoot = childFs.getPath("/");
+				assertThat(Files.list(nestedRoot)).hasSize(4);
+				Path path = childFs.getPath(components[2]);
+				assertThat(Files.readAllBytes(path)).containsExactly(0x3);
+			}
+		}
 	}
 
 }

@@ -177,7 +177,7 @@ class NestedFileSystem extends FileSystem {
 	@Override
 	public Path getPath(String first, String... more) {
 		assertNotClosed();
-		if (first == null || first.isBlank() || more.length != 0) {
+		if (more.length != 0) {
 			throw new IllegalArgumentException("Nested paths must contain a single element");
 		}
 		return new NestedPath(this, first);
