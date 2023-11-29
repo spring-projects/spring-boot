@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -51,12 +52,10 @@ public class BasicJsonParser extends AbstractJsonParser {
 	}
 
 	private List<Object> parseListInternal(int nesting, String json) {
-		List<Object> list = new ArrayList<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, ']'), '[').trim();
-		for (String value : tokenize(json)) {
-			list.add(parseInternal(nesting + 1, value));
-		}
-		return list;
+		return tokenize(json).stream()
+				.map(value -> parseInternal(nesting + 1, value))
+				.toList();
 	}
 
 	private Object parseInternal(int nesting, String json) {
