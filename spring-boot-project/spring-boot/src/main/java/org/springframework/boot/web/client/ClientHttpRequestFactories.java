@@ -212,7 +212,8 @@ public final class ClientHttpRequestFactories {
 						options.getEnabledProtocols(), options.getCiphers(), new DefaultHostnameVerifier());
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
-			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
+			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.useSystemProperties()
+				.build();
 			return HttpClientBuilder.create().useSystemProperties().setConnectionManager(connectionManager).build();
 		}
 
