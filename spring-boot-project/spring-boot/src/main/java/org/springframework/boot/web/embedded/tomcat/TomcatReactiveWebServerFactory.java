@@ -200,8 +200,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
-		// Don't bind to the socket prematurely if ApplicationContext is slow to start
-		connector.setProperty("bindOnInit", "false");
 		if (getHttp2() != null && getHttp2().isEnabled()) {
 			connector.addUpgradeProtocol(new Http2Protocol());
 		}
