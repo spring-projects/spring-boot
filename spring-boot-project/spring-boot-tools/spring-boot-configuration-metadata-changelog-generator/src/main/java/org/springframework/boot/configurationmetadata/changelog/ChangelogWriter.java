@@ -46,6 +46,7 @@ import org.springframework.boot.configurationmetadata.Deprecation;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class ChangelogWriter implements AutoCloseable {
 
@@ -198,8 +199,18 @@ class ChangelogWriter implements AutoCloseable {
 		return (value != null) ? "`%s`".formatted(value) : null;
 	}
 
-	private void writeCell(String format, Object... args) {
-		write((format != null) ? "| %s%n".formatted(format) : "|%n", args);
+	private void writeCell(String content) {
+		if (content == null) {
+			write("|%n");
+		}
+		else {
+			String escaped = escapeForTableCell(content);
+			write("| %s%n".formatted(escaped));
+		}
+	}
+
+	private String escapeForTableCell(String content) {
+		return content.replace("|", "\\|");
 	}
 
 	private void write(String format, Object... args) {
