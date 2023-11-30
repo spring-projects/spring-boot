@@ -104,8 +104,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String AUTO_CONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
 
-	private static final Set<String> SUPPORTED_OPTIONS = Collections
-		.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
+	private static final Set<String> SUPPORTED_OPTIONS = Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION);
 
 	private MetadataStore metadataStore;
 
