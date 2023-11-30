@@ -16,6 +16,7 @@
 
 package org.springframework.boot.task;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
 
@@ -142,6 +143,12 @@ class SimpleAsyncTaskExecutorBuilderTests {
 			.build();
 		then(customizer1).should().customize(executor);
 		then(customizer2).should().customize(executor);
+	}
+
+	@Test
+	void taskTerminationTimeoutShouldApply() {
+		SimpleAsyncTaskExecutor executor = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
+		assertThat(executor).extracting("taskTerminationTimeout").isEqualTo(1000L);
 	}
 
 }

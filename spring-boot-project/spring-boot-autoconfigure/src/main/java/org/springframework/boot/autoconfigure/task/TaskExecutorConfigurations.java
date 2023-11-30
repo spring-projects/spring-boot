@@ -177,6 +177,8 @@ class TaskExecutorConfigurations {
 			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			TaskExecutionProperties.Simple simple = this.properties.getSimple();
 			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
+			Shutdown shutdown = this.properties.getShutdown();
+			builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
 			return builder;
 		}
 
