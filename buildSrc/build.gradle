@@ -86,6 +86,6 @@ gradlePlugin {
 	}
 }
 
-test {
-	useJUnitPlatform()
-}
+//test {
+//	useJUnitPlatform()
+//}

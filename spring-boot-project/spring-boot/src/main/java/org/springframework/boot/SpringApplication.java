@@ -1244,6 +1244,7 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+		//这里就做了两件事 先new一个SpringApplication实例，然后再启动
 		return new SpringApplication(primarySources).run(args);
 	}
 
