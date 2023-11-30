@@ -119,13 +119,16 @@ class TaskSchedulingAutoConfigurationTests {
 	void simpleAsyncTaskSchedulerBuilderShouldReadProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.task.scheduling.simple.concurrency-limit=1",
-					"spring.task.scheduling.thread-name-prefix=scheduling-test-")
+					"spring.task.scheduling.thread-name-prefix=scheduling-test-",
+					"spring.task.scheduling.shutdown.await-termination=true",
+					"spring.task.scheduling.shutdown.await-termination-period=30s")
 			.withUserConfiguration(SchedulingConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
 				SimpleAsyncTaskSchedulerBuilder builder = context.getBean(SimpleAsyncTaskSchedulerBuilder.class);
 				assertThat(builder).hasFieldOrPropertyWithValue("threadNamePrefix", "scheduling-test-");
 				assertThat(builder).hasFieldOrPropertyWithValue("concurrencyLimit", 1);
+				assertThat(builder).hasFieldOrPropertyWithValue("taskTerminationTimeout", Duration.ofSeconds(30));
 			});
 	}
 

@@ -152,6 +152,10 @@ class TaskSchedulingConfigurations {
 			builder = builder.customizers(this.taskSchedulerCustomizers.orderedStream()::iterator);
 			TaskSchedulingProperties.Simple simple = this.properties.getSimple();
 			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
+			TaskSchedulingProperties.Shutdown shutdown = this.properties.getShutdown();
+			if (shutdown.isAwaitTermination()) {
+				builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
+			}
 			return builder;
 		}
 
