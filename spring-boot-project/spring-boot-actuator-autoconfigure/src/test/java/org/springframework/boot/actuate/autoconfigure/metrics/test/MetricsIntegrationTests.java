@@ -30,6 +30,7 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.DispatcherType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,11 @@ class MetricsIntegrationTests {
 
 	@Autowired
 	private MeterRegistry registry;
+
+	@BeforeEach
+	void setUp() {
+		this.registry.clear();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
