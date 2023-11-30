@@ -113,6 +113,7 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.task.execution.thread-name-prefix=mytest-",
 					"spring.task.execution.simple.concurrency-limit=1",
+					"spring.task.execution.shutdown.await-termination=true",
 					"spring.task.execution.shutdown.await-termination-period=30s")
 			.run(assertSimpleAsyncTaskExecutor((taskExecutor) -> {
 				assertThat(taskExecutor.getConcurrencyLimit()).isEqualTo(1);

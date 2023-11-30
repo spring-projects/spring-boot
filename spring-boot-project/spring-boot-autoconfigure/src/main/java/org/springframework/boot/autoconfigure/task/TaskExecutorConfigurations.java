@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
 import org.springframework.boot.task.SimpleAsyncTaskExecutorCustomizer;
@@ -92,7 +91,7 @@ class TaskExecutorConfigurations {
 			builder = builder.maxPoolSize(pool.getMaxSize());
 			builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 			builder = builder.keepAlive(pool.getKeepAlive());
-			Shutdown shutdown = properties.getShutdown();
+			TaskExecutionProperties.Shutdown shutdown = properties.getShutdown();
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
@@ -120,7 +119,7 @@ class TaskExecutorConfigurations {
 			builder = builder.maxPoolSize(pool.getMaxSize());
 			builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 			builder = builder.keepAlive(pool.getKeepAlive());
-			Shutdown shutdown = properties.getShutdown();
+			TaskExecutionProperties.Shutdown shutdown = properties.getShutdown();
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
@@ -177,8 +176,10 @@ class TaskExecutorConfigurations {
 			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			TaskExecutionProperties.Simple simple = this.properties.getSimple();
 			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
-			Shutdown shutdown = this.properties.getShutdown();
-			builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
+			TaskExecutionProperties.Shutdown shutdown = this.properties.getShutdown();
+			if (shutdown.isAwaitTermination()) {
+				builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
+			}
 			return builder;
 		}
 
