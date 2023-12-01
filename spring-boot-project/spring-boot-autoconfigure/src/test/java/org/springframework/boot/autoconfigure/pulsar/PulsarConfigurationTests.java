@@ -129,10 +129,12 @@ class PulsarConfigurationTests {
 			PulsarConfigurationTests.this.contextRunner.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
 				.withPropertyValues("spring.pulsar.client.service-url=properties",
 						"spring.pulsar.client.failover.backup-clusters[0].service-url=backup-cluster-1",
-						"spring.pulsar.client.failover.failover-delay=30s",
+						"spring.pulsar.client.failover.failover-delay=15s",
 						"spring.pulsar.client.failover.switch-back-delay=30s",
 						"spring.pulsar.client.failover.check-interval=5s",
-						"spring.pulsar.client.failover.backup-clusters[1].service-url=backup-cluster-2")
+						"spring.pulsar.client.failover.backup-clusters[1].service-url=backup-cluster-2",
+						"spring.pulsar.client.failover.backup-clusters[1].authentication.plugin-class-name=org.springframework.boot.autoconfigure.pulsar.MockAuthentication",
+						"spring.pulsar.client.failover.backup-clusters[1].authentication.param.token=1234")
 				.run((context) -> {
 					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
 					PulsarProperties pulsarProperties = context.getBean(PulsarProperties.class);
@@ -146,9 +148,7 @@ class PulsarConfigurationTests {
 					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
 
 					assertThat(pulsarProperties.getClient().getFailover().getFailOverDelay())
-						.isEqualTo(Duration.ofSeconds(30));
-					assertThat(pulsarProperties.getClient().getFailover().getFailOverDelay())
-						.isEqualTo(Duration.ofSeconds(30));
+						.isEqualTo(Duration.ofSeconds(15));
 					assertThat(pulsarProperties.getClient().getFailover().getSwitchBackDelay())
 						.isEqualTo(Duration.ofSeconds(30));
 					assertThat(pulsarProperties.getClient().getFailover().getCheckInterval())

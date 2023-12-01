@@ -101,6 +101,10 @@ class PulsarPropertiesMapperTests {
 	void customizeClientBuilderWhenHasFailover() {
 		BackupCluster backupCluster1 = new BackupCluster();
 		backupCluster1.setServiceUrl("backup-cluster-1");
+		Map<String, String> params = Map.of("param", "name");
+		backupCluster1.getAuthentication()
+			.setPluginClassName("org.springframework.boot.autoconfigure.pulsar.MockAuthentication");
+		backupCluster1.getAuthentication().setParam(params);
 
 		BackupCluster backupCluster2 = new BackupCluster();
 		backupCluster2.setServiceUrl("backup-cluster-2");

@@ -63,20 +63,28 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
 		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
-		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrlProvider, properties, connectionDetails);
-		if (properties.getFailover().getBackupClusters().isEmpty()) {
-			map.from(connectionDetails::getBrokerUrl).to(clientBuilder::serviceUrl);
-		}
+		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrl, clientBuilder::serviceUrlProvider, properties,
+				connectionDetails);
 	}
 
-	private void customizeServiceUrlProviderBuilder(Consumer<ServiceUrlProvider> serviceUrlProviderConsumer,
-			PulsarProperties.Client properties, PulsarConnectionDetails connectionDetails) {
+	private void customizeServiceUrlProviderBuilder(Consumer<String> serviceUrlConsumer,
+			Consumer<ServiceUrlProvider> serviceUrlProviderConsumer, PulsarProperties.Client properties,
+			PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Failover failoverProperties = properties.getFailover();
 		if (!failoverProperties.getBackupClusters().isEmpty()) {
 			Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
-			failoverProperties.getBackupClusters()
-				.forEach((cluster) -> secondaryAuths.put(cluster.getServiceUrl(),
-						populateAuthenticationForFailoverClusters(cluster.getAuthentication())));
+			failoverProperties.getBackupClusters().forEach((cluster) -> {
+				PulsarProperties.Authentication authentication = cluster.getAuthentication();
+				if (authentication.getPluginClassName() != null) {
+					customizeAuthentication((authPluginClassName, authParams) -> secondaryAuths
+						.put(cluster.getServiceUrl(), AuthenticationFactory.create(authPluginClassName, authParams)),
+							authentication);
+				}
+				else {
+					secondaryAuths.put(cluster.getServiceUrl(), null);
+				}
+			});
+
 			AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
@@ -92,20 +100,9 @@ final class PulsarPropertiesMapper {
 
 			serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
 		}
-	}
-
-	private Authentication populateAuthenticationForFailoverClusters(
-			PulsarProperties.Authentication authenticationProperties) {
-		if (StringUtils.hasText(authenticationProperties.getPluginClassName())) {
-			try {
-				return AuthenticationFactory.create(authenticationProperties.getPluginClassName(),
-						authenticationProperties.getParam());
-			}
-			catch (UnsupportedAuthenticationException ex) {
-				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
-			}
+		else {
+			serviceUrlConsumer.accept(connectionDetails.getBrokerUrl());
 		}
-		return null;
 	}
 
 	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
