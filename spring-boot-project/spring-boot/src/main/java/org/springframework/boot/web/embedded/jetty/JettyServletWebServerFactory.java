@@ -232,7 +232,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private boolean isJettyHttp2Present() {
-		return ClassUtils.isPresent("org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory", null);
+		return ClassUtils.isPresent("org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory", null);
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
