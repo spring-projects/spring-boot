@@ -43,6 +43,7 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -431,6 +432,17 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	void whenTheUserDefinesCustomExecutionContextSerializer() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.withUserConfiguration(ExecutionContextSerializerConfiguration.class)
+			.run((context) -> {
+				SpringBootBatchConfiguration batchConfiguration = context.getBean(SpringBootBatchConfiguration.class);
+				ExecutionContextSerializer serializer = context.getBean(ExecutionContextSerializer.class);
+				assertThat(batchConfiguration.getExecutionContextSerializer()).isSameAs(serializer);
+			});
+	}
+
+	@Test
 	void whenTheUserDefinesAJobNameAsJobInstanceValidates() {
 		JobLauncherApplicationRunner runner = createInstance("another");
 		runner.setJobs(Collections.singletonList(mockJob("test")));
@@ -773,6 +785,16 @@ class BatchAutoConfigurationTests {
 		@Order(2)
 		BatchConversionServiceCustomizer anotherBatchConversionServiceCustomizer() {
 			return mock(BatchConversionServiceCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExecutionContextSerializerConfiguration {
+
+		@Bean
+		ExecutionContextSerializer executionContextSerializer() {
+			return mock(ExecutionContextSerializer.class);
 		}
 
 	}

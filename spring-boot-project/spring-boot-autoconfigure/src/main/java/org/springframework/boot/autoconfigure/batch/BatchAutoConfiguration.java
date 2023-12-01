@@ -24,6 +24,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
@@ -62,6 +63,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
+ * @author Sanghyuk Jung
  * @since 1.0.0
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
@@ -102,13 +104,17 @@ public class BatchAutoConfiguration {
 
 		private final List<BatchConversionServiceCustomizer> batchConversionServiceCustomizers;
 
+		private final ExecutionContextSerializer serializer;
+
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager, BatchProperties properties,
-				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers) {
+				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
+				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = transactionManager;
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
+			this.serializer = executionContextSerializer.getIfAvailable(super::getExecutionContextSerializer);
 		}
 
 		@Override
@@ -131,6 +137,11 @@ public class BatchAutoConfiguration {
 		protected Isolation getIsolationLevelForCreate() {
 			Isolation isolation = this.properties.getJdbc().getIsolationLevelForCreate();
 			return (isolation != null) ? isolation : super.getIsolationLevelForCreate();
+		}
+
+		@Override
+		protected ExecutionContextSerializer getExecutionContextSerializer() {
+			return this.serializer;
 		}
 
 		@Override
