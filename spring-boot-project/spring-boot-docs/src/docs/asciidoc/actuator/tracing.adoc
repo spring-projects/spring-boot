@@ -70,7 +70,7 @@ Press the "Show" button to see the details of that trace.
 [[actuator.micrometer-tracing.logging]]
 === Logging Correlation IDs
 Correlation IDs provide a helpful way to link lines in your log files to spans/traces.
-When you are using Micrometer Tracing, Spring Boot will include correlation IDs in your logs.
+If you are using Micrometer Tracing, Spring Boot will include correlation IDs in your logs by default.
 
 The default correlation ID is built from `traceId` and `spanId` https://logback.qos.ch/manual/mdc.html[MDC] values.
 For example, if Micrometer Tracing has added an MDC `traceId` of `803B448A0489F84084905D3093480352` and an MDC `spanId` of `3425F23BB2432450` the log output will include the correlation ID `[803B448A0489F84084905D3093480352-3425F23BB2432450]`.
