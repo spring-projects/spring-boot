@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.time.Duration;
 
+import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 
@@ -48,6 +49,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	private JtaTransactionManager transactionManager;
 
 	private JmsProperties jmsProperties;
+
+	private ObservationRegistry observationRegistry;
 
 	/**
 	 * Set the {@link DestinationResolver} to use or {@code null} if no destination
@@ -94,6 +97,15 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link ObservationRegistry} to use.
+	 * @param observationRegistry the {@link ObservationRegistry}
+	 * @since 3.2.1
+	 */
+	public void setObservationRegistry(ObservationRegistry observationRegistry) {
+		this.observationRegistry = observationRegistry;
+	}
+
+	/**
 	 * Configure the specified jms listener container factory. The factory can be further
 	 * tuned and default settings can be overridden.
 	 * @param factory the {@link DefaultJmsListenerContainerFactory} instance to configure
@@ -115,6 +127,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		if (this.transactionManager == null && sessionProperties.getTransacted() == null) {
 			factory.setSessionTransacted(true);
 		}
+		map.from(this.observationRegistry).to(factory::setObservationRegistry);
 		map.from(sessionProperties::getTransacted).to(factory::setSessionTransacted);
 		map.from(listenerProperties::isAutoStartup).to(factory::setAutoStartup);
 		map.from(listenerProperties::formatConcurrency).to(factory::setConcurrency);

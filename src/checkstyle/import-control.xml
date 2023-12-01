@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE import-control PUBLIC "-//Checkstyle//DTD ImportControl Configuration 1.4//EN" "https://checkstyle.org/dtds/import_control_1_4.dtd">
 <import-control pkg="org.springframework.boot">
+	<allow pkg="io.micrometer.observation" />
 	<disallow pkg="io.micrometer" />
 	<disallow pkg="org.springframework.lang" />
 	<allow pkg=".*" regex="true" />

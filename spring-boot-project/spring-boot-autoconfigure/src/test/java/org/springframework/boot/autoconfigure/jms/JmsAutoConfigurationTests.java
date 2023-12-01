@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.io.IOException;
 
+import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 import jakarta.jms.Session;
@@ -259,6 +260,17 @@ class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	void testDefaultContainerFactoryWithObservationRegistry() {
+		ObservationRegistry observationRegistry = mock(ObservationRegistry.class);
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+			.withBean(ObservationRegistry.class, () -> observationRegistry)
+			.run((context) -> {
+				DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
+				assertThat(container.getObservationRegistry()).isSameAs(observationRegistry);
+			});
+	}
+
+	@Test
 	void testCustomContainerFactoryWithConfigurer() {
 		this.contextRunner.withUserConfiguration(TestConfiguration9.class, EnableJmsConfiguration.class)
 			.withPropertyValues("spring.jms.listener.autoStartup=false")
@@ -288,6 +300,17 @@ class JmsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(DestinationResolversConfiguration.class)
 			.run((context) -> assertThat(context.getBean(JmsTemplate.class).getDestinationResolver())
 				.isSameAs(context.getBean("myDestinationResolver")));
+	}
+
+	@Test
+	void testJmsTemplateWithObservationRegistry() {
+		ObservationRegistry observationRegistry = mock(ObservationRegistry.class);
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+			.withBean(ObservationRegistry.class, () -> observationRegistry)
+			.run((context) -> {
+				JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+				assertThat(jmsTemplate).extracting("observationRegistry").isSameAs(observationRegistry);
+			});
 	}
 
 	@Test
