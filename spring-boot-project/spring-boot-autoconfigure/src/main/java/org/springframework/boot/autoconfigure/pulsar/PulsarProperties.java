@@ -902,8 +902,7 @@ public class PulsarProperties {
 	public static class Failover {
 
 		/**
-		 * Cluster Failover Policy. Order in which we mentioned in the
-		 * {@link BackupCluster} List
+		 * Cluster Failover Policy.
 		 */
 		private FailoverPolicy failoverPolicy = FailoverPolicy.ORDER;
 
