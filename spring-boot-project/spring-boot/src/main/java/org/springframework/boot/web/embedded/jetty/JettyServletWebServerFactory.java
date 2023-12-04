@@ -97,7 +97,6 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -221,8 +220,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		List<ConnectionFactory> connectionFactories = new ArrayList<>();
 		connectionFactories.add(new HttpConnectionFactory(httpConfiguration));
 		if (getHttp2() != null && getHttp2().isEnabled()) {
-			Assert.state(isJettyHttp2Present(),
-					() -> "The 'org.eclipse.jetty.http2:jetty-http2-server' dependency is required for HTTP/2 support.");
 			connectionFactories.add(new HTTP2CServerConnectionFactory(httpConfiguration));
 		}
 		ServerConnector connector = new ServerConnector(server, this.acceptors, this.selectors,
@@ -230,10 +227,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		connector.setHost(address.getHostString());
 		connector.setPort(address.getPort());
 		return connector;
-	}
-
-	private boolean isJettyHttp2Present() {
-		return ClassUtils.isPresent("org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory", null);
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
