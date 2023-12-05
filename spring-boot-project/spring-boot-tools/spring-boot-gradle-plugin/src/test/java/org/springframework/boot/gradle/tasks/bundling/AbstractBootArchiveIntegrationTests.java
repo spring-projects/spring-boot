@@ -650,6 +650,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 		try (PrintWriter writer = new PrintWriter(
 				new FileWriter(new File(this.gradleBuild.getProjectDir(), "settings.gradle")))) {
 			writer.println("include 'alpha', 'bravo', 'charlie'");
+			new File(this.gradleBuild.getProjectDir(), "alpha").mkdirs();
+			new File(this.gradleBuild.getProjectDir(), "bravo").mkdirs();
+			new File(this.gradleBuild.getProjectDir(), "charlie").mkdirs();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
