@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.boot.web.server.Cookie;
 
 /**
  * Session properties.
@@ -101,6 +100,15 @@ public class Session {
 
 	SessionStoreDirectory getSessionStoreDirectory() {
 		return this.sessionStoreDirectory;
+	}
+
+	/**
+	 * Session cookie properties. This class is provided only for back-compatibility
+	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whever
+	 * possible.
+	 */
+	public static class Cookie extends org.springframework.boot.web.server.Cookie {
+
 	}
 
 	/**
