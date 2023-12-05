@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -82,6 +83,14 @@ class CompositePropagationFactory extends Propagation.Factory {
 			.filter((decorated) -> decorated != context)
 			.findFirst()
 			.orElse(context);
+	}
+
+	/**
+	 * Creates a new {@link CompositePropagationFactory} which doesn't do any propagation.
+	 * @return the {@link CompositePropagationFactory}
+	 */
+	static CompositePropagationFactory noop() {
+		return new CompositePropagationFactory(Collections.emptyList(), Collections.emptyList());
 	}
 
 	/**

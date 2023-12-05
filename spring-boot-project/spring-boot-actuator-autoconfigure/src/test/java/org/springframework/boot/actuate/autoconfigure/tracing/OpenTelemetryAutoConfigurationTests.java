@@ -290,6 +290,15 @@ class OpenTelemetryAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldDisablePropagationIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
+			assertThat(context).hasSingleBean(TextMapPropagator.class);
+			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
+			assertThat(propagator.fields()).isEmpty();
+		});
+	}
+
 	private List<TextMapPropagator> getInjectors(TextMapPropagator propagator) {
 		assertThat(propagator).as("propagator").isNotNull();
 		if (propagator instanceof CompositeTextMapPropagator compositePropagator) {

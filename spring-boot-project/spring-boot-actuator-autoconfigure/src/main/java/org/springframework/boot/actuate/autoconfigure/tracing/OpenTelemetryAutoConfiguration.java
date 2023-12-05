@@ -32,9 +32,7 @@ import io.micrometer.tracing.otel.bridge.OtelPropagator;
 import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
-import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
-import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Tracer;
@@ -56,10 +54,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry tracing.
@@ -72,6 +69,9 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfiguration(value = "openTelemetryTracingAutoConfiguration", before = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class })
 @EnableConfigurationProperties(TracingProperties.class)
+@Import({ OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage.class,
+		OpenTelemetryPropagationConfigurations.PropagationWithBaggage.class,
+		OpenTelemetryPropagationConfigurations.NoPropagation.class })
 public class OpenTelemetryAutoConfiguration {
 
 	private final TracingProperties tracingProperties;
@@ -170,45 +170,6 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean(SpanCustomizer.class)
 	OtelSpanCustomizer otelSpanCustomizer() {
 		return new OtelSpanCustomizer();
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "management.tracing.baggage", name = "enabled", matchIfMissing = true)
-	static class BaggageConfiguration {
-
-		private final TracingProperties tracingProperties;
-
-		BaggageConfiguration(TracingProperties tracingProperties) {
-			this.tracingProperties = tracingProperties;
-		}
-
-		@Bean
-		TextMapPropagator textMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
-			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
-			BaggageTextMapPropagator baggagePropagator = new BaggageTextMapPropagator(remoteFields,
-					new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList()));
-			return CompositeTextMapPropagator.create(this.tracingProperties.getPropagation(), baggagePropagator);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.tracing.baggage.correlation", name = "enabled",
-				matchIfMissing = true)
-		Slf4JBaggageEventListener otelSlf4JBaggageEventListener() {
-			return new Slf4JBaggageEventListener(this.tracingProperties.getBaggage().getCorrelation().getFields());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "management.tracing.baggage", name = "enabled", havingValue = "false")
-	static class NoBaggageConfiguration {
-
-		@Bean
-		TextMapPropagator textMapPropagator(TracingProperties properties) {
-			return CompositeTextMapPropagator.create(properties.getPropagation(), null);
-		}
-
 	}
 
 	static class OTelEventPublisher implements EventPublisher {

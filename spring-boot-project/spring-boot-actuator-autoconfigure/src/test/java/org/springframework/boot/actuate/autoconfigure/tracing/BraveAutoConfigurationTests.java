@@ -344,6 +344,16 @@ class BraveAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldDisablePropagationIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
+			assertThat(context).hasSingleBean(Factory.class);
+			Factory factory = context.getBean(Factory.class);
+			Propagation<String> propagation = factory.get();
+			assertThat(propagation.keys()).isEmpty();
+		});
+	}
+
 	private void injectToMap(Map<String, String> map, String key, String value) {
 		map.put(key, value);
 	}
