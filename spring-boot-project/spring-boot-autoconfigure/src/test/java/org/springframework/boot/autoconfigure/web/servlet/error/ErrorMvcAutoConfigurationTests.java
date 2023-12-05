@@ -112,8 +112,7 @@ class ErrorMvcAutoConfigurationTests {
 	}
 
 	private ErrorAttributeOptions withAllOptions() {
-		return ErrorAttributeOptions.of(Include.EXCEPTION, Include.STACK_TRACE, Include.MESSAGE,
-				Include.BINDING_ERRORS);
+		return ErrorAttributeOptions.of(Include.values());
 	}
 
 }

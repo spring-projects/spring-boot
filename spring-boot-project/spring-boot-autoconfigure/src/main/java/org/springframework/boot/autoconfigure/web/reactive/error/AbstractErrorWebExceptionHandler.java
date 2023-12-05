@@ -54,6 +54,7 @@ import org.springframework.web.util.HtmlUtils;
  *
  * @author Brian Clozel
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -166,6 +167,17 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 */
 	protected boolean isBindingErrorsEnabled(ServerRequest request) {
 		return getBooleanParameter(request, "errors");
+	}
+
+	/**
+	 * Check whether the path attribute has been set on the given request.
+	 * @param request the source request
+	 * @return {@code true} if the path attribute has been requested, {@code false}
+	 * otherwise
+	 * @since 3.3.0
+	 */
+	protected boolean isPathEnabled(ServerRequest request) {
+		return getBooleanParameter(request, "path");
 	}
 
 	private boolean getBooleanParameter(ServerRequest request, String parameterName) {

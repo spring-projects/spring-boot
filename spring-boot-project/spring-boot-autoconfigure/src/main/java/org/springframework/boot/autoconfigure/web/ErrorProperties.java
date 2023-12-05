@@ -55,6 +55,11 @@ public class ErrorProperties {
 	 */
 	private IncludeAttribute includeBindingErrors = IncludeAttribute.NEVER;
 
+	/**
+	 * When to include "path" attribute.
+	 */
+	private IncludeAttribute includePath = IncludeAttribute.ALWAYS;
+
 	private final Whitelabel whitelabel = new Whitelabel();
 
 	public String getPath() {
@@ -95,6 +100,14 @@ public class ErrorProperties {
 
 	public void setIncludeBindingErrors(IncludeAttribute includeBindingErrors) {
 		this.includeBindingErrors = includeBindingErrors;
+	}
+
+	public IncludeAttribute getIncludePath() {
+		return this.includePath;
+	}
+
+	public void setIncludePath(IncludeAttribute includePath) {
+		this.includePath = includePath;
 	}
 
 	public Whitelabel getWhitelabel() {

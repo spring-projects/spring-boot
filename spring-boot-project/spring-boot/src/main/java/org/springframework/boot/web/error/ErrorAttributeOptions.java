@@ -88,7 +88,7 @@ public final class ErrorAttributeOptions {
 	 * @return an {@code ErrorAttributeOptions}
 	 */
 	public static ErrorAttributeOptions defaults() {
-		return of();
+		return of(Include.PATH);
 	}
 
 	/**
@@ -135,7 +135,13 @@ public final class ErrorAttributeOptions {
 		/**
 		 * Include the binding errors attribute.
 		 */
-		BINDING_ERRORS
+		BINDING_ERRORS,
+
+		/**
+		 * Include the request path.
+		 * @since 3.3.0
+		 */
+		PATH
 
 	}
 

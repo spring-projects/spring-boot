@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Vedran Pavic
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class DefaultErrorAttributesTests {
 
@@ -249,11 +250,27 @@ class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	void path() {
+	void shouldIncludePathByDefault() {
 		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).containsEntry("path", "path");
+	}
+
+	@Test
+	void shouldIncludePath() {
+		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.of(Include.PATH));
+		assertThat(attributes).containsEntry("path", "path");
+	}
+
+	@Test
+	void shouldExcludePath() {
+		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.of());
+		assertThat(attributes).doesNotContainEntry("path", "path");
 	}
 
 	@Test

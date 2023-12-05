@@ -61,6 +61,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -99,6 +100,9 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		}
 		if (!options.isIncluded(Include.BINDING_ERRORS)) {
 			errorAttributes.remove("errors");
+		}
+		if (!options.isIncluded(Include.PATH)) {
+			errorAttributes.remove("path");
 		}
 		return errorAttributes;
 	}

@@ -57,6 +57,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Stephane Nicoll
  * @author Michele Mancioppi
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -78,6 +79,9 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		}
 		if (!options.isIncluded(Include.BINDING_ERRORS)) {
 			errorAttributes.remove("errors");
+		}
+		if (!options.isIncluded(Include.PATH)) {
+			errorAttributes.remove("path");
 		}
 		return errorAttributes;
 	}
