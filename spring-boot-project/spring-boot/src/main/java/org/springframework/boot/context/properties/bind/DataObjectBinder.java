@@ -53,4 +53,15 @@ interface DataObjectBinder {
 	 */
 	<T> T create(Bindable<T> target, Context context);
 
+	/**
+	 * Callback that can be used to add additional suppressed exceptions when an instance
+	 * cannot be created.
+	 * @param <T> the source type
+	 * @param target the bindable that was being created
+	 * @param context the bind context
+	 * @param exception the exception about to be thrown
+	 */
+	default <T> void onUnableToCreateInstance(Bindable<T> target, Binder.Context context, RuntimeException exception) {
+	}
+
 }

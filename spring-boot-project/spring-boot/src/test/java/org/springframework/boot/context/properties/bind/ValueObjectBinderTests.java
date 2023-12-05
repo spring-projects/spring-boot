@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.internal.CharacterIndex;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -394,7 +395,7 @@ class ValueObjectBinderTests {
 	}
 
 	@Test // gh-38201
-	void bindWithNonExtractableParameterNamesAndNonIterablePropertySource() throws Exception {
+	void bindWhenNonExtractableParameterNamesOnPropertyAndNonIterablePropertySource() throws Exception {
 		verifyJsonPathParametersCannotBeResolved();
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.value", "test");
@@ -402,6 +403,17 @@ class ValueObjectBinderTests {
 		Bindable<NonExtractableParameterName> target = Bindable.of(NonExtractableParameterName.class);
 		NonExtractableParameterName bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getValue()).isEqualTo("test");
+	}
+
+	@Test
+	void createWhenNonExtractableParameterNamesOnPropertyAndNonIterablePropertySource() throws Exception {
+		assertThat(new DefaultParameterNameDiscoverer()
+			.getParameterNames(CharacterIndex.class.getDeclaredConstructor(CharSequence.class))).isNull();
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source.nonIterable());
+		Bindable<CharacterIndex> target = Bindable.of(CharacterIndex.class).withBindMethod(BindMethod.VALUE_OBJECT);
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bindOrCreate("test", target))
+			.withStackTraceContaining("Ensure that the compiler uses the '-parameters' flag");
 	}
 
 	private void verifyJsonPathParametersCannotBeResolved() throws NoSuchFieldException {
