@@ -2211,6 +2211,12 @@
       }
     },
     {
+      "name": "management.tracing.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export and propagate traces.",
+      "defaultValue": true
+    },
+    {
       "name": "management.tracing.propagation.consume",
       "defaultValue": [
         "W3C",
