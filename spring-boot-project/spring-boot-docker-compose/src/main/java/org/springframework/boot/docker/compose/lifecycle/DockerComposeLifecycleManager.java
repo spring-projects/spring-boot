@@ -118,14 +118,19 @@ class DockerComposeLifecycleManager {
 		Stop stop = this.properties.getStop();
 		Wait wait = this.properties.getReadiness().getWait();
 		List<RunningService> runningServices = dockerCompose.getRunningServices();
-		if (lifecycleManagement.shouldStart() && runningServices.isEmpty()) {
-			start.getCommand().applyTo(dockerCompose, start.getLogLevel());
-			runningServices = dockerCompose.getRunningServices();
-			if (wait == Wait.ONLY_IF_STARTED) {
-				wait = Wait.ALWAYS;
+		if (lifecycleManagement.shouldStart()) {
+			if (runningServices.isEmpty()) {
+				start.getCommand().applyTo(dockerCompose, start.getLogLevel());
+				runningServices = dockerCompose.getRunningServices();
+				if (wait == Wait.ONLY_IF_STARTED) {
+					wait = Wait.ALWAYS;
+				}
+				if (lifecycleManagement.shouldStop()) {
+					this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
+				}
 			}
-			if (lifecycleManagement.shouldStop()) {
-				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
+			else {
+				logger.info("There are already Docker Compose services running, skipping startup");
 			}
 		}
 		List<RunningService> relevantServices = new ArrayList<>(runningServices);

@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.aot.AotDetector;
@@ -38,6 +39,8 @@ import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
@@ -59,6 +62,7 @@ import static org.mockito.Mockito.never;
  * @author Phillip Webb
  * @author Scott Frederick
  */
+@ExtendWith(OutputCaptureExtension.class)
 class DockerComposeLifecycleManagerTests {
 
 	@TempDir
@@ -363,6 +367,21 @@ class DockerComposeLifecycleManagerTests {
 		assertThat(event).isNotNull();
 		assertThat(event.getSource()).isEqualTo(this.applicationContext);
 		assertThat(event.getRunningServices()).isEqualTo(this.runningServices);
+	}
+
+	@Test
+	void shouldLogIfServicesAreAlreadyRunning(CapturedOutput output) {
+		setUpRunningServices();
+		this.lifecycleManager.start();
+		assertThat(output).contains("There are already Docker Compose services running, skipping startup");
+	}
+
+	@Test
+	void shouldNotLogIfThereAreNoServicesRunning(CapturedOutput output) {
+		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
+		given(this.dockerCompose.getRunningServices()).willReturn(Collections.emptyList());
+		this.lifecycleManager.start();
+		assertThat(output).doesNotContain("There are already Docker Compose services running, skipping startup");
 	}
 
 	private void setUpRunningServices() {
