@@ -93,6 +93,14 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 		assertFoundBeans(failureAnalysis);
 	}
 
+	@Test
+	void failureAnalysisIncludesPossiblyMissingParameterNames() {
+		FailureAnalysis failureAnalysis = analyzeFailure(createFailure(MethodConsumer.class));
+		assertThat(failureAnalysis.getDescription()).contains(MissingParameterNamesFailureAnalyzer.POSSIBILITY);
+		assertThat(failureAnalysis.getAction()).contains(MissingParameterNamesFailureAnalyzer.ACTION);
+		assertFoundBeans(failureAnalysis);
+	}
+
 	private BeanCreationException createFailure(Class<?> consumer) {
 		this.context.registerBean("beanOne", TestBean.class);
 		this.context.register(DuplicateBeansProducer.class, consumer);

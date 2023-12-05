@@ -56,11 +56,12 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 		for (String beanName : beanNames) {
 			buildMessage(message, beanName);
 		}
-		return new FailureAnalysis(message.toString(),
-				"Consider marking one of the beans as @Primary, updating the consumer to"
-						+ " accept multiple beans, or using @Qualifier to identify the"
-						+ " bean that should be consumed",
-				cause);
+		MissingParameterNamesFailureAnalyzer.appendPossibility(message);
+		StringBuilder action = new StringBuilder(
+				"Consider marking one of the beans as @Primary, updating the consumer to accept multiple beans, "
+						+ "or using @Qualifier to identify the bean that should be consumed");
+		action.append("%n%n%s".formatted(MissingParameterNamesFailureAnalyzer.ACTION));
+		return new FailureAnalysis(message.toString(), action.toString(), cause);
 	}
 
 	private void buildMessage(StringBuilder message, String beanName) {
@@ -69,7 +70,7 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 			message.append(getDefinitionDescription(beanName, definition));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			message.append(String.format("\t- %s: a programmatically registered singleton", beanName));
+			message.append(String.format("\t- %s: a programmatically registered singleton%n", beanName));
 		}
 	}
 
