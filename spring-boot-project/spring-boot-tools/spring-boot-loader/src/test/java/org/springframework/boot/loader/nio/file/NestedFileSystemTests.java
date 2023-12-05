@@ -127,15 +127,15 @@ class NestedFileSystemTests {
 	}
 
 	@Test
-	void getPathWhenFirstIsNullThrowsException() {
+	void getPathWhenFirstIsNull() {
 		Path path = this.fileSystem.getPath(null);
-		assertThat(path.toString()).endsWith("/test.jar");
+		assertThat(path.toString()).endsWith(File.separator + "test.jar");
 	}
 
 	@Test
 	void getPathWhenFirstIsBlank() {
 		Path path = this.fileSystem.getPath("");
-		assertThat(path.toString()).endsWith("/test.jar");
+		assertThat(path.toString()).endsWith(File.separator + "test.jar");
 	}
 
 	@Test
