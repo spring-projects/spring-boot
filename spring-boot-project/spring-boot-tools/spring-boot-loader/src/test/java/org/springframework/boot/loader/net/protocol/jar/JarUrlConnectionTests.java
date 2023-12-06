@@ -512,6 +512,20 @@ class JarUrlConnectionTests {
 		}
 	}
 
+	@Test
+	void getJarFileWhenInFolderWithEncodedCharsReturnsJarFile() throws Exception {
+		this.temp = new File(this.temp, "te#st");
+		this.temp.mkdirs();
+		this.file = new File(this.temp, "test.jar");
+		this.url = JarUrl.create(this.file, "nested.jar");
+		assertThat(this.url.toString()).contains("te%23st");
+		TestJar.create(this.file);
+		JarUrlConnection connection = JarUrlConnection.open(this.url);
+		JarFile jarFile = connection.getJarFile();
+		assertThat(jarFile).isNotNull();
+		assertThat(jarFile.getEntry("3.dat")).isNotNull();
+	}
+
 	private long withoutNanos(long epochMilli) {
 		return Instant.ofEpochMilli(epochMilli).with(ChronoField.NANO_OF_SECOND, 0).toEpochMilli();
 	}

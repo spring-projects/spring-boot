@@ -25,6 +25,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.loader.net.util.UrlDecoder;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -82,6 +84,16 @@ class JarUrlTests {
 	void createWithFileNameAndPathReturnsUrl() {
 		URL url = JarUrl.create(this.jarFile, "lib.jar", "com/example/My.class");
 		assertThat(url).hasToString("jar:nested:%s/!lib.jar!/com/example/My.class".formatted(this.jarFileUrlPath));
+	}
+
+	@Test
+	void createWithReservedCharsInName() throws Exception {
+		String badFolderName = "foo#bar!/baz/!oof";
+		this.temp = new File(this.temp, badFolderName);
+		setup();
+		URL url = JarUrl.create(this.jarFile, "lib.jar", "com/example/My.class");
+		assertThat(url).hasToString("jar:nested:%s/!lib.jar!/com/example/My.class".formatted(this.jarFileUrlPath));
+		assertThat(UrlDecoder.decode(url.toString())).contains(badFolderName);
 	}
 
 }
