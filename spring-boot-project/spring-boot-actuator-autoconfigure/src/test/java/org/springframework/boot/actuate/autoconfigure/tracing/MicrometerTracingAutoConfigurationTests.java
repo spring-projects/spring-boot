@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
 
+import io.micrometer.common.annotation.ValueExpressionResolver;
+import io.micrometer.common.annotation.ValueResolver;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.annotation.DefaultNewSpanParser;
 import io.micrometer.tracing.annotation.ImperativeMethodInvocationProcessor;
@@ -63,6 +65,7 @@ class MicrometerTracingAutoConfigurationTests {
 				assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
 				assertThat(context).hasSingleBean(ImperativeMethodInvocationProcessor.class);
 				assertThat(context).hasSingleBean(SpanAspect.class);
+				assertThat(context).hasSingleBean(SpanTagAnnotationHandler.class);
 			});
 	}
 
@@ -100,6 +103,8 @@ class MicrometerTracingAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ImperativeMethodInvocationProcessor.class);
 				assertThat(context).hasBean("customSpanAspect");
 				assertThat(context).hasSingleBean(SpanAspect.class);
+				assertThat(context).hasBean("customSpanTagAnnotationHandler");
+				assertThat(context).hasSingleBean(SpanTagAnnotationHandler.class);
 			});
 	}
 
@@ -213,6 +218,12 @@ class MicrometerTracingAutoConfigurationTests {
 		@Bean
 		SpanAspect customSpanAspect(MethodInvocationProcessor methodInvocationProcessor) {
 			return new SpanAspect(methodInvocationProcessor);
+		}
+
+		@Bean
+		SpanTagAnnotationHandler customSpanTagAnnotationHandler() {
+			return new SpanTagAnnotationHandler((aClass) -> mock(ValueResolver.class),
+					(aClass) -> mock(ValueExpressionResolver.class));
 		}
 
 	}
