@@ -106,7 +106,7 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 		return ex.getClass().getName() + (StringUtils.hasText(message) ? ": " + message : "");
 	}
 
-	public static void appendPossibility(StringBuilder description) {
+	static void appendPossibility(StringBuilder description) {
 		if (!description.toString().endsWith(System.lineSeparator())) {
 			description.append("%n".formatted());
 		}
