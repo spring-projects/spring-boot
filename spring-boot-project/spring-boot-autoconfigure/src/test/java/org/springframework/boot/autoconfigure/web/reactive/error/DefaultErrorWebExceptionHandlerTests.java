@@ -33,12 +33,10 @@ import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.util.DisconnectedClientHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,14 +51,6 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  */
 class DefaultErrorWebExceptionHandlerTests {
-
-	@Test
-	void disconnectedClientExceptionsMatchesFramework() {
-		Object errorHandlers = ReflectionTestUtils.getField(AbstractErrorWebExceptionHandler.class,
-				"DISCONNECTED_CLIENT_EXCEPTIONS");
-		Object webHandlers = ReflectionTestUtils.getField(DisconnectedClientHelper.class, "EXCEPTION_TYPE_NAMES");
-		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);
-	}
 
 	@Test
 	void nonStandardErrorStatusCodeShouldNotFail() {

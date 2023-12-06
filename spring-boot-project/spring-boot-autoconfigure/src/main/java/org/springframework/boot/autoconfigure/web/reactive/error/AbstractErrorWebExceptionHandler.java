@@ -18,10 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import reactor.core.publisher.Mono;
@@ -33,7 +31,6 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpLogging;
@@ -49,6 +46,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.DisconnectedClientHelper;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -60,19 +58,6 @@ import org.springframework.web.util.HtmlUtils;
  * @see ErrorAttributes
  */
 public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler, InitializingBean {
-
-	/**
-	 * Currently duplicated from Spring Web's DisconnectedClientHelper.
-	 */
-	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS;
-
-	static {
-		Set<String> exceptions = new HashSet<>();
-		exceptions.add("ClientAbortException");
-		exceptions.add("EOFException");
-		exceptions.add("EofException");
-		DISCONNECTED_CLIENT_EXCEPTIONS = Collections.unmodifiableSet(exceptions);
-	}
 
 	private static final Log logger = HttpLogging.forLogName(AbstractErrorWebExceptionHandler.class);
 
@@ -305,13 +290,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	private boolean isDisconnectedClientError(Throwable ex) {
-		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
-				|| isDisconnectedClientErrorMessage(NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
-	}
-
-	private boolean isDisconnectedClientErrorMessage(String message) {
-		message = (message != null) ? message.toLowerCase() : "";
-		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
+		return DisconnectedClientHelper.isClientDisconnectedException(ex);
 	}
 
 	/**
