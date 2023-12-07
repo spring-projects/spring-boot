@@ -98,7 +98,7 @@
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/html/
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
-:dynatrace-help: https://www.dynatrace.com/support/help
+:dynatrace-docs: https://docs.dynatrace.com/docs/shortlink
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/{hibernate-version}/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/en/java/javase/17/docs/api
