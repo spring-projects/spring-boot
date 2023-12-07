@@ -179,15 +179,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		int read(ByteBuffer dst, long position) throws IOException {
 			synchronized (this.lock) {
 				if (position < this.bufferPosition || position >= this.bufferPosition + this.bufferSize) {
-					this.buffer.clear();
-					try {
-						this.bufferSize = this.fileChannel.read(this.buffer, position);
-					}
-					catch (ClosedByInterruptException ex) {
-						repairFileChannel();
-						throw ex;
-					}
-					this.bufferPosition = position;
+					fillBuffer(position);
 				}
 				if (this.bufferSize <= 0) {
 					return this.bufferSize;
@@ -198,6 +190,27 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				dst.position(dst.position() + length);
 				return length;
 			}
+		}
+
+		private void fillBuffer(long position) throws IOException {
+			for (int i = 0; i < 10; i++) {
+				boolean interrupted = (i != 0) ? Thread.interrupted() : false;
+				try {
+					this.buffer.clear();
+					this.bufferSize = this.fileChannel.read(this.buffer, position);
+					this.bufferPosition = position;
+					return;
+				}
+				catch (ClosedByInterruptException ex) {
+					repairFileChannel();
+				}
+				finally {
+					if (interrupted) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+			throw new ClosedByInterruptException();
 		}
 
 		private void repairFileChannel() throws IOException {
