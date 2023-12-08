@@ -26,6 +26,6 @@ class MyApplication
 fun main(args: Array<String>) {
 	runApplication<MyApplication>(*args) {
 		setBannerMode(Banner.Mode.OFF)
-		setAdditionalProfiles("myprofile");
+		setAdditionalProfiles("myprofile")
 	}
 }

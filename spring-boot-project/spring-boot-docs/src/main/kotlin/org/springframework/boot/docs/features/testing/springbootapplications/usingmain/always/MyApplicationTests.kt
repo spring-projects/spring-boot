@@ -19,7 +19,6 @@ package org.springframework.boot.docs.features.testing.springbootapplications.us
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
-import org.springframework.context.annotation.Import
 
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 class MyApplicationTests {
