@@ -332,7 +332,10 @@ public class WebFluxAutoConfiguration {
 		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
 			Duration timeout = this.serverProperties.getReactive().getSession().getTimeout();
-			webSessionManager.setSessionStore(new MaxIdleTimeInMemoryWebSessionStore(timeout));
+			int maxSessions = this.serverProperties.getReactive().getSession().getMaxSessions();
+			MaxIdleTimeInMemoryWebSessionStore sessionStore = new MaxIdleTimeInMemoryWebSessionStore(timeout);
+			sessionStore.setMaxSessions(maxSessions);
+			webSessionManager.setSessionStore(sessionStore);
 			webSessionIdResolver.ifAvailable(webSessionManager::setSessionIdResolver);
 			return webSessionManager;
 		}

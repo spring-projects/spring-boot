@@ -109,8 +109,11 @@ import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.DefaultWebSessionManager;
+import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionManager;
+import org.springframework.web.server.session.WebSessionStore;
 import org.springframework.web.util.pattern.PathPattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -621,6 +624,20 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void customSessionMaxSessionsConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("server.reactive.session.max-sessions:123")
+			.run((context) -> assertMaxSessionsWithWebSession(123));
+	}
+
+	@Test
+	void defaultSessionMaxSessionsConfigurationShouldBeInSync() {
+		this.contextRunner.run((context) -> {
+			int defaultMaxSessions = new InMemoryWebSessionStore().getMaxSessions();
+			assertMaxSessionsWithWebSession(defaultMaxSessions);
+		});
+	}
+
+	@Test
 	void customSessionCookieConfigurationShouldBeApplied() {
 		this.contextRunner.withPropertyValues("server.reactive.session.cookie.name:JSESSIONID",
 				"server.reactive.session.cookie.domain:.example.com", "server.reactive.session.cookie.path:/example",
@@ -748,6 +765,16 @@ class WebFluxAutoConfigurationTests {
 			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
 			WebSession webSession = webSessionManager.getSession(webExchange).block();
 			session.accept(webSession);
+		};
+	}
+
+	private ContextConsumer<ReactiveWebApplicationContext> assertMaxSessionsWithWebSession(int maxSessions) {
+		return (context) -> {
+			WebSessionManager sessionManager = context.getBean(WebSessionManager.class);
+			assertThat(sessionManager).isInstanceOf(DefaultWebSessionManager.class);
+			WebSessionStore sessionStore = ((DefaultWebSessionManager) sessionManager).getSessionStore();
+			assertThat(sessionStore).isInstanceOf(InMemoryWebSessionStore.class);
+			assertThat(((InMemoryWebSessionStore) sessionStore).getMaxSessions()).isEqualTo(maxSessions);
 		};
 	}
 
