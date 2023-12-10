@@ -115,13 +115,8 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setRollbackFile(properties.getRollbackFile());
 			liquibase.setTestRollbackOnUpdate(properties.isTestRollbackOnUpdate());
 			liquibase.setTag(properties.getTag());
-			if (properties.getShowSummary() != null) {
-				liquibase.setShowSummary(UpdateSummaryEnum.valueOf(properties.getShowSummary().name()));
-			}
-			if (properties.getShowSummaryOutput() != null) {
-				liquibase
-					.setShowSummaryOutput(UpdateSummaryOutputEnum.valueOf(properties.getShowSummaryOutput().name()));
-			}
+			liquibase.setShowSummary(UpdateSummaryEnum.valueOf(properties.getShowSummary().name()));
+			liquibase.setShowSummaryOutput(UpdateSummaryOutputEnum.valueOf(properties.getShowSummaryOutput().name()));
 			return liquibase;
 		}
 

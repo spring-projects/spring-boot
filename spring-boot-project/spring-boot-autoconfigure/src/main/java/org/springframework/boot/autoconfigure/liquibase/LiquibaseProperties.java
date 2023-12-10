@@ -140,12 +140,12 @@ public class LiquibaseProperties {
 	/**
 	 * Whether to print a summary of the update operation.
 	 */
-	private ShowSummary showSummary;
+	private ShowSummary showSummary = ShowSummary.SUMMARY;
 
 	/**
 	 * Where to print a summary of the update operation.
 	 */
-	private ShowSummaryOutput showSummaryOutput;
+	private ShowSummaryOutput showSummaryOutput = ShowSummaryOutput.LOG;
 
 	public String getChangeLog() {
 		return this.changeLog;
