@@ -78,9 +78,9 @@ public class BatchAutoConfiguration {
 	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
 			JobRepository jobRepository, BatchProperties properties) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
-		String jobNames = properties.getJob().getName();
-		if (StringUtils.hasText(jobNames)) {
-			runner.setJobName(jobNames);
+		String jobName = properties.getJob().getName();
+		if (StringUtils.hasText(jobName)) {
+			runner.setJobName(jobName);
 		}
 		return runner;
 	}
