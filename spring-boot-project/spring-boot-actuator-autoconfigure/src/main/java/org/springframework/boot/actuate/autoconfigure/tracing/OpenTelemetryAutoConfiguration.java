@@ -66,7 +66,8 @@ import org.springframework.context.annotation.Import;
  * @author Yanming Zhou
  * @since 3.0.0
  */
-@AutoConfiguration(value = "openTelemetryTracingAutoConfiguration", before = MicrometerTracingAutoConfiguration.class)
+@AutoConfiguration(value = "openTelemetryTracingAutoConfiguration",
+		before = { MicrometerTracingAutoConfiguration.class, NoopTracerAutoConfiguration.class })
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class })
 @EnableConfigurationProperties(TracingProperties.class)
 @Import({ OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage.class,

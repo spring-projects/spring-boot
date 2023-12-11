@@ -62,7 +62,7 @@ import org.springframework.core.env.Environment;
  * @author Jonatan Ivanov
  * @since 3.0.0
  */
-@AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
+@AutoConfiguration(before = { MicrometerTracingAutoConfiguration.class, NoopTracerAutoConfiguration.class })
 @ConditionalOnClass({ Tracer.class, BraveTracer.class })
 @EnableConfigurationProperties(TracingProperties.class)
 @Import({ BravePropagationConfigurations.PropagationWithoutBaggage.class,
