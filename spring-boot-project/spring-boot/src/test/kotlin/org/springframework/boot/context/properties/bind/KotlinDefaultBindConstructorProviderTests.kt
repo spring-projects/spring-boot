@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind;
+package org.springframework.boot.context.properties.bind
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
@@ -46,7 +46,7 @@ class KotlinDefaultBindConstructorProviderTests {
 	@Test
 	fun `type with primary and secondary annotated constructor should use secondary constructor for binding`() {
 		val bindConstructor = this.constructorProvider.getBindConstructor(ConstructorBindingOnSecondaryWithPrimaryConstructor::class.java, false)
-		assertThat(bindConstructor).isNotNull();
+		assertThat(bindConstructor).isNotNull()
 	}
 
 	@Test
@@ -116,12 +116,12 @@ class KotlinDefaultBindConstructorProviderTests {
 	@Test
 	fun `data class with default values should use constructor binding`() {
 		val bindConstructor = this.constructorProvider.getBindConstructor(ConstructorBindingDataClassWithDefaultValues::class.java, false)
-		assertThat(bindConstructor).isNotNull();
+		assertThat(bindConstructor).isNotNull()
 	}
 
 	class FooProperties
 
-	class PrimaryWithAutowiredSecondaryProperties constructor(val name: String?, val counter: Int = 42) {
+	class PrimaryWithAutowiredSecondaryProperties(val name: String?, val counter: Int = 42) {
 
 		@Autowired
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
@@ -133,9 +133,7 @@ class KotlinDefaultBindConstructorProviderTests {
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String)
 	}
 
-	class AutowiredPrimaryProperties @Autowired constructor(val name: String?, val counter: Int = 42) {
-
-	}
+	class AutowiredPrimaryProperties @Autowired constructor(val name: String?, val counter: Int = 42)
 
 	class ConstructorBindingOnSecondaryAndAutowiredPrimaryProperties @Autowired constructor(val name: String?, val counter: Int = 42) {
 
@@ -149,7 +147,7 @@ class KotlinDefaultBindConstructorProviderTests {
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 	}
 
-	class ConstructorBindingOnSecondaryWithPrimaryConstructor constructor(val name: String?, val counter: Int = 42) {
+	class ConstructorBindingOnSecondaryWithPrimaryConstructor(val name: String?, val counter: Int = 42) {
 
 		@ConstructorBinding
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
