@@ -17,7 +17,6 @@
 package org.springframework.boot.docs.messaging.pulsar.sending
 
 import org.apache.pulsar.client.api.PulsarClientException
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.pulsar.core.PulsarTemplate
 import org.springframework.stereotype.Component
 

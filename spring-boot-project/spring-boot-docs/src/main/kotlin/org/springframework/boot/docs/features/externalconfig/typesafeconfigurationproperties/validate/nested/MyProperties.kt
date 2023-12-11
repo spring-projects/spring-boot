@@ -29,7 +29,7 @@ class MyProperties {
 
 	var remoteAddress: @NotNull InetAddress? = null
 
-	val security: @Valid Security? = Security()
+	val security: @Valid Security = Security()
 
 	class Security {
 		var username: @NotEmpty String? = null

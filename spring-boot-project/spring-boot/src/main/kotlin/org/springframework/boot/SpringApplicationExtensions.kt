@@ -21,7 +21,6 @@ import org.springframework.util.Assert
 import org.springframework.util.ClassUtils
 import org.springframework.util.ReflectionUtils
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 /**
  * Top-level function acting as a Kotlin shortcut allowing to write

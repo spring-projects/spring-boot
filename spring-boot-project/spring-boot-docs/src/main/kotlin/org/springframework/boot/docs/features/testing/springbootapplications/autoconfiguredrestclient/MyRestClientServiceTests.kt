@@ -31,7 +31,7 @@ class MyRestClientServiceTests(
 	@Autowired val server: MockRestServiceServer) {
 
 	@Test
-	fun getVehicleDetailsWhenResultIsSuccessShouldReturnDetails(): Unit {
+	fun getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
 		server.expect(MockRestRequestMatchers.requestTo("https://example.com/greet/details"))
 			.andRespond(MockRestResponseCreators.withSuccess("hello", MediaType.TEXT_PLAIN))
 		val greeting = service.callRestService()
