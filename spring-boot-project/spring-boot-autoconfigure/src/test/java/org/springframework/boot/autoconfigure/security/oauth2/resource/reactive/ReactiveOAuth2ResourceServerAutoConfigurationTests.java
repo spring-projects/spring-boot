@@ -43,6 +43,8 @@ import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -73,6 +75,7 @@ import org.springframework.security.oauth2.server.resource.authentication.Opaque
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.WebFilter;
@@ -117,9 +120,15 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationDoesNotEnableWebSecurityWithoutJwtDecoderOrTokenIntrospector() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(WebFilterChainProxy.class));
+	}
+
+	@Test
 	void autoConfigurationShouldConfigureResourceServer() {
 		this.contextRunner
 			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 				assertFilterConfiguredWithJwtAuthenticationManager(context);
@@ -385,7 +394,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationWhenIntrospectionUriAvailableShouldConfigureIntrospectionClient() {
-		this.contextRunner
+		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.withPropertyValues(
 					"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
 					"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",

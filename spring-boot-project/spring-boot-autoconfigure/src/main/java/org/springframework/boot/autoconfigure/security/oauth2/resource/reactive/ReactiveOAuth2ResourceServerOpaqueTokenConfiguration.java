@@ -56,10 +56,10 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(SecurityWebFilterChain.class)
+	@ConditionalOnBean(ReactiveOpaqueTokenIntrospector.class)
 	static class WebSecurityConfiguration {
 
 		@Bean
-		@ConditionalOnBean(ReactiveOpaqueTokenIntrospector.class)
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
 			http.oauth2ResourceServer((resourceServer) -> resourceServer.opaqueToken(withDefaults()));
