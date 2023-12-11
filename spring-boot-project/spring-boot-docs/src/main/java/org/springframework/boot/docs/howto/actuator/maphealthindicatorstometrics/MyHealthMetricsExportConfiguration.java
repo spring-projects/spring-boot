@@ -32,17 +32,11 @@ public class MyHealthMetricsExportConfiguration {
 	}
 
 	private int getStatusCode(HealthEndpoint health) {
-		Status status = health.health().getStatus();
-		if (Status.UP.equals(status)) {
-			return 3;
-		}
-		if (Status.OUT_OF_SERVICE.equals(status)) {
-			return 2;
-		}
-		if (Status.DOWN.equals(status)) {
-			return 1;
-		}
-		return 0;
+		return switch (health.health().getStatus().toString()) {
+			case "UP" -> 3;
+			case "OUT_OF_SERVICE" -> 2;
+			case "DOWN" -> 1;
+			default -> 0;
+		};
 	}
-
 }
