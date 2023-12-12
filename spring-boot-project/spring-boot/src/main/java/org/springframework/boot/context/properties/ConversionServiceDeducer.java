@@ -29,6 +29,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
@@ -63,6 +64,7 @@ class ConversionServiceDeducer {
 		ConverterBeans converterBeans = new ConverterBeans(applicationContext);
 		if (!converterBeans.isEmpty()) {
 			FormattingConversionService beansConverterService = new FormattingConversionService();
+			DefaultConversionService.addCollectionConverters(beansConverterService);
 			converterBeans.addTo(beansConverterService);
 			conversionServices.add(beansConverterService);
 		}

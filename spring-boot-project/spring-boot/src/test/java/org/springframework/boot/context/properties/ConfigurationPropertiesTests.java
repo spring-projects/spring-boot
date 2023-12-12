@@ -679,6 +679,20 @@ class ConfigurationPropertiesTests {
 		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
 	}
 
+	@Test // gh-38734
+	void loadWhenBeanFactoryConversionServiceAndConverterBeanCanUseConverterBeanWithCollections() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new PersonConverter());
+		this.context.getBeanFactory().setConversionService(conversionService);
+		load(new Class<?>[] { AlienConverterConfiguration.class, PersonAndAliensProperties.class },
+				"test.person=John Smith", "test.aliens=Alf Tanner,Gilbert");
+		PersonAndAliensProperties properties = this.context.getBean(PersonAndAliensProperties.class);
+		assertThat(properties.getPerson().firstName).isEqualTo("John");
+		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
+		assertThat(properties.getAliens().get(0).name).isEqualTo("rennaT flA");
+		assertThat(properties.getAliens().get(1).name).isEqualTo("trebliG");
+	}
+
 	@Test
 	void loadWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
 		assertThatExceptionOfType(BeanCreationException.class)
@@ -2086,6 +2100,32 @@ class ConfigurationPropertiesTests {
 
 		void setAlien(Alien alien) {
 			this.alien = alien;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class PersonAndAliensProperties {
+
+		private Person person;
+
+		private List<Alien> aliens;
+
+		Person getPerson() {
+			return this.person;
+		}
+
+		void setPerson(Person person) {
+			this.person = person;
+		}
+
+		List<Alien> getAliens() {
+			return this.aliens;
+		}
+
+		void setAliens(List<Alien> aliens) {
+			this.aliens = aliens;
 		}
 
 	}
