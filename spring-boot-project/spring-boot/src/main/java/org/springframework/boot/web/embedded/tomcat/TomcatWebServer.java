@@ -256,7 +256,7 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	String getStartedLogMessage() {
-		return "Tomcat started on " + getPortsDescription(true) + " with context path '" + getContextPath() + "'";
+		return "Tomcat started on " + getPortsDescription(true) + " with context path '" + getPathFromEmbeddedContext() + "'";
 	}
 
 	private void checkThatConnectorsHaveStarted() {
@@ -406,12 +406,21 @@ public class TomcatWebServer implements WebServer {
 		return -1;
 	}
 
-	private String getContextPath() {
+	private String getPathFromEmbeddedContext() {
 		return Arrays.stream(this.tomcat.getHost().findChildren())
-			.filter(TomcatEmbeddedContext.class::isInstance)
-			.map(TomcatEmbeddedContext.class::cast)
-			.map(TomcatEmbeddedContext::getPath)
-			.collect(Collectors.joining(" "));
+				.filter(TomcatEmbeddedContext.class::isInstance)
+				.map(TomcatEmbeddedContext.class::cast)
+				.map(this::getPathFromEmbeddedContext)
+				.collect(Collectors.joining(" "));
+	}
+
+	private String getPathFromEmbeddedContext(TomcatEmbeddedContext context) {
+		String path = context.getPath();
+		if (path.isEmpty()) {
+			// return slash if empty to be consistent with other servers
+			return "/";
+		}
+		return path;
 	}
 
 	/**
