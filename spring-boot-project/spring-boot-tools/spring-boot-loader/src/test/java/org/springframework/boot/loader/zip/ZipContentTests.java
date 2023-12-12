@@ -283,7 +283,7 @@ class ZipContentTests {
 
 	@Test
 	void openWhenZip64ThatExceedsZipSizeLimitOpensZip() throws Exception {
-		Assumptions.assumeTrue(this.tempDir.getFreeSpace() > 6 * 1024 * 1024 * 1024, "Insufficient disk space");
+		Assumptions.assumeTrue(this.tempDir.getFreeSpace() > 6L * 1024 * 1024 * 1024, "Insufficient disk space");
 		File zip64File = new File(this.tempDir, "zip64.zip");
 		File entryFile = new File(this.tempDir, "entry.dat");
 		CRC32 crc32 = new CRC32();

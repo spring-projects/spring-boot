@@ -582,7 +582,7 @@ class JarFileTests {
 
 	@Test
 	void zip64JarThatExceedsZipSizeLimitCanBeRead() throws Exception {
-		Assumptions.assumeTrue(this.tempDir.getFreeSpace() > 6 * 1024 * 1024 * 1024, "Insufficient disk space");
+		Assumptions.assumeTrue(this.tempDir.getFreeSpace() > 6L * 1024 * 1024 * 1024, "Insufficient disk space");
 		File zip64Jar = new File(this.tempDir, "zip64.jar");
 		File entry = new File(this.tempDir, "entry.dat");
 		CRC32 crc32 = new CRC32();
