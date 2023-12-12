@@ -18,6 +18,8 @@ package org.springframework.boot.build.architecture;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
@@ -60,6 +62,7 @@ import org.gradle.api.tasks.TaskAction;
  * {@link Task} that checks for architecture problems.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -71,7 +74,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
 				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
-				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList());
+				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
+				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding());
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
 	}
 
@@ -188,6 +192,20 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.should()
 			.callMethod(Collectors.class, "toList")
 			.because("java.util.stream.Stream.toList() should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallURLEncoderWithStringEncoding() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(URLEncoder.class, "encode", String.class, String.class)
+			.because("java.net.URLEncoder.encode(String s, Charset charset) should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallURLDecoderWithStringEncoding() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(URLDecoder.class, "decode", String.class, String.class)
+			.because("java.net.URLDecoder.decode(String s, Charset charset) should be used instead");
 	}
 
 	public void setClasses(FileCollection classes) {
