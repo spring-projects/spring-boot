@@ -20,12 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 
 /**
@@ -318,13 +318,8 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			for (int i = 0; i < length; i++) {
 				int c = source.charAt(i);
 				if (c > 127) {
-					try {
-						String encoded = URLEncoder.encode(String.valueOf((char) c), "UTF-8");
-						write(encoded, outputStream);
-					}
-					catch (UnsupportedEncodingException ex) {
-						throw new IllegalStateException(ex);
-					}
+					String encoded = URLEncoder.encode(String.valueOf((char) c), StandardCharsets.UTF_8);
+					write(encoded, outputStream);
 				}
 				else {
 					if (c == '%') {

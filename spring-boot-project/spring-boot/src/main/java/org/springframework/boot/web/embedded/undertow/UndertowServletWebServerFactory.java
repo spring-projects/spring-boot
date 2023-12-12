@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -553,7 +554,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 		private URLResource getMetaInfResource(URL resourceJar, String path) {
 			try {
-				String urlPath = URLEncoder.encode(ENCODED_SLASH.matcher(path).replaceAll("/"), "UTF-8");
+				String urlPath = URLEncoder.encode(ENCODED_SLASH.matcher(path).replaceAll("/"), StandardCharsets.UTF_8);
 				URL resourceUrl = new URL(resourceJar + "META-INF/resources" + urlPath);
 				URLResource resource = new URLResource(resourceUrl, path);
 				if (resource.getContentLength() < 0) {
