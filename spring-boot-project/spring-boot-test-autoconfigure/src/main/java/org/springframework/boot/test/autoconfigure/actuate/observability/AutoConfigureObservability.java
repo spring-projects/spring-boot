@@ -23,9 +23,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+
 /**
  * Annotation that can be applied to a test class to enable auto-configuration for
  * observability.
+ * <p>
+ * If this annotation is applied to a sliced test, an in-memory {@code MeterRegistry}, a
+ * no-op {@code Tracer} and an {@code ObservationRegistry} is added to the application
+ * context.
  *
  * @author Moritz Halbritter
  * @since 3.0.0
@@ -34,17 +40,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@ImportAutoConfiguration
 public @interface AutoConfigureObservability {
 
 	/**
-	 * Whether metrics should be enabled in the test.
-	 * @return whether metrics should be enabled in the test
+	 * Whether metrics should be reported to external systems in the test.
+	 * @return whether metrics should be reported to external systems in the test
 	 */
 	boolean metrics() default true;
 
 	/**
-	 * Whether tracing should be enabled in the test.
-	 * @return whether tracing should be enabled in the test
+	 * Whether traces should be reported to external systems in the test.
+	 * @return whether traces should be reported to external systems in the test
 	 */
 	boolean tracing() default true;
 

@@ -255,12 +255,20 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 include::code:MyJmxTests[]
 
 
+[[features.testing.spring-boot-applications.observations]]
+==== Using Observations
+If you annotate <<features#features.testing.spring-boot-applications.autoconfigured-tests, a sliced test>> with `@AutoConfigureObservability`, it auto-configures an `ObservationRegistry`.
+
+
 
 [[features.testing.spring-boot-applications.metrics]]
 ==== Using Metrics
 Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using `@SpringBootTest`.
 
 If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureObservability`.
+
+If you annotate <<features#features.testing.spring-boot-applications.autoconfigured-tests, a sliced test>> with `@AutoConfigureObservability`, it auto-configures an in-memory `MeterRegistry`.
+Data exporting in sliced tests is not supported with the `@AutoConfigureObservability` annotation.
 
 
 
@@ -271,6 +279,9 @@ Regardless of your classpath, tracing components which are reporting data are no
 If you need those components as part of an integration test, annotate the test with `@AutoConfigureObservability`.
 
 If you have created your own reporting components (e.g. a custom `SpanExporter` or `SpanHandler`) and you don't want them to be active in tests, you can use the `@ConditionalOnEnabledTracing` annotation to disable them.
+
+If you annotate <<features#features.testing.spring-boot-applications.autoconfigured-tests, a sliced test>> with `@AutoConfigureObservability`, it auto-configures a no-op `Tracer`.
+Data exporting in sliced tests is not supported with the `@AutoConfigureObservability` annotation.
 
 
 
