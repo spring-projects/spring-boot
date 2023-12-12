@@ -52,7 +52,7 @@ public abstract class DataObjectPropertyName {
 				}
 				else {
 					ch = (ch != '_') ? ch : '-';
-					if (Character.isUpperCase(ch) && result.length() > 0 && result.charAt(result.length() - 1) != '-') {
+					if (Character.isUpperCase(ch) && !result.isEmpty() && result.charAt(result.length() - 1) != '-') {
 						result.append('-');
 					}
 					result.append(Character.toLowerCase(ch));

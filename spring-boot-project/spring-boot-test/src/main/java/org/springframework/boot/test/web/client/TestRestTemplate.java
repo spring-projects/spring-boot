@@ -956,7 +956,7 @@ public class TestRestTemplate {
 	private URI applyRootUriIfNecessary(URI uri) {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
 		if ((uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) && uri.toString().startsWith("/")) {
-			return URI.create(rootHandler.getRootUri() + uri.toString());
+			return URI.create(rootHandler.getRootUri() + uri);
 		}
 		return uri;
 	}

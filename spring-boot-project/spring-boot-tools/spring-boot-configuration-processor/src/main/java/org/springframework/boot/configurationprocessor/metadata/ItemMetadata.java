@@ -65,7 +65,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 			fullName.append(prefix);
 		}
 		if (name != null) {
-			if (fullName.length() > 0) {
+			if (!fullName.isEmpty()) {
 				fullName.append('.');
 			}
 			fullName.append(ConfigurationMetadata.toDashedCase(name));

@@ -144,7 +144,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	}
 
 	@SafeVarargs
-	private final File getHomeDirectory(Supplier<String>... pathSuppliers) {
+	private File getHomeDirectory(Supplier<String>... pathSuppliers) {
 		for (Supplier<String> pathSupplier : pathSuppliers) {
 			String path = pathSupplier.get();
 			if (StringUtils.hasText(path)) {

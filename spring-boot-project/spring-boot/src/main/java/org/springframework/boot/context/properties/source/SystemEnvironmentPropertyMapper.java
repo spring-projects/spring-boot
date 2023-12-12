@@ -57,7 +57,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	private String convertName(ConfigurationPropertyName name, int numberOfElements) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < numberOfElements; i++) {
-			if (result.length() > 0) {
+			if (!result.isEmpty()) {
 				result.append('_');
 			}
 			result.append(name.getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
@@ -68,7 +68,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	private String convertLegacyName(ConfigurationPropertyName name) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < name.getNumberOfElements(); i++) {
-			if (result.length() > 0) {
+			if (!result.isEmpty()) {
 				result.append('_');
 			}
 			result.append(convertLegacyNameElement(name.getElement(i, Form.ORIGINAL)));

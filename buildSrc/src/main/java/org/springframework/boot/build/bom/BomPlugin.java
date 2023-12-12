@@ -221,7 +221,7 @@ public class BomPlugin implements Plugin<Project> {
 						.collect(Collectors.toSet());
 					Node target = dependency;
 					for (String classifier : classifiers) {
-						if (classifier.length() > 0) {
+						if (!classifier.isEmpty()) {
 							if (target == null) {
 								target = new Node(null, "dependency");
 								target.appendNode("groupId", groupId);

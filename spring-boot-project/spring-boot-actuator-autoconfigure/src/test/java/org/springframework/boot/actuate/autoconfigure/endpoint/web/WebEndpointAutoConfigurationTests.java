@@ -125,7 +125,7 @@ class WebEndpointAutoConfigurationTests {
 		@Override
 		public String getRootPath(EndpointId endpointId) {
 			if (endpointId.toString().endsWith("one")) {
-				return "1/" + endpointId.toString();
+				return "1/" + endpointId;
 			}
 			return null;
 		}

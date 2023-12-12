@@ -162,7 +162,7 @@ class ImportTestcontainersTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface ContainerAnnotation {
+	@interface ContainerAnnotation {
 
 	}
 

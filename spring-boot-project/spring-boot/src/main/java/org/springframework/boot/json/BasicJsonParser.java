@@ -158,7 +158,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			}
 			index++;
 		}
-		if (build.length() > 0) {
+		if (!build.isEmpty()) {
 			list.add(build.toString().trim());
 		}
 		return list;

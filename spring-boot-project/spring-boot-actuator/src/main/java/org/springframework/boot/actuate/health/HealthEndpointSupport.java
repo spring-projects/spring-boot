@@ -127,7 +127,7 @@ abstract class HealthEndpointSupport<C, T> {
 	private String getName(String[] path, int pathOffset) {
 		StringBuilder name = new StringBuilder();
 		while (pathOffset < path.length) {
-			name.append((name.length() != 0) ? "/" : "");
+			name.append((!name.isEmpty()) ? "/" : "");
 			name.append(path[pathOffset]);
 			pathOffset++;
 		}

@@ -207,7 +207,7 @@ class DefaultBindConstructorProviderTests {
 
 	}
 
-	static record OneConstructorOnRecord(String name, int age) {
+	record OneConstructorOnRecord(String name, int age) {
 
 	}
 

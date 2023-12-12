@@ -74,7 +74,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 				sb.append(',');
 			}
 		}
-		SnakeTimer.broadcast(String.format("{'type': 'join','data':[%s]}", sb.toString()));
+		SnakeTimer.broadcast(String.format("{'type': 'join','data':[%s]}", sb));
 	}
 
 	@Override

@@ -141,7 +141,7 @@ public class Snake {
 				sb.append(',');
 				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x), Integer.valueOf(location.y)));
 			}
-			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id), sb.toString());
+			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id), sb);
 		}
 	}
 

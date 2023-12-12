@@ -118,7 +118,7 @@ class StartupInfoLogger {
 		}
 		append(context, "started by ", () -> System.getProperty("user.name"));
 		append(context, "in ", () -> System.getProperty("user.dir"));
-		if (context.length() > 0) {
+		if (!context.isEmpty()) {
 			message.append(" (");
 			message.append(context);
 			message.append(")");
@@ -140,7 +140,7 @@ class StartupInfoLogger {
 			value = defaultValue;
 		}
 		if (StringUtils.hasLength(value)) {
-			message.append((message.length() > 0) ? " " : "");
+			message.append((!message.isEmpty()) ? " " : "");
 			message.append(prefix);
 			message.append(value);
 		}

@@ -69,7 +69,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 		if ("/".equals(uri.getPath())) {
 			return uri;
 		}
-		return URI.create(uri.toString() + "/");
+		return URI.create(uri + "/");
 	}
 
 	@Override

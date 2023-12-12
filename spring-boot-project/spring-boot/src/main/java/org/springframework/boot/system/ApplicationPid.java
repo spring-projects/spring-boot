@@ -104,7 +104,7 @@ public class ApplicationPid {
 
 	private void assertCanOverwrite(File file) throws IOException {
 		if (!file.canWrite() || !canWritePosixFile(file)) {
-			throw new FileNotFoundException(file.toString() + " (permission denied)");
+			throw new FileNotFoundException(file + " (permission denied)");
 		}
 	}
 
