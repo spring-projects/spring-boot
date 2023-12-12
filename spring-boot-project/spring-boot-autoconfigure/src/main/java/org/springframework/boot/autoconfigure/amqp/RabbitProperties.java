@@ -723,12 +723,25 @@ public class RabbitProperties {
 		 */
 		private boolean autoStartup = true;
 
+		/**
+		 * Whether to enable observation.
+		 */
+		private boolean observationEnabled;
+
 		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
 
 		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
+		}
+
+		public boolean isObservationEnabled() {
+			return this.observationEnabled;
+		}
+
+		public void setObservationEnabled(boolean observationEnabled) {
+			this.observationEnabled = observationEnabled;
 		}
 
 	}
@@ -996,6 +1009,11 @@ public class RabbitProperties {
 		 */
 		private String defaultReceiveQueue;
 
+		/**
+		 * Whether to enable observation.
+		 */
+		private boolean observationEnabled;
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -1046,6 +1064,14 @@ public class RabbitProperties {
 
 		public void setDefaultReceiveQueue(String defaultReceiveQueue) {
 			this.defaultReceiveQueue = defaultReceiveQueue;
+		}
+
+		public boolean isObservationEnabled() {
+			return this.observationEnabled;
+		}
+
+		public void setObservationEnabled(boolean observationEnabled) {
+			this.observationEnabled = observationEnabled;
 		}
 
 	}

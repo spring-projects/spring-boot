@@ -101,6 +101,7 @@ public class RabbitTemplateConfigurer {
 		map.from(templateProperties::getExchange).to(template::setExchange);
 		map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
 		map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
+		map.from(templateProperties::isObservationEnabled).to(template::setObservationEnabled);
 	}
 
 	private boolean determineMandatoryFlag() {

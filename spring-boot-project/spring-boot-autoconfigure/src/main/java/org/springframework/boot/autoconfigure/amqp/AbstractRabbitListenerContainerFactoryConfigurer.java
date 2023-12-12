@@ -134,6 +134,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		if (this.taskExecutor != null) {
 			factory.setTaskExecutor(this.taskExecutor);
 		}
+		factory.setObservationEnabled(configuration.isObservationEnabled());
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()

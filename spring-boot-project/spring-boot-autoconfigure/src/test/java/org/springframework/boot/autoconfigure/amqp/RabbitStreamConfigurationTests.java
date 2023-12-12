@@ -54,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Gary Russell
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class RabbitStreamConfigurationTests {
 
@@ -85,6 +86,16 @@ class RabbitStreamConfigurationTests {
 					"spring.rabbitmq.listener.stream.native-listener:true")
 			.run((context) -> assertThat(context.getBean(StreamRabbitListenerContainerFactory.class))
 				.extracting("nativeListener", InstanceOfAssertFactories.BOOLEAN)
+				.isTrue());
+	}
+
+	@Test
+	void shouldConfigureObservations() {
+		this.contextRunner
+			.withPropertyValues("spring.rabbitmq.listener.type:stream",
+					"spring.rabbitmq.listener.stream.observation-enabled:true")
+			.run((context) -> assertThat(context.getBean(StreamRabbitListenerContainerFactory.class))
+				.extracting("observationEnabled", InstanceOfAssertFactories.BOOLEAN)
 				.isTrue());
 	}
 

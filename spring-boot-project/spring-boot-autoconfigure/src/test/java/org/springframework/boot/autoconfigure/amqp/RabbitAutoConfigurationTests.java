@@ -29,6 +29,7 @@ import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -372,6 +373,16 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureObservationEnabledOnTemplate() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.template.observation-enabled:true")
+			.run((context) -> {
+				RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+				assertThat(rabbitTemplate).extracting("observationEnabled", InstanceOfAssertFactories.BOOLEAN).isTrue();
+			});
+	}
+
+	@Test
 	void testRabbitTemplateDefaultReceiveQueue() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.template.default-receive-queue:default-queue")
@@ -531,7 +542,8 @@ class RabbitAutoConfigurationTests {
 					"spring.rabbitmq.listener.simple.idleEventInterval:5",
 					"spring.rabbitmq.listener.simple.batchSize:20",
 					"spring.rabbitmq.listener.simple.missingQueuesFatal:false",
-					"spring.rabbitmq.listener.simple.force-stop:true")
+					"spring.rabbitmq.listener.simple.force-stop:true",
+					"spring.rabbitmq.listener.simple.observation-enabled:true")
 			.run((context) -> {
 				SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
@@ -539,6 +551,7 @@ class RabbitAutoConfigurationTests {
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("maxConcurrentConsumers", 10);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", false);
+				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("observationEnabled", true);
 				checkCommonProps(context, rabbitListenerContainerFactory);
 			});
 	}
@@ -582,12 +595,14 @@ class RabbitAutoConfigurationTests {
 					"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
 					"spring.rabbitmq.listener.direct.idleEventInterval:5",
 					"spring.rabbitmq.listener.direct.missingQueuesFatal:true",
-					"spring.rabbitmq.listener.direct.force-stop:true")
+					"spring.rabbitmq.listener.direct.force-stop:true",
+					"spring.rabbitmq.listener.direct.observation-enabled:true")
 			.run((context) -> {
 				DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", DirectRabbitListenerContainerFactory.class);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("consumersPerQueue", 5);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", true);
+				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("observationEnabled", true);
 				checkCommonProps(context, rabbitListenerContainerFactory);
 			});
 	}

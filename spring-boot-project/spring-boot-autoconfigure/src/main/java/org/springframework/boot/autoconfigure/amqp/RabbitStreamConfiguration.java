@@ -25,6 +25,7 @@ import com.rabbitmq.stream.EnvironmentBuilder;
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.StreamContainer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -57,7 +58,9 @@ class RabbitStreamConfiguration {
 			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
 		StreamRabbitListenerContainerFactory factory = new StreamRabbitListenerContainerFactory(
 				rabbitStreamEnvironment);
-		factory.setNativeListener(properties.getListener().getStream().isNativeListener());
+		StreamContainer stream = properties.getListener().getStream();
+		factory.setObservationEnabled(stream.isObservationEnabled());
+		factory.setNativeListener(stream.isNativeListener());
 		consumerCustomizer.ifUnique(factory::setConsumerCustomizer);
 		containerCustomizer.ifUnique(factory::setContainerCustomizer);
 		return factory;
