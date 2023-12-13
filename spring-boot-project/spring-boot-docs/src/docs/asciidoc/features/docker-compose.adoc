@@ -45,7 +45,6 @@ To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
 
 [[features.docker-compose.prerequisites]]
 === Prerequisites
-
 You need to have the `docker` and `docker compose` (or `docker-compose`) CLI applications on your path.
 The minimum supported Docker Compose version is 2.2.0.
 
