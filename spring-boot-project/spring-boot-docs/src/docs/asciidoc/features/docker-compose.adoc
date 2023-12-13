@@ -28,8 +28,6 @@ Add the module dependency to your build, as shown in the following listings for 
 	}
 ----
 
-NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
-
 When this module is included as a dependency Spring Boot will do the following:
 
 * Search for a `compose.yml` and other common compose filenames in your application directory
@@ -42,6 +40,14 @@ It will not call `docker compose up` again and it will not call `docker compose 
 
 NOTE: By default, Spring Boot's Docker Compose support is disabled when running tests.
 To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
+
+
+
+[[features.docker-compose.prerequisites]]
+=== Prerequisites
+
+You need to have the `docker` and `docker compose` (or `docker-compose`) CLI applications on your path.
+The minimum supported Docker Compose version is 2.2.0.
 
 
 
