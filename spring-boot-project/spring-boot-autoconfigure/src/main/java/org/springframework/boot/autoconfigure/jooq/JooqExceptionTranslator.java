@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.ExecuteContext;
-import org.jooq.ExecuteListener;
 import org.jooq.SQLDialect;
 
 import org.springframework.dao.DataAccessException;
@@ -30,7 +29,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 
 /**
- * Transforms {@link java.sql.SQLException} into a Spring-specific
+ * Transforms {@link SQLException} into a Spring-specific
  * {@link DataAccessException}.
  *
  * @author Lukas Eder
@@ -39,7 +38,7 @@ import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
  * @author Stephane Nicoll
  * @since 1.5.10
  */
-public class JooqExceptionTranslator implements ExecuteListener {
+public class JooqExceptionTranslator implements JooqExceptionTranslatorListener {
 
 	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
 

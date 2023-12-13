@@ -70,8 +70,14 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
-		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
+	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider(JooqExceptionTranslatorListener jooqExceptionTranslator) {
+		return new DefaultExecuteListenerProvider(jooqExceptionTranslator);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(JooqExceptionTranslatorListener.class)
+	public JooqExceptionTranslatorListener jooqExceptionTranslator() {
+		return new JooqExceptionTranslator();
 	}
 
 	@Configuration(proxyBeanMethods = false)
