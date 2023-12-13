@@ -17,21 +17,21 @@
 package org.springframework.boot.autoconfigure.security.reactive;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -52,33 +52,21 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, WebFilterChainProxy.class, WebFluxConfigurer.class })
 public class ReactiveSecurityAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(WebFilterChainProxy.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	@Conditional(EnableWebFluxSecurityCondition.class)
-	@EnableWebFluxSecurity
-	static class EnableWebFluxSecurityConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	class SpringBootWebFluxSecurityConfiguration {
 
-	}
-
-	static final class EnableWebFluxSecurityCondition extends AnyNestedCondition {
-
-		EnableWebFluxSecurityCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
+		@Bean
+		@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class,
+				SecurityWebFilterChain.class })
+		ReactiveAuthenticationManager denyAllAuthenticationManager() {
+			return (authentication) -> Mono.error(new UsernameNotFoundException(authentication.getName()));
 		}
 
-		@ConditionalOnBean(ReactiveAuthenticationManager.class)
-		static final class ConditionalOnReactiveAuthenticationManagerBean {
-
-		}
-
-		@ConditionalOnBean(ReactiveUserDetailsService.class)
-		static final class ConditionalOnReactiveUserDetailsService {
-
-		}
-
-		@ConditionalOnBean(SecurityWebFilterChain.class)
-		static final class ConditionalOnSecurityWebFilterChain {
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnMissingBean(WebFilterChainProxy.class)
+		@EnableWebFluxSecurity
+		static class EnableWebFluxSecurityConfiguration {
 
 		}
 

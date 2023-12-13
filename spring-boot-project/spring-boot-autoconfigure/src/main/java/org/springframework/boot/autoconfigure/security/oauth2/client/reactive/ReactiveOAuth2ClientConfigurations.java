@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
@@ -38,7 +37,6 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.WebFilterChainProxy;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -92,13 +90,6 @@ class ReactiveOAuth2ClientConfigurations {
 				http.oauth2Login(withDefaults());
 				http.oauth2Client(withDefaults());
 				return http.build();
-			}
-
-			@Configuration(proxyBeanMethods = false)
-			@ConditionalOnMissingBean(WebFilterChainProxy.class)
-			@EnableWebFluxSecurity
-			static class EnableWebFluxSecurityConfiguration {
-
 			}
 
 		}
