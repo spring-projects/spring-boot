@@ -30,68 +30,17 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 
 /**
- * Transforms {@link java.sql.SQLException} into a Spring-specific
+ * A {@link ExecuteListener} which can transforms or translate {@link Exception} into a Spring-specific
  * {@link DataAccessException}.
  *
- * @author Lukas Eder
- * @author Andreas Ahlenstorf
- * @author Phillip Webb
- * @author Stephane Nicoll
- * @since 1.5.10
+ * @author Dennis Melzer
+ * @since 3.2.1
  */
-public class JooqExceptionTranslator implements ExecuteListener {
-
-	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
-
-	private static final Log logger = LogFactory.getLog(JooqExceptionTranslator.class);
-
-	@Override
-	public void exception(ExecuteContext context) {
-		SQLExceptionTranslator translator = getTranslator(context);
-		// The exception() callback is not only triggered for SQL exceptions but also for
-		// "normal" exceptions. In those cases sqlException() returns null.
-		SQLException exception = context.sqlException();
-		while (exception != null) {
-			handle(context, translator, exception);
-			exception = exception.getNextException();
-		}
-	}
-
-	private SQLExceptionTranslator getTranslator(ExecuteContext context) {
-		SQLDialect dialect = context.configuration().dialect();
-		if (dialect != null && dialect.thirdParty() != null) {
-			String dbName = dialect.thirdParty().springDbName();
-			if (dbName != null) {
-				return new SQLErrorCodeSQLExceptionTranslator(dbName);
-			}
-		}
-		return new SQLStateSQLExceptionTranslator();
-	}
+public interface JooqExceptionTranslator extends ExecuteListener {
 
 	/**
-	 * Handle a single exception in the chain. SQLExceptions might be nested multiple
-	 * levels deep. The outermost exception is usually the least interesting one ("Call
-	 * getNextException to see the cause."). Therefore the innermost exception is
-	 * propagated and all other exceptions are logged.
-	 * @param context the execute context
-	 * @param translator the exception translator
-	 * @param exception the exception
+	 * Override the given {@link Exception} from {@link ExecuteContext} into a generic {@link DataAccessException}.
+	 * @param context The context containing information about the execution.
 	 */
-	private void handle(ExecuteContext context, SQLExceptionTranslator translator, SQLException exception) {
-		DataAccessException translated = translate(context, translator, exception);
-		if (exception.getNextException() == null) {
-			if (translated != null) {
-				context.exception(translated);
-			}
-		}
-		else {
-			logger.error("Execution of SQL statement failed.", (translated != null) ? translated : exception);
-		}
-	}
-
-	private DataAccessException translate(ExecuteContext context, SQLExceptionTranslator translator,
-			SQLException exception) {
-		return translator.translate("jOOQ", context.sql(), exception);
-	}
-
+	void exception(ExecuteContext context);
 }
