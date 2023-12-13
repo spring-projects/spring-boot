@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 
 /**
- * Configuration classes for OAuth2 Resource Server. These should be {@code @Import}ed in
- * a regular auto-configuration class to guarantee their order of execution.
+ * Configuration classes for OAuth2 Resource Server These should be {@code @Import} in a
+ * regular auto-configuration class to guarantee their order of execution.
  *
  * @author Madhura Bhave
  */
@@ -33,29 +33,17 @@ class ReactiveOAuth2ResourceServerConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })
-	@Import(ReactiveOAuth2ResourceServerJwkConfiguration.JwtConfiguration.class)
+	@Import({ ReactiveOAuth2ResourceServerJwkConfiguration.JwtConfiguration.class,
+			ReactiveOAuth2ResourceServerJwkConfiguration.WebSecurityConfiguration.class })
 	static class JwtConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })
-	@Import(ReactiveOAuth2ResourceServerJwkConfiguration.WebSecurityConfiguration.class)
-	static class JwtWebSecurityConfiguration {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveOpaqueTokenIntrospector.class })
-	@Import(ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class)
+	@Import({ ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
+			ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.WebSecurityConfiguration.class })
 	static class OpaqueTokenConfiguration {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveOpaqueTokenIntrospector.class })
-	@Import(ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.WebSecurityConfiguration.class)
-	static class OpaqueTokenWebSecurityConfiguration {
 
 	}
 

@@ -164,11 +164,11 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(ReactiveJwtDecoder.class)
 	@ConditionalOnMissingBean(SecurityWebFilterChain.class)
 	static class WebSecurityConfiguration {
 
 		@Bean
+		@ConditionalOnBean(ReactiveJwtDecoder.class)
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveJwtDecoder jwtDecoder) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
 			http.oauth2ResourceServer((server) -> customDecoder(server, jwtDecoder));

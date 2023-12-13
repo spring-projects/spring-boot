@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 @ConditionalOnClass({ EnableWebFluxSecurity.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @Import({ ReactiveOAuth2ResourceServerConfiguration.JwtConfiguration.class,
-		ReactiveOAuth2ResourceServerConfiguration.OpaqueTokenConfiguration.class,
-		ReactiveOAuth2ResourceServerConfiguration.JwtWebSecurityConfiguration.class,
-		ReactiveOAuth2ResourceServerConfiguration.OpaqueTokenWebSecurityConfiguration.class })
+		ReactiveOAuth2ResourceServerConfiguration.OpaqueTokenConfiguration.class })
 public class ReactiveOAuth2ResourceServerAutoConfiguration {
 
 }
