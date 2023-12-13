@@ -86,7 +86,10 @@ class ZipStringTests {
 			case DATA_BLOCK -> {
 				ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
 				assertThat(ZipString.hash(null, dataBlock, 0, (int) dataBlock.size(), addEndSlash)).isEqualTo(expected);
-
+			}
+			case SINGLE_BYTE_READ_DATA_BLOCK -> {
+				ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8), 1);
+				assertThat(ZipString.hash(null, dataBlock, 0, (int) dataBlock.size(), addEndSlash)).isEqualTo(expected);
 			}
 		}
 	}
@@ -187,7 +190,7 @@ class ZipStringTests {
 
 	enum HashSourceType {
 
-		STRING, CHAR_SEQUENCE, DATA_BLOCK
+		STRING, CHAR_SEQUENCE, DATA_BLOCK, SINGLE_BYTE_READ_DATA_BLOCK
 
 	}
 

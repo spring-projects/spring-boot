@@ -108,19 +108,15 @@ final class ZipString {
 		byte[] bytes = buffer.array();
 		int hash = 0;
 		char lastChar = 0;
+		int codePointSize = 1;
 		while (len > 0) {
-			int count = readInBuffer(dataBlock, pos, buffer, len);
-			len -= count;
-			pos += count;
+			int count = readInBuffer(dataBlock, pos, buffer, len, codePointSize);
 			for (int byteIndex = 0; byteIndex < count;) {
-				int codePointSize = getCodePointSize(bytes, byteIndex);
+				codePointSize = getCodePointSize(bytes, byteIndex);
 				if (!hasEnoughBytes(byteIndex, codePointSize, count)) {
-					pos--;
-					len++;
 					break;
 				}
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
-				byteIndex += codePointSize;
 				if (codePoint <= 0xFFFF) {
 					lastChar = (char) (codePoint & 0xFFFF);
 					hash = 31 * hash + lastChar;
@@ -130,6 +126,10 @@ final class ZipString {
 					hash = 31 * hash + Character.highSurrogate(codePoint);
 					hash = 31 * hash + Character.lowSurrogate(codePoint);
 				}
+				byteIndex += codePointSize;
+				pos += codePointSize;
+				len -= codePointSize;
+				codePointSize = 1;
 			}
 		}
 		hash = (addEndSlash && lastChar != '/') ? 31 * hash + '/' : hash;
@@ -198,19 +198,15 @@ final class ZipString {
 		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
 		int result = 0;
 		byte[] bytes = buffer.array();
+		int codePointSize = 1;
 		while (len > 0) {
-			int count = readInBuffer(dataBlock, pos, buffer, len);
-			len -= count;
-			pos += count;
+			int count = readInBuffer(dataBlock, pos, buffer, len, codePointSize);
 			for (int byteIndex = 0; byteIndex < count;) {
-				int codePointSize = getCodePointSize(bytes, byteIndex);
+				codePointSize = getCodePointSize(bytes, byteIndex);
 				if (!hasEnoughBytes(byteIndex, codePointSize, count)) {
-					pos--;
-					len++;
 					break;
 				}
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
-				result += codePointSize;
 				if (codePoint <= 0xFFFF) {
 					char ch = (char) (codePoint & 0xFFFF);
 					if (charSequenceIndex >= maxCharSequenceLength
@@ -230,10 +226,14 @@ final class ZipString {
 						return -1;
 					}
 				}
+				byteIndex += codePointSize;
+				pos += codePointSize;
+				len -= codePointSize;
+				result += codePointSize;
+				codePointSize = 1;
 				if (compareType == CompareType.STARTS_WITH && charSequenceIndex >= charSequence.length()) {
 					return result;
 				}
-				byteIndex += codePointSize;
 			}
 		}
 		return (charSequenceIndex >= charSequence.length()) ? result : -1;
@@ -273,16 +273,22 @@ final class ZipString {
 		}
 	}
 
-	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen) throws IOException {
+	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen, int minLen)
+			throws IOException {
 		buffer.clear();
 		if (buffer.remaining() > maxLen) {
 			buffer.limit(maxLen);
 		}
-		int count = dataBlock.read(buffer, pos);
-		if (count <= 0) {
-			throw new EOFException();
+		int result = 0;
+		while (result < minLen) {
+			int count = dataBlock.read(buffer, pos);
+			if (count <= 0) {
+				throw new EOFException();
+			}
+			result += count;
+			pos += count;
 		}
-		return count;
+		return result;
 	}
 
 	private static int getCodePointSize(byte[] bytes, int i) {
