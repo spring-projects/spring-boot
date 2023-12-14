@@ -1078,6 +1078,10 @@ bom {
 		}
 	}
 	library("Netty", "4.1.101.Final") {
+		prohibit {
+			versionRange "[4.1.103.Final]"
+			because "it crashes on macOS (https://github.com/netty/netty/issues/13728)"
+		}
 		group("io.netty") {
 			imports = [
 				"netty-bom"
