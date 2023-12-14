@@ -19,7 +19,10 @@ package org.springframework.boot.web.servlet.server;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
@@ -29,6 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link StaticResourceJars}.
@@ -86,6 +91,27 @@ class StaticResourceJarsTests {
 		assertThat(staticResourceJarUrls).isEmpty();
 	}
 
+	@Test
+	void doesNotCloseJarFromCachedConnection() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(true);
+		URL url = new URL("jar", null, 0, jarFile.toURI().toURL().toString() + "!/", handler);
+		new StaticResourceJars().getUrlsFrom(url);
+		assertThatNoException()
+			.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment());
+	}
+
+	@Test
+	void closesJarFromNonCachedConnection() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(false);
+		URL url = new URL("jar", null, 0, jarFile.toURI().toURL().toString() + "!/", handler);
+		new StaticResourceJars().getUrlsFrom(url);
+		assertThatIllegalStateException()
+			.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment())
+			.withMessageContaining("closed");
+	}
+
 	private File createResourcesJar(String name) throws IOException {
 		return createJar(name, (output) -> {
 			JarEntry jarEntry = new JarEntry("META-INF/resources");
@@ -111,6 +137,29 @@ class StaticResourceJarsTests {
 		}
 		jarOutputStream.close();
 		return jarFile;
+	}
+
+	private static class TrackedURLStreamHandler extends URLStreamHandler {
+
+		private final boolean useCaches;
+
+		private URLConnection connection;
+
+		TrackedURLStreamHandler(boolean useCaches) {
+			this.useCaches = useCaches;
+		}
+
+		@Override
+		protected URLConnection openConnection(URL u) throws IOException {
+			this.connection = new URL(u.toExternalForm()).openConnection();
+			this.connection.setUseCaches(this.useCaches);
+			return this.connection;
+		}
+
+		URLConnection getConnection() {
+			return this.connection;
+		}
+
 	}
 
 }
