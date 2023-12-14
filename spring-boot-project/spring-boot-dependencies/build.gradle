@@ -1756,6 +1756,21 @@ bom {
 			]
 		}
 	}
+	library("Johnzon", "2.0.0") {
+		group("org.apache.johnzon") {
+			modules = [
+					"johnzon-core",
+					"johnzon-jaxrs",
+					"johnzon-json-extras",
+					"johnzon-jsonb",
+					"johnzon-jsonlogic",
+					"johnzon-jsonschema",
+					"johnzon-mapper",
+					"johnzon-osgi",
+					"johnzon-websocket"
+			]
+		}
+	}
 }
 
 generateMetadataFileForMavenPublication {

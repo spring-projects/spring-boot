@@ -41,6 +41,9 @@ public abstract class JsonParserFactory {
 		if (ClassUtils.isPresent("com.google.gson.Gson", null)) {
 			return new GsonJsonParser();
 		}
+		if (ClassUtils.isPresent("jakarta.json.bind.Jsonb", null)) {
+			return new JsonbJsonParser();
+		}
 		return new BasicJsonParser();
 	}
 
