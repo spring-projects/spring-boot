@@ -96,9 +96,14 @@ class StaticResourceJarsTests {
 		File jarFile = createResourcesJar("test-resources.jar");
 		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(true);
 		URL url = new URL("jar", null, 0, jarFile.toURI().toURL().toString() + "!/", handler);
-		new StaticResourceJars().getUrlsFrom(url);
-		assertThatNoException()
-			.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment());
+		try {
+			new StaticResourceJars().getUrlsFrom(url);
+			assertThatNoException()
+				.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment());
+		}
+		finally {
+			((JarURLConnection) handler.getConnection()).getJarFile().close();
+		}
 	}
 
 	@Test
