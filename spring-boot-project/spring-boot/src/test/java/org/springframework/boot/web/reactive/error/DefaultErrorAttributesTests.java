@@ -160,7 +160,6 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
 				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
 		assertThat(attributes).containsEntry("message", "Test");
 	}
@@ -178,7 +177,6 @@ class DefaultErrorAttributesTests {
 		assertThat(attributes).containsEntry("message", "invalid request");
 		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 	}
 
 	@Test
@@ -194,7 +192,6 @@ class DefaultErrorAttributesTests {
 		assertThat(attributes).containsEntry("message", "could not process request");
 		assertThat(attributes).containsEntry("exception", ResponseStatusException.class.getName());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 	}
 
 	@Test

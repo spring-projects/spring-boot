@@ -216,9 +216,6 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		if (exception == null) {
 			exception = getAttribute(webRequest, RequestDispatcher.ERROR_EXCEPTION);
 		}
-		// store the exception in a well-known attribute to make it available to metrics
-		// instrumentation.
-		webRequest.setAttribute(ErrorAttributes.ERROR_ATTRIBUTE, exception, WebRequest.SCOPE_REQUEST);
 		return exception;
 	}
 

@@ -152,7 +152,6 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Throwable getError(ServerRequest request) {
 		Optional<Object> error = request.attribute(ERROR_INTERNAL_ATTRIBUTE);
-		error.ifPresent((value) -> request.attributes().putIfAbsent(ErrorAttributes.ERROR_ATTRIBUTE, value));
 		return (Throwable) error
 			.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}

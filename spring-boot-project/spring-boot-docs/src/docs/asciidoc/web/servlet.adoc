@@ -355,10 +355,8 @@ include::code:MyControllerAdvice[]
 
 In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
 
-In some cases, errors handled at the controller level are not recorded by the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
-Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
-
-include::code:MyController[]
+In some cases, errors handled at the controller level are not recorded by web observations or the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
+Applications can ensure that such exceptions are recorded with the observations by {spring-framework-docs}/integration/observability.html#observability.http-server.servlet[setting the handled exception on the observation context].
 
 
 
