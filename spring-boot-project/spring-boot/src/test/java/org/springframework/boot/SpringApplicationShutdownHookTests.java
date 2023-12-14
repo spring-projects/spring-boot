@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -113,7 +114,7 @@ class SpringApplicationShutdownHookTests {
 		Thread shutdownThread = new Thread(shutdownHook);
 		shutdownThread.start();
 		// Shutdown thread should start waiting for context to become inactive
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(shutdownThread::getState, State.TIMED_WAITING::equals);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(shutdownThread::getState, State.WAITING::equals);
 		// Allow context thread to proceed, unblocking shutdown thread
 		proceedWithClose.countDown();
 		contextThread.join();
@@ -252,7 +253,7 @@ class SpringApplicationShutdownHookTests {
 			}
 			if (this.proceedWithClose != null) {
 				try {
-					this.proceedWithClose.await();
+					this.proceedWithClose.await(1, TimeUnit.MINUTES);
 				}
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
