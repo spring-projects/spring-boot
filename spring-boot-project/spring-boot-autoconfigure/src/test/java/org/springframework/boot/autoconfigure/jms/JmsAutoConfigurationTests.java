@@ -63,6 +63,7 @@ import static org.mockito.Mockito.mock;
  * @author Aurélien Leboulanger
  * @author Eddú Meléndez
  * @author Vedran Pavic
+ * @author Lasse Wulff
  */
 class JmsAutoConfigurationTests {
 
@@ -151,7 +152,8 @@ class JmsAutoConfigurationTests {
 			.withPropertyValues("spring.jms.listener.autoStartup=false",
 					"spring.jms.listener.session.acknowledgeMode=client",
 					"spring.jms.listener.session.transacted=false", "spring.jms.listener.minConcurrency=2",
-					"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10")
+					"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10",
+					"spring.jms.subscription-durable=true", "spring.jms.client-id=exampleId")
 			.run(this::testJmsListenerContainerFactoryWithCustomSettings);
 	}
 
@@ -163,6 +165,8 @@ class JmsAutoConfigurationTests {
 		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
 		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
 		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
+		assertThat(container.isSubscriptionDurable()).isTrue();
+		assertThat(container.getClientId()).isEqualTo("exampleId");
 	}
 
 	@Test

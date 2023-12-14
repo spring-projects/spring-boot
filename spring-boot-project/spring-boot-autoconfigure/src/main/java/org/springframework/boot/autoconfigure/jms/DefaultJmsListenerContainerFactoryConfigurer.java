@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Vedran Pavic
+ * @author Lasse Wulff
  * @since 1.3.3
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer {
@@ -116,6 +117,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
+		factory.setSubscriptionDurable(this.jmsProperties.isSubscriptionDurable());
+		factory.setClientId(this.jmsProperties.getClientId());
 		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
