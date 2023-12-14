@@ -215,6 +215,11 @@ public class CacheProperties {
 		 * Entry expiration. By default the entries never expire.
 		 */
 		private Duration timeToLive;
+		
+		/**
+		 * Random time displacement to solve the cache avalanche issue.
+		 */
+		private Duration timeOffset;
 
 		/**
 		 * Allow caching null values.
@@ -242,6 +247,14 @@ public class CacheProperties {
 
 		public void setTimeToLive(Duration timeToLive) {
 			this.timeToLive = timeToLive;
+		}
+
+		public Duration getTimeOffset() {
+			return timeOffset;
+		}
+
+		public void setTimeOffset(Duration timeOffset) {
+			this.timeOffset = timeOffset;
 		}
 
 		public boolean isCacheNullValues() {

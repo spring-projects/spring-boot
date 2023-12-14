@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.cache.CacheProperties.Redis;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.redis.RandomDurationTtlFunction;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -86,7 +87,7 @@ class RedisCacheConfiguration {
 		config = config
 			.serializeValuesWith(SerializationPair.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
 		if (redisProperties.getTimeToLive() != null) {
-			config = config.entryTtl(redisProperties.getTimeToLive());
+			config = config.entryTtl(new RandomDurationTtlFunction(redisProperties.getTimeToLive(), redisProperties.getTimeOffset()));
 		}
 		if (redisProperties.getKeyPrefix() != null) {
 			config = config.prefixCacheNameWith(redisProperties.getKeyPrefix());
