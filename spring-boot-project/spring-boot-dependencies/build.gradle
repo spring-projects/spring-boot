@@ -1172,7 +1172,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Postgresql", "1.0.2.RELEASE") {
+	library("R2DBC Postgresql", "1.0.3.RELEASE") {
 		considerSnapshots()
 		group("org.postgresql") {
 			modules = [
