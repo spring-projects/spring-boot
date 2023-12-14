@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Lasse Wulff
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.jms")
@@ -42,6 +43,16 @@ public class JmsProperties {
 	 */
 	private String jndiName;
 
+	/**
+	 * Whether the subscription is durable.
+	 */
+	private boolean subscriptionDurable = false;
+
+	/**
+	 * Client id of the connection.
+	 */
+	private String clientId;
+
 	private final Cache cache = new Cache();
 
 	private final Listener listener = new Listener();
@@ -54,6 +65,22 @@ public class JmsProperties {
 
 	public void setPubSubDomain(boolean pubSubDomain) {
 		this.pubSubDomain = pubSubDomain;
+	}
+
+	public boolean isSubscriptionDurable() {
+		return this.subscriptionDurable;
+	}
+
+	public void setSubscriptionDurable(boolean subscriptionDurable) {
+		this.subscriptionDurable = subscriptionDurable;
+	}
+
+	public String getClientId() {
+		return this.clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 
 	public String getJndiName() {
