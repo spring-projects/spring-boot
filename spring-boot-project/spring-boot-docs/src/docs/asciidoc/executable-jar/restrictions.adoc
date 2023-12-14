@@ -8,7 +8,7 @@ You need to consider the following restrictions when working with a Spring Boot 
 * Zip entry compression:
 The `ZipEntry` for a nested jar must be saved by using the `ZipEntry.STORED` method.
 This is required so that we can seek directly to individual content within the nested jar.
-The content of the nested jar file itself can still be compressed, as can any other entries in the outer jar.
+The content of the nested jar file itself can still be compressed, as can any other entry in the outer jar.
 
 
 
