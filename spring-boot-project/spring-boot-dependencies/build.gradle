@@ -1573,7 +1573,7 @@ bom {
 			]
 		}
 	}
-	library("UnboundID LDAPSDK", "6.0.10") {
+	library("UnboundID LDAPSDK", "6.0.11") {
 		group("com.unboundid") {
 			modules = [
 				"unboundid-ldapsdk"
