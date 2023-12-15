@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -99,23 +96,17 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(PemSslBundleProperties properties) {
-		try {
-			PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore());
-			if (keyStore != null) {
-				keyStore = keyStore.withAlias(properties.getKey().getAlias())
-					.withPassword(properties.getKey().getPassword());
-			}
-			PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore());
-			SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
-			return new PropertiesSslBundle(storeBundle, properties);
+		PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore());
+		if (keyStore != null) {
+			keyStore = keyStore.withAlias(properties.getKey().getAlias())
+				.withPassword(properties.getKey().getPassword());
 		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore());
+		SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
+		return new PropertiesSslBundle(storeBundle, properties);
 	}
 
-	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties)
-			throws IOException {
+	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties) {
 		PemSslStore pemSslStore = PemSslStore.load(asPemSslStoreDetails(properties));
 		if (properties.isVerifyKeys()) {
 			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());

@@ -17,7 +17,6 @@
 package org.springframework.boot.ssl.pem;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -66,13 +65,8 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 */
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String alias) {
-		try {
-			this.keyStore = createKeyStore("key", PemSslStore.load(keyStoreDetails), alias);
-			this.trustStore = createKeyStore("trust", PemSslStore.load(trustStoreDetails), alias);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		this.keyStore = createKeyStore("key", PemSslStore.load(keyStoreDetails), alias);
+		this.trustStore = createKeyStore("trust", PemSslStore.load(trustStoreDetails), alias);
 	}
 
 	/**

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.ssl.pem;
 
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -92,9 +91,8 @@ public interface PemSslStore {
 	 * {@link PemSslStoreDetails}.
 	 * @param details the PEM store details
 	 * @return a loaded {@link PemSslStore} or {@code null}.
-	 * @throws IOException on IO error
 	 */
-	static PemSslStore load(PemSslStoreDetails details) throws IOException {
+	static PemSslStore load(PemSslStoreDetails details) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}

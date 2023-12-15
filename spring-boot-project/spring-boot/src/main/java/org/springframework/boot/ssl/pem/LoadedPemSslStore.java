@@ -17,12 +17,16 @@
 package org.springframework.boot.ssl.pem;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.function.SingletonSupplier;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * {@link PemSslStore} loaded from {@link PemSslStoreDetails}.
@@ -34,15 +38,23 @@ final class LoadedPemSslStore implements PemSslStore {
 
 	private final PemSslStoreDetails details;
 
-	private final List<X509Certificate> certificates;
+	private final Supplier<List<X509Certificate>> certificatesSupplier;
 
-	private final PrivateKey privateKey;
+	private final Supplier<PrivateKey> privateKeySupplier;
 
-	LoadedPemSslStore(PemSslStoreDetails details) throws IOException {
+	LoadedPemSslStore(PemSslStoreDetails details) {
 		Assert.notNull(details, "Details must not be null");
 		this.details = details;
-		this.certificates = loadCertificates(details);
-		this.privateKey = loadPrivateKey(details);
+		this.certificatesSupplier = supplier(() -> loadCertificates(details));
+		this.privateKeySupplier = supplier(() -> loadPrivateKey(details));
+	}
+
+	private static <T> Supplier<T> supplier(ThrowingSupplier<T> supplier) {
+		return SingletonSupplier.of(supplier.throwing(LoadedPemSslStore::asUncheckedIOException));
+	}
+
+	private static UncheckedIOException asUncheckedIOException(String message, Exception cause) {
+		return new UncheckedIOException(message, (IOException) cause);
 	}
 
 	private static List<X509Certificate> loadCertificates(PemSslStoreDetails details) throws IOException {
@@ -77,12 +89,12 @@ final class LoadedPemSslStore implements PemSslStore {
 
 	@Override
 	public List<X509Certificate> certificates() {
-		return this.certificates;
+		return this.certificatesSupplier.get();
 	}
 
 	@Override
 	public PrivateKey privateKey() {
-		return this.privateKey;
+		return this.privateKeySupplier.get();
 	}
 
 }
