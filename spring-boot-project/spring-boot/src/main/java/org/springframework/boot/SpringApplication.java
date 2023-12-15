@@ -1633,6 +1633,9 @@ public class SpringApplication {
 
 	}
 
+	/**
+	 * {@link SpringApplicationHook} decorator that ensures the hook is only used once.
+	 */
 	private static final class SingleUseSpringApplicationHook implements SpringApplicationHook {
 
 		private final AtomicBoolean used = new AtomicBoolean();
@@ -1651,8 +1654,8 @@ public class SpringApplication {
 	}
 
 	/**
-	 * <<<<<<< HEAD Starts a non-daemon thread to keep the JVM alive on
-	 * {@link ContextRefreshedEvent}. Stops the thread on {@link ContextClosedEvent}.
+	 * Starts a non-daemon thread to keep the JVM alive on {@link ContextRefreshedEvent}.
+	 * Stops the thread on {@link ContextClosedEvent}.
 	 */
 	private static final class KeepAlive implements ApplicationListener<ApplicationContextEvent> {
 
@@ -1696,15 +1699,18 @@ public class SpringApplication {
 
 	}
 
+	/**
+	 * Strategy used to handle startup concerns.
+	 */
 	abstract static class Startup {
 
 		private Duration timeTakenToStarted;
 
-		abstract long startTime();
+		protected abstract long startTime();
 
-		abstract Long processUptime();
+		protected abstract Long processUptime();
 
-		abstract String action();
+		protected abstract String action();
 
 		final Duration started() {
 			long now = System.currentTimeMillis();
@@ -1712,13 +1718,13 @@ public class SpringApplication {
 			return this.timeTakenToStarted;
 		}
 
+		Duration timeTakenToStarted() {
+			return this.timeTakenToStarted;
+		}
+
 		private Duration ready() {
 			long now = System.currentTimeMillis();
 			return Duration.ofMillis(now - startTime());
-		}
-
-		Duration timeTakenToStarted() {
-			return this.timeTakenToStarted;
 		}
 
 		static Startup create() {
@@ -1730,50 +1736,20 @@ public class SpringApplication {
 
 	}
 
-	private static class CoordinatedRestoreAtCheckpointStartup extends Startup {
-
-		private final StandardStartup fallback = new StandardStartup();
-
-		@Override
-		Long processUptime() {
-			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
-			return (uptime >= 0) ? uptime : this.fallback.processUptime();
-		}
-
-		@Override
-		String action() {
-			if (restoreTime() >= 0) {
-				return "Restored";
-			}
-			return this.fallback.action();
-		}
-
-		private long restoreTime() {
-			return CRaCMXBean.getCRaCMXBean().getRestoreTime();
-		}
-
-		@Override
-		long startTime() {
-			long restoreTime = restoreTime();
-			if (restoreTime >= 0) {
-				return restoreTime;
-			}
-			return this.fallback.startTime();
-		}
-
-	}
-
+	/**
+	 * Standard {@link Startup} implementation.
+	 */
 	private static class StandardStartup extends Startup {
 
 		private final Long startTime = System.currentTimeMillis();
 
 		@Override
-		long startTime() {
+		protected long startTime() {
 			return this.startTime;
 		}
 
 		@Override
-		Long processUptime() {
+		protected Long processUptime() {
 			try {
 				return ManagementFactory.getRuntimeMXBean().getUptime();
 			}
@@ -1783,8 +1759,38 @@ public class SpringApplication {
 		}
 
 		@Override
-		String action() {
+		protected String action() {
 			return "Started";
+		}
+
+	}
+
+	/**
+	 * Coordinated-Restore-At-Checkpoint {@link Startup} implementation.
+	 */
+	private static class CoordinatedRestoreAtCheckpointStartup extends Startup {
+
+		private final StandardStartup fallback = new StandardStartup();
+
+		@Override
+		protected Long processUptime() {
+			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
+			return (uptime >= 0) ? uptime : this.fallback.processUptime();
+		}
+
+		@Override
+		protected String action() {
+			return (restoreTime() >= 0) ? "Restored" : this.fallback.action();
+		}
+
+		private long restoreTime() {
+			return CRaCMXBean.getCRaCMXBean().getRestoreTime();
+		}
+
+		@Override
+		protected long startTime() {
+			long restoreTime = restoreTime();
+			return (restoreTime >= 0) ? restoreTime : this.fallback.startTime();
 		}
 
 	}

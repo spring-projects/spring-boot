@@ -110,17 +110,17 @@ class StartupInfoLoggerTests {
 		}
 
 		@Override
-		long startTime() {
+		protected long startTime() {
 			return this.startTime;
 		}
 
 		@Override
-		Long processUptime() {
+		protected Long processUptime() {
 			return this.uptime;
 		}
 
 		@Override
-		String action() {
+		protected String action() {
 			return this.action;
 		}
 
