@@ -46,6 +46,8 @@ import org.springframework.security.saml2.provider.service.web.authentication.Sa
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.filter.CompositeFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -208,7 +210,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	@Test
 	void samlLoginShouldBeConfigured() {
 		this.contextRunner.withPropertyValues(getPropertyValues())
-			.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isTrue());
+			.run((context) -> assertThat(hasSecurityFilter(context, Saml2WebSsoAuthenticationFilter.class)).isTrue());
 	}
 
 	@Test
@@ -216,7 +218,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
 			.withUserConfiguration(TestSecurityFilterChainConfig.class)
 			.withPropertyValues(getPropertyValues())
-			.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
+			.run((context) -> assertThat(hasSecurityFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
 	}
 
 	@Test
@@ -229,7 +231,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	@Test
 	void samlLogoutShouldBeConfigured() {
 		this.contextRunner.withPropertyValues(getPropertyValues())
-			.run((context) -> assertThat(hasFilter(context, Saml2LogoutRequestFilter.class)).isTrue());
+			.run((context) -> assertThat(hasSecurityFilter(context, Saml2LogoutRequestFilter.class)).isTrue());
 	}
 
 	private String[] getPropertyValuesWithoutSigningCredentials(boolean signRequests) {
@@ -323,11 +325,29 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				PREFIX + ".foo.acs.binding=redirect" };
 	}
 
-	private boolean hasFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
-		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
-		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
-		List<Filter> filters = filterChains.get(0).getFilters();
-		return filters.stream().anyMatch(filter::isInstance);
+	private boolean hasSecurityFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
+		return getSecurityFilterChain(context).getFilters().stream().anyMatch(filter::isInstance);
+	}
+
+	private SecurityFilterChain getSecurityFilterChain(AssertableWebApplicationContext context) {
+		Filter springSecurityFilterChain = context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
+		FilterChainProxy filterChainProxy = getFilterChainProxy(springSecurityFilterChain);
+		SecurityFilterChain securityFilterChain = filterChainProxy.getFilterChains().get(0);
+		return securityFilterChain;
+	}
+
+	private FilterChainProxy getFilterChainProxy(Filter filter) {
+		if (filter instanceof FilterChainProxy filterChainProxy) {
+			return filterChainProxy;
+		}
+		if (filter instanceof CompositeFilter) {
+			List<?> filters = (List<?>) ReflectionTestUtils.getField(filter, "filters");
+			return (FilterChainProxy) filters.stream()
+				.filter(FilterChainProxy.class::isInstance)
+				.findFirst()
+				.orElseThrow();
+		}
+		throw new IllegalStateException("No FilterChainProxy found");
 	}
 
 	private void setupMockResponse(MockWebServer server, Resource resourceBody) throws Exception {
