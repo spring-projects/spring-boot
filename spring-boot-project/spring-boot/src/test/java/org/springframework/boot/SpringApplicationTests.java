@@ -60,6 +60,7 @@ import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
 import org.springframework.boot.availability.ReadinessState;
+import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -628,6 +629,19 @@ class SpringApplicationTests {
 		assertThat(this.context).has(runTestRunnerBean("runnerA"));
 		assertThat(this.context).has(runTestRunnerBean("runnerB"));
 		assertThat(this.context).has(runTestRunnerBean("runnerC"));
+	}
+
+	@Test
+	void runCommandLineRunnersAndApplicationRunnersWithParentContext() {
+		SpringApplication application = new SpringApplication(CommandLineRunConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.addInitializers(new ParentContextApplicationContextInitializer(
+				new AnnotationConfigApplicationContext(CommandLineRunParentConfig.class)));
+		this.context = application.run("arg");
+		assertThat(this.context).has(runTestRunnerBean("runnerA"));
+		assertThat(this.context).has(runTestRunnerBean("runnerB"));
+		assertThat(this.context).has(runTestRunnerBean("runnerC"));
+		assertThat(this.context).doesNotHave(runTestRunnerBean("runnerP"));
 	}
 
 	@Test
@@ -1432,7 +1446,7 @@ class SpringApplicationTests {
 		};
 	}
 
-	private Condition<ConfigurableApplicationContext> runTestRunnerBean(final String name) {
+	private Condition<ConfigurableApplicationContext> runTestRunnerBean(String name) {
 		return new Condition<>("run testrunner bean") {
 
 			@Override
@@ -1642,17 +1656,27 @@ class SpringApplicationTests {
 
 		@Bean
 		TestCommandLineRunner runnerC() {
-			return new TestCommandLineRunner(Ordered.LOWEST_PRECEDENCE, "runnerB", "runnerA");
+			return new TestCommandLineRunner("runnerC", Ordered.LOWEST_PRECEDENCE, "runnerB", "runnerA");
 		}
 
 		@Bean
 		TestApplicationRunner runnerB() {
-			return new TestApplicationRunner(Ordered.LOWEST_PRECEDENCE - 1, "runnerA");
+			return new TestApplicationRunner("runnerB", Ordered.LOWEST_PRECEDENCE - 1, "runnerA");
 		}
 
 		@Bean
 		TestCommandLineRunner runnerA() {
-			return new TestCommandLineRunner(Ordered.HIGHEST_PRECEDENCE);
+			return new TestCommandLineRunner("runnerA", Ordered.HIGHEST_PRECEDENCE);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CommandLineRunParentConfig {
+
+		@Bean
+		TestCommandLineRunner runnerP() {
+			return new TestCommandLineRunner("runnerP", Ordered.LOWEST_PRECEDENCE);
 		}
 
 	}
@@ -1861,12 +1885,16 @@ class SpringApplicationTests {
 
 	static class TestCommandLineRunner extends AbstractTestRunner implements CommandLineRunner {
 
-		TestCommandLineRunner(int order, String... expectedBefore) {
+		private final String name;
+
+		TestCommandLineRunner(String name, int order, String... expectedBefore) {
 			super(order, expectedBefore);
+			this.name = name;
 		}
 
 		@Override
 		public void run(String... args) {
+			System.out.println(">>> " + this.name);
 			markAsRan();
 		}
 
@@ -1874,12 +1902,16 @@ class SpringApplicationTests {
 
 	static class TestApplicationRunner extends AbstractTestRunner implements ApplicationRunner {
 
-		TestApplicationRunner(int order, String... expectedBefore) {
+		private final String name;
+
+		TestApplicationRunner(String name, int order, String... expectedBefore) {
 			super(order, expectedBefore);
+			this.name = name;
 		}
 
 		@Override
 		public void run(ApplicationArguments args) {
+			System.out.println(">>> " + this.name);
 			markAsRan();
 		}
 
