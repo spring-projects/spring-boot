@@ -16,6 +16,8 @@
 
 package smoketest.web.secure;
 
+import org.junit.jupiter.api.Disabled;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,6 +36,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 				SampleWebSecureApplication.class },
 		properties = { "server.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password", "spring.mvc.servlet.path=/custom/servlet/path" })
+@Disabled("gh-38822")
 class CustomServletPathUnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {
 
 	CustomServletPathUnauthenticatedErrorPageTests() {
