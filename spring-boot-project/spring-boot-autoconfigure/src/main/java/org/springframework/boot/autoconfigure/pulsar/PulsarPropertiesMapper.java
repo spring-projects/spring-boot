@@ -170,8 +170,7 @@ final class PulsarPropertiesMapper {
 
 	private interface AuthenticationConsumer {
 
-		void accept(String authPluginClassName, String authParamString)
-				throws UnsupportedAuthenticationException;
+		void accept(String authPluginClassName, String authParamString) throws UnsupportedAuthenticationException;
 
 	}
 
