@@ -73,12 +73,13 @@ class PulsarPropertiesMapperTests {
 	void customizeClientBuilderWhenHasAuthentication() throws UnsupportedAuthenticationException {
 		PulsarProperties properties = new PulsarProperties();
 		Map<String, String> params = Map.of("param", "name");
+		String authParamString = "{\"param\":\"name\"}";
 		properties.getClient().getAuthentication().setPluginClassName("myclass");
 		properties.getClient().getAuthentication().setParam(params);
 		ClientBuilder builder = mock(ClientBuilder.class);
 		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
 				new PropertiesPulsarConnectionDetails(properties));
-		then(builder).should().authentication("myclass", params);
+		then(builder).should().authentication("myclass", authParamString);
 	}
 
 	@Test
@@ -112,12 +113,13 @@ class PulsarPropertiesMapperTests {
 	void customizeAdminBuilderWhenHasAuthentication() throws UnsupportedAuthenticationException {
 		PulsarProperties properties = new PulsarProperties();
 		Map<String, String> params = Map.of("param", "name");
+		String authParamString = "{\"param\":\"name\"}";
 		properties.getAdmin().getAuthentication().setPluginClassName("myclass");
 		properties.getAdmin().getAuthentication().setParam(params);
 		PulsarAdminBuilder builder = mock(PulsarAdminBuilder.class);
 		new PulsarPropertiesMapper(properties).customizeAdminBuilder(builder,
 				new PropertiesPulsarConnectionDetails(properties));
-		then(builder).should().authentication("myclass", params);
+		then(builder).should().authentication("myclass", authParamString);
 	}
 
 	@Test

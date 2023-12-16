@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -29,6 +30,7 @@ import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.ProducerBuilder;
 import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticationException;
 import org.apache.pulsar.client.api.ReaderBuilder;
+import org.apache.pulsar.common.util.ObjectMapperFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
@@ -71,13 +73,23 @@ final class PulsarPropertiesMapper {
 
 	private void customizeAuthentication(AuthenticationConsumer authentication,
 			PulsarProperties.Authentication properties) {
-		if (StringUtils.hasText(properties.getPluginClassName())) {
+		if (!StringUtils.hasText(properties.getPluginClassName())) {
+			return;
+		}
+		try {
+			// sort keys for testing and readability
+			Map<String, String> params = new TreeMap<>(properties.getParam());
+			String authParamString;
 			try {
-				authentication.accept(properties.getPluginClassName(), properties.getParam());
+				authParamString = ObjectMapperFactory.create().writeValueAsString(params);
 			}
-			catch (UnsupportedAuthenticationException ex) {
-				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
+			catch (Exception ex) {
+				throw new IllegalStateException("Could not convert auth parameters to encoded string", ex);
 			}
+			authentication.accept(properties.getPluginClassName(), authParamString);
+		}
+		catch (UnsupportedAuthenticationException ex) {
+			throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
 		}
 	}
 
@@ -158,8 +170,7 @@ final class PulsarPropertiesMapper {
 
 	private interface AuthenticationConsumer {
 
-		void accept(String authPluginClassName, Map<String, String> authParams)
-				throws UnsupportedAuthenticationException;
+		void accept(String authPluginClassName, String authParamString) throws UnsupportedAuthenticationException;
 
 	}
 
