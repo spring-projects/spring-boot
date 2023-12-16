@@ -38,7 +38,7 @@ import org.springframework.boot.context.properties.bind.Nested;
  * @author Phillip Webb
  * @since 1.2.0
  */
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Nested

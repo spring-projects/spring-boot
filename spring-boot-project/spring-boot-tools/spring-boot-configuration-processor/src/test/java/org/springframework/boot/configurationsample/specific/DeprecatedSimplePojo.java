@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.springframework.boot.configurationsample.specific;
 
 /**
- * Alternative to Spring Boot's {@code @NestedConfigurationProperty} for testing (removes
- * the need for a dependency on the real annotation).
+ * POJO for use with samples needing a deprecated value.
  *
- * @author Stephane Nicoll
- * @author Phillip Webb
- * @since 1.2.0
+ * @author Jared Bates
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NestedConfigurationProperty {
+public class DeprecatedSimplePojo {
+
+	private int value;
+
+	@Deprecated
+	public int getValue() {
+		return this.value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
 
 }
