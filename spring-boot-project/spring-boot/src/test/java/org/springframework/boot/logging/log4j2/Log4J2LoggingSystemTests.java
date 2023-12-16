@@ -575,6 +575,17 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void applicationNamePlaceHolderNotShowingWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "application-name");
+		this.environment.setProperty("logging.include-application-name", "false");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_NAME}");
+	}
+
+	@Test
 	void applicationNameLoggingWhenDisabled(CapturedOutput output) {
 		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
