@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -63,7 +64,7 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	private final TestcontainersStartup startup;
 
-	private final AtomicBoolean startablesInitialized = new AtomicBoolean();
+	private final AtomicReference<Startables> startables = new AtomicReference<>(Startables.UNSTARTED);
 
 	private final AtomicBoolean containersInitialized = new AtomicBoolean();
 
@@ -79,10 +80,11 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 			initializeContainers();
 		}
 		if (bean instanceof Startable startableBean) {
-			if (this.startablesInitialized.compareAndSet(false, true)) {
+			if (this.startables.compareAndExchange(Startables.UNSTARTED, Startables.STARTING) == Startables.UNSTARTED) {
 				initializeStartables(startableBean, beanName);
 			}
-			else {
+			else if (this.startables.get() == Startables.STARTED) {
+				logger.trace(LogMessage.format("Starting container %s", beanName));
 				startableBean.start();
 			}
 		}
@@ -90,17 +92,21 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 	}
 
 	private void initializeStartables(Startable startableBean, String startableBeanName) {
+		logger.trace(LogMessage.format("Initializing startables"));
 		List<String> beanNames = new ArrayList<>(
 				List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
 		beanNames.remove(startableBeanName);
 		List<Object> beans = getBeans(beanNames);
 		if (beans == null) {
-			this.startablesInitialized.set(false);
+			logger.trace(LogMessage.format("Failed to obtain startables %s", beanNames));
+			this.startables.set(Startables.UNSTARTED);
 			return;
 		}
 		beanNames.add(startableBeanName);
 		beans.add(startableBean);
+		logger.trace(LogMessage.format("Starting startables %s", beanNames));
 		start(beans);
+		this.startables.set(Startables.STARTED);
 		if (!beanNames.isEmpty()) {
 			logger.debug(LogMessage.format("Initialized and started startable beans '%s'", beanNames));
 		}
@@ -115,8 +121,14 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 	}
 
 	private void initializeContainers() {
+		logger.trace("Initializing containers");
 		List<String> beanNames = List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false));
-		if (getBeans(beanNames) == null) {
+		List<Object> beans = getBeans(beanNames);
+		if (beans != null) {
+			logger.trace(LogMessage.format("Initialized containers %s", beanNames));
+		}
+		else {
+			logger.trace(LogMessage.format("Failed to initialize containers %s", beanNames));
 			this.containersInitialized.set(false);
 		}
 	}
@@ -162,6 +174,12 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	private boolean isReusedContainer(Object bean) {
 		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused();
+	}
+
+	enum Startables {
+
+		UNSTARTED, STARTING, STARTED
+
 	}
 
 }
