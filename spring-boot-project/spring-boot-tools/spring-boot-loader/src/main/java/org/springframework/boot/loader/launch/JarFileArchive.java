@@ -113,7 +113,7 @@ class JarFileArchive implements Archive {
 		if (!Files.exists(path) || Files.size(path) != jarEntry.getSize()) {
 			unpack(jarEntry, path);
 		}
-		return JarUrl.create(path.toFile());
+		return path.toUri().toURL();
 	}
 
 	private Path getTempUnpackDirectory() {
