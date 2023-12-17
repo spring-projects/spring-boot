@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.testcontainers.containers.Container;
-import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.util.Assert;
@@ -39,9 +38,6 @@ class ContainerFieldsImporter {
 		for (Field field : getContainerFields(definitionClass)) {
 			assertValid(field);
 			Container<?> container = getContainer(field);
-			if (container instanceof Startable startable) {
-				startable.start();
-			}
 			registerBeanDefinition(registry, field, container);
 		}
 	}
