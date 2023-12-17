@@ -73,23 +73,24 @@ final class PulsarPropertiesMapper {
 
 	private void customizeAuthentication(AuthenticationConsumer authentication,
 			PulsarProperties.Authentication properties) {
-		if (!StringUtils.hasText(properties.getPluginClassName())) {
-			return;
-		}
-		try {
-			// sort keys for testing and readability
-			Map<String, String> params = new TreeMap<>(properties.getParam());
-			String authParamString;
+		if (StringUtils.hasText(properties.getPluginClassName())) {
 			try {
-				authParamString = ObjectMapperFactory.create().writeValueAsString(params);
+				authentication.accept(properties.getPluginClassName(),
+						getAuthenticationParamsJson(properties.getParam()));
 			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Could not convert auth parameters to encoded string", ex);
+			catch (UnsupportedAuthenticationException ex) {
+				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
 			}
-			authentication.accept(properties.getPluginClassName(), authParamString);
 		}
-		catch (UnsupportedAuthenticationException ex) {
-			throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
+	}
+
+	private String getAuthenticationParamsJson(Map<String, String> params) {
+		Map<String, String> sortedParams = new TreeMap<>(params);
+		try {
+			return ObjectMapperFactory.create().writeValueAsString(sortedParams);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Could not convert auth parameters to encoded string", ex);
 		}
 	}
 
