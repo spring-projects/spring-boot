@@ -68,7 +68,7 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 	}
 
 	@ConfigurationProperties("container")
-	static record ContainerProperties(int port) {
+	record ContainerProperties(int port) {
 	}
 
 	static class TestBean {

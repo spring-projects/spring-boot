@@ -3019,7 +3019,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	static record NestedRecord(String name) {
+	record NestedRecord(String name) {
 	}
 
 	@EnableConfigurationProperties
