@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ class StartupInfoLogger {
 		}
 		append(context, "started by ", () -> System.getProperty("user.name"));
 		append(context, "in ", () -> System.getProperty("user.dir"));
-		if (context.length() > 0) {
+		if (!context.isEmpty()) {
 			message.append(" (");
 			message.append(context);
 			message.append(")");
@@ -143,7 +143,7 @@ class StartupInfoLogger {
 			value = defaultValue;
 		}
 		if (StringUtils.hasLength(value)) {
-			message.append((message.length() > 0) ? " " : "");
+			message.append((!message.isEmpty()) ? " " : "");
 			message.append(prefix);
 			message.append(value);
 		}

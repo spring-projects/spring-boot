@@ -258,14 +258,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		List<Throwable> suppressedExceptions = new ArrayList<>();
 		for (Status status : loggerContext.getStatusManager().getCopyOfStatusList()) {
 			if (status.getLevel() == Status.ERROR) {
-				errors.append((errors.length() > 0) ? String.format("%n") : "");
-				errors.append(status.toString());
+				errors.append((!errors.isEmpty()) ? String.format("%n") : "");
+				errors.append(status);
 				if (status.getThrowable() != null) {
 					suppressedExceptions.add(status.getThrowable());
 				}
 			}
 		}
-		if (errors.length() == 0) {
+		if (errors.isEmpty()) {
 			if (!StatusUtil.contextHasStatusListener(loggerContext)) {
 				StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 			}

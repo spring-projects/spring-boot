@@ -154,7 +154,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 		});
 	}
 
-	private static record AutoConfigurationImports(Path importsFile, List<String> imports) {
+	private record AutoConfigurationImports(Path importsFile, List<String> imports) {
 
 	}
 

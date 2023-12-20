@@ -91,8 +91,7 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	 * Relevant details from {@link ContainerConnectionSource} used as a
 	 * MergedContextConfiguration cache key.
 	 */
-	private static record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes,
-			Container<?> container) {
+	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container) {
 
 		CacheKey(ContainerConnectionSource<?> source) {
 			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get());

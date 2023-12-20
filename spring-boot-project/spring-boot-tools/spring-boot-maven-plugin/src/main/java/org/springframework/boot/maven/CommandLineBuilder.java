@@ -98,7 +98,7 @@ final class CommandLineBuilder {
 		static String build(List<URL> classpathElements) {
 			StringBuilder classpath = new StringBuilder();
 			for (URL element : classpathElements) {
-				if (classpath.length() > 0) {
+				if (!classpath.isEmpty()) {
 					classpath.append(File.pathSeparator);
 				}
 				classpath.append(toFile(element));
