@@ -234,9 +234,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			String extensionBeanNames = extensions.stream()
 				.map(ExtensionBean::getBeanName)
 				.collect(Collectors.joining(", "));
-			throw new IllegalStateException("Unable to map duplicate endpoint operations: " + duplicates.toString()
-					+ " to " + endpointBean.getBeanName()
-					+ (extensions.isEmpty() ? "" : " (" + extensionBeanNames + ")"));
+			throw new IllegalStateException("Unable to map duplicate endpoint operations: " + duplicates + " to "
+					+ endpointBean.getBeanName() + (extensions.isEmpty() ? "" : " (" + extensionBeanNames + ")"));
 		}
 	}
 

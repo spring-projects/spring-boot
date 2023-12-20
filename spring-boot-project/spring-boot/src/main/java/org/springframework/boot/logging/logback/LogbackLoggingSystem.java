@@ -259,7 +259,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		for (Status status : loggerContext.getStatusManager().getCopyOfStatusList()) {
 			if (status.getLevel() == Status.ERROR) {
 				errors.append((!errors.isEmpty()) ? String.format("%n") : "");
-				errors.append(status.toString());
+				errors.append(status);
 				if (status.getThrowable() != null) {
 					suppressedExceptions.add(status.getThrowable());
 				}

@@ -86,7 +86,7 @@ class StaticResourceJarsTests {
 	void ignoreWildcardUrls() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		URL folderUrl = jarFile.getParentFile().toURI().toURL();
-		URL wildcardUrl = new URL(folderUrl.toString() + "*.jar");
+		URL wildcardUrl = new URL(folderUrl + "*.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(wildcardUrl);
 		assertThat(staticResourceJarUrls).isEmpty();
 	}

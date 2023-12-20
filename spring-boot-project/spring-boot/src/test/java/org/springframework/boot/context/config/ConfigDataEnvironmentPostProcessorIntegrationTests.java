@@ -877,7 +877,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 				map.put("spring", "boot");
 			}
 			String suffix = (!resource.isProfileSpecific()) ? "" : ":ps";
-			map.put(resource.toString() + suffix, "true");
+			map.put(resource + suffix, "true");
 			MapPropertySource propertySource = new MapPropertySource("loaded" + suffix, map);
 			return new ConfigData(Collections.singleton(propertySource));
 		}
