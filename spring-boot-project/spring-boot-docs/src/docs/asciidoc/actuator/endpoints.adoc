@@ -929,7 +929,7 @@ See the section that describes <<actuator#actuator.endpoints.kubernetes-probes.l
 
 If your Actuator endpoints are deployed on a separate management context, the endpoints do not use the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
-For this reason, is it a good idea to make the `liveness` and `readiness` health groups available on the main server port.
+For this reason, it is a good idea to make the `liveness` and `readiness` health groups available on the main server port.
 This can be done by setting the following property:
 
 [source,properties,indent=0,subs="verbatim"]
