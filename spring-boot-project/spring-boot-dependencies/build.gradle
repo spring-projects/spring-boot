@@ -1077,7 +1077,7 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.102.Final") {
+	library("Netty", "4.1.104.Final") {
 		prohibit {
 			versionRange "[4.1.103.Final]"
 			because "it crashes on macOS (https://github.com/netty/netty/issues/13728)"
