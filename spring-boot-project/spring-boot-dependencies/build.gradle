@@ -1582,7 +1582,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Pulsar", "1.0.0") {
+	library("Spring Pulsar", "1.0.1") {
 		group("org.springframework.pulsar") {
 			modules = [
 				"spring-pulsar",
