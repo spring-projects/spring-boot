@@ -20,12 +20,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -225,9 +225,9 @@ public class PropertiesLauncher extends Launcher {
 		return getFileResource(config);
 	}
 
-	private String handleUrl(String path) throws UnsupportedEncodingException {
+	private String handleUrl(String path) {
 		if (path.startsWith("jar:file:") || path.startsWith("file:")) {
-			path = URLDecoder.decode(path, "UTF-8");
+			path = URLDecoder.decode(path, StandardCharsets.UTF_8);
 			if (path.startsWith("file:")) {
 				path = path.substring("file:".length());
 				if (path.startsWith("//")) {
