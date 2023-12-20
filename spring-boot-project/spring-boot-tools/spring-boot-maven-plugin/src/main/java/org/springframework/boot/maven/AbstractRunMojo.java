@@ -342,7 +342,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
-				if (classpath.length() > 0) {
+				if (!classpath.isEmpty()) {
 					classpath.append(File.pathSeparator);
 				}
 				classpath.append(new File(ele.toURI()));

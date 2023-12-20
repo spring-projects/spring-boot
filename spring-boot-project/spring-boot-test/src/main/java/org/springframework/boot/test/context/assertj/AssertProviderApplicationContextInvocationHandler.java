@@ -153,7 +153,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 
 	private ApplicationContext getStartedApplicationContext() {
 		if (this.startupFailure != null) {
-			throw new IllegalStateException(toString() + " failed to start", this.startupFailure);
+			throw new IllegalStateException(this + " failed to start", this.startupFailure);
 		}
 		return this.applicationContext;
 	}

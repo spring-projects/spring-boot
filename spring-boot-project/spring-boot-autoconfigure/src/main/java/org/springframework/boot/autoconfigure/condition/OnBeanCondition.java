@@ -332,7 +332,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private void appendMessageForNoMatches(StringBuilder reason, Collection<String> unmatched, String description) {
 		if (!unmatched.isEmpty()) {
-			if (reason.length() > 0) {
+			if (!reason.isEmpty()) {
 				reason.append(" and ");
 			}
 			reason.append("did not find any beans ");
@@ -347,7 +347,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		appendMessageForMatches(reason, matchResult.getMatchedAnnotations(), "annotated with");
 		appendMessageForMatches(reason, matchResult.getMatchedTypes(), "of type");
 		if (!matchResult.getMatchedNames().isEmpty()) {
-			if (reason.length() > 0) {
+			if (!reason.isEmpty()) {
 				reason.append(" and ");
 			}
 			reason.append("found beans named ");
@@ -360,7 +360,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			String description) {
 		if (!matches.isEmpty()) {
 			matches.forEach((key, value) -> {
-				if (reason.length() > 0) {
+				if (!reason.isEmpty()) {
 					reason.append(" and ");
 				}
 				reason.append("found beans ");

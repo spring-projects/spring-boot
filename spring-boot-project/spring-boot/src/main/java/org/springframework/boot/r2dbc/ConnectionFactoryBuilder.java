@@ -245,7 +245,7 @@ public final class ConnectionFactoryBuilder {
 
 		private ConnectionFactoryOptions delegateFactoryOptions(ConnectionFactoryOptions options) {
 			String protocol = toString(options.getRequiredValue(ConnectionFactoryOptions.PROTOCOL));
-			if (protocol.trim().length() == 0) {
+			if (protocol.trim().isEmpty()) {
 				throw new IllegalArgumentException(String.format("Protocol %s is not valid.", protocol));
 			}
 			String[] protocols = protocol.split(COLON, 2);

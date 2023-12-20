@@ -169,7 +169,7 @@ abstract class AbstractJsonMarshalTesterTests {
 		assertThat(tester.parse(MAP_JSON)).asMap().containsEntry("a", OBJECT);
 	}
 
-	protected static final ExampleObject createExampleObject(String name, int age) {
+	protected static ExampleObject createExampleObject(String name, int age) {
 		ExampleObject exampleObject = new ExampleObject();
 		exampleObject.setName(name);
 		exampleObject.setAge(age);

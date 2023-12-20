@@ -211,7 +211,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		private String getKeyName(ConfigurationPropertyName name) {
 			StringBuilder result = new StringBuilder();
 			for (int i = this.root.getNumberOfElements(); i < name.getNumberOfElements(); i++) {
-				if (result.length() != 0) {
+				if (!result.isEmpty()) {
 					result.append('.');
 				}
 				result.append(name.getElement(i, Form.ORIGINAL));
