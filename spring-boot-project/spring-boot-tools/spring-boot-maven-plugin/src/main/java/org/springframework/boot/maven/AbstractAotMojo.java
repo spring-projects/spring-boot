@@ -227,7 +227,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		}
 
 		boolean hasReportedErrors() {
-			return this.message.length() > 0;
+			return !this.message.isEmpty();
 		}
 
 		@Override

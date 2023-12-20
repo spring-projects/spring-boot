@@ -130,7 +130,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		for (PatternFormatter formatter : this.formatters) {
 			formatter.format(event, buf);
 		}
-		if (buf.length() > 0) {
+		if (!buf.isEmpty()) {
 			AnsiElement element = this.styling;
 			if (element == null) {
 				// Assume highlighting

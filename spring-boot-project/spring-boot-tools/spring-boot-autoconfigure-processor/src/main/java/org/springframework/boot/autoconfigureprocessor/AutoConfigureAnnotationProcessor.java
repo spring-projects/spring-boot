@@ -345,7 +345,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			}
 			StringBuilder result = new StringBuilder();
 			for (Object item : list) {
-				result.append((result.length() != 0) ? "," : "");
+				result.append((!result.isEmpty()) ? "," : "");
 				result.append(item);
 			}
 			return result.toString();
