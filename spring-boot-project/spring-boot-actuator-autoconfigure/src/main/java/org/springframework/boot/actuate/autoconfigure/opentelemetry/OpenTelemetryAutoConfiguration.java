@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
+import io.micrometer.registry.otlp.OtlpConfig;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -79,6 +80,7 @@ public class OpenTelemetryAutoConfiguration {
 
 	private static Resource toResource(OpenTelemetryProperties properties) {
 		ResourceBuilder builder = Resource.builder();
+		((OtlpConfig) k -> null).resourceAttributes().forEach(builder::put);
 		properties.getResourceAttributes().forEach(builder::put);
 		return builder.build();
 	}
