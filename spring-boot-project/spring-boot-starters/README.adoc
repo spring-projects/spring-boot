@@ -154,6 +154,9 @@ do as they were designed before this was clarified.
 | https://kogito.kie.org/[Kogito]
 | https://github.com/kiegroup/kogito-runtimes/tree/main/springboot/starters
 
+| https://github.com/langchain4j/langchain4j[LangChain for Java]
+| https://github.com/langchain4j/langchain4j/tree/main/langchain4j-spring-boot-starter
+
 | https://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 
