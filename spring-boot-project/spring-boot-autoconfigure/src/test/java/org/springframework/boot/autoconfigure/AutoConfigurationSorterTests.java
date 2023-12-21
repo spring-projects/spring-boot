@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Alexandre Baron
  */
 class AutoConfigurationSorterTests {
 
@@ -206,6 +207,17 @@ class AutoConfigurationSorterTests {
 			.withMessageContaining("AutoConfigure cycle detected");
 	}
 
+	@Test // gh-38904
+	void byBeforeAnnotationThenOrderAnnotation() {
+		String oa = OrderAutoConfigureA.class.getName();
+		String oa1 = OrderAutoConfigureASeedR1.class.getName();
+		String oa2 = OrderAutoConfigureASeedY2.class.getName();
+		String oa3 = OrderAutoConfigureASeedA3.class.getName();
+		String oa4 = OrderAutoConfigureAutoConfigureASeedG4.class.getName();
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(oa4, oa3, oa2, oa1, oa));
+		assertThat(actual).containsExactly(oa1, oa2, oa3, oa4, oa);
+	}
+
 	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames) throws Exception {
 		Properties properties = new Properties();
 		for (String className : classNames) {
@@ -345,6 +357,36 @@ class AutoConfigurationSorterTests {
 
 	@AutoConfiguration(before = AutoConfigureY2.class)
 	static class AutoConfigureZ2 {
+
+	}
+
+	static class OrderAutoConfigureA {
+
+	}
+
+	// Use seeds in auto-configuration class names to mislead the sort by names done in
+	// AutoConfigurationSorter class.
+	@AutoConfigureBefore(OrderAutoConfigureA.class)
+	@AutoConfigureOrder(1)
+	static class OrderAutoConfigureASeedR1 {
+
+	}
+
+	@AutoConfigureBefore(OrderAutoConfigureA.class)
+	@AutoConfigureOrder(2)
+	static class OrderAutoConfigureASeedY2 {
+
+	}
+
+	@AutoConfigureBefore(OrderAutoConfigureA.class)
+	@AutoConfigureOrder(3)
+	static class OrderAutoConfigureASeedA3 {
+
+	}
+
+	@AutoConfigureBefore(OrderAutoConfigureA.class)
+	@AutoConfigureOrder(4)
+	static class OrderAutoConfigureAutoConfigureASeedG4 {
 
 	}
 
