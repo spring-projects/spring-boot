@@ -210,11 +210,9 @@ class ZipContentTests {
 	@Test
 	void nestedDirectoryReturnsNestedJar() throws IOException {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
-			assertThat(nested.size()).isEqualTo(3);
+			assertThat(nested.size()).isEqualTo(1);
 			assertThat(nested.getEntry("9.dat")).isNotNull();
-			assertThat(nested.getEntry(0).getName()).isEqualTo("META-INF/");
-			assertThat(nested.getEntry(1).getName()).isEqualTo("META-INF/MANIFEST.MF");
-			assertThat(nested.getEntry(2).getName()).isEqualTo("9.dat");
+			assertThat(nested.getEntry(0).getName()).isEqualTo("9.dat");
 		}
 	}
 
@@ -230,9 +228,8 @@ class ZipContentTests {
 			File file = new File(this.tempDir, "included.zip");
 			write(file, nested.openRawZipData());
 			try (ZipFile loadedZipFile = new ZipFile(file)) {
-				assertThat(loadedZipFile.size()).isEqualTo(3);
-				assertThat(loadedZipFile.stream().map(ZipEntry::getName)).containsExactly("META-INF/",
-						"META-INF/MANIFEST.MF", "9.dat");
+				assertThat(loadedZipFile.size()).isEqualTo(1);
+				assertThat(loadedZipFile.stream().map(ZipEntry::getName)).containsExactly("9.dat");
 				assertThat(loadedZipFile.getEntry("9.dat")).isNotNull();
 				try (InputStream in = loadedZipFile.getInputStream(loadedZipFile.getEntry("9.dat"))) {
 					ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -637,10 +637,7 @@ public final class ZipContent implements Closeable {
 							.load(zip.data, pos);
 						long namePos = pos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
 						short nameLen = centralRecord.fileNameLength();
-						if (ZipString.startsWith(loader.buffer, zip.data, namePos, nameLen, META_INF) != -1) {
-							loader.add(centralRecord, pos, false);
-						}
-						else if (ZipString.startsWith(loader.buffer, zip.data, namePos, nameLen, directoryName) != -1) {
+						if (ZipString.startsWith(loader.buffer, zip.data, namePos, nameLen, directoryName) != -1) {
 							loader.add(centralRecord, pos, true);
 						}
 					}

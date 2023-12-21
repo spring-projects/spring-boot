@@ -105,9 +105,8 @@ class NestedJarFileTests {
 	void createWhenNestedJarDirectoryOpensJar() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file, "d/")) {
 			assertThat(jar.getName()).isEqualTo(this.file.getAbsolutePath() + "!/d/");
-			assertThat(jar.size()).isEqualTo(3);
-			assertThat(jar.stream().map(JarEntry::getName)).containsExactly("META-INF/", "META-INF/MANIFEST.MF",
-					"9.dat");
+			assertThat(jar.size()).isEqualTo(1);
+			assertThat(jar.stream().map(JarEntry::getName)).containsExactly("9.dat");
 		}
 	}
 
