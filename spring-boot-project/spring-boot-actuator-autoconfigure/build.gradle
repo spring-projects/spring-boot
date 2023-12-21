@@ -178,6 +178,8 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
+	testImplementation("org.junit-pioneer:junit-pioneer:2.2.0")
+
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
@@ -229,6 +231,8 @@ artifacts {
 
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+	jvmArgs += "--add-opens=java.base/java.util=ALL-UNNAMED"
+	jvmArgs += "--add-opens=java.base/java.lang=ALL-UNNAMED"
 	filter {
 		excludeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
 	}

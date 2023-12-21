@@ -26,6 +26,8 @@ import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.semconv.ResourceAttributes;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.junitpioneer.jupiter.SetEnvironmentVariable.SetEnvironmentVariables;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -100,11 +102,30 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldApplyResourceAttributesFromProperties() {
-		this.runner.withPropertyValues("management.opentelemetry.resource-attributes.region=us-west").run((context) -> {
+	@SetEnvironmentVariables({ @SetEnvironmentVariable(key = "OTEL_SERVICE_NAME", value = "env-var-service-name"),
+			@SetEnvironmentVariable(key = "OTEL_RESOURCE_ATTRIBUTES", value = "region=env") })
+	void shouldApplyResourceAttributesFromEnvVars() {
+		this.runner.run((context) -> {
 			Resource resource = context.getBean(Resource.class);
-			assertThat(resource.getAttributes().asMap()).contains(entry(AttributeKey.stringKey("region"), "us-west"));
+			assertThat(resource.getAttributes().asMap()).contains(entry(AttributeKey.stringKey("region"), "env"),
+					entry(AttributeKey.stringKey("service.name"), "env-var-service-name"));
 		});
+	}
+
+	@Test
+	@SetEnvironmentVariables({ @SetEnvironmentVariable(key = "OTEL_SERVICE_NAME", value = "env-var-service-name"),
+			@SetEnvironmentVariable(key = "OTEL_RESOURCE_ATTRIBUTES", value = "region=env") })
+	void shouldApplyResourceAttributesFromPropertiesWhichOverrideEnvVars() {
+		this.runner
+			.withPropertyValues("management.opentelemetry.resource-attributes.region=us-west",
+					"management.opentelemetry.resource-attributes.service.name=my-application")
+			.run((context) -> {
+				Resource resource = context.getBean(Resource.class);
+				assertThat(resource.getAttributes().asMap())
+					.contains(entry(AttributeKey.stringKey("region"), "us-west"))
+					.contains(entry(ResourceAttributes.SERVICE_NAME, "my-application"));
+				;
+			});
 	}
 
 	@Test
