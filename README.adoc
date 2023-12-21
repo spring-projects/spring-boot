@@ -162,6 +162,46 @@ Generally, you will not need to use `spring-boot-loader` directly but work with 
 The spring-boot-devtools module provides additional development-time features, such as automatic restarts, for a smoother application development experience.
 Developer tools are automatically disabled when running a fully packaged application.
 
+### ${\color{red} \space Virtual \space Threads \space Limitations \space and \space Best \space Practices \space in \space Spring \space Boot}$
+
+### Warning: Potential Risks of Incorrect Virtual Thread Usage
+
+Virtual threads in Spring Boot offer concurrent execution benefits but come with specific risks and limitations when used incorrectly:
+
+1. **External Resource Overload:** Excessive concurrent virtual threads might strain external resources like database connections or file I/O operations. This can lead to contention, depletion, or performance degradation when the number of threads surpasses the capacity of these resources.
+
+2. **Thread Starvation:** Uncontrolled creation of virtual threads can cause thread starvation, impacting system stability due to increased context switching and resource contention, ultimately affecting performance.
+
+3. **Blocking Operations Impact:** Operations that block for extended periods, like synchronous blocking I/O or long-running tasks, might nullify the benefits of virtual threads by causing delays and potentially blocking other threads.
+
+### Examples of Anti-Patterns and Potential Issues
+
+Certain Spring modules might exacerbate these problems:
+- **Spring JDBC or JPA:** Uncontrolled virtual threads might overload database connections, leading to bottlenecks or connection pool exhaustion.
+- **Spring Web:** Concurrently handling requests using virtual threads might overload I/O-bound operations, affecting response times or causing bottlenecks.
+
+### Quarkus Insight on Virtual Threads
+
+Quarkus, a related framework, highlights the limitations and risks of virtual threads in concurrent environments, cautioning against unchecked usage due to potential resource constraints and scalability issues.
+
+### Lack of Fine-Tuning in Spring Boot for Virtual Threads
+
+Spring Boot lacks extensive fine-tuning options for virtual threads, necessitating careful consideration and strategic usage.
+
+### Proposed Annotations for Virtual Threads
+
+Consider introducing annotations like:
+- **@RunOnVirtualThread:** Marks methods for execution on virtual threads.
+- **@VirtualThreadSafe:** Ensures thread safety in virtual thread environments.
+- **@NotVirtualThreadSafe:** Marks components or methods not suitable for virtual threads.
+
+### Emphasizing Careful Usage and Thorough Testing
+
+Before adopting virtual threads extensively, thoroughly test applications under various loads and scenarios to identify bottlenecks and resource constraints. Monitor thread usage and resource consumption regularly.
+
+### Cautionary Approach
+
+Excessive advertising of virtual threads might overlook the associated risks. Emphasize a cautious approach, encouraging users to consider the limitations and employ them judiciously.
 
 
 == Guides
