@@ -203,6 +203,59 @@ Before adopting virtual threads extensively, thoroughly test applications under 
 
 Excessive advertising of virtual threads might overlook the associated risks. Emphasize a cautious approach, encouraging users to consider the limitations and employ them judiciously.
 
+### Adding Custom MimeMappings
+**Step 1: Identify the MimeMappings File**
+
+Locate the configuration file responsible for MimeMappings. Typically, it's named web.xml or similar.
+
+**Step 2: Edit the MimeMappings**
+
+Open the identified configuration file.
+
+Look for the <mime-mapping> section or similar entries.
+
+To add a new MimeMapping, use the following xml format:
+<mime-mapping>
+    <extension>[FILE_EXTENSION]</extension>
+    <mime-type>[MIME_TYPE]</mime-type>
+</mime-mapping>
+
+Replace [FILE_EXTENSION] with the file extension (e.g., pdf, docx) and [MIME_TYPE] with the corresponding MIME type (e.g., application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document).
+
+Save the changes to the configuration file.
+
+**Step 3: Restart the Application (if required)**
+
+If the changes to the configuration file require a server/application restart, perform the necessary steps to restart the application.
+
+### Configuring MimeMappings Using Properties
+**Step 1: Identify Properties File**
+
+Locate the properties file used for configuring your application.
+
+
+**Step 2: Add MimeMappings Properties**
+Open the properties file.
+
+**Add or modify properties related to MimeMappings using the following css format:**
+
+mimeMappings.[FILE_EXTENSION]=[MIME_TYPE]
+Replace [FILE_EXTENSION] with the file extension (e.g., pdf, docx) and [MIME_TYPE] with the corresponding MIME type (e.g., application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document).
+
+**For example (bash):**
+
+`mimeMappings.pdf=application/pdf
+mimeMappings.docx=application/vnd.openxmlformats-officedocument.wordprocessingml.document
+Save the changes to the properties file.`
+
+**Step 3: Load Properties in Application**
+
+Ensure that the application loads and utilizes these properties during runtime. This may involve a configuration setup within your application codebase to read and apply these properties for MimeMappings.
+
+**Step 4: Restart the Application (if required)**
+
+If changes to the properties file necessitate a server/application restart, proceed to restart the application accordingly.
+
 
 == Guides
 The https://spring.io/[spring.io] site contains several guides that show how to use Spring Boot step-by-step:
