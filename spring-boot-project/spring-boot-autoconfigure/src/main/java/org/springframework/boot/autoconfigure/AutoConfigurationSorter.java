@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -53,12 +55,14 @@ class AutoConfigurationSorter {
 	}
 
 	List<String> getInPriorityOrder(Collection<String> classNames) {
-		AutoConfigurationClasses classes = new AutoConfigurationClasses(this.metadataReaderFactory,
-				this.autoConfigurationMetadata, classNames);
-		List<String> orderedClassNames = new ArrayList<>(classNames);
 		// Initially sort alphabetically
-		Collections.sort(orderedClassNames);
+		List<String> alphabeticallyOrderedClassNames = new ArrayList<>(classNames);
+		Collections.sort(alphabeticallyOrderedClassNames);
 		// Then sort by order
+		AutoConfigurationClasses classes = new AutoConfigurationClasses(this.metadataReaderFactory,
+				this.autoConfigurationMetadata, alphabeticallyOrderedClassNames);
+		List<String> orderedClassNames = new ArrayList<>(classNames);
+		Collections.sort(orderedClassNames);
 		orderedClassNames.sort((o1, o2) -> {
 			int i1 = classes.get(o1).getOrder();
 			int i2 = classes.get(o2).getOrder();
@@ -87,7 +91,9 @@ class AutoConfigurationSorter {
 			current = toSort.remove(0);
 		}
 		processing.add(current);
-		for (String after : classes.getClassesRequestedAfter(current)) {
+		Set<String> afters = new TreeSet<>(Comparator.comparing(toSort::indexOf));
+		afters.addAll(classes.getClassesRequestedAfter(current));
+		for (String after : afters) {
 			checkForCycles(processing, current, after);
 			if (!sorted.contains(after) && toSort.contains(after)) {
 				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
@@ -104,7 +110,7 @@ class AutoConfigurationSorter {
 
 	private static class AutoConfigurationClasses {
 
-		private final Map<String, AutoConfigurationClass> classes = new HashMap<>();
+		private final Map<String, AutoConfigurationClass> classes = new LinkedHashMap<>();
 
 		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				AutoConfigurationMetadata autoConfigurationMetadata, Collection<String> classNames) {
