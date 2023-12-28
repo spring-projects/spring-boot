@@ -19,11 +19,11 @@ This is controlled through two external properties:
 
 [[howto.data-initialization.using-hibernate]]
 === Initialize a Database Using Hibernate
-You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property values are `none`, `validate`, `update`, `create`, and `create-drop`.
+You can set `spring.jpa.hibernate.ddl-auto` explicitly, and the standard Hibernate property values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether it thinks your database is embedded.
 It defaults to `create-drop` if no schema manager has been detected or `none` in all other cases.
 An embedded database is detected by looking at the `Connection` type and JDBC url.
-`hsqldb`, `h2`, and `derby` are candidates, and others are not.
+`hsqldb`, `h2`, and `derby` are candidates, while others are not.
 Be careful when switching from in-memory to a '`real`' database that you do not make assumptions about the existence of the tables and data in the new platform.
 You either have to set `ddl-auto` explicitly or use one of the other mechanisms to initialize the database.
 
@@ -41,8 +41,8 @@ It is a Hibernate feature (and has nothing to do with Spring).
 Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize its data (DML scripts).
 
 By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
-The locations of these schema and data scripts can customized using configprop:spring.sql.init.schema-locations[] and configprop:spring.sql.init.data-locations[] respectively.
-The `optional:` prefix means that the application will start when the files do not exist.
+The locations of these schema and data scripts can be customized using configprop:spring.sql.init.schema-locations[] and configprop:spring.sql.init.data-locations[] respectively.
+The `optional:` prefix means that the application will start even when the files do not exist.
 To have the application fail to start when the files are absent, remove the `optional:` prefix.
 
 In addition, Spring Boot processes the `optional:classpath*:schema-$\{platform}.sql` and `optional:classpath*:data-$\{platform}.sql` files (if present), where `$\{platform}` is the value of configprop:spring.sql.init.platform[].
