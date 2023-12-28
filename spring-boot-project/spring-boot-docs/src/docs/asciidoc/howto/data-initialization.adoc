@@ -19,7 +19,7 @@ This is controlled through two external properties:
 
 [[howto.data-initialization.using-hibernate]]
 === Initialize a Database Using Hibernate
-You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property values are `none`, `validate`, `update`, `create`, and `create-drop`.
+You can set `spring.jpa.hibernate.ddl-auto` explicitly, and the standard Hibernate property values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether it thinks your database is embedded.
 It defaults to `create-drop` if no schema manager has been detected or `none` in all other cases.
 An embedded database is detected by looking at the `Connection` type and JDBC url.
