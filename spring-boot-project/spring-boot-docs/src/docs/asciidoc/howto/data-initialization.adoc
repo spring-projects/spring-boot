@@ -42,7 +42,7 @@ Spring Boot can automatically create the schema (DDL scripts) of your JDBC `Data
 
 By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
 The locations of these schema and data scripts can customized using configprop:spring.sql.init.schema-locations[] and configprop:spring.sql.init.data-locations[] respectively.
-The `optional:` prefix means that the application will start when the files do not exist.
+The `optional:` prefix means that the application will start even when the files do not exist.
 To have the application fail to start when the files are absent, remove the `optional:` prefix.
 
 In addition, Spring Boot processes the `optional:classpath*:schema-$\{platform}.sql` and `optional:classpath*:data-$\{platform}.sql` files (if present), where `$\{platform}` is the value of configprop:spring.sql.init.platform[].
