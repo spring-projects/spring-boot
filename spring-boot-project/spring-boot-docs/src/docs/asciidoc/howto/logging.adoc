@@ -27,7 +27,7 @@ If the only change you need to make to logging is to set the levels of various l
 	    org.hibernate: "error"
 ----
 
-You can also set the location of a file to which to write the log (in addition to the console) by using `logging.file.name`.
+You can also set the location of a file to which the log will be written (in addition to the console) by using `logging.file.name`.
 
 To configure the more fine-grained settings of a logging system, you need to use the native configuration format supported by the `LoggingSystem` in question.
 By default, Spring Boot picks up the native configuration from its default location for the system (such as `classpath:logback.xml` for Logback), but you can set the location of the config file by using the configprop:logging.config[] property.
