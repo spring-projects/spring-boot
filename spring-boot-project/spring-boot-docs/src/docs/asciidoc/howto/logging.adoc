@@ -1,7 +1,7 @@
 [[howto.logging]]
 == Logging
 Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which is typically provided by Spring Framework's `spring-jcl` module.
-To use https://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
+To use https://logback.qos.ch[Logback], you need to include it and `spring-jcl` in the classpath.
 The recommended way to do that is through the starters, which all depend on `spring-boot-starter-logging`.
 For a web application, you need only `spring-boot-starter-web`, since it depends transitively on the logging starter.
 If you use Maven, the following dependency adds logging for you:
