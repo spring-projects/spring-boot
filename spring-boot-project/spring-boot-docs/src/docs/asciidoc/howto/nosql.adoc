@@ -11,7 +11,7 @@ By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses http
 You need to exclude that dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead.
 Spring Boot manages both of these dependencies, allowing you to switch to Jedis without specifying a version.
 
-The following example shows how to do so in Maven:
+The following example shows how to accomplish this in Maven:
 
 [source,xml,indent=0,subs="verbatim"]
 ----
@@ -31,7 +31,7 @@ The following example shows how to do so in Maven:
 	</dependency>
 ----
 
-The following example shows how to do so in Gradle:
+The following example shows how to accomplish this in Gradle:
 
 [source,gradle,indent=0,subs="verbatim"]
 ----
