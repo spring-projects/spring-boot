@@ -36,7 +36,7 @@ jobs:
         if: cancelled()
 
       - name: Upload build reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-reports
