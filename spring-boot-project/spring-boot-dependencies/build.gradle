@@ -1578,13 +1578,11 @@ bom {
 			]
 		}
 	}
-	library("Spring Pulsar", "1.0.1") {
+	library("Spring Pulsar", "1.0.2-SNAPSHOT") {
+		considerSnapshots()
 		group("org.springframework.pulsar") {
-			modules = [
-				"spring-pulsar",
-				"spring-pulsar-cache-provider",
-				"spring-pulsar-cache-provider-caffeine",
-				"spring-pulsar-reactive"
+			imports = [
+				"spring-pulsar-bom"
 			]
 		}
 	}
