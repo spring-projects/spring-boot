@@ -42,8 +42,8 @@ class Dbcp2JdbcConnectionDetailsBeanPostProcessorTests {
 		new Dbcp2JdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
 				new TestJdbcConnectionDetails());
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
-		assertThat(dataSource.getUsername()).isEqualTo("user-1");
-		assertThat(dataSource.getPassword()).isEqualTo("password-1");
+		assertThat(dataSource.getUserName()).isEqualTo("user-1");
+		assertThat(dataSource).extracting("password").isEqualTo("password-1");
 		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 	}
 

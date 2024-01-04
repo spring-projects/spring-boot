@@ -644,8 +644,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 			add(DataSourceProperty.URL, BasicDataSource::getUrl, BasicDataSource::setUrl);
 			add(DataSourceProperty.DRIVER_CLASS_NAME, BasicDataSource::getDriverClassName,
 					BasicDataSource::setDriverClassName);
-			add(DataSourceProperty.USERNAME, BasicDataSource::getUsername, BasicDataSource::setUsername);
-			add(DataSourceProperty.PASSWORD, BasicDataSource::getPassword, BasicDataSource::setPassword);
+			add(DataSourceProperty.USERNAME, BasicDataSource::getUserName, BasicDataSource::setUsername);
+			add(DataSourceProperty.PASSWORD, null, BasicDataSource::setPassword);
 		}
 
 	}
