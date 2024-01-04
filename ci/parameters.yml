@@ -8,7 +8,7 @@ artifactory-snapshot-repository: "libs-snapshot-local"
 artifactory-staging-repository: "libs-staging-local"
 artifactory-url: "https://repo.spring.io"
 branch: "main"
-milestone: "3.2.x"
+milestone: "3.3.x"
 build-name: "spring-boot"
 concourse-url: "https://ci.spring.io"
 task-timeout: 2h00m
