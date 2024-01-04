@@ -472,7 +472,7 @@ bom {
 			]
 		}
 	}
-	library("InfluxDB Java", "2.23") {
+	library("InfluxDB Java", "2.24") {
 		group("org.influxdb") {
 			modules = [
 				"influxdb-java"
