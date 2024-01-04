@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -354,7 +355,7 @@ class ConfigDataEnvironmentTests {
 		TestConfigDataEnvironment configDataEnvironment = new TestConfigDataEnvironment(this.logFactory,
 				this.bootstrapContext, this.environment, resourceLoader, this.additionalProfiles, null);
 		assertThat(configDataEnvironment).extracting("loaders.loaders")
-			.asList()
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
 			.extracting((item) -> (Class) item.getClass())
 			.containsOnly(SeparateClassLoaderConfigDataLoader.class);
 	}

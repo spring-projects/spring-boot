@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ class CouchbaseAutoConfigurationTests {
 					.doesNotHaveBean(PropertiesCouchbaseConnectionDetails.class);
 				Cluster cluster = context.getBean(Cluster.class);
 				assertThat(cluster.core()).extracting("connectionString.hosts")
-					.asList()
+					.asInstanceOf(InstanceOfAssertFactories.LIST)
 					.extractingResultOf("host")
 					.containsExactly("couchbase.example.com");
 			});
@@ -109,7 +109,7 @@ class CouchbaseAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				Cluster cluster = context.getBean(Cluster.class);
 				assertThat(cluster.core()).extracting("connectionString.hosts")
-					.asList()
+					.asInstanceOf(InstanceOfAssertFactories.LIST)
 					.extractingResultOf("host")
 					.containsExactly("couchbase.example.com");
 			});

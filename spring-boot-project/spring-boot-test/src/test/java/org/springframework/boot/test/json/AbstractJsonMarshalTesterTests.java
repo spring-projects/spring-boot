@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -152,7 +153,7 @@ abstract class AbstractJsonMarshalTesterTests {
 	void parseListShouldReturnContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("listOfExampleObject");
 		AbstractJsonMarshalTester<Object> tester = createTester(type);
-		assertThat(tester.parse(ARRAY_JSON)).asList().containsOnly(OBJECT);
+		assertThat(tester.parse(ARRAY_JSON)).asInstanceOf(InstanceOfAssertFactories.LIST).containsOnly(OBJECT);
 	}
 
 	@Test

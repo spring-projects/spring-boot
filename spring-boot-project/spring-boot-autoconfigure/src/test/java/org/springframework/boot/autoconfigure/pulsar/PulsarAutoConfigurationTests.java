@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.apache.pulsar.common.schema.SchemaType;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -287,7 +288,7 @@ class PulsarAutoConfigurationTests {
 			this.contextRunner.withBean("customProducerInterceptor", ProducerInterceptor.class, () -> interceptor)
 				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
 					.extracting("interceptors")
-					.asList()
+					.asInstanceOf(InstanceOfAssertFactories.LIST)
 					.contains(interceptor));
 		}
 
@@ -296,7 +297,7 @@ class PulsarAutoConfigurationTests {
 			this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class)
 				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
 					.extracting("interceptors")
-					.asList()
+					.asInstanceOf(InstanceOfAssertFactories.LIST)
 					.containsExactly(context.getBean("interceptorBar"), context.getBean("interceptorFoo")));
 		}
 

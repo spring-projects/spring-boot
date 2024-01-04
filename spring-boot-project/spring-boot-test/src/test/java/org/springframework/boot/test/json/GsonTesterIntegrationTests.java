@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +62,7 @@ class GsonTesterIntegrationTests {
 	@Test
 	void typicalListTest() throws Exception {
 		String example = "[" + JSON + "]";
-		assertThat(this.listJson.parse(example)).asList().hasSize(1);
+		assertThat(this.listJson.parse(example)).asInstanceOf(InstanceOfAssertFactories.LIST).hasSize(1);
 		assertThat(this.listJson.parse(example).getObject().get(0).getName()).isEqualTo("Spring");
 	}
 
