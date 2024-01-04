@@ -1579,6 +1579,7 @@ bom {
 		}
 	}
 	library("Spring Pulsar", "1.0.1") {
+		considerSnapshots()
 		group("org.springframework.pulsar") {
 			modules = [
 				"spring-pulsar",
