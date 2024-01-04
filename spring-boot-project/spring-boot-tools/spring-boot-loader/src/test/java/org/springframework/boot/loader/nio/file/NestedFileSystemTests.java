@@ -167,7 +167,7 @@ class NestedFileSystemTests {
 	void newWatchServiceThrowsException() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> this.fileSystem.newWatchService())
-			.withMessage("Nested paths do not support the WacherService");
+			.withMessage("Nested paths do not support the WatchService");
 	}
 
 	@Test
