@@ -981,7 +981,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Surefire Plugin", "3.1.2") {
+	library("Maven Surefire Plugin", "3.2.3") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-surefire-plugin"
