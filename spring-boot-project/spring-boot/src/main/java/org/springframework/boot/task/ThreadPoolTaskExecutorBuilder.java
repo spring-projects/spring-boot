@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
+ * @author Yanming Zhou
  * @since 3.2.0
  */
 public class ThreadPoolTaskExecutorBuilder {
@@ -53,6 +54,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	private final Boolean allowCoreThreadTimeOut;
 
 	private final Duration keepAlive;
+
+	private final Boolean acceptTasksAfterContextClose;
 
 	private final Boolean awaitTermination;
 
@@ -70,6 +73,7 @@ public class ThreadPoolTaskExecutorBuilder {
 		this.maxPoolSize = null;
 		this.allowCoreThreadTimeOut = null;
 		this.keepAlive = null;
+		this.acceptTasksAfterContextClose = null;
 		this.awaitTermination = null;
 		this.awaitTerminationPeriod = null;
 		this.threadNamePrefix = null;
@@ -78,14 +82,15 @@ public class ThreadPoolTaskExecutorBuilder {
 	}
 
 	private ThreadPoolTaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
-			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean awaitTermination,
-			Duration awaitTerminationPeriod, String threadNamePrefix, TaskDecorator taskDecorator,
-			Set<ThreadPoolTaskExecutorCustomizer> customizers) {
+			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean acceptTasksAfterContextClose,
+			Boolean awaitTermination, Duration awaitTerminationPeriod, String threadNamePrefix,
+			TaskDecorator taskDecorator, Set<ThreadPoolTaskExecutorCustomizer> customizers) {
 		this.queueCapacity = queueCapacity;
 		this.corePoolSize = corePoolSize;
 		this.maxPoolSize = maxPoolSize;
 		this.allowCoreThreadTimeOut = allowCoreThreadTimeOut;
 		this.keepAlive = keepAlive;
+		this.acceptTasksAfterContextClose = acceptTasksAfterContextClose;
 		this.awaitTermination = awaitTermination;
 		this.awaitTerminationPeriod = awaitTerminationPeriod;
 		this.threadNamePrefix = threadNamePrefix;
@@ -101,8 +106,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder queueCapacity(int queueCapacity) {
 		return new ThreadPoolTaskExecutorBuilder(queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -116,8 +121,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder corePoolSize(int corePoolSize) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -131,8 +136,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder maxPoolSize(int maxPoolSize) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -143,8 +148,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder allowCoreThreadTimeOut(boolean allowCoreThreadTimeOut) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -154,8 +159,21 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder keepAlive(Duration keepAlive) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
+	}
+
+	/**
+	 * Set whether to accept further tasks after the application context close phase has
+	 * begun.
+	 * @param acceptTasksAfterContextClose to accept further tasks after the application
+	 * context close phase has begun
+	 * @return a new builder instance
+	 */
+	public ThreadPoolTaskExecutorBuilder acceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
+		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+				this.allowCoreThreadTimeOut, this.keepAlive, acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -168,8 +186,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder awaitTermination(boolean awaitTermination) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -183,8 +201,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -194,8 +212,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder threadNamePrefix(String threadNamePrefix) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -205,8 +223,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder taskDecorator(TaskDecorator taskDecorator) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, taskDecorator, this.customizers);
 	}
 
 	/**
@@ -235,8 +253,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	public ThreadPoolTaskExecutorBuilder customizers(Iterable<? extends ThreadPoolTaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, append(null, customizers));
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, append(null, customizers));
 	}
 
 	/**
@@ -264,8 +282,9 @@ public class ThreadPoolTaskExecutorBuilder {
 			Iterable<? extends ThreadPoolTaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.taskDecorator, append(this.customizers, customizers));
+				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
+				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator,
+				append(this.customizers, customizers));
 	}
 
 	/**
@@ -307,6 +326,7 @@ public class ThreadPoolTaskExecutorBuilder {
 		map.from(this.maxPoolSize).to(taskExecutor::setMaxPoolSize);
 		map.from(this.keepAlive).asInt(Duration::getSeconds).to(taskExecutor::setKeepAliveSeconds);
 		map.from(this.allowCoreThreadTimeOut).to(taskExecutor::setAllowCoreThreadTimeOut);
+		map.from(this.acceptTasksAfterContextClose).to(taskExecutor::setAcceptTasksAfterContextClose);
 		map.from(this.awaitTermination).to(taskExecutor::setWaitForTasksToCompleteOnShutdown);
 		map.from(this.awaitTerminationPeriod).as(Duration::toMillis).to(taskExecutor::setAwaitTerminationMillis);
 		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
+ * @author Yanming Zhou
  * @since 2.1.0
  */
 @ConfigurationProperties("spring.task.execution")
@@ -110,6 +111,8 @@ public class TaskExecutionProperties {
 		 */
 		private Duration keepAlive = Duration.ofSeconds(60);
 
+		private final Shutdown shutdown = new Shutdown();
+
 		public int getQueueCapacity() {
 			return this.queueCapacity;
 		}
@@ -148,6 +151,28 @@ public class TaskExecutionProperties {
 
 		public void setKeepAlive(Duration keepAlive) {
 			this.keepAlive = keepAlive;
+		}
+
+		public Shutdown getShutdown() {
+			return this.shutdown;
+		}
+
+		public static class Shutdown {
+
+			/**
+			 * Whether to accept further tasks after the application context close phase
+			 * has begun.
+			 */
+			private boolean acceptTasksAfterContextClose;
+
+			public boolean isAcceptTasksAfterContextClose() {
+				return this.acceptTasksAfterContextClose;
+			}
+
+			public void setAcceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
+				this.acceptTasksAfterContextClose = acceptTasksAfterContextClose;
+			}
+
 		}
 
 	}
