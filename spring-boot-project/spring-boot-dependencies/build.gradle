@@ -1633,7 +1633,7 @@ bom {
 			]
 		}
 	}
-	library("SQLite JDBC", "3.43.2.0") {
+	library("SQLite JDBC", "3.44.1.0") {
 		group("org.xerial") {
 			modules = [
 				"sqlite-jdbc"
