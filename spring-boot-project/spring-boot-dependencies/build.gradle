@@ -690,7 +690,7 @@ bom {
 			]
 		}
 	}
-	library("JMustache", "1.15") {
+	library("JMustache", "1.16") {
 		group("com.samskivert") {
 			modules = [
 				"jmustache"
