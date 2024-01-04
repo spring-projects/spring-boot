@@ -355,7 +355,7 @@ See the https://www.freedesktop.org/software/systemd/man/systemd.service.html[se
 
 
 [[deployment.installing.init-d.script-customization.when-running.conf-file]]
-====== Using a Conf Gile
+====== Using a Conf File
 With the exception of `JARFILE` and `APP_NAME`, the settings listed in the preceding section can be configured by using a `.conf` file.
 The file is expected to be next to the jar file and have the same name but suffixed with `.conf` rather than `.jar`.
 For example, a jar named `/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`, as shown in the following example:

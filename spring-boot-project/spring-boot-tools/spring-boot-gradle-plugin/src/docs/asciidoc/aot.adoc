@@ -36,7 +36,7 @@ The `nativeCompile` task of the GraalVM Native Image plugin is automatically con
 [[aot.processing-tests]]
 == Processing Tests
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
-Suitable tests are processed by the `processTestAot` task to generate `ApplicationContextInitialzer` code.
+Suitable tests are processed by the `processTestAot` task to generate `ApplicationContextInitializer` code.
 As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
 As with `processAot`, the `processTestAot` task is `JavaExec` subclass and can be configured as needed to influence this processing.
 
