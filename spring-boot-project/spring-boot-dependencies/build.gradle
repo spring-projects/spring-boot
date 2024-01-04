@@ -1105,7 +1105,7 @@ bom {
 			]
 		}
 	}
-	library("Oracle R2DBC", "1.1.1") {
+	library("Oracle R2DBC", "1.2.0") {
 		group("com.oracle.database.r2dbc") {
 			modules = [
 				"oracle-r2dbc"
