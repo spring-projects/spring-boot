@@ -1309,7 +1309,7 @@ bom {
 			]
 		}
 	}
-	library("Rabbit Stream Client", "0.14.0") {
+	library("Rabbit Stream Client", "0.15.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
