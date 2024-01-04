@@ -17,11 +17,11 @@ def versions = [:]
 new File(projectDir.parentFile, "gradle.properties").withInputStream {
 	def properties = new Properties()
 	properties.load(it)
-	["assertj", "commonsCodec", "hamcrest", "jackson", "junitJupiter",
-		"kotlin", "maven"].each {
+	["assertj", "commonsCodec", "hamcrest", "junitJupiter", "kotlin", "maven"].each {
 		versions[it] = properties[it + "Version"]
 	}
 }
+versions["jackson"] = "2.15.3"
 versions["springFramework"] = "6.0.12"
 ext.set("versions", versions)
 if (versions.springFramework.contains("-")) {
@@ -136,4 +136,3 @@ eclipse.classpath.file.whenMerged {
 	jreEntry.entryAttributes['module'] = 'true'
 	jreEntry.entryAttributes['limit-modules'] = 'java.base'
 }
-
