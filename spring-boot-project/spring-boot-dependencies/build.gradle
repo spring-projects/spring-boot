@@ -236,6 +236,10 @@ bom {
 		}
 	}
 	library("Derby", "10.16.1.1") {
+		prohibit {
+			versionRange "[10.17.1.0,)"
+			because "it requires Java 21"
+		}
 		group("org.apache.derby") {
 			modules = [
 				"derby",
