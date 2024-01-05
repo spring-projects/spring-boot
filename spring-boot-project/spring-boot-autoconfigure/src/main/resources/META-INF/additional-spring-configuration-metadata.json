@@ -671,6 +671,26 @@
       }
     },
     {
+      "name": "spring.couchbase.env.ssl.key-store",
+      "type": "java.lang.String",
+      "description": "Path to the JVM key store that holds the certificates.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.ssl.bundle",
+        "level": "error",
+        "since": "3.1.0"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.ssl.key-store-password",
+      "type": "java.lang.String",
+      "description": "Password used to access the key store.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.ssl.bundle",
+        "level": "error",
+        "since": "3.1.0"
+      }
+    },
+    {
       "name": "spring.couchbase.env.timeouts.socket-connect",
       "type": "java.time.Duration",
       "description": "Socket connect connections timeout.",
@@ -1901,8 +1921,17 @@
       "name": "spring.kafka.streams.cache-max-bytes-buffering",
       "type": "java.lang.Integer",
       "deprecation": {
-        "replacement": "spring.kafka.streams.cache-max-size-buffering",
+        "replacement": "spring.kafka.streams.state-store-cache-max-size",
         "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.streams.cache-max-size-buffering",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.kafka.streams.state-store-cache-max-size",
+        "level": "error",
+        "since": "3.1.0"
       }
     },
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.springframework.boot.web.server;
 
-import java.io.InputStream;
-import java.security.KeyStore;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.SslBundle;
@@ -27,13 +24,9 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link WebServerSslBundle}.
@@ -123,48 +116,10 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.1.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void whenFromCustomSslStoreProvider() throws Exception {
-		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
-		KeyStore keyStore = loadStore();
-		given(sslStoreProvider.getKeyStore()).willReturn(keyStore);
-		given(sslStoreProvider.getTrustStore()).willReturn(keyStore);
-		Ssl ssl = new Ssl();
-		ssl.setKeyStoreType("PKCS12");
-		ssl.setTrustStoreType("PKCS12");
-		ssl.setKeyPassword("password");
-		ssl.setClientAuth(Ssl.ClientAuth.NONE);
-		ssl.setCiphers(new String[] { "ONE", "TWO", "THREE" });
-		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
-		ssl.setProtocol("TLSv1.1");
-		SslBundle bundle = WebServerSslBundle.get(ssl, null, sslStoreProvider);
-		assertThat(bundle).isNotNull();
-		SslBundleKey key = bundle.getKey();
-		assertThat(key.getPassword()).isEqualTo("password");
-		assertThat(key.getAlias()).isNull();
-		SslStoreBundle stores = bundle.getStores();
-		assertThat(stores.getKeyStore()).isNotNull();
-		assertThat(stores.getTrustStore()).isNotNull();
-		SslOptions options = bundle.getOptions();
-		assertThat(options.getCiphers()).containsExactly("ONE", "TWO", "THREE");
-		assertThat(options.getEnabledProtocols()).containsExactly("TLSv1.1", "TLSv1.2");
-	}
-
-	@Test
 	void whenMissingPropertiesThrowsException() {
 		Ssl ssl = new Ssl();
 		assertThatIllegalStateException().isThrownBy(() -> WebServerSslBundle.get(ssl))
 			.withMessageContaining("SSL is enabled but no trust material is configured");
-	}
-
-	private KeyStore loadStore() throws Exception {
-		Resource resource = new ClassPathResource("test.p12");
-		try (InputStream stream = resource.getInputStream()) {
-			KeyStore keyStore = KeyStore.getInstance("PKCS12");
-			keyStore.load(stream, "secret".toCharArray());
-			return keyStore;
-		}
 	}
 
 }

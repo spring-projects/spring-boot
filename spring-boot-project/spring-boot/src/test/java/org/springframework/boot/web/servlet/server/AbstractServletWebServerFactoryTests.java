@@ -30,7 +30,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -134,14 +133,12 @@ import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
-import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.Session.SessionTrackingMode;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -161,9 +158,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -177,7 +172,6 @@ import static org.mockito.Mockito.times;
  * @author Raja Kolli
  * @author Scott Frederick
  */
-@SuppressWarnings("removal")
 @ExtendWith(OutputCaptureExtension.class)
 @DirtiesUrlFactories
 public abstract class AbstractServletWebServerFactoryTests {
@@ -680,33 +674,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
 		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
-	}
-
-	@Test
-	@Deprecated(since = "3.1.0", forRemoval = true)
-	void sslWithCustomSslStoreProvider() throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		addTestTxtFile(factory);
-		Ssl ssl = new Ssl();
-		ssl.setClientAuth(ClientAuth.NEED);
-		ssl.setKeyPassword("password");
-		factory.setSsl(ssl);
-		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
-		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
-		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
-		factory.setSslStoreProvider(sslStoreProvider);
-		this.webServer = factory.getWebServer();
-		this.webServer.start();
-		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.jks"));
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
-					.loadKeyMaterial(keyStore, "password".toCharArray())
-					.build());
-		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
-		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
-		then(sslStoreProvider).should(atLeastOnce()).getKeyStore();
-		then(sslStoreProvider).should(atLeastOnce()).getTrustStore();
 	}
 
 	@Test
@@ -1595,13 +1562,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 			});
 			action.run(blockedPort);
 		}
-	}
-
-	private KeyStore loadStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-		KeyStore keyStore = KeyStore.getInstance("JKS");
-		Resource resource = new ClassPathResource("test.jks");
-		loadStore(keyStore, resource);
-		return keyStore;
 	}
 
 	private void loadStore(KeyStore keyStore, Resource resource)

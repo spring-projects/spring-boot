@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerSslBundle;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
@@ -58,7 +57,6 @@ import org.springframework.util.unit.DataSize;
  * @author Scott Frederick
  * @since 2.2.0
  */
-@SuppressWarnings("removal")
 public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
 
 	private int port = 9898;
@@ -76,8 +74,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
 	private Ssl ssl;
-
-	private SslStoreProvider sslStoreProvider;
 
 	private SslBundles sslBundles;
 
@@ -104,11 +100,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	@Override
 	public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
-	}
-
-	@Override
-	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
-		this.sslStoreProvider = sslStoreProvider;
 	}
 
 	@Override
@@ -204,9 +195,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
 	}
 
-	@SuppressWarnings("deprecation")
 	private SslBundle getSslBundle() {
-		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
+		return WebServerSslBundle.get(this.ssl, this.sslBundles);
 	}
 
 	private InetSocketAddress getListenAddress() {

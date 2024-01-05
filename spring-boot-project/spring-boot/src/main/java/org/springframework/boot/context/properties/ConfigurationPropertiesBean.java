@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,17 +98,6 @@ public final class ConfigurationPropertiesBean {
 	 */
 	Class<?> getType() {
 		return this.bindTarget.getType().resolve();
-	}
-
-	/**
-	 * Return the property binding method that was used for the bean.
-	 * @return the bind method
-	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of {@link #asBindTarget} and
-	 * {@link Bindable#getBindMethod}
-	 */
-	@Deprecated(since = "3.0.8", forRemoval = true)
-	public BindMethod getBindMethod() {
-		return BindMethod.from(this.bindTarget.getBindMethod());
 	}
 
 	/**
@@ -310,37 +299,6 @@ public final class ConfigurationPropertiesBean {
 	private static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(
 			Constructor<?> bindConstructor) {
 		return (bindConstructor != null) ? VALUE_OBJECT_BIND_METHOD : JAVA_BEAN_BIND_METHOD;
-	}
-
-	/**
-	 * The binding method that is used for the bean.
-	 *
-	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of
-	 * {@link org.springframework.boot.context.properties.bind.BindMethod}
-	 */
-	@Deprecated(since = "3.0.8", forRemoval = true)
-	public enum BindMethod {
-
-		/**
-		 * Java Bean using getter/setter binding.
-		 */
-		JAVA_BEAN,
-
-		/**
-		 * Value object using constructor binding.
-		 */
-		VALUE_OBJECT;
-
-		static BindMethod from(org.springframework.boot.context.properties.bind.BindMethod bindMethod) {
-			if (bindMethod == null) {
-				return null;
-			}
-			return switch (bindMethod) {
-				case VALUE_OBJECT -> BindMethod.VALUE_OBJECT;
-				case JAVA_BEAN -> BindMethod.JAVA_BEAN;
-			};
-		}
-
 	}
 
 }

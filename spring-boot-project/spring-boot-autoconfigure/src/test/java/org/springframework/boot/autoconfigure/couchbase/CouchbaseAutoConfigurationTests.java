@@ -190,15 +190,6 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSslWithKeyStore() {
-		testClusterEnvironment((env) -> {
-			SecurityConfig securityConfig = env.securityConfig();
-			assertThat(securityConfig.tlsEnabled()).isTrue();
-			assertThat(securityConfig.trustManagerFactory()).isNotNull();
-		}, "spring.couchbase.env.ssl.keyStore=classpath:test.jks", "spring.couchbase.env.ssl.keyStorePassword=secret");
-	}
-
-	@Test
 	void enableSslWithBundle() {
 		testClusterEnvironment((env) -> {
 			SecurityConfig securityConfig = env.securityConfig();
@@ -220,16 +211,6 @@ class CouchbaseAutoConfigurationTests {
 					.isInstanceOf(NoSuchSslBundleException.class)
 					.hasMessageContaining("test-bundle");
 			});
-	}
-
-	@Test
-	void disableSslEvenWithKeyStore() {
-		testClusterEnvironment((env) -> {
-			SecurityConfig securityConfig = env.securityConfig();
-			assertThat(securityConfig.tlsEnabled()).isFalse();
-			assertThat(securityConfig.trustManagerFactory()).isNull();
-		}, "spring.couchbase.env.ssl.enabled=false", "spring.couchbase.env.ssl.keyStore=classpath:test.jks",
-				"spring.couchbase.env.ssl.keyStorePassword=secret");
 	}
 
 	@Test

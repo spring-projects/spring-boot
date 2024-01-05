@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -838,11 +837,6 @@ public class KafkaProperties {
 		private List<String> bootstrapServers;
 
 		/**
-		 * Maximum memory size to be used for buffering across all threads.
-		 */
-		private DataSize cacheMaxSizeBuffering;
-
-		/**
 		 * Maximum size of the in-memory state store cache across all threads.
 		 */
 		private DataSize stateStoreCacheMaxSize;
@@ -904,18 +898,6 @@ public class KafkaProperties {
 			this.bootstrapServers = bootstrapServers;
 		}
 
-		@DeprecatedConfigurationProperty(replacement = "spring.kafka.streams.state-store-cache-max-size",
-				since = "3.1.0")
-		@Deprecated(since = "3.1.0", forRemoval = true)
-		public DataSize getCacheMaxSizeBuffering() {
-			return this.cacheMaxSizeBuffering;
-		}
-
-		@Deprecated(since = "3.1.0", forRemoval = true)
-		public void setCacheMaxSizeBuffering(DataSize cacheMaxSizeBuffering) {
-			this.cacheMaxSizeBuffering = cacheMaxSizeBuffering;
-		}
-
 		public DataSize getStateStoreCacheMaxSize() {
 			return this.stateStoreCacheMaxSize;
 		}
@@ -957,9 +939,6 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
 			map.from(this::getBootstrapServers).to(properties.in(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getCacheMaxSizeBuffering)
-				.asInt(DataSize::toBytes)
-				.to(properties.in("cache.max.bytes.buffering"));
 			map.from(this::getStateStoreCacheMaxSize)
 				.asInt(DataSize::toBytes)
 				.to(properties.in("statestore.cache.max.bytes"));
