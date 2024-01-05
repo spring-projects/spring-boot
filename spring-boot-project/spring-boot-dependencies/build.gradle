@@ -676,6 +676,10 @@ bom {
 		}
 	}
 	library("Jetty Reactive HTTPClient", "4.0.1") {
+		prohibit {
+			versionRange "[4.0.2]"
+			because "it causes problems in Spring Framework (https://github.com/spring-projects/spring-framework/issues/31931#issue-2061468092)"
+		}
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
