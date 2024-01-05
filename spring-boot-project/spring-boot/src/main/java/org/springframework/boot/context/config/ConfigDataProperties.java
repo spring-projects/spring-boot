@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,14 +119,14 @@ class ConfigDataProperties {
 			if (activationContext == null) {
 				return false;
 			}
-			boolean activate = isActive(activationContext.getCloudPlatform());
+			CloudPlatform cloudPlatform = activationContext.getCloudPlatform();
+			boolean activate = isActive((cloudPlatform != null) ? cloudPlatform : CloudPlatform.NONE);
 			activate = activate && isActive(activationContext.getProfiles());
 			return activate;
 		}
 
 		private boolean isActive(CloudPlatform cloudPlatform) {
-			return this.onCloudPlatform == null || this.onCloudPlatform == CloudPlatform.NONE && cloudPlatform == null
-					|| this.onCloudPlatform == cloudPlatform;
+			return this.onCloudPlatform == null || this.onCloudPlatform == cloudPlatform;
 		}
 
 		private boolean isActive(Profiles profiles) {
