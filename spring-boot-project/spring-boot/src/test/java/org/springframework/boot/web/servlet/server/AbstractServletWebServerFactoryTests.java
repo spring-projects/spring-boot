@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.protocol.HttpContext;
@@ -1403,7 +1404,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
-		factory.addInitializers(new ServletRegistrationBean<>(new HttpServlet() {
+		factory.addInitializers(new ServletRegistrationBean<HttpServlet>(new HttpServlet() {
 
 			@Override
 			protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -1630,7 +1631,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 
 		@Override
-		public boolean isTrusted(X509Certificate[] chain, String authType) {
+		public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 			String hexSerialNumber = chain[0].getSerialNumber().toString(16);
 			boolean isMatch = hexSerialNumber.equalsIgnoreCase(this.serialNumber);
 			return super.isTrusted(chain, authType) && isMatch;
@@ -1770,18 +1771,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 				resp.addCookie(new Cookie("empty", "test"));
 				resp.addCookie(new Cookie("controlled", "test"));
 			}
-		}
-
-	}
-
-	protected static class TrustSelfSignedStrategy implements TrustStrategy {
-
-		public TrustSelfSignedStrategy() {
-		}
-
-		@Override
-		public boolean isTrusted(X509Certificate[] chain, String authType) {
-			return chain.length == 1;
 		}
 
 	}
