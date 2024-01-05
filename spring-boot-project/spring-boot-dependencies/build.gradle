@@ -443,6 +443,10 @@ bom {
 		}
 	}
 	library("HttpClient5", "5.2.3") {
+		prohibit {
+			versionRange "[5.3]"
+			because "it can NPE when discarding a connection (https://issues.apache.org/jira/browse/HTTPCLIENT-2313)"
+		}
 		group("org.apache.httpcomponents.client5") {
 			modules = [
 				"httpclient5",
