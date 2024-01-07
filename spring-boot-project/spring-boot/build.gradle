@@ -5,6 +5,7 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id 'io.skippy' version '0.0.13'
 }
 
 description = "Spring Boot"
@@ -136,6 +137,7 @@ dependencies {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
+	testRuntimeOnly("io.skippy:skippy-junit5:0.0.13")
 
 	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
 }
@@ -184,6 +186,7 @@ sourceSets {
 
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+	jvmArgs += "-Djunit.jupiter.extensions.autodetection.enabled=true"
 
 	// https://stackoverflow.com/a/36130467
 	afterSuite { desc, result ->
