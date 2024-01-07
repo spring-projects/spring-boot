@@ -72,6 +72,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -85,6 +86,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  * @author Moritz Halbritter
+ * @author Onur Kagan Ozcan
  */
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
@@ -539,6 +541,17 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
 		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Test
+	void shouldApplyingMaxConnectionUseConnector() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		assertThat(server.getConnectors()).isEmpty();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).extracting("_connectors", LIST).hasSize(1);
 	}
 
 	@Override
