@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
@@ -85,6 +86,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  * @author Moritz Halbritter
+ * @author Onur Kagan Ozcan
  */
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
@@ -539,6 +541,20 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
 		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Test
+	void shouldApplyingMaxConnectionUseConnector() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		assertThat(server.getConnectors()).isEmpty();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		Field connectorsField = ReflectionUtils.findField(ConnectionLimit.class, "_connectors");
+		ReflectionUtils.makeAccessible(connectorsField);
+		Object connectors = connectorsField.get(connectionLimit);
+		assertThat(connectors).isNotNull();
 	}
 
 	@Override
