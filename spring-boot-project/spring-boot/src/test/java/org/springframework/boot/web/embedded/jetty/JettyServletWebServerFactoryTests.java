@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
@@ -73,6 +72,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -551,10 +551,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		Server server = ((JettyWebServer) this.webServer).getServer();
 		assertThat(server.getConnectors()).isEmpty();
 		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
-		Field connectorsField = ReflectionUtils.findField(ConnectionLimit.class, "_connectors");
-		ReflectionUtils.makeAccessible(connectorsField);
-		Object connectors = connectorsField.get(connectionLimit);
-		assertThat(connectors).isNotNull();
+		assertThat(connectionLimit).extracting("_connectors", LIST).hasSize(1);
 	}
 
 	@Override
