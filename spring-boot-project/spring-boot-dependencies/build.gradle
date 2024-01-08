@@ -251,13 +251,6 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.2.23") {
-		group("io.dropwizard.metrics") {
-			imports = [
-				"metrics-bom"
-			]
-		}
-	}
 	library("Ehcache3", "3.10.8") {
 		group("org.ehcache") {
 			modules = [

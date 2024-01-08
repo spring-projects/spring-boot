@@ -34,7 +34,6 @@ dependencies {
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.zaxxer:HikariCP")
-	optional("io.dropwizard.metrics:metrics-jmx")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
 	optional("io.micrometer:micrometer-jakarta9")
