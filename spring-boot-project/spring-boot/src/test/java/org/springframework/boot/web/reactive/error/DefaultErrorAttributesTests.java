@@ -225,8 +225,16 @@ class DefaultErrorAttributesTests {
 	void includePath() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
-				ErrorAttributeOptions.defaults());
+				ErrorAttributeOptions.of(Include.PATH));
 		assertThat(attributes).containsEntry("path", "/test");
+	}
+
+	@Test
+	void pathShouldIncludeContext() {
+		MockServerHttpRequest request = MockServerHttpRequest.get("/context/test").contextPath("/context").build();
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
+				ErrorAttributeOptions.of(Include.PATH));
+		assertThat(attributes).containsEntry("path", "/context/test");
 	}
 
 	@Test

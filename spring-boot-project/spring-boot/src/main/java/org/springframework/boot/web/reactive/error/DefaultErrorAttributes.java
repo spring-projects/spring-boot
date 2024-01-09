@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	private Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
-		errorAttributes.put("path", request.path());
+		errorAttributes.put("path", request.requestPath().value());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
 			.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY)
