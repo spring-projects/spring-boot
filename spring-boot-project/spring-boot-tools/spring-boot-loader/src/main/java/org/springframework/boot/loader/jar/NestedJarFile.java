@@ -154,7 +154,9 @@ public class NestedJarFile extends JarFile {
 	@Override
 	public Manifest getManifest() throws IOException {
 		try {
-			return this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo).getManifest();
+			return this.resources.zipContentForManifest()
+				.getInfo(ManifestInfo.class, this::getManifestInfo)
+				.getManifest();
 		}
 		catch (UncheckedIOException ex) {
 			throw ex.getCause();

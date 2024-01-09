@@ -48,6 +48,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.ZipContent.Entry;
+import org.springframework.boot.loader.zip.ZipContent.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -165,6 +166,25 @@ class ZipContentTests {
 				Entry actual = this.zipContent.getEntry(i++);
 				assertThatFieldsAreEqual(actual.as(ZipEntry::new), expected.next());
 			}
+		}
+	}
+
+	@Test
+	void getKindWhenZipReturnsZip() {
+		assertThat(this.zipContent.getKind()).isEqualTo(Kind.ZIP);
+	}
+
+	@Test
+	void getKindWhenNestedZipReturnsNestedZip() throws IOException {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "nested.jar")) {
+			assertThat(nested.getKind()).isEqualTo(Kind.NESTED_ZIP);
+		}
+	}
+
+	@Test
+	void getKindWhenNestedDirectoryReturnsNestedDirectory() throws IOException {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
+			assertThat(nested.getKind()).isEqualTo(Kind.NESTED_DIRECTORY);
 		}
 	}
 

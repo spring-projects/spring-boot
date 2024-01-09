@@ -111,6 +111,26 @@ class NestedJarFileTests {
 	}
 
 	@Test
+	void getManifestWhenNestedJarReturnsManifestOfNestedJar() throws Exception {
+		try (JarFile jar = new JarFile(this.file)) {
+			try (NestedJarFile nestedJar = new NestedJarFile(this.file, "nested.jar")) {
+				Manifest manifest = nestedJar.getManifest();
+				assertThat(manifest).isNotEqualTo(jar.getManifest());
+				assertThat(manifest.getMainAttributes().getValue("Built-By")).isEqualTo("j2");
+			}
+		}
+	}
+
+	@Test
+	void getManifestWhenNestedJarDirectoryReturnsManifestOfParent() throws Exception {
+		try (JarFile jar = new JarFile(this.file)) {
+			try (NestedJarFile nestedJar = new NestedJarFile(this.file, "d/")) {
+				assertThat(nestedJar.getManifest()).isEqualTo(jar.getManifest());
+			}
+		}
+	}
+
+	@Test
 	void createWhenJarHasFrontMatterOpensJar() throws IOException {
 		File file = new File(this.tempDir, "frontmatter.jar");
 		InputStream sourceJarContent = new FileInputStream(this.file);
