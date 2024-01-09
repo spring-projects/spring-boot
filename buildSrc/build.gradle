@@ -30,8 +30,13 @@ if (versions.springFramework.contains("-")) {
 	}
 }
 
+checkstyle {
+	toolVersion = "10.12.4"
+}
+
 dependencies {
-	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
+	checkstyle("com.puppycrawl.tools:checkstyle:${checkstyle.toolVersion}")
+	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
 
 	implementation(platform("org.springframework:spring-framework-bom:${versions.springFramework}"))
 	implementation("com.diffplug.gradle:goomph:3.37.2")
@@ -55,10 +60,6 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-checkstyle {
-	toolVersion = "10.12.4"
 }
 
 gradlePlugin {

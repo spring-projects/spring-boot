@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -551,7 +551,7 @@ public abstract class Packager {
 		 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if
 		 * a library that requires unpacking has a matching entry name.
 		 */
-		private class PackagedLibrariesUnpackHandler implements UnpackHandler {
+		private final class PackagedLibrariesUnpackHandler implements UnpackHandler {
 
 			@Override
 			public boolean requiresUnpack(String name) {

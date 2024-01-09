@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -397,7 +397,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return body;
 		}
 
-		private static class FluxBodyConverter implements Function<Object, Object> {
+		private static final class FluxBodyConverter implements Function<Object, Object> {
 
 			@Override
 			public Object apply(Object body) {

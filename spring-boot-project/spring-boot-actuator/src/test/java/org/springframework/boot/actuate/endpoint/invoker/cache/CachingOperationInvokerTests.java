@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -261,7 +261,7 @@ class CachingOperationInvokerTests {
 		then(target).should(times(1)).invoke(contextManagement);
 	}
 
-	private static class MonoOperationInvoker implements OperationInvoker {
+	private static final class MonoOperationInvoker implements OperationInvoker {
 
 		static AtomicInteger invocations = new AtomicInteger();
 
@@ -275,7 +275,7 @@ class CachingOperationInvokerTests {
 
 	}
 
-	private static class FluxOperationInvoker implements OperationInvoker {
+	private static final class FluxOperationInvoker implements OperationInvoker {
 
 		static AtomicInteger invocations = new AtomicInteger();
 

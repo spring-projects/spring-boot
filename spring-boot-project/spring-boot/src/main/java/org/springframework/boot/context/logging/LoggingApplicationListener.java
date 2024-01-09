@@ -457,7 +457,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		this.parseArgs = parseArgs;
 	}
 
-	private class Lifecycle implements SmartLifecycle {
+	private final class Lifecycle implements SmartLifecycle {
 
 		private volatile boolean running;
 

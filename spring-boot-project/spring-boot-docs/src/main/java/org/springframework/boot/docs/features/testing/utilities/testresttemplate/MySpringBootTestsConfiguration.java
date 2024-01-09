@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MySpringBootTestsConfiguration {
 
 	@RestController
-	private static class ExampleController {
+	private static final class ExampleController {
 
 		@RequestMapping("/example")
 		ResponseEntity<String> example() {

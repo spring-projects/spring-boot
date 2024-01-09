@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -372,7 +372,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	/**
 	 * Inner class to configure {@link WebMergedContextConfiguration}.
 	 */
-	private static class WebConfigurer {
+	private static final class WebConfigurer {
 
 		void configure(MergedContextConfiguration mergedConfig, SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {

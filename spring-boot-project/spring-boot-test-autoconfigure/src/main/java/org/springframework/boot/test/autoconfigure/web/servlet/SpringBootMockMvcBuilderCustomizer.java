@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				writer.write(((Printer) getPrinter()).getLines());
 			}
 
-			private static class Printer implements ResultValuePrinter {
+			private static final class Printer implements ResultValuePrinter {
 
 				private final List<String> lines = new ArrayList<>();
 
@@ -261,7 +261,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	/**
 	 * {@link LinesWriter} to output results to the log.
 	 */
-	private static class LoggingLinesWriter implements LinesWriter {
+	private static final class LoggingLinesWriter implements LinesWriter {
 
 		private static final Log logger = LogFactory.getLog("org.springframework.test.web.servlet.result");
 
@@ -318,7 +318,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			addAsRegistrationBean(beanFactory, Filter.class, new FilterRegistrationBeanAdapter());
 		}
 
-		private static class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
+		private static final class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
 
 			@Override
 			public RegistrationBean createRegistrationBean(String name, Filter source, int totalNumberOfSourceBeans) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class CustomConfiguration {
+	private static final class CustomConfiguration {
 
 		@Bean
 		ApplicationTags customApplicationTags() {
@@ -203,7 +203,7 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class WavefrontSenderConfiguration {
+	private static final class WavefrontSenderConfiguration {
 
 		@Bean
 		WavefrontSender wavefrontSender() {
@@ -213,7 +213,7 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class MeterRegistryConfiguration {
+	private static final class MeterRegistryConfiguration {
 
 		@Bean
 		MeterRegistry meterRegistry() {

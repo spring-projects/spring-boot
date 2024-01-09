@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -500,7 +500,7 @@ public class DockerApi {
 	/**
 	 * {@link UpdateListener} used to capture the image digest.
 	 */
-	private static class DigestCaptureUpdateListener implements UpdateListener<ProgressUpdateEvent> {
+	private static final class DigestCaptureUpdateListener implements UpdateListener<ProgressUpdateEvent> {
 
 		private static final String PREFIX = "Digest:";
 
@@ -521,7 +521,7 @@ public class DockerApi {
 	/**
 	 * {@link UpdateListener} used to ensure an image load response stream.
 	 */
-	private static class StreamCaptureUpdateListener implements UpdateListener<LoadImageUpdateEvent> {
+	private static final class StreamCaptureUpdateListener implements UpdateListener<LoadImageUpdateEvent> {
 
 		private String stream;
 
@@ -540,7 +540,7 @@ public class DockerApi {
 	 * {@link UpdateListener} used to capture the details of an error in a response
 	 * stream.
 	 */
-	private static class ErrorCaptureUpdateListener implements UpdateListener<PushImageUpdateEvent> {
+	private static final class ErrorCaptureUpdateListener implements UpdateListener<PushImageUpdateEvent> {
 
 		@Override
 		public void onUpdate(PushImageUpdateEvent event) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -277,7 +277,7 @@ public class CassandraAutoConfiguration {
 		return connectionDetails.getContactPoints().stream().map((node) -> node.host() + ":" + node.port()).toList();
 	}
 
-	private static class CassandraDriverOptions {
+	private static final class CassandraDriverOptions {
 
 		private final Map<String, String> options = new LinkedHashMap<>();
 

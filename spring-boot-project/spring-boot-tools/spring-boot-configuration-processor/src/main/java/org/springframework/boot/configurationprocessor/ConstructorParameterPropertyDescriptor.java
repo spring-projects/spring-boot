@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 		return (coercedValue != null) ? coercedValue : value;
 	}
 
-	private static class DefaultValueCoercionTypeVisitor extends TypeKindVisitor8<Object, String> {
+	private static final class DefaultValueCoercionTypeVisitor extends TypeKindVisitor8<Object, String> {
 
 		private static final DefaultValueCoercionTypeVisitor INSTANCE = new DefaultValueCoercionTypeVisitor();
 
@@ -161,7 +161,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 	}
 
-	private static class DefaultPrimitiveTypeVisitor extends TypeKindVisitor8<Object, Void> {
+	private static final class DefaultPrimitiveTypeVisitor extends TypeKindVisitor8<Object, Void> {
 
 		private static final DefaultPrimitiveTypeVisitor INSTANCE = new DefaultPrimitiveTypeVisitor();
 

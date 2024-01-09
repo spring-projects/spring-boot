@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -342,7 +342,7 @@ public final class LambdaSafe {
 	 * {@link Filter} that matches when the callback has a single generic and primary
 	 * argument is an instance of it.
 	 */
-	private static class GenericTypeFilter<C, A> implements Filter<C, A> {
+	private static final class GenericTypeFilter<C, A> implements Filter<C, A> {
 
 		@Override
 		public boolean match(Class<C> callbackType, C callbackInstance, A argument, Object[] additionalArguments) {
