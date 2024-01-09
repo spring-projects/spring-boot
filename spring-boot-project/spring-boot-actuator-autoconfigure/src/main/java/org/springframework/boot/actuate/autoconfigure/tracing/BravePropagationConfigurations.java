@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.propagation.Propagation.KeyFactory;
+import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Baggage.Correlation;
@@ -90,7 +91,8 @@ class BravePropagationConfigurations {
 			baggagePropagationCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(throwAwayBuilder));
 			CompositePropagationFactory propagationFactory = CompositePropagationFactory.create(
-					this.tracingProperties.getPropagation(), BraveAutoConfiguration.BRAVE_BAGGAGE_MANAGER,
+					this.tracingProperties.getPropagation(),
+					new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields()),
 					LocalBaggageFields.extractFrom(throwAwayBuilder));
 			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(propagationFactory);
 			throwAwayBuilder.configs().forEach(builder::add);
@@ -110,12 +112,15 @@ class BravePropagationConfigurations {
 		}
 
 		@Bean
-		@Order(0)
 		BaggagePropagationCustomizer remoteFieldsBaggagePropagationCustomizer() {
 			return (builder) -> {
 				List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
 				for (String fieldName : remoteFields) {
 					builder.add(BaggagePropagationConfig.SingleBaggageField.remote(BaggageField.create(fieldName)));
+				}
+				List<String> localFields = this.tracingProperties.getBaggage().getLocalFields();
+				for (String localFieldName : localFields) {
+					builder.add(BaggagePropagationConfig.SingleBaggageField.local(BaggageField.create(localFieldName)));
 				}
 			};
 		}

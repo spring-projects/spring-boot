@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,12 +70,16 @@ import org.springframework.core.env.Environment;
 		BravePropagationConfigurations.NoPropagation.class })
 public class BraveAutoConfiguration {
 
-	static final BraveBaggageManager BRAVE_BAGGAGE_MANAGER = new BraveBaggageManager();
-
 	/**
 	 * Default value for application name if {@code spring.application.name} is not set.
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "application";
+
+	private final TracingProperties tracingProperties;
+
+	BraveAutoConfiguration(TracingProperties tracingProperties) {
+		this.tracingProperties = tracingProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -88,22 +92,22 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Tracing braveTracing(Environment environment, TracingProperties properties, List<SpanHandler> spanHandlers,
+	Tracing braveTracing(Environment environment, List<SpanHandler> spanHandlers,
 			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
 			Factory propagationFactory, Sampler sampler) {
-		if (properties.getBrave().isSpanJoiningSupported()) {
-			if (properties.getPropagation().getType() != null
-					&& properties.getPropagation().getType().contains(PropagationType.W3C)) {
+		if (this.tracingProperties.getBrave().isSpanJoiningSupported()) {
+			if (this.tracingProperties.getPropagation().getType() != null
+					&& this.tracingProperties.getPropagation().getType().contains(PropagationType.W3C)) {
 				throw new IncompatibleConfigurationException("management.tracing.propagation.type",
 						"management.tracing.brave.span-joining-supported");
 			}
-			if (properties.getPropagation().getType() == null
-					&& properties.getPropagation().getProduce().contains(PropagationType.W3C)) {
+			if (this.tracingProperties.getPropagation().getType() == null
+					&& this.tracingProperties.getPropagation().getProduce().contains(PropagationType.W3C)) {
 				throw new IncompatibleConfigurationException("management.tracing.propagation.produce",
 						"management.tracing.brave.span-joining-supported");
 			}
-			if (properties.getPropagation().getType() == null
-					&& properties.getPropagation().getConsume().contains(PropagationType.W3C)) {
+			if (this.tracingProperties.getPropagation().getType() == null
+					&& this.tracingProperties.getPropagation().getConsume().contains(PropagationType.W3C)) {
 				throw new IncompatibleConfigurationException("management.tracing.propagation.consume",
 						"management.tracing.brave.span-joining-supported");
 			}
@@ -112,7 +116,7 @@ public class BraveAutoConfiguration {
 		Builder builder = Tracing.newBuilder()
 			.currentTraceContext(currentTraceContext)
 			.traceId128Bit(true)
-			.supportsJoin(properties.getBrave().isSpanJoiningSupported())
+			.supportsJoin(this.tracingProperties.getBrave().isSpanJoiningSupported())
 			.propagationFactory(propagationFactory)
 			.sampler(sampler)
 			.localServiceName(applicationName);
@@ -125,13 +129,13 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public brave.Tracer braveTracer(Tracing tracing) {
+	brave.Tracer braveTracer(Tracing tracing) {
 		return tracing.tracer();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CurrentTraceContext braveCurrentTraceContext(List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
+	CurrentTraceContext braveCurrentTraceContext(List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
 			List<CurrentTraceContextCustomizer> currentTraceContextCustomizers) {
 		ThreadLocalCurrentTraceContext.Builder builder = ThreadLocalCurrentTraceContext.newBuilder();
 		scopeDecorators.forEach(builder::addScopeDecorator);
@@ -143,14 +147,15 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Sampler braveSampler(TracingProperties properties) {
-		return Sampler.create(properties.getSampling().getProbability());
+	Sampler braveSampler() {
+		return Sampler.create(this.tracingProperties.getSampling().getProbability());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
-		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), BRAVE_BAGGAGE_MANAGER);
+		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext),
+				new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields()));
 	}
 
 	@Bean

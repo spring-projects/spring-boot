@@ -354,6 +354,16 @@ class BraveAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldConfigureTaggedFields() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.tag-fields=t1").run((context) -> {
+			BraveTracer braveTracer = context.getBean(BraveTracer.class);
+			assertThat(braveTracer).extracting("braveBaggageManager.tagFields")
+				.asInstanceOf(InstanceOfAssertFactories.list(String.class))
+				.containsExactly("t1");
+		});
+	}
+
 	private void injectToMap(Map<String, String> map, String key, String value) {
 		map.put(key, value);
 	}

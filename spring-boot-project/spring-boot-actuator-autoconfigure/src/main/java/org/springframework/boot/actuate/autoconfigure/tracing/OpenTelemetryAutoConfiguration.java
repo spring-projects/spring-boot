@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.micrometer.tracing.SpanCustomizer;
@@ -47,6 +46,8 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessorBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringBootVersion;
@@ -57,6 +58,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry tracing.
@@ -75,10 +77,15 @@ import org.springframework.context.annotation.Import;
 		OpenTelemetryPropagationConfigurations.NoPropagation.class })
 public class OpenTelemetryAutoConfiguration {
 
+	private static final Log logger = LogFactory.getLog(OpenTelemetryAutoConfiguration.class);
+
 	private final TracingProperties tracingProperties;
 
 	OpenTelemetryAutoConfiguration(TracingProperties tracingProperties) {
 		this.tracingProperties = tracingProperties;
+		if (!CollectionUtils.isEmpty(this.tracingProperties.getBaggage().getLocalFields())) {
+			logger.warn("Local fields are not supported when using OpenTelemetry!");
+		}
 	}
 
 	@Bean
@@ -137,9 +144,10 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	OtelTracer micrometerOtelTracer(Tracer tracer, EventPublisher eventPublisher,
 			OtelCurrentTraceContext otelCurrentTraceContext) {
+		List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
+		List<String> tagFields = this.tracingProperties.getBaggage().getTagFields();
 		return new OtelTracer(tracer, otelCurrentTraceContext, eventPublisher,
-				new OtelBaggageManager(otelCurrentTraceContext, this.tracingProperties.getBaggage().getRemoteFields(),
-						Collections.emptyList()));
+				new OtelBaggageManager(otelCurrentTraceContext, remoteFields, tagFields));
 	}
 
 	@Bean
