@@ -1,0 +1,2 @@
+org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter
+org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilterTests

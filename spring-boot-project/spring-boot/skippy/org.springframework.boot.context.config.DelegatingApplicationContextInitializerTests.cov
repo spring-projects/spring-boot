@@ -1,0 +1,4 @@
+org.springframework.boot.context.config.DelegatingApplicationContextInitializer
+org.springframework.boot.context.config.DelegatingApplicationContextInitializerTests
+org.springframework.boot.context.config.DelegatingApplicationContextInitializerTests$MockInitA
+org.springframework.boot.context.config.DelegatingApplicationContextInitializerTests$MockInitB

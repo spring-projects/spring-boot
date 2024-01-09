@@ -1,0 +1,7 @@
+org.springframework.boot.logging.LoggingSystemProperty
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.logging.log4j2.Log4j2FileXmlTests
+org.springframework.boot.logging.log4j2.Log4j2XmlTests
+org.springframework.boot.logging.log4j2.SpringBootPropertySource
+org.springframework.boot.logging.log4j2.SpringEnvironmentLookup

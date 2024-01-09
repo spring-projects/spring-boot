@@ -1,0 +1,4 @@
+org.springframework.boot.context.properties.bind.validation.OriginTrackedFieldError
+org.springframework.boot.context.properties.bind.validation.OriginTrackedFieldErrorTests
+org.springframework.boot.origin.MockOrigin
+org.springframework.boot.origin.Origin

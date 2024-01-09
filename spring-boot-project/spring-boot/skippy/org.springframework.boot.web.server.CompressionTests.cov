@@ -1,0 +1,2 @@
+org.springframework.boot.web.server.Compression
+org.springframework.boot.web.server.CompressionTests

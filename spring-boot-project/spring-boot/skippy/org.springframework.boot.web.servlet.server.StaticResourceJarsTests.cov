@@ -1,0 +1,3 @@
+org.springframework.boot.web.servlet.server.StaticResourceJars
+org.springframework.boot.web.servlet.server.StaticResourceJarsTests
+org.springframework.boot.web.servlet.server.StaticResourceJarsTests$TrackedURLStreamHandler

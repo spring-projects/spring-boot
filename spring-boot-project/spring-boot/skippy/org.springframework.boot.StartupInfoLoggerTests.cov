@@ -1,0 +1,6 @@
+org.springframework.boot.SpringApplication$Startup
+org.springframework.boot.StartupInfoLogger
+org.springframework.boot.StartupInfoLoggerTests
+org.springframework.boot.StartupInfoLoggerTests$TestStartup
+org.springframework.boot.system.ApplicationHome
+org.springframework.boot.system.ApplicationPid

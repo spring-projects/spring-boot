@@ -1,0 +1,8 @@
+org.springframework.boot.context.properties.BindMethodAttribute
+org.springframework.boot.context.properties.ConfigurationPropertiesBean
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrar
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessorTests
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider$Constructors
+org.springframework.boot.jackson.JsonMixinModuleEntriesBeanRegistrationAotProcessor

@@ -1,0 +1,4 @@
+org.springframework.boot.info.GitProperties
+org.springframework.boot.info.GitProperties$GitPropertiesRuntimeHints
+org.springframework.boot.info.GitPropertiesTests
+org.springframework.boot.info.InfoProperties

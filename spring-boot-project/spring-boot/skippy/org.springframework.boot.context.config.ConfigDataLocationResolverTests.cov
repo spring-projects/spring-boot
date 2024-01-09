@@ -1,0 +1,3 @@
+org.springframework.boot.context.config.ConfigDataLocationResolver
+org.springframework.boot.context.config.ConfigDataLocationResolverTests
+org.springframework.boot.context.config.ConfigDataLocationResolverTests$TestConfigDataLocationResolver

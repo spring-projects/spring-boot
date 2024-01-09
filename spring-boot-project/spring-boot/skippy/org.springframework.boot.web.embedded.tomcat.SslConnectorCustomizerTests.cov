@@ -1,0 +1,15 @@
+org.springframework.boot.ssl.DefaultSslManagerBundle
+org.springframework.boot.ssl.SslBundleKey
+org.springframework.boot.ssl.SslBundleKey$1
+org.springframework.boot.ssl.SslManagerBundle
+org.springframework.boot.ssl.SslOptions
+org.springframework.boot.ssl.SslOptions$1
+org.springframework.boot.ssl.jks.JksSslStoreBundle
+org.springframework.boot.ssl.jks.JksSslStoreDetails
+org.springframework.boot.web.embedded.test.MockKeyStoreSpi
+org.springframework.boot.web.embedded.test.MockPkcs11SecurityProviderExtension
+org.springframework.boot.web.embedded.tomcat.SslConnectorCustomizer
+org.springframework.boot.web.embedded.tomcat.SslConnectorCustomizerTests
+org.springframework.boot.web.server.Ssl
+org.springframework.boot.web.server.Ssl$ClientAuth
+org.springframework.boot.web.server.WebServerSslBundle

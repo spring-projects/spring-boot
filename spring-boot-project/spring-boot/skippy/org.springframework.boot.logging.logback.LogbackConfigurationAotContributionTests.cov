@@ -1,0 +1,8 @@
+org.springframework.boot.logging.logback.LogbackConfigurationAotContributionTests
+org.springframework.boot.logging.logback.LogbackConfigurationAotContributionTests$Implementation
+org.springframework.boot.logging.logback.LogbackConfigurationAotContributionTests$Outer
+org.springframework.boot.logging.logback.LogbackConfigurationAotContributionTests$OuterWithDefaultClass
+org.springframework.boot.logging.logback.SpringBootJoranConfigurator
+org.springframework.boot.logging.logback.SpringBootJoranConfigurator$LogbackConfigurationAotContribution
+org.springframework.boot.logging.logback.SpringBootJoranConfigurator$ModelWriter
+org.springframework.boot.logging.logback.SpringBootJoranConfigurator$PatternRules

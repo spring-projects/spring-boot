@@ -1,0 +1,6 @@
+org.springframework.boot.logging.AbstractLoggingSystem$LogLevels
+org.springframework.boot.logging.log4j2.Log4J2LoggingSystem
+org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$1
+org.springframework.boot.logging.log4j2.SpringBootPropertySource
+org.springframework.boot.logging.log4j2.SpringEnvironmentLookup
+org.springframework.boot.logging.log4j2.SpringEnvironmentLookupTests

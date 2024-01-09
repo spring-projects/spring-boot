@@ -1,0 +1,15 @@
+org.springframework.boot.util.Instantiator
+org.springframework.boot.util.Instantiator$1
+org.springframework.boot.util.Instantiator$TypeSupplier
+org.springframework.boot.util.Instantiator$TypeSupplier$1
+org.springframework.boot.util.Instantiator$TypeSupplier$2
+org.springframework.boot.util.InstantiatorTests
+org.springframework.boot.util.InstantiatorTests$1
+org.springframework.boot.util.InstantiatorTests$CustomFailureHandler
+org.springframework.boot.util.InstantiatorTests$ParamA
+org.springframework.boot.util.InstantiatorTests$ParamB
+org.springframework.boot.util.InstantiatorTests$ParamC
+org.springframework.boot.util.InstantiatorTests$WithAdditionalConstructor
+org.springframework.boot.util.InstantiatorTests$WithFactory
+org.springframework.boot.util.InstantiatorTests$WithMultipleConstructors
+org.springframework.boot.util.WithDefaultConstructor

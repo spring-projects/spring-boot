@@ -1,0 +1,12 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.web.servlet.AbstractFilterRegistrationBean
+org.springframework.boot.web.servlet.AbstractFilterRegistrationBeanTests
+org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean
+org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean$1
+org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBeanTests
+org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBeanTests$MockFilter
+org.springframework.boot.web.servlet.DynamicRegistrationBean
+org.springframework.boot.web.servlet.RegistrationBean
+org.springframework.boot.web.servlet.ServletRegistrationBean

@@ -1,0 +1,5 @@
+org.springframework.boot.BeanDefinitionLoader
+org.springframework.boot.BeanDefinitionLoader$ClassExcludeFilter
+org.springframework.boot.BeanDefinitionLoaderTests
+org.springframework.boot.BeanDefinitionLoaderTests$1
+org.springframework.boot.sampleconfig.MyComponent

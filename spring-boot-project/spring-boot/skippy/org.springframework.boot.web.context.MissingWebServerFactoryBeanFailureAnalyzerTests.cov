@@ -1,0 +1,14 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.diagnostics.AbstractFailureAnalyzer
+org.springframework.boot.diagnostics.FailureAnalysis
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.web.context.MissingWebServerFactoryBeanException
+org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer
+org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzerTests
+org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext
+org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext
+org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment
+org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext
+org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext$ExistingWebApplicationScopes
+org.springframework.boot.web.servlet.context.WebApplicationContextServletContextAwareProcessor

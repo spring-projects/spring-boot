@@ -1,0 +1,8 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.jdbc.DataSourceUnwrapper
+org.springframework.boot.jdbc.DataSourceUnwrapper$DelegatingDataSourceUnwrapper
+org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle
+org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycleTests
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.logging.logback.ColorConverter

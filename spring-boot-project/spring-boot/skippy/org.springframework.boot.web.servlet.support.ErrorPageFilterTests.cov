@@ -1,0 +1,11 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.web.server.ErrorPage
+org.springframework.boot.web.servlet.support.ErrorPageFilter
+org.springframework.boot.web.servlet.support.ErrorPageFilter$1
+org.springframework.boot.web.servlet.support.ErrorPageFilter$ErrorWrapperResponse
+org.springframework.boot.web.servlet.support.ErrorPageFilterTests
+org.springframework.boot.web.servlet.support.ErrorPageFilterTests$DispatchRecordingMockHttpServletRequest
+org.springframework.boot.web.servlet.support.ErrorPageFilterTests$DispatchRecordingMockHttpServletRequest$AttributeCapturingRequestDispatcher
+org.springframework.boot.web.servlet.support.ErrorPageFilterTests$TestFilterChain

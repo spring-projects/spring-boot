@@ -1,0 +1,2 @@
+org.springframework.boot.json.JacksonRuntimeHints
+org.springframework.boot.json.JacksonRuntimeHintsTests

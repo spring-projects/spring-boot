@@ -1,0 +1,5 @@
+org.springframework.boot.convert.DurationStyle
+org.springframework.boot.convert.DurationStyle$1
+org.springframework.boot.convert.DurationStyle$2
+org.springframework.boot.convert.DurationStyle$Unit
+org.springframework.boot.convert.DurationStyleTests

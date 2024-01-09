@@ -1,0 +1,5 @@
+org.springframework.boot.json.AbstractJsonParser
+org.springframework.boot.json.AbstractJsonParserTests
+org.springframework.boot.json.JacksonJsonParser
+org.springframework.boot.json.JacksonJsonParserTests
+org.springframework.boot.json.JsonParseException

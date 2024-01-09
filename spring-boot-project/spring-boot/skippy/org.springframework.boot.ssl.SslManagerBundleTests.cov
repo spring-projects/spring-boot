@@ -1,0 +1,4 @@
+org.springframework.boot.ssl.DefaultSslManagerBundle
+org.springframework.boot.ssl.SslManagerBundle
+org.springframework.boot.ssl.SslManagerBundle$1
+org.springframework.boot.ssl.SslManagerBundleTests

@@ -1,0 +1,11 @@
+org.springframework.boot.context.properties.source.ConfigurationPropertyName
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementType
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$Elements
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementsParser
+org.springframework.boot.context.properties.source.IterableConfigurationPropertySource
+org.springframework.boot.context.properties.source.MockConfigurationPropertySource
+org.springframework.boot.context.properties.source.PrefixedConfigurationPropertySource
+org.springframework.boot.context.properties.source.PrefixedIterableConfigurationPropertySource
+org.springframework.boot.context.properties.source.PrefixedIterableConfigurationPropertySourceTests
+org.springframework.boot.origin.OriginTrackedValue
+org.springframework.boot.origin.OriginTrackedValue$OriginTrackedCharSequence

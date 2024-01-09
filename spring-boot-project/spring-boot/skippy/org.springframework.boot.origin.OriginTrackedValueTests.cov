@@ -1,0 +1,3 @@
+org.springframework.boot.origin.OriginTrackedValue
+org.springframework.boot.origin.OriginTrackedValue$OriginTrackedCharSequence
+org.springframework.boot.origin.OriginTrackedValueTests

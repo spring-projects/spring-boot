@@ -1,0 +1,3 @@
+org.springframework.boot.logging.LoggerConfiguration$LevelConfiguration
+org.springframework.boot.logging.LoggerConfigurationTests
+org.springframework.boot.logging.LoggerConfigurationTests$LevelConfigurationTests

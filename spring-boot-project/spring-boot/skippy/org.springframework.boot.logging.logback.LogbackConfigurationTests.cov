@@ -1,0 +1,3 @@
+org.springframework.boot.logging.logback.ColorConverter
+org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter
+org.springframework.boot.logging.logback.LogbackConfigurationTests

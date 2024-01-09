@@ -1,0 +1,7 @@
+org.springframework.boot.AbstractApplicationEnvironmentTests
+org.springframework.boot.context.properties.source.ConfigurationPropertySources
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver$DefaultResolver
+org.springframework.boot.web.reactive.context.ApplicationReactiveWebEnvironment
+org.springframework.boot.web.reactive.context.ApplicationReactiveWebEnvironmentTests
+org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment

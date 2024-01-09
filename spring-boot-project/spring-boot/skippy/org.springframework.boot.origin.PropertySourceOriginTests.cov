@@ -1,0 +1,3 @@
+org.springframework.boot.origin.OriginLookup
+org.springframework.boot.origin.PropertySourceOrigin
+org.springframework.boot.origin.PropertySourceOriginTests

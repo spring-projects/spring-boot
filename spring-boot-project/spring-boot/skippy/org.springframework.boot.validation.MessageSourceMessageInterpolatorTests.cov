@@ -1,0 +1,3 @@
+org.springframework.boot.validation.MessageSourceMessageInterpolator
+org.springframework.boot.validation.MessageSourceMessageInterpolatorTests
+org.springframework.boot.validation.MessageSourceMessageInterpolatorTests$IdentityMessageInterpolator

@@ -1,0 +1,4 @@
+org.springframework.boot.logging.LoggingSystemProperties
+org.springframework.boot.logging.LoggingSystemPropertiesTests
+org.springframework.boot.logging.LoggingSystemProperty
+org.springframework.boot.system.ApplicationPid

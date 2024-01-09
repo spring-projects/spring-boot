@@ -1,0 +1,8 @@
+org.springframework.boot.origin.JarUri
+org.springframework.boot.origin.MockOrigin
+org.springframework.boot.origin.Origin
+org.springframework.boot.origin.OriginTrackedResource
+org.springframework.boot.origin.TextResourceOrigin
+org.springframework.boot.origin.TextResourceOrigin$Location
+org.springframework.boot.origin.TextResourceOriginTests
+org.springframework.boot.origin.TextResourceOriginTests$1

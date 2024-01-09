@@ -1,0 +1,5 @@
+org.springframework.boot.info.JavaInfo
+org.springframework.boot.info.JavaInfo$JavaRuntimeEnvironmentInfo
+org.springframework.boot.info.JavaInfo$JavaVendorInfo
+org.springframework.boot.info.JavaInfo$JavaVirtualMachineInfo
+org.springframework.boot.info.JavaInfoTests

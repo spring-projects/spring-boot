@@ -1,0 +1,2 @@
+org.springframework.boot.web.client.ClientHttpRequestFactoriesRuntimeHints
+org.springframework.boot.web.client.ClientHttpRequestFactoriesRuntimeHintsTests

@@ -1,0 +1,2 @@
+org.springframework.boot.web.servlet.MultipartConfigFactory
+org.springframework.boot.web.servlet.MultipartConfigFactoryTests

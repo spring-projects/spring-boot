@@ -1,0 +1,16 @@
+org.springframework.boot.context.config.ConfigData
+org.springframework.boot.context.config.ConfigData$Options
+org.springframework.boot.context.config.ConfigData$PropertySourceOptions
+org.springframework.boot.context.config.ConfigDataException
+org.springframework.boot.context.config.ConfigDataNotFoundException
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.context.config.ConfigDataResourceNotFoundException
+org.springframework.boot.context.config.ConfigTreeConfigDataLoader
+org.springframework.boot.context.config.ConfigTreeConfigDataLoaderTests
+org.springframework.boot.context.config.ConfigTreeConfigDataResource
+org.springframework.boot.env.ConfigTreePropertySource
+org.springframework.boot.env.ConfigTreePropertySource$Option
+org.springframework.boot.env.ConfigTreePropertySource$PropertyFile
+org.springframework.boot.env.ConfigTreePropertySource$PropertyFileContent
+org.springframework.boot.origin.TextResourceOrigin
+org.springframework.boot.origin.TextResourceOrigin$Location

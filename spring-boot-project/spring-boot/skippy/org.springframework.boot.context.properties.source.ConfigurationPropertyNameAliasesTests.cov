@@ -1,0 +1,6 @@
+org.springframework.boot.context.properties.source.ConfigurationPropertyName
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementType
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$Elements
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementsParser
+org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases
+org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliasesTests

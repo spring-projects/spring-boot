@@ -1,0 +1,4 @@
+org.springframework.boot.origin.MockOrigin
+org.springframework.boot.origin.OriginTrackedResource
+org.springframework.boot.origin.OriginTrackedResource$OriginTrackedWritableResource
+org.springframework.boot.origin.OriginTrackedResourceTests

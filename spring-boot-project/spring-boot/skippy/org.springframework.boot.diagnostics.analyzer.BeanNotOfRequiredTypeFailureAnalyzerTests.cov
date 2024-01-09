@@ -1,0 +1,10 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.diagnostics.AbstractFailureAnalyzer
+org.springframework.boot.diagnostics.FailureAnalysis
+org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzer
+org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzerTests
+org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzerTests$AsyncBean
+org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzerTests$JdkProxyConfiguration
+org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzerTests$UserConfiguration
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter

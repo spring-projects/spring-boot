@@ -1,0 +1,5 @@
+org.springframework.boot.info.InfoProperties
+org.springframework.boot.info.InfoProperties$Entry
+org.springframework.boot.info.InfoProperties$PropertiesIterator
+org.springframework.boot.info.InfoPropertiesTests
+org.springframework.boot.info.InfoPropertiesTests$MyInfoProperties

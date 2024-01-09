@@ -1,0 +1,4 @@
+org.springframework.boot.info.BuildProperties
+org.springframework.boot.info.BuildProperties$BuildPropertiesRuntimeHints
+org.springframework.boot.info.BuildPropertiesTests
+org.springframework.boot.info.InfoProperties

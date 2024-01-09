@@ -1,0 +1,8 @@
+org.springframework.boot.convert.ApplicationConversionService
+org.springframework.boot.convert.StringToDataSizeConverter
+org.springframework.boot.logging.LoggingSystemProperties
+org.springframework.boot.logging.LoggingSystemProperty
+org.springframework.boot.logging.logback.LogbackLoggingSystemProperties
+org.springframework.boot.logging.logback.LogbackLoggingSystemPropertiesTests
+org.springframework.boot.logging.logback.RollingPolicySystemProperty
+org.springframework.boot.system.ApplicationPid

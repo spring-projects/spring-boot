@@ -1,0 +1,3 @@
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider$Constructors
+org.springframework.boot.context.properties.bind.KotlinDefaultBindConstructorProviderTests

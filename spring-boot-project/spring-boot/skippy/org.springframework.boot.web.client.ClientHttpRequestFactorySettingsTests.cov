@@ -1,0 +1,2 @@
+org.springframework.boot.web.client.ClientHttpRequestFactorySettings
+org.springframework.boot.web.client.ClientHttpRequestFactorySettingsTests

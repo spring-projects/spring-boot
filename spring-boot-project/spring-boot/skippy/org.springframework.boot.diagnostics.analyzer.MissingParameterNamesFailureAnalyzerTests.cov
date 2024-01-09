@@ -1,0 +1,4 @@
+org.springframework.boot.diagnostics.FailureAnalysis
+org.springframework.boot.diagnostics.analyzer.MissingParameterNamesFailureAnalyzer
+org.springframework.boot.diagnostics.analyzer.MissingParameterNamesFailureAnalyzerTests
+org.springframework.boot.diagnostics.analyzer.MissingParameterNamesFailureAnalyzerTests$MockResolver

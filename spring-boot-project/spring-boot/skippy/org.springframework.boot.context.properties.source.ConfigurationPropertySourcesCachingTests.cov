@@ -1,0 +1,3 @@
+org.springframework.boot.context.properties.source.CachingConfigurationPropertySource
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesCaching
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesCachingTests

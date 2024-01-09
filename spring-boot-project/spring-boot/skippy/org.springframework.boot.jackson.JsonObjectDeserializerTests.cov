@@ -1,0 +1,6 @@
+org.springframework.boot.jackson.JsonObjectDeserializer
+org.springframework.boot.jackson.JsonObjectDeserializerTests
+org.springframework.boot.jackson.JsonObjectDeserializerTests$TestJsonObjectDeserializer
+org.springframework.boot.jackson.NameAndAgeJsonComponent$Deserializer
+org.springframework.boot.jackson.types.Name
+org.springframework.boot.jackson.types.NameAndAge

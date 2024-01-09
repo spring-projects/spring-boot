@@ -1,0 +1,4 @@
+org.springframework.boot.context.properties.bind.Bindable
+org.springframework.boot.context.properties.bind.Bindable$BindRestriction
+org.springframework.boot.context.properties.bind.BindableTests
+org.springframework.boot.context.properties.bind.BindableTests$JavaBeanOrValueObject

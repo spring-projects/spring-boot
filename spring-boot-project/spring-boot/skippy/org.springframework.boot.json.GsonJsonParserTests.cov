@@ -1,0 +1,7 @@
+org.springframework.boot.json.AbstractJsonParser
+org.springframework.boot.json.AbstractJsonParserTests
+org.springframework.boot.json.GsonJsonParser
+org.springframework.boot.json.GsonJsonParser$ListTypeToken
+org.springframework.boot.json.GsonJsonParser$MapTypeToken
+org.springframework.boot.json.GsonJsonParserTests
+org.springframework.boot.json.JsonParseException

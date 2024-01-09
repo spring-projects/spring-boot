@@ -1,0 +1,2 @@
+org.springframework.boot.logging.logback.LogbackRuntimeHints
+org.springframework.boot.logging.logback.LogbackRuntimeHintsTests

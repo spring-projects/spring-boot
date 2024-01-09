@@ -1,0 +1,4 @@
+org.springframework.boot.diagnostics.AbstractFailureAnalyzer
+org.springframework.boot.diagnostics.FailureAnalysis
+org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer
+org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzerTests

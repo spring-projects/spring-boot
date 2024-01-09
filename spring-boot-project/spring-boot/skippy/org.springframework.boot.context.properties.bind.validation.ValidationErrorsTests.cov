@@ -1,0 +1,10 @@
+org.springframework.boot.context.properties.bind.validation.OriginTrackedFieldError
+org.springframework.boot.context.properties.bind.validation.ValidationErrors
+org.springframework.boot.context.properties.bind.validation.ValidationErrorsTests
+org.springframework.boot.context.properties.source.ConfigurationProperty
+org.springframework.boot.context.properties.source.ConfigurationPropertyName
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementType
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$Elements
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementsParser
+org.springframework.boot.origin.MockOrigin
+org.springframework.boot.origin.Origin

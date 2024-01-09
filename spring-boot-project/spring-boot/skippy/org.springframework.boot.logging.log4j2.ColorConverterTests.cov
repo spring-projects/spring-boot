@@ -1,0 +1,6 @@
+org.springframework.boot.ansi.AnsiColor
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.ansi.AnsiStyle
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ColorConverterTests
+org.springframework.boot.logging.log4j2.ColorConverterTests$TestLogEvent

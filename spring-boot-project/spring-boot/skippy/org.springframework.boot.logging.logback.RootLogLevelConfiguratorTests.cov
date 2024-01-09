@@ -1,0 +1,2 @@
+org.springframework.boot.logging.logback.RootLogLevelConfigurator
+org.springframework.boot.logging.logback.RootLogLevelConfiguratorTests

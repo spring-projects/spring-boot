@@ -1,0 +1,12 @@
+org.springframework.boot.context.properties.source.CachingConfigurationPropertySource
+org.springframework.boot.context.properties.source.ConfigurationPropertyCaching
+org.springframework.boot.context.properties.source.ConfigurationPropertyCachingTests
+org.springframework.boot.context.properties.source.ConfigurationPropertySources
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesCaching
+org.springframework.boot.context.properties.source.PropertyMapper
+org.springframework.boot.context.properties.source.SoftReferenceConfigurationPropertyCache
+org.springframework.boot.context.properties.source.SpringConfigurationPropertySource
+org.springframework.boot.context.properties.source.SpringConfigurationPropertySources
+org.springframework.boot.context.properties.source.SpringConfigurationPropertySources$SourcesIterator
+org.springframework.boot.context.properties.source.SpringIterableConfigurationPropertySource
+org.springframework.boot.context.properties.source.SystemEnvironmentPropertyMapper

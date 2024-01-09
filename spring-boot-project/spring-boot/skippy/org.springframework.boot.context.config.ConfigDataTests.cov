@@ -1,0 +1,5 @@
+org.springframework.boot.context.config.ConfigData
+org.springframework.boot.context.config.ConfigData$AlwaysPropertySourceOptions
+org.springframework.boot.context.config.ConfigData$Options
+org.springframework.boot.context.config.ConfigData$PropertySourceOptions
+org.springframework.boot.context.config.ConfigDataTests

@@ -1,0 +1,3 @@
+org.springframework.boot.logging.logback.SpringProfileModel
+org.springframework.boot.logging.logback.SpringProfileModelHandler
+org.springframework.boot.logging.logback.SpringProfileModelHandlerTests

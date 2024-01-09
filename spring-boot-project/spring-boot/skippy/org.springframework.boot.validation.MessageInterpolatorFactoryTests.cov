@@ -1,0 +1,3 @@
+org.springframework.boot.validation.MessageInterpolatorFactory
+org.springframework.boot.validation.MessageInterpolatorFactoryTests
+org.springframework.boot.validation.MessageSourceMessageInterpolator

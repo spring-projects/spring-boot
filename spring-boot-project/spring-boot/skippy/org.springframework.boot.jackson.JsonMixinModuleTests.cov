@@ -1,0 +1,7 @@
+org.springframework.boot.jackson.JsonMixinModule
+org.springframework.boot.jackson.JsonMixinModuleEntries
+org.springframework.boot.jackson.JsonMixinModuleEntries$Builder
+org.springframework.boot.jackson.JsonMixinModuleEntries$JsonMixinComponentScanner
+org.springframework.boot.jackson.JsonMixinModuleTests
+org.springframework.boot.jackson.types.Name
+org.springframework.boot.jackson.types.NameAndAge

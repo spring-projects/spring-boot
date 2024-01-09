@@ -1,0 +1,3 @@
+org.springframework.boot.context.ContextIdApplicationContextInitializer
+org.springframework.boot.context.ContextIdApplicationContextInitializer$ContextId
+org.springframework.boot.context.ContextIdApplicationContextInitializerTests

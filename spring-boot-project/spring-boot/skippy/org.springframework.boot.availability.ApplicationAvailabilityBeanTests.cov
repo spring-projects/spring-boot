@@ -1,0 +1,9 @@
+org.springframework.boot.availability.ApplicationAvailability
+org.springframework.boot.availability.ApplicationAvailabilityBean
+org.springframework.boot.availability.ApplicationAvailabilityBeanTests
+org.springframework.boot.availability.ApplicationAvailabilityBeanTests$CustomEventSource
+org.springframework.boot.availability.ApplicationAvailabilityBeanTests$TestConfiguration
+org.springframework.boot.availability.ApplicationAvailabilityBeanTests$TestState
+org.springframework.boot.availability.ApplicationAvailabilityBeanTests$TestState$1
+org.springframework.boot.availability.ApplicationAvailabilityBeanTests$TestState$2
+org.springframework.boot.availability.AvailabilityChangeEvent

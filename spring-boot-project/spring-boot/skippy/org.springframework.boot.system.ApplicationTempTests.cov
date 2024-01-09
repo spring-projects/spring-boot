@@ -1,0 +1,3 @@
+org.springframework.boot.system.ApplicationHome
+org.springframework.boot.system.ApplicationTemp
+org.springframework.boot.system.ApplicationTempTests

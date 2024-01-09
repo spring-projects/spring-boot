@@ -1,0 +1,2 @@
+org.springframework.boot.logging.DeferredLogFactory
+org.springframework.boot.logging.DeferredLogFactoryTests

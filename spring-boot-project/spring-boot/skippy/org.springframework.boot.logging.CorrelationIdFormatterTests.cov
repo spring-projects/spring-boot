@@ -1,0 +1,3 @@
+org.springframework.boot.logging.CorrelationIdFormatter
+org.springframework.boot.logging.CorrelationIdFormatter$Part
+org.springframework.boot.logging.CorrelationIdFormatterTests

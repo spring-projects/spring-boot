@@ -1,0 +1,4 @@
+org.springframework.boot.context.config.ConfigDataException
+org.springframework.boot.context.config.ConfigDataLocation
+org.springframework.boot.context.config.UnsupportedConfigDataLocationException
+org.springframework.boot.context.config.UnsupportedConfigDataLocationExceptionTests

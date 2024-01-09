@@ -1,0 +1,3 @@
+org.springframework.boot.context.annotation.Configurations
+org.springframework.boot.context.annotation.UserConfigurations
+org.springframework.boot.context.annotation.UserConfigurationsTests

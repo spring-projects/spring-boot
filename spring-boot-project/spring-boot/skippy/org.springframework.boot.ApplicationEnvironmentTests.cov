@@ -1,0 +1,13 @@
+org.springframework.boot.AbstractApplicationEnvironmentTests
+org.springframework.boot.ApplicationEnvironment
+org.springframework.boot.ApplicationEnvironmentTests
+org.springframework.boot.ansi.AnsiColor
+org.springframework.boot.ansi.AnsiStyle
+org.springframework.boot.context.properties.source.ConfigurationPropertySources
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver
+org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver$DefaultResolver
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.logging.log4j2.SpringBootConfigurationFactory
+org.springframework.boot.logging.log4j2.SpringBootPropertySource
+org.springframework.boot.logging.log4j2.SpringEnvironmentLookup

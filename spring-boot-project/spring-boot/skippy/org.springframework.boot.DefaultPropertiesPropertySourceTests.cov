@@ -1,0 +1,2 @@
+org.springframework.boot.DefaultPropertiesPropertySource
+org.springframework.boot.DefaultPropertiesPropertySourceTests

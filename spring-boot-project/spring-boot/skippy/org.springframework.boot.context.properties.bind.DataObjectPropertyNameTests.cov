@@ -1,0 +1,2 @@
+org.springframework.boot.context.properties.bind.DataObjectPropertyName
+org.springframework.boot.context.properties.bind.DataObjectPropertyNameTests

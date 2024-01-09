@@ -1,0 +1,10 @@
+org.springframework.boot.ansi.AnsiColor
+org.springframework.boot.ansi.AnsiStyle
+org.springframework.boot.jdbc.DataSourceUnwrapper
+org.springframework.boot.jdbc.DataSourceUnwrapperNoSpringJdbcTests
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.logging.log4j2.SpringBootConfigurationFactory
+org.springframework.boot.logging.log4j2.SpringBootPropertySource
+org.springframework.boot.logging.log4j2.SpringEnvironmentLookup
+org.springframework.boot.logging.logback.RootLogLevelConfigurator

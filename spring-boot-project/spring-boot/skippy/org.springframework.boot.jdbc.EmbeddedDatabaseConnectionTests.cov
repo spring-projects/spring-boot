@@ -1,0 +1,8 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.jdbc.DatabaseDriver
+org.springframework.boot.jdbc.EmbeddedDatabaseConnection
+org.springframework.boot.jdbc.EmbeddedDatabaseConnection$1
+org.springframework.boot.jdbc.EmbeddedDatabaseConnection$IsEmbedded
+org.springframework.boot.jdbc.EmbeddedDatabaseConnectionTests
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter

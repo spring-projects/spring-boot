@@ -1,0 +1,9 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.context.properties.PropertySourcesDeducer
+org.springframework.boot.context.properties.PropertySourcesDeducerTests
+org.springframework.boot.context.properties.PropertySourcesDeducerTests$EmptyConfiguration
+org.springframework.boot.context.properties.PropertySourcesDeducerTests$MultiplePropertySourcesPlaceholderConfigurerConfiguration
+org.springframework.boot.context.properties.PropertySourcesDeducerTests$PropertySourcesPlaceholderConfigurerConfiguration
+org.springframework.boot.context.properties.PropertySourcesDeducerTests$TestPropertySource
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter

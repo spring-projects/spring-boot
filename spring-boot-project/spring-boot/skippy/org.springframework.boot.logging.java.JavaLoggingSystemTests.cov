@@ -1,0 +1,12 @@
+org.springframework.boot.logging.AbstractLoggingSystem
+org.springframework.boot.logging.AbstractLoggingSystem$LogLevels
+org.springframework.boot.logging.AbstractLoggingSystemTests
+org.springframework.boot.logging.LogFile
+org.springframework.boot.logging.LoggerConfiguration
+org.springframework.boot.logging.LoggerConfiguration$LevelConfiguration
+org.springframework.boot.logging.LoggerConfigurationComparator
+org.springframework.boot.logging.LoggingSystem
+org.springframework.boot.logging.LoggingSystemProperty
+org.springframework.boot.logging.java.JavaLoggingSystem
+org.springframework.boot.logging.java.JavaLoggingSystemTests
+org.springframework.boot.logging.java.SimpleFormatter

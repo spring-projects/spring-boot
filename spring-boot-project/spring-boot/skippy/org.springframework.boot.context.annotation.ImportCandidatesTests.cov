@@ -1,0 +1,2 @@
+org.springframework.boot.context.annotation.ImportCandidates
+org.springframework.boot.context.annotation.ImportCandidatesTests

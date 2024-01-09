@@ -1,0 +1,10 @@
+org.springframework.boot.context.config.ConfigData
+org.springframework.boot.context.config.ConfigData$Options
+org.springframework.boot.context.config.ConfigData$PropertySourceOptions
+org.springframework.boot.context.config.ConfigDataImporter
+org.springframework.boot.context.config.ConfigDataImporterTests
+org.springframework.boot.context.config.ConfigDataImporterTests$TestResource
+org.springframework.boot.context.config.ConfigDataLocation
+org.springframework.boot.context.config.ConfigDataResolutionResult
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.logging.DeferredLogFactory

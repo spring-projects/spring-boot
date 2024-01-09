@@ -1,0 +1,3 @@
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.context.config.StandardConfigDataResource
+org.springframework.boot.context.config.StandardConfigDataResourceTests

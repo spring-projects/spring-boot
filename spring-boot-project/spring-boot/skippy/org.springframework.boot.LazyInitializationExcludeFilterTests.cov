@@ -1,0 +1,2 @@
+org.springframework.boot.LazyInitializationExcludeFilter
+org.springframework.boot.LazyInitializationExcludeFilterTests

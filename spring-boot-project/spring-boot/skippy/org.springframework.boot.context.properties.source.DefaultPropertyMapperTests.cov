@@ -1,0 +1,8 @@
+org.springframework.boot.context.properties.source.AbstractPropertyMapperTests
+org.springframework.boot.context.properties.source.ConfigurationPropertyName
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementType
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$Elements
+org.springframework.boot.context.properties.source.ConfigurationPropertyName$ElementsParser
+org.springframework.boot.context.properties.source.DefaultPropertyMapper
+org.springframework.boot.context.properties.source.DefaultPropertyMapper$LastMapping
+org.springframework.boot.context.properties.source.DefaultPropertyMapperTests

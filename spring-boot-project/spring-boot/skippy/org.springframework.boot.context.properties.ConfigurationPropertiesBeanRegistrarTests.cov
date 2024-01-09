@@ -1,0 +1,6 @@
+org.springframework.boot.context.properties.BindMethodAttribute
+org.springframework.boot.context.properties.ConfigurationPropertiesBean
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrar
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider$Constructors

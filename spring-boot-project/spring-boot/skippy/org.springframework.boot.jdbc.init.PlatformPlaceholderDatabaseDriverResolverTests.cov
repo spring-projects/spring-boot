@@ -1,0 +1,7 @@
+org.springframework.boot.jdbc.DatabaseDriver
+org.springframework.boot.jdbc.DatabaseDriver$2
+org.springframework.boot.jdbc.DatabaseDriver$3
+org.springframework.boot.jdbc.DatabaseDriver$4
+org.springframework.boot.jdbc.DatabaseDriver$5
+org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver
+org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolverTests

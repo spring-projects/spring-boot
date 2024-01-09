@@ -1,0 +1,7 @@
+org.springframework.boot.context.config.ConfigDataException
+org.springframework.boot.context.config.ConfigDataLocation
+org.springframework.boot.context.config.ConfigDataNotFoundException
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.context.config.ConfigDataResourceNotFoundException
+org.springframework.boot.context.config.ConfigDataResourceNotFoundExceptionTests
+org.springframework.boot.context.config.ConfigDataResourceNotFoundExceptionTests$TestConfigDataResource

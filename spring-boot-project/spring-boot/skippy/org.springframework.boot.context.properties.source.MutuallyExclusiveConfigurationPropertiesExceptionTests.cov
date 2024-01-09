@@ -1,0 +1,2 @@
+org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException
+org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesExceptionTests

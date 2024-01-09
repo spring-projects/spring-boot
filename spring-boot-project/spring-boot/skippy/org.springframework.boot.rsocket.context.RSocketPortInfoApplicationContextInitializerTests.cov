@@ -1,0 +1,5 @@
+org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer
+org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer$Listener
+org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializerTests
+org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializerTests$Config
+org.springframework.boot.rsocket.context.RSocketServerInitializedEvent

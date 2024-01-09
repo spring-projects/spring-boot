@@ -1,0 +1,13 @@
+=== java.lang.Runtime@17adeb0 ===
+CoverageData#getCoveredClasses: 394 call(s), 2ms
+CoverageData#noDataAvailableFor: 394 call(s), 2ms
+CoverageData#parse: 1 call(s), 59ms
+HashedClass#exists: 2510 call(s), 10ms
+HashedClass#hasChanged: 2510 call(s), 270ms
+HashedClasses#parse: 1 call(s), 370ms
+SkippyAnalysis#parse: 1 call(s), 429ms
+SkippyAnalysis#predict: 394 call(s), 9ms
+SkippyTestApi#captureCoverageDataFor: 23 call(s), 0ms
+SkippyTestApi#prepareCoverageDataCaptureFor: 24 call(s), 1ms
+SkippyTestApi#testNeedsToBeExecuted: 836 call(s), 34ms
+

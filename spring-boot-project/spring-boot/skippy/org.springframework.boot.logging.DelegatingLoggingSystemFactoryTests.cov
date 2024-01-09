@@ -1,0 +1,2 @@
+org.springframework.boot.logging.DelegatingLoggingSystemFactory
+org.springframework.boot.logging.DelegatingLoggingSystemFactoryTests

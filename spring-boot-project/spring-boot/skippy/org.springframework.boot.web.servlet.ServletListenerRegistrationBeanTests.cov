@@ -1,0 +1,7 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter
+org.springframework.boot.web.servlet.RegistrationBean
+org.springframework.boot.web.servlet.ServletListenerRegistrationBean
+org.springframework.boot.web.servlet.ServletListenerRegistrationBeanTests
+org.springframework.boot.web.servlet.ServletListenerRegistrationBeanTests$1

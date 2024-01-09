@@ -1,0 +1,2 @@
+org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider
+org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProviderTests

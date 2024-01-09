@@ -1,0 +1,4 @@
+org.springframework.boot.logging.log4j2.SpringBootPropertySource
+org.springframework.boot.logging.log4j2.SpringEnvironmentLookup
+org.springframework.boot.logging.log4j2.WhitespaceThrowablePatternConverter
+org.springframework.boot.logging.log4j2.WhitespaceThrowablePatternConverterTests

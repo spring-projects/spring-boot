@@ -1,0 +1,2 @@
+org.springframework.boot.context.config.LocationResourceLoader
+org.springframework.boot.context.config.LocationResourceLoaderTests

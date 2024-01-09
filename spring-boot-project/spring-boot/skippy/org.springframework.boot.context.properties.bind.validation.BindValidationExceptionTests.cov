@@ -1,0 +1,2 @@
+org.springframework.boot.context.properties.bind.validation.BindValidationException
+org.springframework.boot.context.properties.bind.validation.BindValidationExceptionTests

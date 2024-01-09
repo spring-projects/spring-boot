@@ -1,0 +1,2 @@
+org.springframework.boot.jdbc.DatabaseDriver
+org.springframework.boot.jdbc.DatabaseDriverClassNameTests

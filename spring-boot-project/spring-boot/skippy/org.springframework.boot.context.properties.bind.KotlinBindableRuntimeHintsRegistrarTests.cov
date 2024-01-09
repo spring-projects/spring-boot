@@ -1,0 +1,11 @@
+org.springframework.boot.context.properties.bind.Bindable
+org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar
+org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar$KotlinDelegate
+org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar$Processor
+org.springframework.boot.context.properties.bind.DataObjectPropertyName
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider$Constructors
+org.springframework.boot.context.properties.bind.JavaBeanBinder$BeanProperties
+org.springframework.boot.context.properties.bind.JavaBeanBinder$BeanProperty
+org.springframework.boot.context.properties.bind.KotlinBindableRuntimeHintsRegistrarTests
+org.springframework.boot.context.properties.bind.KotlinBindableRuntimeHintsRegistrarTests$registerHints for data class with default value should allow declared constructors to be invoked$1

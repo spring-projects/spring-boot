@@ -1,0 +1,2 @@
+org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints
+org.springframework.boot.jdbc.DataSourceBuilderRuntimeHintsTests

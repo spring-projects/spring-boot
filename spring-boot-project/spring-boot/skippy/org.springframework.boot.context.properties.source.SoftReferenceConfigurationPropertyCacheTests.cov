@@ -1,0 +1,4 @@
+org.springframework.boot.context.properties.source.SoftReferenceConfigurationPropertyCache
+org.springframework.boot.context.properties.source.SoftReferenceConfigurationPropertyCacheTests
+org.springframework.boot.context.properties.source.SoftReferenceConfigurationPropertyCacheTests$TestSoftReferenceConfigurationPropertyCache
+org.springframework.boot.context.properties.source.SoftReferenceConfigurationPropertyCacheTests$Value

@@ -1,0 +1,13 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.jdbc.DataSourceBuilder
+org.springframework.boot.jdbc.DataSourceBuilder$DataSourceProperties
+org.springframework.boot.jdbc.DataSourceBuilder$DataSourceProperty
+org.springframework.boot.jdbc.DataSourceBuilder$HikariDataSourceProperties
+org.springframework.boot.jdbc.DataSourceBuilder$MappedDataSourceProperties
+org.springframework.boot.jdbc.DataSourceBuilder$MappedDataSourceProperty
+org.springframework.boot.jdbc.UnsupportedDataSourcePropertyException
+org.springframework.boot.jdbc.metadata.AbstractDataSourcePoolMetadata
+org.springframework.boot.jdbc.metadata.AbstractDataSourcePoolMetadataTests
+org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata
+org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadataTests
+org.springframework.boot.logging.logback.ColorConverter

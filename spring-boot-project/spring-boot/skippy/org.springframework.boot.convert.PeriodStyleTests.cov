@@ -1,0 +1,5 @@
+org.springframework.boot.convert.PeriodStyle
+org.springframework.boot.convert.PeriodStyle$1
+org.springframework.boot.convert.PeriodStyle$2
+org.springframework.boot.convert.PeriodStyle$Unit
+org.springframework.boot.convert.PeriodStyleTests

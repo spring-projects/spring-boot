@@ -1,0 +1,9 @@
+org.springframework.boot.context.TypeExcludeFilter
+org.springframework.boot.context.properties.BindMethodAttribute
+org.springframework.boot.context.properties.ConfigurationPropertiesBean
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrar
+org.springframework.boot.context.properties.ConfigurationPropertiesScanRegistrar
+org.springframework.boot.context.properties.ConfigurationPropertiesScanRegistrarTests
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider
+org.springframework.boot.context.properties.bind.DefaultBindConstructorProvider$Constructors
+org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$TestResourceCondition

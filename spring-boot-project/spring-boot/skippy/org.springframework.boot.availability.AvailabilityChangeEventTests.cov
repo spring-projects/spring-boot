@@ -1,0 +1,6 @@
+org.springframework.boot.availability.AvailabilityChangeEvent
+org.springframework.boot.availability.AvailabilityChangeEventTests
+org.springframework.boot.availability.AvailabilityChangeEventTests$Config
+org.springframework.boot.availability.AvailabilityChangeEventTests$SubClassedEnum
+org.springframework.boot.availability.AvailabilityChangeEventTests$SubClassedEnum$1
+org.springframework.boot.availability.AvailabilityChangeEventTests$SubClassedEnum$2

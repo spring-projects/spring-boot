@@ -1,0 +1,6 @@
+org.springframework.boot.context.config.ConfigDataLocation
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolver
+org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolverTests
+org.springframework.boot.context.config.ConfigTreeConfigDataResource
+org.springframework.boot.context.config.LocationResourceLoader

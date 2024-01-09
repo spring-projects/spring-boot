@@ -1,0 +1,4 @@
+org.springframework.boot.web.servlet.DynamicRegistrationBean
+org.springframework.boot.web.servlet.DynamicRegistrationBeanTests
+org.springframework.boot.web.servlet.DynamicRegistrationBeanTests$1
+org.springframework.boot.web.servlet.RegistrationBean

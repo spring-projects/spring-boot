@@ -1,0 +1,2 @@
+org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
+org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverterTests

@@ -1,0 +1,6 @@
+org.springframework.boot.web.server.MimeMappings
+org.springframework.boot.web.server.MimeMappings$DefaultMimeMappings
+org.springframework.boot.web.server.MimeMappings$LazyMimeMappingsCopy
+org.springframework.boot.web.server.MimeMappings$Mapping
+org.springframework.boot.web.server.MimeMappings$MimeMappingsRuntimeHints
+org.springframework.boot.web.server.MimeMappingsTests

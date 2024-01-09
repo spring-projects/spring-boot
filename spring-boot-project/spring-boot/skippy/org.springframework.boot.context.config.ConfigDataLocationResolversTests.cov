@@ -1,0 +1,17 @@
+org.springframework.boot.BootstrapRegistry$InstanceSupplier
+org.springframework.boot.DefaultBootstrapContext
+org.springframework.boot.context.config.ConfigDataException
+org.springframework.boot.context.config.ConfigDataLocation
+org.springframework.boot.context.config.ConfigDataLocationResolvers
+org.springframework.boot.context.config.ConfigDataLocationResolversTests
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$HighestTestResolver
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$LowestTestResolver
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$OptionalResourceTestResolver
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$TestBootstrappingResolver
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$TestBoundResolver
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$TestConfigDataResource
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$TestLogResolver
+org.springframework.boot.context.config.ConfigDataLocationResolversTests$TestResolver
+org.springframework.boot.context.config.ConfigDataResolutionResult
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.context.config.UnsupportedConfigDataLocationException

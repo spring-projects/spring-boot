@@ -1,0 +1,5 @@
+org.springframework.boot.logging.DeferredLog
+org.springframework.boot.logging.DeferredLog$Line
+org.springframework.boot.logging.DeferredLog$Lines
+org.springframework.boot.logging.DeferredLogs
+org.springframework.boot.logging.DeferredLogsTests

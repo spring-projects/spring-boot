@@ -1,0 +1,3 @@
+org.springframework.boot.web.embedded.undertow.FileSessionPersistence
+org.springframework.boot.web.embedded.undertow.FileSessionPersistence$SerializablePersistentSession
+org.springframework.boot.web.embedded.undertow.FileSessionPersistenceTests

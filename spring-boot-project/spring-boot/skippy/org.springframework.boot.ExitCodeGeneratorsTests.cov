@@ -1,0 +1,3 @@
+org.springframework.boot.ExitCodeGenerators
+org.springframework.boot.ExitCodeGenerators$MappedExitCodeGenerator
+org.springframework.boot.ExitCodeGeneratorsTests

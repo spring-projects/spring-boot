@@ -1,0 +1,6 @@
+org.springframework.boot.web.error.ErrorAttributeOptions
+org.springframework.boot.web.error.ErrorAttributeOptions$Include
+org.springframework.boot.web.reactive.error.DefaultErrorAttributes
+org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests
+org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests$Custom2Exception
+org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests$CustomException

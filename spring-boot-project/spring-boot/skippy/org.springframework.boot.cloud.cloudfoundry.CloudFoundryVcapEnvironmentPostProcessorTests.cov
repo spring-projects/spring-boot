@@ -1,0 +1,14 @@
+org.springframework.boot.ansi.AnsiOutput
+org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor
+org.springframework.boot.cloud.CloudPlatform
+org.springframework.boot.cloud.CloudPlatform$2
+org.springframework.boot.cloud.cloudfoundry.CloudFoundryVcapEnvironmentPostProcessorTests
+org.springframework.boot.json.AbstractJsonParser
+org.springframework.boot.json.JacksonJsonParser
+org.springframework.boot.json.JacksonJsonParser$ListTypeReference
+org.springframework.boot.json.JacksonJsonParser$MapTypeReference
+org.springframework.boot.json.JsonParseException
+org.springframework.boot.json.JsonParserFactory
+org.springframework.boot.logging.DeferredLogFactory
+org.springframework.boot.logging.log4j2.ColorConverter
+org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter

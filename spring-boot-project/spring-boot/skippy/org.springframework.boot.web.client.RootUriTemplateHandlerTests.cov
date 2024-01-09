@@ -1,0 +1,2 @@
+org.springframework.boot.web.client.RootUriTemplateHandler
+org.springframework.boot.web.client.RootUriTemplateHandlerTests

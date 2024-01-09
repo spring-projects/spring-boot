@@ -1,0 +1,5 @@
+org.springframework.boot.diagnostics.AbstractFailureAnalyzer
+org.springframework.boot.diagnostics.AbstractFailureAnalyzerTests
+org.springframework.boot.diagnostics.AbstractFailureAnalyzerTests$SpecificTestException
+org.springframework.boot.diagnostics.AbstractFailureAnalyzerTests$TestException
+org.springframework.boot.diagnostics.AbstractFailureAnalyzerTests$TestFailureAnalyzer

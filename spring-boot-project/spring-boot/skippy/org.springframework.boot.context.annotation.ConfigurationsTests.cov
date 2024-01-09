@@ -1,0 +1,4 @@
+org.springframework.boot.context.annotation.Configurations
+org.springframework.boot.context.annotation.ConfigurationsTests
+org.springframework.boot.context.annotation.ConfigurationsTests$TestConfigurations
+org.springframework.boot.context.annotation.ConfigurationsTests$TestSortedConfigurations

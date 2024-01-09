@@ -1,0 +1,2 @@
+org.springframework.boot.web.embedded.undertow.JarResourceManager
+org.springframework.boot.web.embedded.undertow.JarResourceManagerTests

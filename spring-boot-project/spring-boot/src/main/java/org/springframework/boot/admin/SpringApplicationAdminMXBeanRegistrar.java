@@ -66,7 +66,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	private boolean embeddedWebApplication = false;
 
 	public SpringApplicationAdminMXBeanRegistrar(String name) throws MalformedObjectNameException {
-		this.objectName = new ObjectName(name);
+		this.objectName = null;
 	}
 
 	@Override

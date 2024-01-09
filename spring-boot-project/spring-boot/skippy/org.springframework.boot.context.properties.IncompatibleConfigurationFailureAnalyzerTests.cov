@@ -1,0 +1,5 @@
+org.springframework.boot.context.properties.IncompatibleConfigurationException
+org.springframework.boot.context.properties.IncompatibleConfigurationFailureAnalyzer
+org.springframework.boot.context.properties.IncompatibleConfigurationFailureAnalyzerTests
+org.springframework.boot.diagnostics.AbstractFailureAnalyzer
+org.springframework.boot.diagnostics.FailureAnalysis

@@ -1,0 +1,9 @@
+org.springframework.boot.ssl.AliasKeyManagerFactory
+org.springframework.boot.ssl.AliasKeyManagerFactory$AliasKeyManagerFactorySpi
+org.springframework.boot.ssl.DefaultSslManagerBundle
+org.springframework.boot.ssl.DefaultSslManagerBundleTests
+org.springframework.boot.ssl.DefaultSslManagerBundleTests$TestDefaultSslManagerBundle
+org.springframework.boot.ssl.SslBundleKey
+org.springframework.boot.ssl.SslBundleKey$1
+org.springframework.boot.ssl.SslStoreBundle
+org.springframework.boot.ssl.SslStoreBundle$1

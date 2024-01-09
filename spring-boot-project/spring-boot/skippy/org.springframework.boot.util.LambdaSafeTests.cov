@@ -1,0 +1,8 @@
+org.springframework.boot.util.LambdaSafe
+org.springframework.boot.util.LambdaSafe$Callback
+org.springframework.boot.util.LambdaSafe$Callbacks
+org.springframework.boot.util.LambdaSafe$Filter
+org.springframework.boot.util.LambdaSafe$GenericTypeFilter
+org.springframework.boot.util.LambdaSafe$InvocationResult
+org.springframework.boot.util.LambdaSafe$LambdaSafeCallback
+org.springframework.boot.util.LambdaSafeTests

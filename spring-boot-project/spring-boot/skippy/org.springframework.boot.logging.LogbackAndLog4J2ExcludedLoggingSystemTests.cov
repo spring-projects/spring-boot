@@ -1,0 +1,12 @@
+org.springframework.boot.logging.AbstractLoggingSystem
+org.springframework.boot.logging.AbstractLoggingSystem$LogLevels
+org.springframework.boot.logging.DelegatingLoggingSystemFactory
+org.springframework.boot.logging.LogLevel
+org.springframework.boot.logging.LogbackAndLog4J2ExcludedLoggingSystemTests
+org.springframework.boot.logging.LoggerConfigurationComparator
+org.springframework.boot.logging.LoggingSystem
+org.springframework.boot.logging.LoggingSystemFactory
+org.springframework.boot.logging.java.JavaLoggingSystem
+org.springframework.boot.logging.java.JavaLoggingSystem$Factory
+org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory
+org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory

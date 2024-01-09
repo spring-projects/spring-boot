@@ -1,0 +1,12 @@
+org.springframework.boot.r2dbc.ConnectionFactoryBuilder
+org.springframework.boot.r2dbc.ConnectionFactoryBuilder$OptionsCapableWrapper
+org.springframework.boot.r2dbc.ConnectionFactoryBuilder$PoolingAwareOptionsCapableWrapper
+org.springframework.boot.r2dbc.EmbeddedDatabaseConnection
+org.springframework.boot.r2dbc.OptionsCapableConnectionFactory
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerTests
+org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer
+org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer$ScriptLocationResolver
+org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer$Scripts
+org.springframework.boot.sql.init.AbstractScriptDatabaseInitializerTests
+org.springframework.boot.sql.init.DatabaseInitializationSettings

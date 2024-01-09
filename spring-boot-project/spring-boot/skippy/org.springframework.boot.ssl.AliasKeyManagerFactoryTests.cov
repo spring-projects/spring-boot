@@ -1,0 +1,4 @@
+org.springframework.boot.ssl.AliasKeyManagerFactory
+org.springframework.boot.ssl.AliasKeyManagerFactory$AliasKeyManagerFactorySpi
+org.springframework.boot.ssl.AliasKeyManagerFactory$AliasX509ExtendedKeyManager
+org.springframework.boot.ssl.AliasKeyManagerFactoryTests

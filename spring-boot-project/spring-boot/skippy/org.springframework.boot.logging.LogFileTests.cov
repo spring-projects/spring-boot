@@ -1,0 +1,3 @@
+org.springframework.boot.logging.LogFile
+org.springframework.boot.logging.LogFileTests
+org.springframework.boot.logging.LoggingSystemProperty

@@ -1,0 +1,3 @@
+org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver
+org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolverTests
+org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolverTests$TestPropertyPlaceholderHelper

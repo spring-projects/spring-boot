@@ -1,0 +1,2 @@
+org.springframework.boot.context.properties.bind.BindResult
+org.springframework.boot.context.properties.bind.BindResultTests

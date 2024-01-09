@@ -1,0 +1,6 @@
+org.springframework.boot.context.metrics.buffering.BufferedStartupStep
+org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag
+org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup
+org.springframework.boot.context.metrics.buffering.BufferingApplicationStartupTests
+org.springframework.boot.context.metrics.buffering.StartupTimeline
+org.springframework.boot.context.metrics.buffering.StartupTimeline$TimelineEvent

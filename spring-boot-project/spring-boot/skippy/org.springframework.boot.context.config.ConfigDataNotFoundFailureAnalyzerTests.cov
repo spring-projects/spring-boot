@@ -1,0 +1,13 @@
+org.springframework.boot.context.config.ConfigDataException
+org.springframework.boot.context.config.ConfigDataLocation
+org.springframework.boot.context.config.ConfigDataLocationNotFoundException
+org.springframework.boot.context.config.ConfigDataNotFoundException
+org.springframework.boot.context.config.ConfigDataNotFoundFailureAnalyzer
+org.springframework.boot.context.config.ConfigDataNotFoundFailureAnalyzerTests
+org.springframework.boot.context.config.ConfigDataNotFoundFailureAnalyzerTests$TestConfigDataResource
+org.springframework.boot.context.config.ConfigDataNotFoundFailureAnalyzerTests$TestOrigin
+org.springframework.boot.context.config.ConfigDataResource
+org.springframework.boot.context.config.ConfigDataResourceNotFoundException
+org.springframework.boot.diagnostics.AbstractFailureAnalyzer
+org.springframework.boot.diagnostics.FailureAnalysis
+org.springframework.boot.origin.Origin
