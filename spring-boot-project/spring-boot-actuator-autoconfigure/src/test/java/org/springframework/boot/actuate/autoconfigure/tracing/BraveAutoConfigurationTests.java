@@ -26,7 +26,6 @@ import brave.Span;
 import brave.SpanCustomizer;
 import brave.Tracer;
 import brave.Tracing;
-import brave.baggage.BaggageField;
 import brave.baggage.BaggagePropagation;
 import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.handler.SpanHandler;
@@ -346,28 +345,22 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldCreateTagHandler() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.tag-fields=country-code,bp")
-			.run((context) -> assertThat(context.getBean(BaggageTagSpanHandler.class)).extracting("fieldsToTag")
-				.asInstanceOf(InstanceOfAssertFactories.list(BaggageField.class))
-				.extracting(BaggageField::name)
-				.containsExactlyInAnyOrder("country-code", "bp"));
-	}
-
-	@Test
-	void noopOnNoTagFields() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.tag-fields=")
-			.run((context) -> assertThat(context.getBean("baggageTagSpanHandler", SpanHandler.class))
-				.isSameAs(SpanHandler.NOOP));
-	}
-
-	@Test
 	void shouldDisablePropagationIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
 			assertThat(context).hasSingleBean(Factory.class);
 			Factory factory = context.getBean(Factory.class);
 			Propagation<String> propagation = factory.get();
 			assertThat(propagation.keys()).isEmpty();
+		});
+	}
+
+	@Test
+	void shouldConfigureTaggedFields() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.tag-fields=t1").run((context) -> {
+			BraveTracer braveTracer = context.getBean(BraveTracer.class);
+			assertThat(braveTracer).extracting("braveBaggageManager.tagFields")
+				.asInstanceOf(InstanceOfAssertFactories.list(String.class))
+				.containsExactly("t1");
 		});
 	}
 

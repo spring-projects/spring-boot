@@ -27,11 +27,11 @@ import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
 import brave.context.slf4j.MDCScopeDecorator;
-import brave.handler.SpanHandler;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.propagation.Propagation.KeyFactory;
+import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Baggage.Correlation;
@@ -41,7 +41,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Brave propagation configurations. They are imported by {@link BraveAutoConfiguration}.
@@ -92,7 +91,8 @@ class BravePropagationConfigurations {
 			baggagePropagationCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(throwAwayBuilder));
 			CompositePropagationFactory propagationFactory = CompositePropagationFactory.create(
-					this.tracingProperties.getPropagation(), BraveAutoConfiguration.BRAVE_BAGGAGE_MANAGER,
+					this.tracingProperties.getPropagation(),
+					new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields()),
 					LocalBaggageFields.extractFrom(throwAwayBuilder));
 			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(propagationFactory);
 			throwAwayBuilder.configs().forEach(builder::add);
@@ -112,35 +112,17 @@ class BravePropagationConfigurations {
 		}
 
 		@Bean
-		@Order(0)
 		BaggagePropagationCustomizer remoteFieldsBaggagePropagationCustomizer() {
 			return (builder) -> {
 				List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
 				for (String fieldName : remoteFields) {
 					builder.add(BaggagePropagationConfig.SingleBaggageField.remote(BaggageField.create(fieldName)));
 				}
-			};
-		}
-
-		@Bean
-		@Order(1)
-		BaggagePropagationCustomizer localFieldsBaggagePropagationCustomizer() {
-			return (builder) -> {
 				List<String> localFields = this.tracingProperties.getBaggage().getLocalFields();
 				for (String localFieldName : localFields) {
 					builder.add(BaggagePropagationConfig.SingleBaggageField.local(BaggageField.create(localFieldName)));
 				}
 			};
-		}
-
-		@Bean
-		@Order(2)
-		SpanHandler baggageTagSpanHandler() {
-			List<String> tagFields = this.tracingProperties.getBaggage().getTagFields();
-			if (CollectionUtils.isEmpty(tagFields)) {
-				return SpanHandler.NOOP;
-			}
-			return new BaggageTagSpanHandler(tagFields.stream().map(BaggageField::create).toList());
 		}
 
 		@Bean
