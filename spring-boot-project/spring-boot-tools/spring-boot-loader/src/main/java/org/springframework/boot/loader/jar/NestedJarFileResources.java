@@ -30,6 +30,7 @@ import java.util.zip.Inflater;
 
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.ZipContent;
+import org.springframework.boot.loader.zip.ZipContent.Kind;
 
 /**
  * Resources created managed and cleaned by a {@link NestedJarFile} instance and suitable
@@ -43,6 +44,8 @@ class NestedJarFileResources implements Runnable {
 
 	private ZipContent zipContent;
 
+	private ZipContent zipContentForManifest;
+
 	private final Set<InputStream> inputStreams = Collections.newSetFromMap(new WeakHashMap<>());
 
 	private Deque<Inflater> inflaterCache = new ArrayDeque<>();
@@ -55,6 +58,8 @@ class NestedJarFileResources implements Runnable {
 	 */
 	NestedJarFileResources(File file, String nestedEntryName) throws IOException {
 		this.zipContent = ZipContent.open(file.toPath(), nestedEntryName);
+		this.zipContentForManifest = (this.zipContent.getKind() != Kind.NESTED_DIRECTORY) ? null
+				: ZipContent.open(file.toPath());
 	}
 
 	/**
@@ -63,6 +68,15 @@ class NestedJarFileResources implements Runnable {
 	 */
 	ZipContent zipContent() {
 		return this.zipContent;
+	}
+
+	/**
+	 * Return the underlying {@link ZipContent} that should be used to load manifest
+	 * content.
+	 * @return the zip content to use when loading the manifest
+	 */
+	ZipContent zipContentForManifest() {
+		return (this.zipContentForManifest != null) ? this.zipContentForManifest : this.zipContent;
 	}
 
 	/**
@@ -144,6 +158,7 @@ class NestedJarFileResources implements Runnable {
 		exceptionChain = releaseInflators(exceptionChain);
 		exceptionChain = releaseInputStreams(exceptionChain);
 		exceptionChain = releaseZipContent(exceptionChain);
+		exceptionChain = releaseZipContentForManifest(exceptionChain);
 		if (exceptionChain != null) {
 			throw new UncheckedIOException(exceptionChain);
 		}
@@ -190,6 +205,22 @@ class NestedJarFileResources implements Runnable {
 			}
 			finally {
 				this.zipContent = null;
+			}
+		}
+		return exceptionChain;
+	}
+
+	private IOException releaseZipContentForManifest(IOException exceptionChain) {
+		ZipContent zipContentForManifest = this.zipContentForManifest;
+		if (zipContentForManifest != null) {
+			try {
+				zipContentForManifest.close();
+			}
+			catch (IOException ex) {
+				exceptionChain = addToExceptionChain(exceptionChain, ex);
+			}
+			finally {
+				this.zipContentForManifest = null;
 			}
 		}
 		return exceptionChain;
