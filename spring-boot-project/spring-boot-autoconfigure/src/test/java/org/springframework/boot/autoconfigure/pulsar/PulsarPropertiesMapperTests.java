@@ -106,10 +106,8 @@ class PulsarPropertiesMapperTests {
 		backupCluster1.getAuthentication()
 			.setPluginClassName("org.springframework.boot.autoconfigure.pulsar.MockAuthentication");
 		backupCluster1.getAuthentication().setParam(params);
-
 		BackupCluster backupCluster2 = new BackupCluster();
 		backupCluster2.setServiceUrl("backup-cluster-2");
-
 		PulsarProperties properties = new PulsarProperties();
 		properties.getClient().setServiceUrl("https://used.example.com");
 		properties.getClient().getFailover().setFailoverPolicy(FailoverPolicy.ORDER);
@@ -117,10 +115,8 @@ class PulsarPropertiesMapperTests {
 		properties.getClient().getFailover().setFailOverDelay(Duration.ofSeconds(30));
 		properties.getClient().getFailover().setSwitchBackDelay(Duration.ofSeconds(30));
 		properties.getClient().getFailover().setBackupClusters(List.of(backupCluster1, backupCluster2));
-
 		PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
 		given(connectionDetails.getBrokerUrl()).willReturn("https://used.example.com");
-
 		ClientBuilder builder = mock(ClientBuilder.class);
 		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
 				new PropertiesPulsarConnectionDetails(properties));

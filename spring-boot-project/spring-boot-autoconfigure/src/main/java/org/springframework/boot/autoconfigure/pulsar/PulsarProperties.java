@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -928,7 +927,7 @@ public class PulsarProperties {
 		 * given list. If all backup clusters are available, the Pulsar client chooses the
 		 * first backup cluster.
 		 */
-		private List<BackupCluster> backupClusters = new LinkedList<>();
+		private List<BackupCluster> backupClusters = new ArrayList<>();
 
 		public FailoverPolicy getFailoverPolicy() {
 			return this.failoverPolicy;

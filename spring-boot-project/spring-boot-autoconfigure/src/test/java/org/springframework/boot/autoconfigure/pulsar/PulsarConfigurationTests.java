@@ -125,7 +125,6 @@ class PulsarConfigurationTests {
 		void whenHasUserDefinedFailoverPropertiesAddsToClient() {
 			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
 			given(connectionDetails.getBrokerUrl()).willReturn("connectiondetails");
-
 			PulsarConfigurationTests.this.contextRunner.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
 				.withPropertyValues("spring.pulsar.client.service-url=properties",
 						"spring.pulsar.client.failover.backup-clusters[0].service-url=backup-cluster-1",
@@ -138,7 +137,6 @@ class PulsarConfigurationTests {
 				.run((context) -> {
 					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
 					PulsarProperties pulsarProperties = context.getBean(PulsarProperties.class);
-
 					ClientBuilder target = mock(ClientBuilder.class);
 					BiConsumer<PulsarClientBuilderCustomizer, ClientBuilder> customizeAction = PulsarClientBuilderCustomizer::customize;
 					PulsarClientBuilderCustomizer pulsarClientBuilderCustomizer = (PulsarClientBuilderCustomizer) ReflectionTestUtils
@@ -146,7 +144,6 @@ class PulsarConfigurationTests {
 					customizeAction.accept(pulsarClientBuilderCustomizer, target);
 					InOrder ordered = inOrder(target);
 					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
-
 					assertThat(pulsarProperties.getClient().getFailover().getFailOverDelay())
 						.isEqualTo(Duration.ofSeconds(15));
 					assertThat(pulsarProperties.getClient().getFailover().getSwitchBackDelay())

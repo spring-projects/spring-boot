@@ -29,7 +29,7 @@ import org.apache.pulsar.client.api.PulsarClientException;
  *
  * @author Swamy Mavuri
  */
-
+@SuppressWarnings("deprecation")
 public class MockAuthentication implements Authentication {
 
 	public Map<String, String> authParamsMap = new HashMap<>();
@@ -45,7 +45,6 @@ public class MockAuthentication implements Authentication {
 	}
 
 	@Override
-	@Deprecated
 	public void configure(Map<String, String> authParams) {
 		this.authParamsMap = authParams;
 	}
