@@ -46,8 +46,7 @@ final class SqlDialectLookup {
 	 * @return the most suitable {@link SQLDialect}
 	 */
 	static SQLDialect getDialect(DataSource dataSource) {
-		try {
-			Connection connection = (dataSource != null) ? dataSource.getConnection() : null;
+		try (Connection connection = (dataSource != null) ? dataSource.getConnection() : null) {
 			return JDBCUtils.dialect(connection);
 		}
 		catch (SQLException ex) {
