@@ -116,6 +116,7 @@ import org.springframework.util.StringUtils;
  * @author Venil Noronha
  * @author Henri Kerola
  * @author Moritz Halbritter
+ * @author Onur Kagan Ozcan
  * @since 2.0.0
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
@@ -183,7 +184,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
 		if (this.maxConnections > -1) {
-			server.addBean(new ConnectionLimit(this.maxConnections, server));
+			server.addBean(new ConnectionLimit(this.maxConnections, server.getConnectors()));
 		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);

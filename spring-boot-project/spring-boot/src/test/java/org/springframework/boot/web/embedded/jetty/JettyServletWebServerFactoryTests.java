@@ -39,6 +39,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
 import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
@@ -46,6 +47,7 @@ import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
 import org.eclipse.jetty.ee10.webapp.ClassMatcher;
 import org.eclipse.jetty.ee10.webapp.Configuration;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -85,6 +87,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  * @author Moritz Halbritter
+ * @author Onur Kagan Ozcan
  */
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
@@ -539,6 +542,19 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
 		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Test
+	void shouldApplyingMaxConnectionUseConnector() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		assertThat(server.getConnectors()).isEmpty();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).extracting("_connectors")
+			.asInstanceOf(InstanceOfAssertFactories.list(AbstractConnector.class))
+			.hasSize(1);
 	}
 
 	@Override
