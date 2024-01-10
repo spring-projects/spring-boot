@@ -43,7 +43,10 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
+import org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -98,6 +101,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
+ * @author Lars Uffmann
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -462,6 +466,27 @@ class BatchAutoConfigurationTests {
 			.withMessage("No job found with name 'three'");
 	}
 
+	@Test
+	void customExecutionContextSerializerIsUsed() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.withUserConfiguration(CustomExecutionContextConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Jackson2ExecutionContextStringSerializer.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getExecutionContextSerializer())
+					.isInstanceOf(Jackson2ExecutionContextStringSerializer.class);
+			});
+	}
+
+	@Test
+	void defaultExecutionContextSerializerIsUsed() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(ExecutionContextSerializer.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getExecutionContextSerializer())
+					.isInstanceOf(DefaultExecutionContextSerializer.class);
+			});
+	}
+
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobLauncher.class),
 				mock(JobExplorer.class), mock(JobRepository.class));
@@ -773,6 +798,16 @@ class BatchAutoConfigurationTests {
 		@Order(2)
 		BatchConversionServiceCustomizer anotherBatchConversionServiceCustomizer() {
 			return mock(BatchConversionServiceCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExecutionContextConfiguration {
+
+		@Bean
+		ExecutionContextSerializer executionContextSerializer() {
+			return new Jackson2ExecutionContextStringSerializer();
 		}
 
 	}
