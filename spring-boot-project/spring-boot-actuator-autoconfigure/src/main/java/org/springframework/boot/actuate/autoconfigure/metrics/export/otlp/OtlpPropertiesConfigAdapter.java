@@ -41,7 +41,7 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	/**
 	 * Default value for application name if {@code spring.application.name} is not set.
 	 */
-	private static final String DEFAULT_APPLICATION_NAME = "application";
+	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
 	private final OpenTelemetryProperties openTelemetryProperties;
 

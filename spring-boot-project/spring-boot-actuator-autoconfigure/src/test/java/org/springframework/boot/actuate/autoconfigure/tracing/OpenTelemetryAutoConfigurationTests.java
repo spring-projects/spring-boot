@@ -183,7 +183,7 @@ class OpenTelemetryAutoConfigurationTests {
 				exporter.await(Duration.ofSeconds(10));
 				SpanData spanData = exporter.getExportedSpans().get(0);
 				Map<AttributeKey<?>, Object> expectedAttributes = Resource.getDefault()
-					.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "application")))
+					.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "unknown_service")))
 					.getAttributes()
 					.asMap();
 				assertThat(spanData.getResource().getAttributes().asMap()).isEqualTo(expectedAttributes);
