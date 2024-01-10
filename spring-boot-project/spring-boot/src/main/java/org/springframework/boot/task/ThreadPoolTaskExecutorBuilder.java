@@ -166,8 +166,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	/**
 	 * Set whether to accept further tasks after the application context close phase has
 	 * begun.
-	 * @param acceptTasksAfterContextClose to accept further tasks after the application
-	 * context close phase has begun
+	 * @param acceptTasksAfterContextClose whether to accept further tasks after the
+	 * application context close phase has begun
 	 * @return a new builder instance
 	 */
 	public ThreadPoolTaskExecutorBuilder acceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
