@@ -136,7 +136,7 @@ class OtlpPropertiesConfigAdapterTests {
 
 	@Test
 	void shouldUseDefaultApplicationNameIfApplicationNameIsNotSet() {
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "application");
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "unknown_service");
 	}
 
 	private OtlpPropertiesConfigAdapter createAdapter() {
