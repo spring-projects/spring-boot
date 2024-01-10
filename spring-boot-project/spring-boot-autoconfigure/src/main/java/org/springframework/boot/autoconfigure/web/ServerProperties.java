@@ -329,6 +329,11 @@ public class ServerProperties {
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration timeout = Duration.ofMinutes(30);
 
+			/**
+			 * The maximum number of sessions that can be stored.
+			 */
+			private int maxSessions = 10_000;
+
 			@NestedConfigurationProperty
 			private final Cookie cookie = new Cookie();
 
@@ -338,6 +343,14 @@ public class ServerProperties {
 
 			public void setTimeout(Duration timeout) {
 				this.timeout = timeout;
+			}
+
+			public int getMaxSessions() {
+				return this.maxSessions;
+			}
+
+			public void setMaxSessions(int maxSessions) {
+				this.maxSessions = maxSessions;
 			}
 
 			public Cookie getCookie() {
