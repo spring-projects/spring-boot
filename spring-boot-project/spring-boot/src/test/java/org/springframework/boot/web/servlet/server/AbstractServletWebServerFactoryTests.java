@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1308,7 +1308,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on port " + this.webServer.getPort()
-				+ " \\(http(/1.1)?\\)( with context path '(/)?')?");
+				+ " \\(http(/1.1)?\\) with context path '/'");
 	}
 
 	@Test
@@ -1328,7 +1328,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on ports " + this.webServer.getPort()
-				+ " \\(http(/1.1)?\\), [0-9]+ \\(http(/1.1)?\\)( with context path '(/)?')?");
+				+ " \\(http(/1.1)?\\), [0-9]+ \\(http(/1.1)?\\) with context path '/'");
 	}
 
 	protected Future<Object> initiateGetRequest(int port, String path) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,12 +78,10 @@ public class UndertowServletWebServer extends UndertowWebServer {
 
 	@Override
 	protected String getStartLogMessage() {
-		if (!StringUtils.hasText(this.contextPath)) {
-			return super.getStartLogMessage();
-		}
+		String contextPath = StringUtils.hasText(this.contextPath) ? this.contextPath : "/";
 		StringBuilder message = new StringBuilder(super.getStartLogMessage());
 		message.append(" with context path '");
-		message.append(this.contextPath);
+		message.append(contextPath);
 		message.append("'");
 		return message.toString();
 	}
