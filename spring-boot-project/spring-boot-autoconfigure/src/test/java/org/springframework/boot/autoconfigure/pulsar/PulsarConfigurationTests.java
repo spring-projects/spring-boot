@@ -16,21 +16,26 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.Schema;
+import org.apache.pulsar.client.impl.AutoClusterFailover;
 import org.apache.pulsar.common.schema.KeyValueEncodingType;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.MapAssert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -48,10 +53,12 @@ import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.function.PulsarFunctionAdministration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -61,6 +68,7 @@ import static org.mockito.Mockito.mock;
  * @author Alexander Preuß
  * @author Soby Chacko
  * @author Phillip Webb
+ * @author Swamy Mavuri
  */
 class PulsarConfigurationTests {
 
@@ -110,6 +118,39 @@ class PulsarConfigurationTests {
 						.of(ClientBuilder.class, PulsarClientBuilderCustomizer::customize);
 					assertThat(customizers.fromField(clientFactory, "customizer")).callsInOrder(
 							ClientBuilder::serviceUrl, "connectiondetails", "fromCustomizer1", "fromCustomizer2");
+				});
+		}
+
+		@Test
+		void whenHasUserDefinedFailoverPropertiesAddsToClient() {
+			PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);
+			given(connectionDetails.getBrokerUrl()).willReturn("connectiondetails");
+			PulsarConfigurationTests.this.contextRunner.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
+				.withPropertyValues("spring.pulsar.client.service-url=properties",
+						"spring.pulsar.client.failover.backup-clusters[0].service-url=backup-cluster-1",
+						"spring.pulsar.client.failover.failover-delay=15s",
+						"spring.pulsar.client.failover.switch-back-delay=30s",
+						"spring.pulsar.client.failover.check-interval=5s",
+						"spring.pulsar.client.failover.backup-clusters[1].service-url=backup-cluster-2",
+						"spring.pulsar.client.failover.backup-clusters[1].authentication.plugin-class-name=org.springframework.boot.autoconfigure.pulsar.MockAuthentication",
+						"spring.pulsar.client.failover.backup-clusters[1].authentication.param.token=1234")
+				.run((context) -> {
+					DefaultPulsarClientFactory clientFactory = context.getBean(DefaultPulsarClientFactory.class);
+					PulsarProperties pulsarProperties = context.getBean(PulsarProperties.class);
+					ClientBuilder target = mock(ClientBuilder.class);
+					BiConsumer<PulsarClientBuilderCustomizer, ClientBuilder> customizeAction = PulsarClientBuilderCustomizer::customize;
+					PulsarClientBuilderCustomizer pulsarClientBuilderCustomizer = (PulsarClientBuilderCustomizer) ReflectionTestUtils
+						.getField(clientFactory, "customizer");
+					customizeAction.accept(pulsarClientBuilderCustomizer, target);
+					InOrder ordered = inOrder(target);
+					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
+					assertThat(pulsarProperties.getClient().getFailover().getFailOverDelay())
+						.isEqualTo(Duration.ofSeconds(15));
+					assertThat(pulsarProperties.getClient().getFailover().getSwitchBackDelay())
+						.isEqualTo(Duration.ofSeconds(30));
+					assertThat(pulsarProperties.getClient().getFailover().getCheckInterval())
+						.isEqualTo(Duration.ofSeconds(5));
+					assertThat(pulsarProperties.getClient().getFailover().getBackupClusters().size()).isEqualTo(2);
 				});
 		}
 
