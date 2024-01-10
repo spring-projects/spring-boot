@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -179,6 +180,7 @@ class OAuth2ResourceServerJwtConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JwtAuthenticationConverter.class)
+	@Conditional(JwtConverterPropertiesCondition.class)
 	static class JwtConverterConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
@@ -200,6 +202,29 @@ class OAuth2ResourceServerJwtConfiguration {
 			map.from(this.properties.getPrincipalClaimName()).to(jwtAuthenticationConverter::setPrincipalClaimName);
 			jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 			return jwtAuthenticationConverter;
+		}
+
+	}
+
+	private static class JwtConverterPropertiesCondition extends AnyNestedCondition {
+
+		JwtConverterPropertiesCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authority-prefix")
+		static class OnAuthorityPrefix {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "principal-claim-name")
+		static class OnPrincipalClaimName {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authorities-claim-name")
+		static class OnAuthoritiesClaimName {
+
 		}
 
 	}

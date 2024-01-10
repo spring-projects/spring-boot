@@ -42,7 +42,6 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 		String customDelimiter = "[~,#:]";
 		String customAuthoritiesClaim = "custom_authorities";
 		String customPrincipalClaim = "custom_principal";
-
 		String jwkSetUriProperty = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com";
 		String authorityPrefixProperty = "spring.security.oauth2.resourceserver.jwt.authority-prefix=" + customPrefix;
 		String authoritiesDelimiterProperty = "spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter="
@@ -51,19 +50,15 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 				+ customAuthoritiesClaim;
 		String principalClaimProperty = "spring.security.oauth2.resourceserver.jwt.principal-claim-name="
 				+ customPrincipalClaim;
-
-		String[] noJwtConverterProps = { jwkSetUriProperty };
 		String[] customPrefixProps = { jwkSetUriProperty, authorityPrefixProperty };
-		String[] customDelimiterProps = { jwkSetUriProperty, authoritiesDelimiterProperty };
+		String[] customDelimiterProps = { jwkSetUriProperty, authorityPrefixProperty, authoritiesDelimiterProperty };
 		String[] customAuthoritiesClaimProps = { jwkSetUriProperty, authoritiesClaimProperty };
 		String[] customPrincipalClaimProps = { jwkSetUriProperty, principalClaimProperty };
 		String[] allJwtConverterProps = { jwkSetUriProperty, authorityPrefixProperty, authoritiesDelimiterProperty,
 				authoritiesClaimProperty, principalClaimProperty };
-
 		String[] jwtScopes = { "custom_scope0", "custom_scope1" };
 		String subjectValue = UUID.randomUUID().toString();
 		String customPrincipalValue = UUID.randomUUID().toString();
-
 		Jwt.Builder jwtBuilder = Jwt.withTokenValue("token")
 			.header("alg", "none")
 			.expiresAt(Instant.MAX)
@@ -73,7 +68,6 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 			.notBefore(Instant.MIN)
 			.subject(subjectValue)
 			.claim(customPrincipalClaim, customPrincipalValue);
-
 		Jwt noAuthoritiesCustomizationsJwt = jwtBuilder.claim("scp", jwtScopes[0] + " " + jwtScopes[1]).build();
 		Jwt customAuthoritiesDelimiterJwt = jwtBuilder.claim("scp", jwtScopes[0] + "~" + jwtScopes[1]).build();
 		Jwt customAuthoritiesClaimJwt = jwtBuilder.claim("scp", null)
@@ -82,17 +76,13 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 		Jwt customAuthoritiesClaimAndDelimiterJwt = jwtBuilder.claim("scp", null)
 			.claim(customAuthoritiesClaim, jwtScopes[0] + "~" + jwtScopes[1])
 			.build();
-
 		String[] customPrefixAuthorities = { customPrefix + jwtScopes[0], customPrefix + jwtScopes[1] };
 		String[] defaultPrefixAuthorities = { "SCOPE_" + jwtScopes[0], "SCOPE_" + jwtScopes[1] };
-
 		return Stream.of(
-				Arguments.of(Named.named("No JWT converter customizations", noJwtConverterProps),
-						noAuthoritiesCustomizationsJwt, subjectValue, defaultPrefixAuthorities),
 				Arguments.of(Named.named("Custom prefix for GrantedAuthority", customPrefixProps),
 						noAuthoritiesCustomizationsJwt, subjectValue, customPrefixAuthorities),
 				Arguments.of(Named.named("Custom delimiter for JWT scopes", customDelimiterProps),
-						customAuthoritiesDelimiterJwt, subjectValue, defaultPrefixAuthorities),
+						customAuthoritiesDelimiterJwt, subjectValue, customPrefixAuthorities),
 				Arguments.of(Named.named("Custom JWT authority claim name", customAuthoritiesClaimProps),
 						customAuthoritiesClaimJwt, subjectValue, defaultPrefixAuthorities),
 				Arguments.of(Named.named("Custom JWT principal claim name", customPrincipalClaimProps),

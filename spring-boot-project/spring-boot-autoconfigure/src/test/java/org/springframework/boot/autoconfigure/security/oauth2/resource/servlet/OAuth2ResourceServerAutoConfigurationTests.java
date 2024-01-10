@@ -663,6 +663,29 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldNotConfigureJwtConverterIfNoPropertiesAreSet() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(JwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfPrincipalClaimNameIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.principal-claim-name=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(JwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfAuthorityPrefixIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authority-prefix=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(JwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfAuthorityClaimsNameIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-name=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(JwtAuthenticationConverter.class));
+	}
+
+	@Test
 	void jwtAuthenticationConverterByJwtConfigIsConditionalOnMissingBean() {
 		String propertiesPrincipalClaim = "principal_from_properties";
 		String propertiesPrincipalValue = "from_props";

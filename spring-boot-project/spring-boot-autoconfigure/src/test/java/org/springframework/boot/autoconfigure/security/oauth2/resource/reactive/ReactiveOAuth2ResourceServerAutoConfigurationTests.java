@@ -633,6 +633,30 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void shouldNotConfigureJwtConverterIfNoPropertiesAreSet() {
+		this.contextRunner
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveJwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfPrincipalClaimNameIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.principal-claim-name=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfAuthorityPrefixIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authority-prefix=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfAuthorityClaimsNameIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-name=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class));
+	}
+
 	@ParameterizedTest(name = "{0}")
 	@ArgumentsSource(JwtConverterCustomizationsArgumentsProvider.class)
 	void autoConfigurationShouldConfigureResourceServerWithJwtConverterCustomizations(String[] properties, Jwt jwt,
