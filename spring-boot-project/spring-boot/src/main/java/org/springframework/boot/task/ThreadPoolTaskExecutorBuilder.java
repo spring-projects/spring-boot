@@ -169,6 +169,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @param acceptTasksAfterContextClose whether to accept further tasks after the
 	 * application context close phase has begun
 	 * @return a new builder instance
+	 * @since 3.3.0
 	 */
 	public ThreadPoolTaskExecutorBuilder acceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
