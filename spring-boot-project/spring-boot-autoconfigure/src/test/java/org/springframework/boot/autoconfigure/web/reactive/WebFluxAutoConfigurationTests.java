@@ -628,15 +628,13 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void customSessionMaxSessionsConfigurationShouldBeApplied() {
 		this.contextRunner.withPropertyValues("server.reactive.session.max-sessions:123")
-			.run((context) -> assertMaxSessionsWithWebSession(123));
+			.run(assertMaxSessionsWithWebSession(123));
 	}
 
 	@Test
 	void defaultSessionMaxSessionsConfigurationShouldBeInSync() {
-		this.contextRunner.run((context) -> {
-			int defaultMaxSessions = new InMemoryWebSessionStore().getMaxSessions();
-			assertMaxSessionsWithWebSession(defaultMaxSessions);
-		});
+		int defaultMaxSessions = new InMemoryWebSessionStore().getMaxSessions();
+		this.contextRunner.run(assertMaxSessionsWithWebSession(defaultMaxSessions));
 	}
 
 	@Test
