@@ -47,6 +47,7 @@ import org.springframework.util.unit.DataSize;
  * @author Eddú Meléndez
  * @author Rafael Carvalho
  * @author Scott Frederick
+ * @author Lasse Wulff
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -719,22 +720,9 @@ public class RabbitProperties {
 	public abstract static class BaseContainer {
 
 		/**
-		 * Whether to start the container automatically on startup.
-		 */
-		private boolean autoStartup = true;
-
-		/**
 		 * Whether to enable observation.
 		 */
 		private boolean observationEnabled;
-
-		public boolean isAutoStartup() {
-			return this.autoStartup;
-		}
-
-		public void setAutoStartup(boolean autoStartup) {
-			this.autoStartup = autoStartup;
-		}
 
 		public boolean isObservationEnabled() {
 			return this.observationEnabled;
@@ -747,6 +735,11 @@ public class RabbitProperties {
 	}
 
 	public abstract static class AmqpContainer extends BaseContainer {
+
+		/**
+		 * Whether to start the container automatically on startup.
+		 */
+		private boolean autoStartup = true;
 
 		/**
 		 * Acknowledge mode of container.
@@ -785,6 +778,14 @@ public class RabbitProperties {
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
 
 		public AcknowledgeMode getAcknowledgeMode() {
 			return this.acknowledgeMode;
