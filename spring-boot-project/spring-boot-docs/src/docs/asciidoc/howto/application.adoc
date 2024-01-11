@@ -23,7 +23,7 @@ The following example registers `ProjectConstraintViolationFailureAnalyzer`:
 	com.example.ProjectConstraintViolationFailureAnalyzer
 ----
 
-NOTE: If you need access to the `BeanFactory` or the `Environment`, your `FailureAnalyzer` can implement `BeanFactoryAware` or `EnvironmentAware` respectively.
+NOTE: If you need access to the `BeanFactory` or the `Environment`, declare them as constructor arguments in your `FailureAnalyzer` implementation.
 
 
 
