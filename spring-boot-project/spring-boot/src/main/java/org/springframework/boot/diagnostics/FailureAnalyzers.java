@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,12 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 
 	FailureAnalyzers(ConfigurableApplicationContext context, SpringFactoriesLoader springFactoriesLoader) {
 		this.springFactoriesLoader = springFactoriesLoader;
-		this.analyzers = springFactoriesLoader.load(FailureAnalyzer.class, getArgumentResolver(context),
+		this.analyzers = loadFailureAnalyzers(context, this.springFactoriesLoader);
+	}
+
+	private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
+			SpringFactoriesLoader springFactoriesLoader) {
+		return springFactoriesLoader.load(FailureAnalyzer.class, getArgumentResolver(context),
 				FailureHandler.logging(logger));
 	}
 

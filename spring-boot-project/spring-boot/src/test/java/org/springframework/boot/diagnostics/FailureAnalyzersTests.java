@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.Environment;
@@ -52,19 +51,24 @@ class FailureAnalyzersTests {
 	}
 
 	@Test
-	void analyzerIsConstructedWithBeanFactory(CapturedOutput output) {
+	void analyzersAreLoadedAndCalled() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport(failure, BasicFailureAnalyzer.class, BeanFactoryConstructorFailureAnalyzer.class);
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, BasicFailureAnalyzer.class);
 		then(failureAnalyzer).should(times(2)).analyze(failure);
-		assertThat(output).doesNotContain("implement BeanFactoryAware or EnvironmentAware");
 	}
 
 	@Test
-	void analyzerIsConstructedWithEnvironment(CapturedOutput output) {
+	void analyzerIsConstructedWithBeanFactory() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport(failure, BasicFailureAnalyzer.class, BeanFactoryConstructorFailureAnalyzer.class);
+		then(failureAnalyzer).should(times(2)).analyze(failure);
+	}
+
+	@Test
+	void analyzerIsConstructedWithEnvironment() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport(failure, BasicFailureAnalyzer.class, EnvironmentConstructorFailureAnalyzer.class);
 		then(failureAnalyzer).should(times(2)).analyze(failure);
-		assertThat(output).doesNotContain("implement BeanFactoryAware or EnvironmentAware");
 	}
 
 	@Test
