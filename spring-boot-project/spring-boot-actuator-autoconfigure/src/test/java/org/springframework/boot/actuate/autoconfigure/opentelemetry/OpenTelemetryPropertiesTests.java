@@ -48,7 +48,7 @@ class OpenTelemetryPropertiesTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(OpenTelemetryProperties.class)
-	private static class TestConfiguration {
+	private static final class TestConfiguration {
 
 	}
 

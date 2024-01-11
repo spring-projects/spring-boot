@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	/**
 	 * {@link DnsResolver} that ensures only the loopback address is used.
 	 */
-	private static class LocalDnsResolver implements DnsResolver {
+	private static final class LocalDnsResolver implements DnsResolver {
 
 		private static final InetAddress LOOPBACK = InetAddress.getLoopbackAddress();
 
@@ -136,7 +136,7 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	/**
 	 * {@link HttpRoutePlanner} for local Docker.
 	 */
-	private static class LocalRoutePlanner implements HttpRoutePlanner {
+	private static final class LocalRoutePlanner implements HttpRoutePlanner {
 
 		@Override
 		public HttpRoute determineRoute(HttpHost target, HttpContext context) {

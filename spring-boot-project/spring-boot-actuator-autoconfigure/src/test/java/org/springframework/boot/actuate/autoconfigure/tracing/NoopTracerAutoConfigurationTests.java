@@ -65,7 +65,7 @@ class NoopTracerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class CustomTracerConfiguration {
+	private static final class CustomTracerConfiguration {
 
 		@Bean
 		Tracer customTracer() {

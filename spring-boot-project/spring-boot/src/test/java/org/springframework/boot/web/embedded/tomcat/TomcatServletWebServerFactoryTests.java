@@ -740,7 +740,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		return ((TomcatWebServer) this.webServer).getStartedLogMessage();
 	}
 
-	private static class RememberingHostnameVerifier implements HostnameVerifier {
+	private static final class RememberingHostnameVerifier implements HostnameVerifier {
 
 		private volatile String lastPrincipal;
 

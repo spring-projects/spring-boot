@@ -453,7 +453,7 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class CustomConfiguration {
+	private static final class CustomConfiguration {
 
 		@Bean
 		Tracing customTracing() {

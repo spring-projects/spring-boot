@@ -131,7 +131,7 @@ public class MicrometerTracingAutoConfiguration {
 
 	}
 
-	private static class SpelTagValueExpressionResolver implements ValueExpressionResolver {
+	private static final class SpelTagValueExpressionResolver implements ValueExpressionResolver {
 
 		@Override
 		public String resolve(String expression, Object parameter) {

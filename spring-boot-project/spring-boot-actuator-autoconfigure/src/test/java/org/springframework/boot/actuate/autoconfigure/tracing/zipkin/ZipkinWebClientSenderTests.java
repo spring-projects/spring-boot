@@ -187,7 +187,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		dispatcher.clear();
 	}
 
-	private static class ClearableDispatcher extends QueueDispatcher {
+	private static final class ClearableDispatcher extends QueueDispatcher {
 
 		void clear() {
 			getResponseQueue().clear();

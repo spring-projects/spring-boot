@@ -1574,7 +1574,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected abstract String startedLogMessage();
 
-	private class TestGzipInputStreamFactory implements InputStreamFactory {
+	private final class TestGzipInputStreamFactory implements InputStreamFactory {
 
 		private final AtomicBoolean requested = new AtomicBoolean();
 
