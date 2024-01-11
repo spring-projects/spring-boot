@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,7 +216,7 @@ class AutoConfigurationImportSelectorTests {
 		return ImportCandidates.load(AutoConfiguration.class, getClass().getClassLoader()).getCandidates();
 	}
 
-	private class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
+	private final class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
 
 		private AutoConfigurationImportEvent lastEvent;
 
@@ -269,54 +269,54 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private class TestConfiguration {
+	private final class TestConfiguration {
 
 	}
 
 	@EnableAutoConfiguration
-	private class BasicEnableAutoConfiguration {
+	private final class BasicEnableAutoConfiguration {
 
 	}
 
 	@EnableAutoConfiguration(exclude = FreeMarkerAutoConfiguration.class)
-	private class EnableAutoConfigurationWithClassExclusions {
+	private final class EnableAutoConfigurationWithClassExclusions {
 
 	}
 
 	@SpringBootApplication(exclude = FreeMarkerAutoConfiguration.class)
-	private class SpringBootApplicationWithClassExclusions {
+	private final class SpringBootApplicationWithClassExclusions {
 
 	}
 
 	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
-	private class EnableAutoConfigurationWithClassNameExclusions {
+	private final class EnableAutoConfigurationWithClassNameExclusions {
 
 	}
 
 	@EnableAutoConfiguration(exclude = MustacheAutoConfiguration.class,
 			excludeName = "org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration")
-	private class EnableAutoConfigurationWithClassAndClassNameExclusions {
+	private final class EnableAutoConfigurationWithClassAndClassNameExclusions {
 
 	}
 
 	@EnableAutoConfiguration(exclude = TestConfiguration.class)
-	private class EnableAutoConfigurationWithFaultyClassExclude {
+	private final class EnableAutoConfigurationWithFaultyClassExclude {
 
 	}
 
 	@EnableAutoConfiguration(
 			excludeName = "org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration")
-	private class EnableAutoConfigurationWithFaultyClassNameExclude {
+	private final class EnableAutoConfigurationWithFaultyClassNameExclude {
 
 	}
 
 	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.DoesNotExist1")
-	private class EnableAutoConfigurationWithAbsentClassNameExclude {
+	private final class EnableAutoConfigurationWithAbsentClassNameExclude {
 
 	}
 
 	@SpringBootApplication(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
-	private class SpringBootApplicationWithClassNameExclusions {
+	private final class SpringBootApplicationWithClassNameExclusions {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -402,7 +402,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * Extension to {@link JacksonAnnotationIntrospector} to suppress CGLIB generated bean
 	 * properties.
 	 */
-	private static class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
+	private static final class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
@@ -425,7 +425,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * <li>Properties that throw an exception when retrieving their value.
 	 * </ul>
 	 */
-	private static class ConfigurationPropertiesPropertyFilter extends SimpleBeanPropertyFilter {
+	private static final class ConfigurationPropertiesPropertyFilter extends SimpleBeanPropertyFilter {
 
 		private static final Log logger = LogFactory.getLog(ConfigurationPropertiesPropertyFilter.class);
 

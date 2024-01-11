@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ class JasperInitializer extends AbstractLifeCycle {
 	/**
 	 * {@link URLStreamHandlerFactory} to support {@literal war} protocol.
 	 */
-	private static class WarUrlStreamHandlerFactory implements URLStreamHandlerFactory {
+	private static final class WarUrlStreamHandlerFactory implements URLStreamHandlerFactory {
 
 		@Override
 		public URLStreamHandler createURLStreamHandler(String protocol) {
@@ -115,7 +115,7 @@ class JasperInitializer extends AbstractLifeCycle {
 	 * {@link URL urls} produced by
 	 * {@link org.apache.tomcat.util.scan.JarFactory#getJarEntryURL(URL, String)}.
 	 */
-	private static class WarUrlStreamHandler extends URLStreamHandler {
+	private static final class WarUrlStreamHandler extends URLStreamHandler {
 
 		@Override
 		protected void parseURL(URL u, String spec, int start, int limit) {

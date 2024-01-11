@@ -108,7 +108,7 @@ class R2dbcObservationAutoConfigurationTests {
 		return handler;
 	}
 
-	private static class CapturingObservationHandler implements ObservationHandler<Context> {
+	private static final class CapturingObservationHandler implements ObservationHandler<Context> {
 
 		private final AtomicReference<Context> context = new AtomicReference<>();
 

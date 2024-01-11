@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class RestartScopeInitializer implements ApplicationContextInitializer<Co
 	/**
 	 * {@link Scope} that stores beans as {@link Restarter} attributes.
 	 */
-	private static class RestartScope implements Scope {
+	private static final class RestartScope implements Scope {
 
 		@Override
 		public Object get(String name, ObjectFactory<?> objectFactory) {

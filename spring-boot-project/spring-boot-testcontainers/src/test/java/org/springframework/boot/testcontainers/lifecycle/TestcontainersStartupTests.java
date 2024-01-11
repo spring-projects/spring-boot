@@ -93,7 +93,7 @@ class TestcontainersStartupTests {
 		return testStartables;
 	}
 
-	private class TestStartable implements Startable {
+	private final class TestStartable implements Startable {
 
 		private int index;
 

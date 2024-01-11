@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,7 +157,7 @@ public abstract class DomainSocket extends AbstractSocket {
 	/**
 	 * {@link InputStream} returned from the {@link DomainSocket}.
 	 */
-	private class DomainSocketInputStream extends InputStream {
+	private final class DomainSocketInputStream extends InputStream {
 
 		@Override
 		public int read() throws IOException {
@@ -180,7 +180,7 @@ public abstract class DomainSocket extends AbstractSocket {
 	/**
 	 * {@link OutputStream} returned from the {@link DomainSocket}.
 	 */
-	private class DomainSocketOutputStream extends OutputStream {
+	private final class DomainSocketOutputStream extends OutputStream {
 
 		@Override
 		public void write(int b) throws IOException {

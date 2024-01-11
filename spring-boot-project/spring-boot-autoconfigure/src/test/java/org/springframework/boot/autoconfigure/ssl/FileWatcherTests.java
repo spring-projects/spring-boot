@@ -165,7 +165,7 @@ class FileWatcherTests {
 		}
 	}
 
-	private static class WaitingCallback implements Runnable {
+	private static final class WaitingCallback implements Runnable {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 

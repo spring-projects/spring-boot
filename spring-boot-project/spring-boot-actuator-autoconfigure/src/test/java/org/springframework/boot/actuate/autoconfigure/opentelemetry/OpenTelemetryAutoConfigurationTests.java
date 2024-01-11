@@ -140,7 +140,7 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class UserConfiguration {
+	private static final class UserConfiguration {
 
 		@Bean
 		OpenTelemetry customOpenTelemetry() {

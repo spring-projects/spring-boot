@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	/**
 	 * Early initializer for Spring MessageConverters.
 	 */
-	private static class MessageConverterInitializer implements Runnable {
+	private static final class MessageConverterInitializer implements Runnable {
 
 		@Override
 		public void run() {
@@ -151,7 +151,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	/**
 	 * Early initializer for jakarta.validation.
 	 */
-	private static class ValidationInitializer implements Runnable {
+	private static final class ValidationInitializer implements Runnable {
 
 		@Override
 		public void run() {
@@ -164,7 +164,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	/**
 	 * Early initializer for Jackson.
 	 */
-	private static class JacksonInitializer implements Runnable {
+	private static final class JacksonInitializer implements Runnable {
 
 		@Override
 		public void run() {
@@ -176,7 +176,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	/**
 	 * Early initializer for Spring's ConversionService.
 	 */
-	private static class ConversionServiceInitializer implements Runnable {
+	private static final class ConversionServiceInitializer implements Runnable {
 
 		@Override
 		public void run() {
@@ -185,7 +185,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	}
 
-	private static class CharsetInitializer implements Runnable {
+	private static final class CharsetInitializer implements Runnable {
 
 		@Override
 		public void run() {
@@ -194,7 +194,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	}
 
-	private static class TomcatInitializer implements Runnable {
+	private static final class TomcatInitializer implements Runnable {
 
 		@Override
 		public void run() {
@@ -204,7 +204,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	}
 
-	private static class JdkInitializer implements Runnable {
+	private static final class JdkInitializer implements Runnable {
 
 		@Override
 		public void run() {
