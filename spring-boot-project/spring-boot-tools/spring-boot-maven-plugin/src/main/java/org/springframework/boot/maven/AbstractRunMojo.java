@@ -277,14 +277,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
-		String suffix = (applicationArguments.asArray().length == 1) ? "" : "s";
-		logArguments("Application argument" + suffix + ": ", applicationArguments.asArray());
+		logArguments("Application argument", applicationArguments.asArray());
 	}
 
 	private Map<String, String> determineEnvironmentVariables() {
 		EnvVariables envVariables = resolveEnvVariables();
-		String suffix = (envVariables.asArray().length == 1) ? "" : "s";
-		logArguments("Environment variable" + suffix + ": ", envVariables.asArray());
+		logArguments("Environment variable", envVariables.asArray());
 		return envVariables.asMap();
 	}
 
@@ -309,8 +307,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addJvmArgs(List<String> args) {
 		RunArguments jvmArguments = resolveJvmArguments();
 		Collections.addAll(args, jvmArguments.asArray());
-		String suffix = (jvmArguments.asArray().length == 1) ? "" : "s";
-		logArguments("JVM argument" + suffix + ": ", jvmArguments.asArray());
+		logArguments("JVM argument", jvmArguments.asArray());
 	}
 
 	private void addAgents(List<String> args) {
@@ -337,8 +334,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				}
 			}
 			arguments.getArgs().addFirst(arg.toString());
-			String suffix = (this.profiles.length == 1) ? "" : "s";
-			logArguments("Active profile" + suffix + ": ", this.profiles);
+			logArguments("Active profile", this.profiles);
 		}
 	}
 
@@ -417,8 +413,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void logArguments(String message, String[] args) {
+	private void logArguments(String name, String[] args) {
 		if (getLog().isDebugEnabled()) {
+			String message = (args.length == 1) ? name + ": " : name + "s: ";
 			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
 	}
