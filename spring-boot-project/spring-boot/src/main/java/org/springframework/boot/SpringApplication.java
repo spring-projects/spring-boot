@@ -95,7 +95,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingConsumer;
 import org.springframework.util.function.ThrowingSupplier;
@@ -172,6 +171,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Ethan Rubinson
  * @author Chris Bono
  * @author Tadaya Tsuyukubo
+ * @author Lasse Wulff
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -330,12 +330,11 @@ public class SpringApplication {
 			listeners.started(context, timeTakenToStartup);
 			callRunners(context, applicationArguments);
 		}
+		catch (AbandonedRunException ex) {
+			throw ex;
+		}
 		catch (Throwable ex) {
-			if (ex instanceof AbandonedRunException) {
-				throw ex;
-			}
-			handleRunFailure(context, ex, listeners);
-			throw new IllegalStateException(ex);
+			throw handleRunFailure(context, ex, listeners);
 		}
 		try {
 			if (context.isRunning()) {
@@ -343,12 +342,11 @@ public class SpringApplication {
 				listeners.ready(context, timeTakenToReady);
 			}
 		}
+		catch (AbandonedRunException ex) {
+			throw ex;
+		}
 		catch (Throwable ex) {
-			if (ex instanceof AbandonedRunException) {
-				throw ex;
-			}
-			handleRunFailure(context, ex, null);
-			throw new IllegalStateException(ex);
+			throw handleRunFailure(context, ex, null);
 		}
 		return context;
 	}
@@ -790,7 +788,7 @@ public class SpringApplication {
 			.accept((R) runner);
 	}
 
-	private void handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
+	private RuntimeException handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
 			SpringApplicationRunListeners listeners) {
 		try {
 			try {
@@ -810,7 +808,10 @@ public class SpringApplication {
 		catch (Exception ex) {
 			logger.warn("Unable to close ApplicationContext", ex);
 		}
-		ReflectionUtils.rethrowRuntimeException(exception);
+		if (exception instanceof RuntimeException runtimeException) {
+			return runtimeException;
+		}
+		return new IllegalStateException(exception);
 	}
 
 	private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
