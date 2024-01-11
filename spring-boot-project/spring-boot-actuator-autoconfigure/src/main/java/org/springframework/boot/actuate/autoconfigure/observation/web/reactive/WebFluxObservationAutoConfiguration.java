@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,13 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
@@ -42,6 +45,7 @@ import org.springframework.core.annotation.Order;
  * @author Brian Clozel
  * @author Jon Schneider
  * @author Dmytro Nosan
+ * @author Moritz Halbritter
  * @since 3.0.0
  */
 @AutoConfiguration(after = { SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
@@ -51,15 +55,27 @@ import org.springframework.core.annotation.Order;
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
 public class WebFluxObservationAutoConfiguration {
 
+	private final ObservationProperties observationProperties;
+
+	WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
+		this.observationProperties = observationProperties;
+	}
+
 	@Bean
 	@Order(0)
-	MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
-			ObservationProperties observationProperties) {
-		String name = observationProperties.getHttp().getServer().getRequests().getName();
+	MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
+		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
 				() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
 		return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
 				filter);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
+	DefaultServerRequestObservationConvention defaultServerRequestObservationConvention() {
+		return new DefaultServerRequestObservationConvention(
+				this.observationProperties.getHttp().getServer().getRequests().getName());
 	}
 
 }
