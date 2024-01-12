@@ -141,14 +141,6 @@ public final class WebServerSslBundle implements SslBundle {
 		throw new IllegalStateException("SSL is enabled but no trust material is configured");
 	}
 
-	static SslBundle createCertificateFileSslStoreProviderDelegate(Ssl ssl) {
-		if (!hasCertificateProperties(ssl)) {
-			return null;
-		}
-		SslStoreBundle stores = createPemStoreBundle(ssl);
-		return new WebServerSslBundle(stores, ssl.getKeyPassword(), ssl);
-	}
-
 	private static boolean hasCertificateProperties(Ssl ssl) {
 		return Ssl.isEnabled(ssl) && ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null;
 	}
