@@ -106,7 +106,7 @@
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/
 :lettuce-docs: https://lettuce.io/core/{lettuce-version}/reference/index.html
-:micrometer-docs: https://micrometer.io/docs
+:micrometer-docs: https://docs.micrometer.io/micrometer/reference
 :micrometer-concepts-docs: {micrometer-docs}/concepts
 :micrometer-registry-docs: {micrometer-docs}/registry
 :tomcat-docs: https://tomcat.apache.org/tomcat-{tomcat-version}-doc

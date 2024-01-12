@@ -22,7 +22,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<actuator#actuator.metrics.export.statsd,StatsD>>
 - <<actuator#actuator.metrics.export.wavefront,Wavefront>>
 
-TIP: To learn more about Micrometer's capabilities, see its https://micrometer.io/docs[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
+TIP: To learn more about Micrometer's capabilities, see its {micrometer-docs}[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
 
 
 
