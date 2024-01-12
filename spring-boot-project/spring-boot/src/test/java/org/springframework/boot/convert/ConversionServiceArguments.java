@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,20 +35,20 @@ import org.springframework.format.support.FormattingConversionService;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-final class ConversionServiceArguments {
+public final class ConversionServiceArguments {
 
 	private ConversionServiceArguments() {
 	}
 
-	static Stream<? extends Arguments> with(Formatter<?> formatter) {
+	public static Stream<? extends Arguments> with(Formatter<?> formatter) {
 		return with((conversionService) -> conversionService.addFormatter(formatter));
 	}
 
-	static Stream<? extends Arguments> with(GenericConverter converter) {
+	public static Stream<? extends Arguments> with(GenericConverter converter) {
 		return with((conversionService) -> conversionService.addConverter(converter));
 	}
 
-	static Stream<? extends Arguments> with(Consumer<FormattingConversionService> initializer) {
+	public static Stream<? extends Arguments> with(Consumer<FormattingConversionService> initializer) {
 		FormattingConversionService withoutDefaults = new FormattingConversionService();
 		initializer.accept(withoutDefaults);
 		return Stream.of(
@@ -57,7 +57,7 @@ final class ConversionServiceArguments {
 						"Application conversion service")));
 	}
 
-	static boolean isApplicationConversionService(ConversionService conversionService) {
+	public static boolean isApplicationConversionService(ConversionService conversionService) {
 		if (conversionService instanceof NamedConversionService namedConversionService) {
 			return isApplicationConversionService(namedConversionService.delegate);
 		}

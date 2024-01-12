@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.core.io.ClassPathResource;
@@ -648,6 +649,41 @@ class ConfigurationPropertiesTests {
 	@Test
 	void loadShouldUseConverterBean() {
 		prepareConverterContext(PersonConverterConfiguration.class, PersonProperties.class);
+		Person person = this.context.getBean(PersonProperties.class).getPerson();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+	}
+
+	@Test
+	void loadShouldUseStringConverterBeanWhenValueIsCharSequence() {
+		this.context.register(PersonConverterConfiguration.class, PersonProperties.class);
+		PropertySource<?> testProperties = new MapPropertySource("test", Map.of("test.person", new CharSequence() {
+
+			private final String value = "John Smith";
+
+			@Override
+			public int length() {
+				return this.value.length();
+			}
+
+			@Override
+			public char charAt(int index) {
+				return this.value.charAt(index);
+			}
+
+			@Override
+			public CharSequence subSequence(int start, int end) {
+				return this.value.subSequence(start, end);
+			}
+
+			@Override
+			public String toString() {
+				return this.value;
+			}
+
+		}));
+		this.context.getEnvironment().getPropertySources().addLast(testProperties);
+		this.context.refresh();
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
