@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.EndpointRequestMatcher;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -237,6 +238,24 @@ class EndpointRequestTests {
 	void toStringWhenIncludedExcludedEndpoints() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("bar").excludingLinks();
 		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[bar], includeLinks=false");
+	}
+
+	@Test
+	void toAnyEndpointWhenEndpointPathMappedToRootIsExcludedShouldNotMatchRoot() {
+		EndpointRequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("root");
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("", () -> List
+			.of(mockEndpoint(EndpointId.of("root"), "/"), mockEndpoint(EndpointId.of("alpha"), "alpha"))));
+		assertMatcher.doesNotMatch("/");
+		assertMatcher.matches("/alpha");
+		assertMatcher.matches("/alpha/sub");
+	}
+
+	@Test
+	void toEndpointWhenEndpointPathMappedToRootShouldMatchRoot() {
+		EndpointRequestMatcher matcher = EndpointRequest.to("root");
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher,
+				new PathMappedEndpoints("", () -> List.of(mockEndpoint(EndpointId.of("root"), "/"))));
+		assertMatcher.matches("/");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
