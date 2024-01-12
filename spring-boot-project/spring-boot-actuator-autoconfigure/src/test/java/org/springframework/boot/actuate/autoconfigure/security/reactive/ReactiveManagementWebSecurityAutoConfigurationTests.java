@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,17 +71,26 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 				HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
 				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class, ReactiveManagementWebSecurityAutoConfiguration.class))
-		.withUserConfiguration(UserDetailsServiceConfiguration.class);
+				ReactiveSecurityAutoConfiguration.class, ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
 	void permitAllForHealth() {
-		this.contextRunner.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull());
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull());
 	}
 
 	@Test
 	void securesEverythingElse() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class).run((context) -> {
+			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
+			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
+		});
+	}
+
+	@Test
+	void noExistingAuthenticationManagerOrUserDetailsService() {
 		this.contextRunner.run((context) -> {
+			assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull();
 			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
 			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
 		});
@@ -89,10 +98,12 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	@Test
 	void usesMatchersBasedOffConfiguredActuatorBasePath() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/").run((context) -> {
-			assertThat(getAuthenticateHeader(context, "/health")).isNull();
-			assertThat(getAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
-		});
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.withPropertyValues("management.endpoints.web.base-path=/")
+			.run((context) -> {
+				assertThat(getAuthenticateHeader(context, "/health")).isNull();
+				assertThat(getAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
+			});
 	}
 
 	@Test
@@ -178,6 +189,11 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 			});
 			http.formLogin(withDefaults());
 			return http.build();
+		}
+
+		@Bean
+		ReactiveAuthenticationManager authenticationManager() {
+			return mock(ReactiveAuthenticationManager.class);
 		}
 
 	}
