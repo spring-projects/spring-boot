@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  * @param path the path to the zip that contains the nested entry
  * @param nestedEntryName the nested entry name
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 3.2.0
  */
 public record NestedLocation(Path path, String nestedEntryName) {
@@ -72,7 +73,7 @@ public record NestedLocation(Path path, String nestedEntryName) {
 		if (url == null || !"nested".equalsIgnoreCase(url.getProtocol())) {
 			throw new IllegalArgumentException("'url' must not be null and must use 'nested' protocol");
 		}
-		return parse(UrlDecoder.decode(url.getPath()));
+		return parse(UrlDecoder.decode(url.toString().substring(7)));
 	}
 
 	/**
@@ -98,7 +99,7 @@ public record NestedLocation(Path path, String nestedEntryName) {
 
 	private static NestedLocation create(int index, String location) {
 		String locationPath = (index != -1) ? location.substring(0, index) : location;
-		if (isWindows()) {
+		if (isWindows() && !isUncPath(location)) {
 			while (locationPath.startsWith("/")) {
 				locationPath = locationPath.substring(1, locationPath.length());
 			}
@@ -109,6 +110,10 @@ public record NestedLocation(Path path, String nestedEntryName) {
 
 	private static boolean isWindows() {
 		return File.separatorChar == '\\';
+	}
+
+	private static boolean isUncPath(String input) {
+		return !input.contains(":");
 	}
 
 	static void clearCache() {
