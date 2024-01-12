@@ -64,7 +64,7 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
-		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
+		customizeAuthentication(properties.getAuthentication(), clientBuilder::authentication);
 		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrl, clientBuilder::serviceUrlProvider, properties,
 				connectionDetails);
 	}
@@ -77,21 +77,11 @@ final class PulsarPropertiesMapper {
 			serviceUrlConsumer.accept(connectionDetails.getBrokerUrl());
 			return;
 		}
-		Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
-		failoverProperties.getBackupClusters().forEach((cluster) -> {
-			PulsarProperties.Authentication authentication = cluster.getAuthentication();
-			if (authentication.getPluginClassName() == null) {
-				secondaryAuths.put(cluster.getServiceUrl(), null);
-			}
-			else {
-				customizeAuthentication((authPluginClassName, authParams) -> secondaryAuths.put(cluster.getServiceUrl(),
-						AuthenticationFactory.create(authPluginClassName, authParams)), authentication);
-			}
-		});
+		Map<String, Authentication> secondaryAuths = getSecondaryAuths(failoverProperties);
 		AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
-		map.from(new ArrayList<>(secondaryAuths.keySet())).to(autoClusterFailoverBuilder::secondary);
+		map.from(secondaryAuths::keySet).as(ArrayList::new).to(autoClusterFailoverBuilder::secondary);
 		map.from(failoverProperties::getFailoverPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
 		map.from(failoverProperties::getFailOverDelay).to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
 		map.from(failoverProperties::getSwitchBackDelay)
@@ -101,6 +91,23 @@ final class PulsarPropertiesMapper {
 		serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
 	}
 
+	private Map<String, Authentication> getSecondaryAuths(PulsarProperties.Failover properties) {
+		Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
+		properties.getBackupClusters().forEach((backupCluster) -> {
+			PulsarProperties.Authentication authenticationProperties = backupCluster.getAuthentication();
+			if (authenticationProperties.getPluginClassName() == null) {
+				secondaryAuths.put(backupCluster.getServiceUrl(), null);
+			}
+			else {
+				customizeAuthentication(authenticationProperties, (authPluginClassName, authParams) -> {
+					Authentication authentication = AuthenticationFactory.create(authPluginClassName, authParams);
+					secondaryAuths.put(backupCluster.getServiceUrl(), authentication);
+				});
+			}
+		});
+		return secondaryAuths;
+	}
+
 	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Admin properties = this.properties.getAdmin();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -108,15 +115,14 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(adminBuilder::connectionTimeout));
 		map.from(properties::getReadTimeout).to(timeoutProperty(adminBuilder::readTimeout));
 		map.from(properties::getRequestTimeout).to(timeoutProperty(adminBuilder::requestTimeout));
-		customizeAuthentication(adminBuilder::authentication, properties.getAuthentication());
+		customizeAuthentication(properties.getAuthentication(), adminBuilder::authentication);
 	}
 
-	private void customizeAuthentication(AuthenticationConsumer authentication,
-			PulsarProperties.Authentication properties) {
-		if (StringUtils.hasText(properties.getPluginClassName())) {
+	private void customizeAuthentication(PulsarProperties.Authentication properties, AuthenticationConsumer action) {
+		String pluginClassName = properties.getPluginClassName();
+		if (StringUtils.hasText(pluginClassName)) {
 			try {
-				authentication.accept(properties.getPluginClassName(),
-						getAuthenticationParamsJson(properties.getParam()));
+				action.accept(pluginClassName, getAuthenticationParamsJson(properties.getParam()));
 			}
 			catch (UnsupportedAuthenticationException ex) {
 				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);

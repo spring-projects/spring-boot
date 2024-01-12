@@ -332,7 +332,7 @@ public class ServerProperties {
 			/**
 			 * The maximum number of sessions that can be stored.
 			 */
-			private int maxSessions = 10_000;
+			private int maxSessions = 10000;
 
 			@NestedConfigurationProperty
 			private final Cookie cookie = new Cookie();

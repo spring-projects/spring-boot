@@ -115,13 +115,13 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	public void configure(DefaultJmsListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
-		factory.setConnectionFactory(connectionFactory);
-		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
-		factory.setSubscriptionDurable(this.jmsProperties.isSubscriptionDurable());
-		factory.setClientId(this.jmsProperties.getClientId());
 		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
+		factory.setConnectionFactory(connectionFactory);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this.jmsProperties::isPubSubDomain).to(factory::setPubSubDomain);
+		map.from(this.jmsProperties::isSubscriptionDurable).to(factory::setSubscriptionDurable);
+		map.from(this.jmsProperties::getClientId).to(factory::setClientId);
 		map.from(this.transactionManager).to(factory::setTransactionManager);
 		map.from(this.destinationResolver).to(factory::setDestinationResolver);
 		map.from(this.messageConverter).to(factory::setMessageConverter);
