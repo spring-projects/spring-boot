@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -62,11 +64,11 @@ class BaseConfiguration {
 
 	@Bean
 	WebEndpointDiscoverer webEndpointDiscoverer(EndpointMediaTypes endpointMediaTypes,
-			ApplicationContext applicationContext) {
+			ApplicationContext applicationContext, ObjectProvider<PathMapper> pathMappers) {
 		ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 				DefaultConversionService.getSharedInstance());
-		return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes, null,
-				Collections.emptyList(), Collections.emptyList());
+		return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes,
+				pathMappers.orderedStream().toList(), Collections.emptyList(), Collections.emptyList());
 	}
 
 	@Bean
