@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,17 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	private String getPath(PathMappedEndpoint endpoint) {
-		return (endpoint != null) ? this.basePath + "/" + endpoint.getRootPath() : null;
+		if (endpoint == null) {
+			return null;
+		}
+		StringBuilder path = new StringBuilder(this.basePath);
+		if (!this.basePath.equals("/")) {
+			path.append("/");
+		}
+		if (!endpoint.getRootPath().equals("/")) {
+			path.append(endpoint.getRootPath());
+		}
+		return path.toString();
 	}
 
 }

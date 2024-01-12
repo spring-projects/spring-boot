@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -106,6 +107,21 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 					.expectBody()
 					.jsonPath("All")
 					.isEqualTo(true));
+	}
+
+	@Test
+	void readOperationWithEndpointPathMappedToTheRoot() {
+		load(EndpointPathMappedToRootConfiguration.class, "", (client) -> {
+			client.get().uri("/").exchange().expectStatus().isOk().expectBody().jsonPath("All").isEqualTo(true);
+			client.get()
+				.uri("/some-part")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("part")
+				.isEqualTo("some-part");
+		});
 	}
 
 	@Test
@@ -668,6 +684,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@Bean
 		public TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new TestEndpoint(endpointDelegate);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestEndpointConfiguration.class)
+	protected static class EndpointPathMappedToRootConfiguration {
+
+		@Bean
+		PathMapper pathMapper() {
+			return (endpointId) -> "/";
 		}
 
 	}

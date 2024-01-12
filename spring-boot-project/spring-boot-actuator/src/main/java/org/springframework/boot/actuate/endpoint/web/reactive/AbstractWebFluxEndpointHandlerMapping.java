@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -176,10 +178,19 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = this.endpointMapping.createSubPath(predicate.getPath());
+		List<String> paths = new ArrayList<>();
+		paths.add(path);
+		if (!StringUtils.hasText(path)) {
+			paths.add("/");
+		}
 		RequestMethod method = RequestMethod.valueOf(predicate.getHttpMethod().name());
 		String[] consumes = StringUtils.toStringArray(predicate.getConsumes());
 		String[] produces = StringUtils.toStringArray(predicate.getProduces());
-		return RequestMappingInfo.paths(path).methods(method).consumes(consumes).produces(produces).build();
+		return RequestMappingInfo.paths(paths.toArray(new String[0]))
+			.methods(method)
+			.consumes(consumes)
+			.produces(produces)
+			.build();
 	}
 
 	private void registerLinksMapping() {
