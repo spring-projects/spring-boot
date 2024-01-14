@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server;
 
+import java.util.Arrays;
+
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -148,6 +150,13 @@ public final class WebServerSslBundle implements SslBundle {
 	private static boolean hasJavaKeyStoreProperties(Ssl ssl) {
 		return Ssl.isEnabled(ssl) && ssl.getKeyStore() != null
 				|| (ssl.getKeyStoreType() != null && ssl.getKeyStoreType().equals("PKCS11"));
+	}
+
+	@Override
+	public String toString() {
+		return "WebServerSslBundle{" + "key=" + this.key + ", protocol='" + this.protocol + '\'' + ", ciphers="
+				+ Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
+				+ Arrays.toString(this.options.getEnabledProtocols()) + '}';
 	}
 
 }

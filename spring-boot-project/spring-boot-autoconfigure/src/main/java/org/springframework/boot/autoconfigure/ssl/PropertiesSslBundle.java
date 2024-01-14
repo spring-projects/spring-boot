@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.util.Arrays;
+
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -140,6 +142,13 @@ public final class PropertiesSslBundle implements SslBundle {
 	private static JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
 		return new JksSslStoreDetails(properties.getType(), properties.getProvider(), properties.getLocation(),
 				properties.getPassword());
+	}
+
+	@Override
+	public String toString() {
+		return "PropertiesSslBundle{" + "key=" + this.key + ", protocol='" + this.protocol + '\'' + ", ciphers="
+				+ Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
+				+ Arrays.toString(this.options.getEnabledProtocols()) + '}';
 	}
 
 }
