@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.util.Arrays;
+
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -26,6 +28,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * {@link SslBundle} backed by {@link JksSslBundleProperties} or
@@ -126,6 +129,19 @@ public final class PropertiesSslBundle implements SslBundle {
 	private static JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
 		return new JksSslStoreDetails(properties.getType(), properties.getProvider(), properties.getLocation(),
 				properties.getPassword());
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key-alias", this.key.getAlias());
+		creator.append("protocol", this.protocol);
+		creator.append("keystore-type", this.stores.getKeyStore().getType());
+		creator.append("truststore-type",
+				(this.stores.getTrustStore() != null) ? this.stores.getTrustStore().getType() : "");
+		creator.append("ciphers", Arrays.toString(this.options.getCiphers()));
+		creator.append("enabled-protocols", Arrays.toString(this.options.getEnabledProtocols()));
+		return creator.toString();
 	}
 
 }

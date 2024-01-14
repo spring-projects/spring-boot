@@ -17,6 +17,7 @@
 package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
+import java.util.Arrays;
 
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
@@ -29,6 +30,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingSupplier;
@@ -282,6 +284,19 @@ public final class WebServerSslBundle implements SslBundle {
 			return this.keyStorePassword;
 		}
 
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key-alias", this.key.getAlias());
+		creator.append("protocol", this.protocol);
+		creator.append("keystore-type", this.stores.getKeyStore().getType());
+		creator.append("truststore-type",
+				(this.stores.getTrustStore() != null) ? this.stores.getTrustStore().getType() : "");
+		creator.append("ciphers", Arrays.toString(this.options.getCiphers()));
+		creator.append("enabled-protocols", Arrays.toString(this.options.getEnabledProtocols()));
+		return creator.toString();
 	}
 
 }
