@@ -49,15 +49,18 @@ import static org.mockito.Mockito.mock;
  *
  * @author Moritz Halbritter
  * @author Jonatan Ivanov
+ * @author Brian Clozel
  */
 class MicrometerTracingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withPropertyValues("micrometer.observations.annotations.enabled=true")
 		.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
+			.withPropertyValues("micrometer.observations.annotations.enabled=true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(DefaultTracingObservationHandler.class);
 				assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
@@ -130,6 +133,17 @@ class MicrometerTracingAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(ImperativeMethodInvocationProcessor.class);
 			assertThat(context).doesNotHaveBean(SpanAspect.class);
 		});
+	}
+
+	@Test
+	void shouldNotSupplyAspectBeansIfPropertyIsDisabled() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
+			.withPropertyValues("micrometer.observations.annotations.enabled=false")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(DefaultNewSpanParser.class);
+				assertThat(context).doesNotHaveBean(ImperativeMethodInvocationProcessor.class);
+				assertThat(context).doesNotHaveBean(SpanAspect.class);
+			});
 	}
 
 	@Test

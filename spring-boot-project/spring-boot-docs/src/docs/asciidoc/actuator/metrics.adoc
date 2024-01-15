@@ -1067,7 +1067,8 @@ Metrics for Jetty's `Connector` instances are bound by using Micrometer's `Jetty
 
 [[actuator.metrics.supported.timed-annotation]]
 ==== @Timed Annotation Support
-To use `@Timed` where it is not directly supported by Spring Boot, refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer documentation].
+To enable scanning of `@Timed` annotations, you will need to set the configprop:micrometer.observations.annotations.enabled[] property to `true`.
+Please refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer documentation].
 
 
 

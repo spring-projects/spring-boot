@@ -109,6 +109,7 @@
 :micrometer-docs: https://micrometer.io/docs
 :micrometer-concepts-docs: {micrometer-docs}/concepts
 :micrometer-registry-docs: {micrometer-docs}/registry
+:micrometer-tracing-docs: https://docs.micrometer.io/tracing/reference
 :tomcat-docs: https://tomcat.apache.org/tomcat-{tomcat-version}-doc
 :graal-version: 22.3
 :graal-native-image-docs: https://www.graalvm.org/{graal-version}/reference-manual/native-image

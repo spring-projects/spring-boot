@@ -2235,6 +2235,12 @@
       "defaultValue": [
         "W3C"
       ]
+    },
+    {
+      "name": "micrometer.observations.annotations.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of Micrometer annotations is enabled.",
+      "defaultValue": false
     }
   ],
   "hints": [
