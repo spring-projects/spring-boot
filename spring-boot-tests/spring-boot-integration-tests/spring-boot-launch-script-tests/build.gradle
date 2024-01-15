@@ -49,6 +49,7 @@ task downloadJdk(type: Download) {
 	dest destFolder
 	tempAndMove true
 	overwrite false
+	retries 3
 }
 
 task syncJdkDownloads(type: Sync) {
