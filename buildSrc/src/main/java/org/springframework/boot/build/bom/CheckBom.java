@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
@@ -69,6 +70,7 @@ public class CheckBom extends DefaultTask {
 		List<String> libraryErrors = new ArrayList<>();
 		checkExclusions(library, libraryErrors);
 		checkProhibitedVersions(library, libraryErrors);
+		checkVersionAlignment(library, libraryErrors);
 		if (!libraryErrors.isEmpty()) {
 			errors.add(library.getName());
 			for (String libraryError : libraryErrors) {
@@ -144,6 +146,30 @@ public class CheckBom extends DefaultTask {
 					errors.add("Version range " + versionRange + " is ineffective as the current version, "
 							+ currentVersion + ", is greater than its upper bound");
 				}
+			}
+		}
+	}
+
+	private void checkVersionAlignment(Library library, List<String> errors) {
+		VersionAlignment versionAlignment = library.getVersionAlignment();
+		if (versionAlignment == null) {
+			return;
+		}
+		Set<String> alignedVersions = versionAlignment.resolve();
+		if (alignedVersions.size() == 1) {
+			String alignedVersion = alignedVersions.iterator().next();
+			if (!alignedVersion.equals(library.getVersion().getVersion().toString())) {
+				errors.add("Version " + library.getVersion().getVersion() + " is misaligned. It should be "
+						+ alignedVersion + ".");
+			}
+		}
+		else {
+			if (alignedVersions.isEmpty()) {
+				errors.add("Version alignment requires a single version but none were found.");
+			}
+			else {
+				errors.add("Version alignment requires a single version but " + alignedVersions.size() + " were found: "
+						+ alignedVersions + ".");
 			}
 		}
 	}
