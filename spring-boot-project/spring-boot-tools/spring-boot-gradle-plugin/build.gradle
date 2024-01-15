@@ -43,6 +43,9 @@ dependencies {
 	implementation("org.springframework:spring-core")
 
 	optional("org.graalvm.buildtools:native-gradle-plugin")
+	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
+		exclude(group: "org.apache.maven", module: "maven-core")
+	}
 	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
@@ -55,6 +58,14 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers")
+}
+
+repositories {
+	gradlePluginPortal() {
+		content {
+			includeGroup("org.cyclonedx")
+		}
+	}
 }
 
 gradlePlugin {

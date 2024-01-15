@@ -92,6 +92,8 @@ include::endpoints/prometheus.adoc[leveloffset=+1]
 
 include::endpoints/quartz.adoc[leveloffset=+1]
 
+include::endpoints/sbom.adoc[leveloffset=+1]
+
 include::endpoints/scheduledtasks.adoc[leveloffset=+1]
 
 include::endpoints/sessions.adoc[leveloffset=+1]

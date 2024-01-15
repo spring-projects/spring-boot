@@ -154,6 +154,23 @@ publishing.publications.withType(MavenPublication) {
 							}
 						}
 						plugin {
+							delegate.groupId('org.cyclonedx')
+							delegate.artifactId('cyclonedx-maven-plugin')
+							executions {
+								execution {
+									delegate.phase('generate-resources')
+									goals {
+										delegate.goal('makeAggregateBom')
+									}
+								}
+							}
+							configuration {
+								delegate.outputDirectory('${project.build.outputDirectory}/META-INF/sbom')
+								delegate.outputFormat('json')
+                        		delegate.outputName('application.cdx')
+							}
+						}
+						plugin {
 							delegate.groupId('org.springframework.boot')
 							delegate.artifactId('spring-boot-maven-plugin')
 							executions {

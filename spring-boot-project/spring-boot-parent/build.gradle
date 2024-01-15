@@ -48,6 +48,13 @@ bom {
 			]
 		}
 	}
+	library("CycloneDX Gradle Plugin", "1.8.2") {
+		group("org.cyclonedx") {
+			modules = [
+				"cyclonedx-gradle-plugin"
+			]
+		}
+	}
 	library("Janino", "3.1.10") {
 		group("org.codehaus.janino") {
 			imports = [
