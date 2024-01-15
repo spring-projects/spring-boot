@@ -278,7 +278,7 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.admin.ssl.trust-store-password=p6", "spring.kafka.admin.ssl.trust-store-type=PKCS12",
 					"spring.kafka.admin.ssl.protocol=TLSv1.2", "spring.kafka.admin.close-timeout=35s",
 					"spring.kafka.admin.operation-timeout=60s", "spring.kafka.admin.modify-topic-configs=true",
-					"spring.kafka.admin.auto-create=false")
+					"spring.kafka.admin.auto-create=false", "spring.kafka.admin.cluster-id=cluster.foo")
 			.run((context) -> {
 				KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 				Map<String, Object> configs = admin.getConfigurationProperties();
@@ -304,6 +304,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(admin).hasFieldOrPropertyWithValue("fatalIfBrokerNotAvailable", true);
 				assertThat(admin).hasFieldOrPropertyWithValue("modifyTopicConfigs", true);
 				assertThat(admin).hasFieldOrPropertyWithValue("autoCreate", false);
+				assertThat(admin).hasFieldOrPropertyWithValue("clusterId", "cluster.foo");
 			});
 	}
 

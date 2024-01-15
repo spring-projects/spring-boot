@@ -740,6 +740,11 @@ public class KafkaProperties {
 		 */
 		private boolean autoCreate = true;
 
+		/**
+		 * Cluster id, perhaps if the user does not have admin permissions.
+		 */
+		private String clusterId;
+
 		public Ssl getSsl() {
 			return this.ssl;
 		}
@@ -794,6 +799,14 @@ public class KafkaProperties {
 
 		public void setAutoCreate(boolean autoCreate) {
 			this.autoCreate = autoCreate;
+		}
+
+		public String getClusterId() {
+			return this.clusterId;
+		}
+
+		public void setClusterId(String clusterId) {
+			this.clusterId = clusterId;
 		}
 
 		public Map<String, String> getProperties() {

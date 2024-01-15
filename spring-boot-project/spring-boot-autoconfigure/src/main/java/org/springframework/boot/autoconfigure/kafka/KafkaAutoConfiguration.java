@@ -173,6 +173,7 @@ public class KafkaAutoConfiguration {
 		kafkaAdmin.setFatalIfBrokerNotAvailable(admin.isFailFast());
 		kafkaAdmin.setModifyTopicConfigs(admin.isModifyTopicConfigs());
 		kafkaAdmin.setAutoCreate(admin.isAutoCreate());
+		kafkaAdmin.setClusterId(admin.getClusterId());
 		return kafkaAdmin;
 	}
 
