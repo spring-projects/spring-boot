@@ -1626,7 +1626,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.9") {
+	library("Spring WS", "4.0.10") {
 		considerSnapshots()
 		group("org.springframework.ws") {
 			imports = [
