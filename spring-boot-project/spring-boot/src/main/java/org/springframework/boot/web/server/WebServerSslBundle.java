@@ -154,8 +154,8 @@ public final class WebServerSslBundle implements SslBundle {
 
 	@Override
 	public String toString() {
-		return "WebServerSslBundle{" + "key=" + this.key + ", protocol='" + this.protocol + '\'' + ", ciphers="
-				+ Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
+		return "WebServerSslBundle{" + "key-alias=" + this.key.getAlias() + ", protocol='" + this.protocol + '\''
+				+ ", ciphers=" + Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
 				+ Arrays.toString(this.options.getEnabledProtocols()) + '}';
 	}
 

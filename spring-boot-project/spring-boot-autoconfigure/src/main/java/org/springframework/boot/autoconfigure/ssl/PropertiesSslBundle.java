@@ -146,8 +146,8 @@ public final class PropertiesSslBundle implements SslBundle {
 
 	@Override
 	public String toString() {
-		return "PropertiesSslBundle{" + "key=" + this.key + ", protocol='" + this.protocol + '\'' + ", ciphers="
-				+ Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
+		return "PropertiesSslBundle{" + "key-alias=" + this.key.getAlias() + ", protocol='" + this.protocol + '\''
+				+ ", ciphers=" + Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
 				+ Arrays.toString(this.options.getEnabledProtocols()) + '}';
 	}
 
