@@ -18,6 +18,7 @@
 ** xref:api:rest/actuator/metrics.adoc[]
 ** xref:api:rest/actuator/prometheus.adoc[]
 ** xref:api:rest/actuator/quartz.adoc[]
+** xref:api:rest/actuator/sbom.adoc[]
 ** xref:api:rest/actuator/scheduledtasks.adoc[]
 ** xref:api:rest/actuator/sessions.adoc[]
 ** xref:api:rest/actuator/shutdown.adoc[]

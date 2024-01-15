@@ -304,6 +304,13 @@ bom {
 			]
 		}
 	}
+	library("CycloneDX Maven Plugin", "2.7.11") {
+		group("org.cyclonedx") {
+			plugins = [
+				"cyclonedx-maven-plugin"
+			]
+		}
+	}
 	library("DB2 JDBC", "11.5.9.0") {
 		group("com.ibm.db2") {
 			modules = [

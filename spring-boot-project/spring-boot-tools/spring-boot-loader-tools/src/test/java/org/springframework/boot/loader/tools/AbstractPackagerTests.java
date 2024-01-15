@@ -656,6 +656,17 @@ abstract class AbstractPackagerTests<P extends Packager> {
 			.isEqualTo(String.join("\n", expected) + "\n");
 	}
 
+	@Test
+	void sbomManifestEntriesAreWritten() throws IOException {
+		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("META-INF/sbom/application.cdx.json", new ByteArrayInputStream(new byte[0]));
+		P packager = createPackager(this.testJarFile.getFile());
+		execute(packager, NO_LIBRARIES);
+		assertThat(getPackagedManifest().getMainAttributes().getValue("Sbom-Format")).isEqualTo("CycloneDX");
+		assertThat(getPackagedManifest().getMainAttributes().getValue("Sbom-Location"))
+			.isEqualTo("META-INF/sbom/application.cdx.json");
+	}
+
 	private File createLibraryJar() throws IOException {
 		TestJarFile library = new TestJarFile(this.tempDir);
 		library.addClass("com/example/library/Library.class", ClassWithoutMainMethod.class);
