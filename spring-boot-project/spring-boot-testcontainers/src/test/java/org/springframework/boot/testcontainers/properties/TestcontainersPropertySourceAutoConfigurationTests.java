@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.testcontainers.properties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -25,6 +28,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -46,11 +50,16 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 
 	@Test
 	void containerBeanMethodContributesProperties() {
-		this.contextRunner.withUserConfiguration(ContainerAndPropertiesConfiguration.class).run((context) -> {
-			TestBean testBean = context.getBean(TestBean.class);
-			RedisContainer redisContainer = context.getBean(RedisContainer.class);
-			assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
-		});
+		List<ApplicationEvent> events = new ArrayList<>();
+		this.contextRunner.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
+			.withInitializer((context) -> context.addApplicationListener(events::add))
+			.run((context) -> {
+				TestBean testBean = context.getBean(TestBean.class);
+				RedisContainer redisContainer = context.getBean(RedisContainer.class);
+				assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
+				assertThat(events.stream().filter(BeforeTestcontainersPropertySuppliedEvent.class::isInstance))
+					.hasSize(1);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
