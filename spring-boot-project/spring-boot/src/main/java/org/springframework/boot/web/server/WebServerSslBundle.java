@@ -29,6 +29,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -154,12 +155,15 @@ public final class WebServerSslBundle implements SslBundle {
 
 	@Override
 	public String toString() {
-		return "WebServerSslBundle{" + "key-alias=" + this.key.getAlias() + ", protocol='" + this.protocol + '\''
-				+ ", keystore-type=" + this.stores.getKeyStore().getType()
-				+ ((this.stores.getTrustStore() != null) ? ", truststore-type=" + this.stores.getTrustStore().getType()
-						: ", truststore=null")
-				+ ", ciphers=" + Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
-				+ Arrays.toString(this.options.getEnabledProtocols()) + '}';
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key-alias", this.key.getAlias());
+		creator.append("protocol", this.protocol);
+		creator.append("keystore-type", this.stores.getKeyStore().getType());
+		creator.append("truststore-type",
+				(this.stores.getTrustStore() != null) ? this.stores.getTrustStore().getType() : "");
+		creator.append("ciphers", Arrays.toString(this.options.getCiphers()));
+		creator.append("enabled-protocols", Arrays.toString(this.options.getEnabledProtocols()));
+		return creator.toString();
 	}
 
 }
