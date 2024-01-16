@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,12 +69,30 @@ public final class WebServerSslBundle implements SslBundle {
 		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
 	}
 
-	private static SslStoreBundle createJksStoreBundle(Ssl ssl) {
+	private static SslStoreBundle createPemKeyStoreBundle(Ssl ssl) {
+		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails(ssl.getKeyStoreType(), ssl.getCertificate(),
+				ssl.getCertificatePrivateKey())
+			.withAlias(ssl.getKeyAlias());
+		return new PemSslStoreBundle(keyStoreDetails, null);
+	}
+
+	private static SslStoreBundle createPemTrustStoreBundle(Ssl ssl) {
+		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
+				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey())
+			.withAlias(ssl.getKeyAlias());
+		return new PemSslStoreBundle(null, trustStoreDetails);
+	}
+
+	private static SslStoreBundle createJksKeyStoreBundle(Ssl ssl) {
 		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
 				ssl.getKeyStore(), ssl.getKeyStorePassword());
+		return new JksSslStoreBundle(keyStoreDetails, null);
+	}
+
+	private static SslStoreBundle createJksTrustStoreBundle(Ssl ssl) {
 		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(ssl.getTrustStoreType(),
 				ssl.getTrustStoreProvider(), ssl.getTrustStore(), ssl.getTrustStorePassword());
-		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return new JksSslStoreBundle(null, trustStoreDetails);
 	}
 
 	@Override
@@ -157,30 +175,55 @@ public final class WebServerSslBundle implements SslBundle {
 	}
 
 	private static SslStoreBundle createStoreBundle(Ssl ssl) {
-		if (hasCertificateProperties(ssl)) {
-			return createPemStoreBundle(ssl);
+		KeyStore keyStore = createKeyStore(ssl);
+		KeyStore trustStore = createTrustStore(ssl);
+		return new WebServerSslStoreBundle(keyStore, trustStore, ssl.getKeyStorePassword());
+	}
+
+	private static KeyStore createKeyStore(Ssl ssl) {
+		if (hasPemKeyStoreProperties(ssl)) {
+			return createPemKeyStoreBundle(ssl).getKeyStore();
 		}
-		if (hasJavaKeyStoreProperties(ssl)) {
-			return createJksStoreBundle(ssl);
+		else if (hasJksKeyStoreProperties(ssl)) {
+			return createJksKeyStoreBundle(ssl).getKeyStore();
 		}
-		throw new IllegalStateException("SSL is enabled but no trust material is configured");
+		return null;
+	}
+
+	private static KeyStore createTrustStore(Ssl ssl) {
+		if (hasPemTrustStoreProperties(ssl)) {
+			return createPemTrustStoreBundle(ssl).getTrustStore();
+		}
+		else if (hasJksTrustStoreProperties(ssl)) {
+			return createJksTrustStoreBundle(ssl).getTrustStore();
+		}
+		return null;
 	}
 
 	static SslBundle createCertificateFileSslStoreProviderDelegate(Ssl ssl) {
-		if (!hasCertificateProperties(ssl)) {
+		if (!hasPemKeyStoreProperties(ssl)) {
 			return null;
 		}
 		SslStoreBundle stores = createPemStoreBundle(ssl);
 		return new WebServerSslBundle(stores, ssl.getKeyPassword(), ssl);
 	}
 
-	private static boolean hasCertificateProperties(Ssl ssl) {
+	private static boolean hasPemKeyStoreProperties(Ssl ssl) {
 		return Ssl.isEnabled(ssl) && ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null;
 	}
 
-	private static boolean hasJavaKeyStoreProperties(Ssl ssl) {
-		return Ssl.isEnabled(ssl) && ssl.getKeyStore() != null
-				|| (ssl.getKeyStoreType() != null && ssl.getKeyStoreType().equals("PKCS11"));
+	private static boolean hasPemTrustStoreProperties(Ssl ssl) {
+		return Ssl.isEnabled(ssl) && ssl.getTrustCertificate() != null;
+	}
+
+	private static boolean hasJksKeyStoreProperties(Ssl ssl) {
+		return Ssl.isEnabled(ssl) && (ssl.getKeyStore() != null
+				|| (ssl.getKeyStoreType() != null && ssl.getKeyStoreType().equals("PKCS11")));
+	}
+
+	private static boolean hasJksTrustStoreProperties(Ssl ssl) {
+		return Ssl.isEnabled(ssl) && (ssl.getTrustStore() != null
+				|| (ssl.getTrustStoreType() != null && ssl.getTrustStoreType().equals("PKCS11")));
 	}
 
 	/**
@@ -208,6 +251,38 @@ public final class WebServerSslBundle implements SslBundle {
 		@Override
 		public KeyStore getTrustStore() {
 			return ThrowingSupplier.of(this.sslStoreProvider::getTrustStore).get();
+		}
+
+	}
+
+	private static final class WebServerSslStoreBundle implements SslStoreBundle {
+
+		private final KeyStore keyStore;
+
+		private final KeyStore trustStore;
+
+		private final String keyStorePassword;
+
+		private WebServerSslStoreBundle(KeyStore keyStore, KeyStore trustStore, String keyStorePassword) {
+			Assert.state(keyStore != null || trustStore != null, "SSL is enabled but no trust material is configured");
+			this.keyStore = keyStore;
+			this.trustStore = trustStore;
+			this.keyStorePassword = keyStorePassword;
+		}
+
+		@Override
+		public KeyStore getKeyStore() {
+			return this.keyStore;
+		}
+
+		@Override
+		public KeyStore getTrustStore() {
+			return this.trustStore;
+		}
+
+		@Override
+		public String getKeyStorePassword() {
+			return this.keyStorePassword;
 		}
 
 	}
