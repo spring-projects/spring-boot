@@ -1,6 +1,5 @@
 [[actuator.observability]]
 == Observability
-
 Observability is the ability to observe the internal state of a running system from the outside.
 It consists of the three pillars logging, metrics and traces.
 
@@ -26,6 +25,8 @@ Read more about it https://jdbc-observations.github.io/datasource-micrometer/doc
 
 TIP: Observability for R2DBC is built into Spring Boot.
 To enable it, add the `io.r2dbc:r2dbc-proxy` dependency to your project.
+
+
 
 [[actuator.observability.common-tags]]
 === Common tags
@@ -90,6 +91,5 @@ The next sections will provide more details about logging, metrics and traces.
 
 [[actuator.observability.annotations]]
 === Micrometer Observation Annotations support
-
 To enable scanning of metrics and tracing annotations like `@Timed`, `@Counted`, `@MeterTag` and `@NewSpan` annotations, you will need to set the configprop:micrometer.observations.annotations.enabled[] property to `true`.
 This feature is supported Micrometer directly, please refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer] and {micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.
