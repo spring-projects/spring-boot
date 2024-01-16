@@ -89,6 +89,25 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
+	void whenFromPkcs11Properties() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setTrustStoreType("PKCS11");
+		ssl.setTrustStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setKeyPassword("password");
+		ssl.setClientAuth(Ssl.ClientAuth.NONE);
+		SslBundle bundle = WebServerSslBundle.get(ssl);
+		assertThat(bundle).isNotNull();
+		assertThat(bundle.getProtocol()).isEqualTo("TLS");
+		SslBundleKey key = bundle.getKey();
+		assertThat(key.getPassword()).isEqualTo("password");
+		SslStoreBundle stores = bundle.getStores();
+		assertThat(stores.getKeyStore()).isNotNull();
+		assertThat(stores.getTrustStore()).isNotNull();
+	}
+
+	@Test
 	void whenFromPemProperties() {
 		Ssl ssl = new Ssl();
 		ssl.setCertificate("classpath:test-cert.pem");
@@ -97,6 +116,61 @@ class WebServerSslBundleTests {
 		ssl.setKeyStoreType("PKCS12");
 		ssl.setTrustStoreType("PKCS12");
 		ssl.setKeyPassword("password");
+		ssl.setClientAuth(Ssl.ClientAuth.NONE);
+		ssl.setCiphers(new String[] { "ONE", "TWO", "THREE" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		ssl.setProtocol("TLSv1.1");
+		SslBundle bundle = WebServerSslBundle.get(ssl);
+		assertThat(bundle).isNotNull();
+		SslBundleKey key = bundle.getKey();
+		assertThat(key.getAlias()).isNull();
+		assertThat(key.getPassword()).isEqualTo("password");
+		SslStoreBundle stores = bundle.getStores();
+		assertThat(stores.getKeyStorePassword()).isNull();
+		assertThat(stores.getKeyStore()).isNotNull();
+		assertThat(stores.getTrustStore()).isNotNull();
+		SslOptions options = bundle.getOptions();
+		assertThat(options.getCiphers()).containsExactly("ONE", "TWO", "THREE");
+		assertThat(options.getEnabledProtocols()).containsExactly("TLSv1.1", "TLSv1.2");
+	}
+
+	@Test
+	void whenPemKeyStoreAndJksTrustStoreProperties() {
+		Ssl ssl = new Ssl();
+		ssl.setCertificate("classpath:test-cert.pem");
+		ssl.setCertificatePrivateKey("classpath:test-key.pem");
+		ssl.setKeyStoreType("PKCS12");
+		ssl.setKeyPassword("password");
+		ssl.setTrustStore("classpath:test.p12");
+		ssl.setTrustStorePassword("secret");
+		ssl.setTrustStoreType("PKCS12");
+		ssl.setClientAuth(Ssl.ClientAuth.NONE);
+		ssl.setCiphers(new String[] { "ONE", "TWO", "THREE" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		ssl.setProtocol("TLSv1.1");
+		SslBundle bundle = WebServerSslBundle.get(ssl);
+		assertThat(bundle).isNotNull();
+		SslBundleKey key = bundle.getKey();
+		assertThat(key.getAlias()).isNull();
+		assertThat(key.getPassword()).isEqualTo("password");
+		SslStoreBundle stores = bundle.getStores();
+		assertThat(stores.getKeyStorePassword()).isNull();
+		assertThat(stores.getKeyStore()).isNotNull();
+		assertThat(stores.getTrustStore()).isNotNull();
+		SslOptions options = bundle.getOptions();
+		assertThat(options.getCiphers()).containsExactly("ONE", "TWO", "THREE");
+		assertThat(options.getEnabledProtocols()).containsExactly("TLSv1.1", "TLSv1.2");
+	}
+
+	@Test
+	void whenJksKeyStoreAndPemTrustStoreProperties() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("classpath:test.p12");
+		ssl.setKeyStoreType("PKCS12");
+		ssl.setKeyPassword("password");
+		ssl.setTrustCertificate("classpath:test-cert-chain.pem");
+		ssl.setTrustStorePassword("secret");
+		ssl.setTrustStoreType("PKCS12");
 		ssl.setClientAuth(Ssl.ClientAuth.NONE);
 		ssl.setCiphers(new String[] { "ONE", "TWO", "THREE" });
 		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
