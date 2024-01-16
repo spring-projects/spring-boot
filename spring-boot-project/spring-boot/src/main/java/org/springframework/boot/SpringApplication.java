@@ -330,9 +330,6 @@ public class SpringApplication {
 			listeners.started(context, timeTakenToStartup);
 			callRunners(context, applicationArguments);
 		}
-		catch (AbandonedRunException ex) {
-			throw ex;
-		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, listeners);
 		}
@@ -341,9 +338,6 @@ public class SpringApplication {
 				Duration timeTakenToReady = Duration.ofNanos(System.nanoTime() - startTime);
 				listeners.ready(context, timeTakenToReady);
 			}
-		}
-		catch (AbandonedRunException ex) {
-			throw ex;
 		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, null);
@@ -790,6 +784,9 @@ public class SpringApplication {
 
 	private RuntimeException handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
 			SpringApplicationRunListeners listeners) {
+		if (exception instanceof AbandonedRunException abandonedRunException) {
+			return abandonedRunException;
+		}
 		try {
 			try {
 				handleExitCode(context, exception);
@@ -808,10 +805,8 @@ public class SpringApplication {
 		catch (Exception ex) {
 			logger.warn("Unable to close ApplicationContext", ex);
 		}
-		if (exception instanceof RuntimeException runtimeException) {
-			return runtimeException;
-		}
-		return new IllegalStateException(exception);
+		return (exception instanceof RuntimeException runtimeException) ? runtimeException
+				: new IllegalStateException(exception);
 	}
 
 	private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
