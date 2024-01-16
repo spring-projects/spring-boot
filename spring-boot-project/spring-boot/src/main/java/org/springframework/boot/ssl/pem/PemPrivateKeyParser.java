@@ -27,6 +27,7 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -90,6 +91,36 @@ final class PemPrivateKeyParser {
 	 * ASN.1 encoded object identifier {@literal 1.2.840.113549.1.1.1}.
 	 */
 	private static final int[] RSA_ALGORITHM = { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 };
+
+	/**
+	 * ASN.1 encoded object identifier {@literal 1.2.840.113549.1.1.10}.
+	 */
+	private static final int[] RSASSA_PSS_ALGORITHM = { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0A };
+
+	/**
+	 * ASN.1 encoded object identifier {@literal 1.2.840.10040.4.1}.
+	 */
+	private static final int[] DSA_ALGORITHM = { 0x2A, 0x86, 0x48, 0xCE, 0x38, 0x02, 0x01 };
+
+	/**
+	 * ASN.1 encoded object identifier {@literal 1.3.101.110}.
+	 */
+	private static final int[] X25519_ALGORITHM = { 0x2B, 0x6C };
+
+	/**
+	 * ASN.1 encoded object identifier {@literal 1.3.101.111}.
+	 */
+	private static final int[] X448_ALGORITHM = { 0x2B, 0x6D };
+
+	/**
+	 * ASN.1 encoded object identifier {@literal 1.3.101.112}.
+	 */
+	private static final int[] ED448_ALGORITHM = { 0x2B, 0x6F };
+
+	/**
+	 * ASN.1 encoded object identifier {@literal 1.3.101.113}.
+	 */
+	private static final int[] ED25519_ALGORITHM = { 0x2B, 0x6E };
 
 	/**
 	 * ASN.1 encoded object identifier {@literal 1.2.840.10045.2.1}.
@@ -160,7 +191,50 @@ final class PemPrivateKeyParser {
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, String password) {
+		DerElement ecPrivateKey = DerElement.of(bytes);
+		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
+				"Key spec should be an ASN.1 encoded sequence");
+		DerElement version = DerElement.of(ecPrivateKey.getContents());
+		Assert.state(version != null && version.isType(ValueType.PRIMITIVE, TagType.INTEGER),
+				"Key spec should start with version");
+		DerElement sequence = DerElement.of(ecPrivateKey.getContents());
+		Assert.state(sequence != null && sequence.isType(ValueType.ENCODED, TagType.SEQUENCE),
+				"Key spec should contain private key");
+		DerElement algorithmIdentifier = DerElement.of(sequence.getContents());
+		Assert.state(
+				algorithmIdentifier != null
+						&& algorithmIdentifier.isType(ValueType.PRIMITIVE, TagType.OBJECT_IDENTIFIER),
+				"Key spec container object identifier");
+		int[] oid = getEcParameters(algorithmIdentifier.getContents());
+		String algorithmName = getAlgorithm(oid);
+		if (algorithmName != null) {
+			new PKCS8EncodedKeySpec(bytes, algorithmName);
+		}
 		return new PKCS8EncodedKeySpec(bytes);
+	}
+
+	private static String getAlgorithm(int[] oid) {
+		if (oid == null) {
+			return null;
+		}
+		if (Arrays.equals(RSA_ALGORITHM, oid)) {
+			return "RSA";
+		}
+		else if (Arrays.equals(RSASSA_PSS_ALGORITHM, oid)) {
+			return "RSASSA-PSS";
+		}
+		else if (Arrays.equals(DSA_ALGORITHM, oid)) {
+			return "DSA";
+		}
+		else if (Arrays.equals(ED448_ALGORITHM, oid) || Arrays.equals(ED25519_ALGORITHM, oid)) {
+			return "EdDSA";
+		}
+		else if (Arrays.equals(X448_ALGORITHM, oid) || Arrays.equals(X25519_ALGORITHM, oid)) {
+			return "XDH";
+		}
+		else {
+			return "EC";
+		}
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs8Encrypted(byte[] bytes, String password) {
@@ -231,6 +305,15 @@ final class PemPrivateKeyParser {
 
 		private PrivateKey parse(byte[] bytes, String password) {
 			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
+			if (keySpec.getAlgorithm() != null) {
+				try {
+					KeyFactory keyFactory = KeyFactory.getInstance(keySpec.getAlgorithm());
+					return keyFactory.generatePrivate(keySpec);
+				}
+				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+					// Ignore
+				}
+			}
 			for (String algorithm : this.algorithms) {
 				try {
 					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
