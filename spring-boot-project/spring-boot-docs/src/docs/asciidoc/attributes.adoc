@@ -108,7 +108,7 @@
 :lettuce-docs: https://lettuce.io/core/{lettuce-version}/reference/index.html
 :micrometer-docs: https://docs.micrometer.io/micrometer/reference
 :micrometer-concepts-docs: {micrometer-docs}/concepts
-:micrometer-registry-docs: {micrometer-docs}/registry
+:micrometer-implementation-docs: {micrometer-docs}/implementations
 :tomcat-docs: https://tomcat.apache.org/tomcat-{tomcat-version}-doc
 :graal-version: 22.3
 :graal-native-image-docs: https://www.graalvm.org/{graal-version}/reference-manual/native-image
