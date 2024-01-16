@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.testcontainers.properties.TestcontainersPropertySource;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -43,16 +44,17 @@ class DynamicPropertySourceMethodsImporter {
 		this.environment = environment;
 	}
 
-	void registerDynamicPropertySources(Class<?> definitionClass) {
+	void registerDynamicPropertySources(BeanDefinitionRegistry beanDefinitionRegistry, Class<?> definitionClass) {
 		Set<Method> methods = MethodIntrospector.selectMethods(definitionClass, this::isAnnotated);
 		if (methods.isEmpty()) {
 			return;
 		}
-		DynamicPropertyRegistry registry = TestcontainersPropertySource.attach(this.environment);
+		DynamicPropertyRegistry dynamicPropertyRegistry = TestcontainersPropertySource.attach(this.environment,
+				beanDefinitionRegistry);
 		methods.forEach((method) -> {
 			assertValid(method);
 			ReflectionUtils.makeAccessible(method);
-			ReflectionUtils.invokeMethod(method, null, registry);
+			ReflectionUtils.invokeMethod(method, null, dynamicPropertyRegistry);
 		});
 	}
 

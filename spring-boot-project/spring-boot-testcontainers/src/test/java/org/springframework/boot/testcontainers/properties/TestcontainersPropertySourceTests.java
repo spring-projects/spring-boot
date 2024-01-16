@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.testcontainers.properties;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockEnvironment;
@@ -99,6 +104,22 @@ class TestcontainersPropertySourceTests {
 		PropertySource<?> p2 = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
 		assertThat(r1).isSameAs(r2);
 		assertThat(p1).isSameAs(p2);
+	}
+
+	@Test
+	void getPropertyPublishesEvent() {
+		try (GenericApplicationContext applicationContext = new GenericApplicationContext()) {
+			List<ApplicationEvent> events = new ArrayList<>();
+			applicationContext.addApplicationListener(events::add);
+			DynamicPropertyRegistry registry = TestcontainersPropertySource.attach(applicationContext.getEnvironment(),
+					(BeanDefinitionRegistry) applicationContext.getBeanFactory());
+			applicationContext.refresh();
+			registry.add("test", () -> "spring");
+			assertThat(applicationContext.getEnvironment().containsProperty("test")).isTrue();
+			assertThat(events.isEmpty());
+			assertThat(applicationContext.getEnvironment().getProperty("test")).isEqualTo("spring");
+			assertThat(events.stream().filter(BeforeTestcontainersPropertySuppliedEvent.class::isInstance)).hasSize(1);
+		}
 	}
 
 }
