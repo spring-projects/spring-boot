@@ -22,7 +22,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<actuator#actuator.metrics.export.statsd,StatsD>>
 - <<actuator#actuator.metrics.export.wavefront,Wavefront>>
 
-TIP: To learn more about Micrometer's capabilities, see its https://micrometer.io/docs[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
+TIP: To learn more about Micrometer's capabilities, see its {micrometer-docs}[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
 
 
 
@@ -85,7 +85,7 @@ This section briefly describes each of the supported monitoring systems.
 [[actuator.metrics.export.appoptics]]
 ==== AppOptics
 By default, the AppOptics registry periodically pushes metrics to `https://api.appoptics.com/v1/measurements`.
-To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your API token must be provided:
+To export metrics to SaaS {micrometer-implementation-docs}/appOptics[AppOptics], your API token must be provided:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -100,7 +100,7 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 
 [[actuator.metrics.export.atlas]]
 ==== Atlas
-By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
+By default, metrics are exported to {micrometer-implementation-docs}/atlas[Atlas] running on your local machine.
 You can provide the location of the https://github.com/Netflix/atlas[Atlas server]:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -117,7 +117,7 @@ You can provide the location of the https://github.com/Netflix/atlas[Atlas serve
 [[actuator.metrics.export.datadog]]
 ==== Datadog
 A Datadog registry periodically pushes metrics to https://www.datadoghq.com[datadoghq].
-To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provide your API key:
+To export metrics to {micrometer-implementation-docs}/datadog[Datadog], you must provide your API key:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -167,7 +167,7 @@ You can also change the interval at which metrics are sent to Datadog:
 
 [[actuator.metrics.export.dynatrace]]
 ==== Dynatrace
-Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer].
+Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-implementation-docs}/dynatrace[Micrometer].
 You can find the Dynatrace documentation on Micrometer metrics ingest {dynatrace-docs}/micrometer-metrics-ingest[here].
 Configuration properties in the `v1` namespace apply only when exporting to the {dynatrace-docs}/api-metrics[Timeseries v1 API].
 Configuration properties in the `v2` namespace apply only when exporting to the {dynatrace-docs}/api-metrics-v2-post-datapoints[Metrics v2 API].
@@ -259,7 +259,7 @@ In this scenario, the automatically configured endpoint is used:
 ===== v1 API (Legacy)
 The Dynatrace v1 API metrics registry pushes metrics to the configured URI periodically by using the {dynatrace-docs}/api-metrics[Timeseries v1 API].
 For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics are exported to the Timeseries v1 endpoint.
-To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
+To export metrics to {micrometer-implementation-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -292,13 +292,13 @@ The following example sets the export interval to 30 seconds:
 	        step: "30s"
 ----
 
-You can find more information on how to set up the Dynatrace exporter for Micrometer in the {micrometer-registry-docs}/dynatrace[Micrometer documentation] and the {dynatrace-docs}/micrometer-metrics-ingest[Dynatrace documentation].
+You can find more information on how to set up the Dynatrace exporter for Micrometer in the {micrometer-implementation-docs}/dynatrace[Micrometer documentation] and the {dynatrace-docs}/micrometer-metrics-ingest[Dynatrace documentation].
 
 
 
 [[actuator.metrics.export.elastic]]
 ==== Elastic
-By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
+By default, metrics are exported to {micrometer-implementation-docs}/elastic[Elastic] running on your local machine.
 You can provide the location of the Elastic server to use by using the following property:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -312,7 +312,7 @@ You can provide the location of the Elastic server to use by using the following
 
 [[actuator.metrics.export.ganglia]]
 ==== Ganglia
-By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
+By default, metrics are exported to {micrometer-implementation-docs}/ganglia[Ganglia] running on your local machine.
 You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -329,7 +329,7 @@ You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port
 
 [[actuator.metrics.export.graphite]]
 ==== Graphite
-By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
+By default, metrics are exported to {micrometer-implementation-docs}/graphite[Graphite] running on your local machine.
 You can provide the https://graphiteapp.org[Graphite server] host and port, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -342,7 +342,7 @@ You can provide the https://graphiteapp.org[Graphite server] host and port, as t
 	         port: 9004
 ----
 
-Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {micrometer-implementation-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
 [TIP]
 ====
@@ -357,7 +357,7 @@ include::code:MyGraphiteConfiguration[]
 [[actuator.metrics.export.humio]]
 ==== Humio
 By default, the Humio registry periodically pushes metrics to https://cloud.humio.com.
-To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], you must provide your API token:
+To export metrics to SaaS {micrometer-implementation-docs}/humio[Humio], you must provide your API token:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -385,7 +385,7 @@ You should also configure one or more tags to identify the data source to which 
 
 [[actuator.metrics.export.influx]]
 ==== Influx
-By default, metrics are exported to an {micrometer-registry-docs}/influx[Influx] v1 instance running on your local machine with the default configuration.
+By default, metrics are exported to an {micrometer-implementation-docs}/influx[Influx] v1 instance running on your local machine with the default configuration.
 To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
 You can provide the location of the https://www.influxdata.com[Influx server] to use by using:
 
@@ -402,7 +402,7 @@ You can provide the location of the https://www.influxdata.com[Influx server] to
 
 [[actuator.metrics.export.jmx]]
 ==== JMX
-Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
+Micrometer provides a hierarchical mapping to {micrometer-implementation-docs}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
 By default, metrics are exported to the `metrics` JMX domain.
 You can provide the domain to use by using:
 
@@ -415,7 +415,7 @@ You can provide the domain to use by using:
 	        domain: "com.example.app.metrics"
 ----
 
-Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {micrometer-implementation-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
 [TIP]
 ====
@@ -429,7 +429,7 @@ include::code:MyJmxConfiguration[]
 
 [[actuator.metrics.export.kairos]]
 ==== KairosDB
-By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
+By default, metrics are exported to {micrometer-implementation-docs}/kairos[KairosDB] running on your local machine.
 You can provide the location of the https://kairosdb.github.io/[KairosDB server] to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -445,7 +445,7 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 
 [[actuator.metrics.export.newrelic]]
 ==== New Relic
-A New Relic registry periodically pushes metrics to {micrometer-registry-docs}/new-relic[New Relic].
+A New Relic registry periodically pushes metrics to {micrometer-implementation-docs}/new-relic[New Relic].
 To export metrics to https://newrelic.com[New Relic], you must provide your API key and account ID:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -486,7 +486,7 @@ Finally, you can take full control by defining your own `NewRelicClientProvider`
 
 [[actuator.metrics.export.otlp]]
 ==== OpenTelemetry
-By default, metrics are exported to {micrometer-registry-docs}/otlp[OpenTelemetry] running on your local machine.
+By default, metrics are exported to {micrometer-implementation-docs}/otlp[OpenTelemetry] running on your local machine.
 You can provide the location of the https://opentelemetry.io/[OpenTelemetry metric endpoint] to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -502,7 +502,7 @@ You can provide the location of the https://opentelemetry.io/[OpenTelemetry metr
 
 [[actuator.metrics.export.prometheus]]
 ==== Prometheus
-{micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
+{micrometer-implementation-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
 Spring Boot provides an actuator endpoint at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
 
 TIP: By default, the endpoint is not available and must be exposed. See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
@@ -544,7 +544,7 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 
 [[actuator.metrics.export.signalfx]]
 ==== SignalFx
-SignalFx registry periodically pushes metrics to {micrometer-registry-docs}/signalFx[SignalFx].
+SignalFx registry periodically pushes metrics to {micrometer-implementation-docs}/signalFx[SignalFx].
 To export metrics to https://www.signalfx.com[SignalFx], you must provide your access token:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -591,7 +591,7 @@ You can also disable it explicitly:
 [[actuator.metrics.export.stackdriver]]
 ==== Stackdriver
 The Stackdriver registry periodically pushes metrics to https://cloud.google.com/stackdriver/[Stackdriver].
-To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], you must provide your Google Cloud project ID:
+To export metrics to SaaS {micrometer-implementation-docs}/stackdriver[Stackdriver], you must provide your Google Cloud project ID:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -618,7 +618,7 @@ You can also change the interval at which metrics are sent to Stackdriver:
 [[actuator.metrics.export.statsd]]
 ==== StatsD
 The StatsD registry eagerly pushes metrics over UDP to a StatsD agent.
-By default, metrics are exported to a {micrometer-registry-docs}/statsD[StatsD] agent running on your local machine.
+By default, metrics are exported to a {micrometer-implementation-docs}/statsD[StatsD] agent running on your local machine.
 You can provide the StatsD agent host, port, and protocol to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -647,7 +647,7 @@ You can also change the StatsD line protocol to use (it defaults to Datadog):
 
 [[actuator.metrics.export.wavefront]]
 ==== Wavefront
-The Wavefront registry periodically pushes metrics to {micrometer-registry-docs}/wavefront[Wavefront].
+The Wavefront registry periodically pushes metrics to {micrometer-implementation-docs}/wavefront[Wavefront].
 If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, you must provide your API token:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
