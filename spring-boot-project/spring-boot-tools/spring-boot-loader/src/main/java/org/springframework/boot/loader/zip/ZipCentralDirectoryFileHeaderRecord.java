@@ -97,8 +97,8 @@ record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNee
 			dataBlock.readFully(buffer, extraPos);
 			zipEntry.setExtra(buffer.array());
 		}
-		if ((fileCommentLength() & 0xFFFF) > 0) {
-			long commentPos = MINIMUM_SIZE + fileNameLength + extraLength;
+		if (commentLength > 0) {
+			long commentPos = pos + MINIMUM_SIZE + fileNameLength + extraLength;
 			zipEntry.setComment(ZipString.readString(dataBlock, commentPos, commentLength));
 		}
 	}
