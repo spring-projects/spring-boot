@@ -29,6 +29,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingSupplier;
@@ -226,6 +227,16 @@ public final class WebServerSslBundle implements SslBundle {
 				|| (ssl.getTrustStoreType() != null && ssl.getTrustStoreType().equals("PKCS11")));
 	}
 
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key", this.key);
+		creator.append("protocol", this.protocol);
+		creator.append("stores", this.stores);
+		creator.append("options", this.options);
+		return creator.toString();
+	}
+
 	/**
 	 * Class to adapt a {@link SslStoreProvider} into a {@link SslStoreBundle}.
 	 */
@@ -251,6 +262,17 @@ public final class WebServerSslBundle implements SslBundle {
 		@Override
 		public KeyStore getTrustStore() {
 			return ThrowingSupplier.of(this.sslStoreProvider::getTrustStore).get();
+		}
+
+		@Override
+		public String toString() {
+			ToStringCreator creator = new ToStringCreator(this);
+			KeyStore keyStore = getKeyStore();
+			creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
+			creator.append("keyStorePassword", null);
+			KeyStore trustStore = getTrustStore();
+			creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
+			return creator.toString();
 		}
 
 	}
@@ -283,6 +305,15 @@ public final class WebServerSslBundle implements SslBundle {
 		@Override
 		public String getKeyStorePassword() {
 			return this.keyStorePassword;
+		}
+
+		@Override
+		public String toString() {
+			ToStringCreator creator = new ToStringCreator(this);
+			creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+			creator.append("keyStorePassword", (this.keyStorePassword != null) ? "******" : null);
+			creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+			return creator.toString();
 		}
 
 	}
