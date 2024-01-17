@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.integration.spring.SpringLiquibase;
+import liquibase.ui.UIServiceEnum;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -146,6 +147,11 @@ public class LiquibaseProperties {
 	 * Where to print a summary of the update operation.
 	 */
 	private ShowSummaryOutput showSummaryOutput;
+
+	/**
+	 * Which UIService to use.
+	 */
+	private UIService uiService;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -316,6 +322,14 @@ public class LiquibaseProperties {
 		this.showSummaryOutput = showSummaryOutput;
 	}
 
+	public UIService getUiService() {
+		return this.uiService;
+	}
+
+	public void setUiService(UIService uiService) {
+		this.uiService = uiService;
+	}
+
 	/**
 	 * Enumeration of types of summary to show. Values are the same as those on
 	 * {@link UpdateSummaryEnum}. To maximize backwards compatibility, the Liquibase enum
@@ -365,6 +379,27 @@ public class LiquibaseProperties {
 		 * Log the summary and output it to the console.
 		 */
 		ALL
+
+	}
+
+	/**
+	 * Enumeration of types of UIService. Values are the same as those on
+	 * {@link UIServiceEnum}. To maximize backwards compatibility, the Liquibase enum is
+	 * not used directly.
+	 *
+	 * @since 3.3.0
+	 */
+	public enum UIService {
+
+		/**
+		 * Console-based UIService.
+		 */
+		CONSOLE,
+
+		/**
+		 * Logging-based UIService.
+		 */
+		LOGGER
 
 	}
 
