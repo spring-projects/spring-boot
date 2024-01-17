@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -108,6 +109,15 @@ public class PemSslStoreBundle implements SslStoreBundle {
 				keyStore.setCertificateEntry(alias + "-" + index, certificates[index]);
 			}
 		}
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+		creator.append("keyStorePassword", null);
+		creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+		return creator.toString();
 	}
 
 }

@@ -17,7 +17,6 @@
 package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
-import java.util.Arrays;
 
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
@@ -225,6 +224,16 @@ public final class WebServerSslBundle implements SslBundle {
 				|| (ssl.getTrustStoreType() != null && ssl.getTrustStoreType().equals("PKCS11")));
 	}
 
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key", this.key);
+		creator.append("protocol", this.protocol);
+		creator.append("stores", this.stores);
+		creator.append("options", this.options);
+		return creator.toString();
+	}
+
 	/**
 	 * Class to adapt a {@link SslStoreProvider} into a {@link SslStoreBundle}.
 	 */
@@ -250,6 +259,17 @@ public final class WebServerSslBundle implements SslBundle {
 		@Override
 		public KeyStore getTrustStore() {
 			return ThrowingSupplier.of(this.sslStoreProvider::getTrustStore).get();
+		}
+
+		@Override
+		public String toString() {
+			ToStringCreator creator = new ToStringCreator(this);
+			KeyStore keyStore = getKeyStore();
+			creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
+			creator.append("keyStorePassword", null);
+			KeyStore trustStore = getTrustStore();
+			creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
+			return creator.toString();
 		}
 
 	}
@@ -284,19 +304,15 @@ public final class WebServerSslBundle implements SslBundle {
 			return this.keyStorePassword;
 		}
 
-	}
+		@Override
+		public String toString() {
+			ToStringCreator creator = new ToStringCreator(this);
+			creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+			creator.append("keyStorePassword", (this.keyStorePassword != null) ? "******" : null);
+			creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+			return creator.toString();
+		}
 
-	@Override
-	public String toString() {
-		ToStringCreator creator = new ToStringCreator(this);
-		creator.append("key-alias", this.key.getAlias());
-		creator.append("protocol", this.protocol);
-		creator.append("keystore-type", this.stores.getKeyStore().getType());
-		creator.append("truststore-type",
-				(this.stores.getTrustStore() != null) ? this.stores.getTrustStore().getType() : "");
-		creator.append("ciphers", Arrays.toString(this.options.getCiphers()));
-		creator.append("enabled-protocols", Arrays.toString(this.options.getEnabledProtocols()));
-		return creator.toString();
 	}
 
 }
