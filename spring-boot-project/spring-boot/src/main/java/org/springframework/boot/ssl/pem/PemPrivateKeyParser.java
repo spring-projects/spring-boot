@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,13 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +77,26 @@ final class PemPrivateKeyParser {
 
 	public static final int BASE64_TEXT_GROUP = 1;
 
+	private static final EncodedOid RSA_ALGORITHM = EncodedOid.OID_1_2_840_113549_1_1_1;
+
+	private static final EncodedOid ELLIPTIC_CURVE_ALGORITHM = EncodedOid.OID_1_2_840_10045_2_1;
+
+	private static final EncodedOid ELLIPTIC_CURVE_384_BIT = EncodedOid.OID_1_3_132_0_34;
+
+	private static final Map<EncodedOid, String> ALGORITHMS;
+	static {
+		Map<EncodedOid, String> algorithms = new HashMap<>();
+		algorithms.put(EncodedOid.OID_1_2_840_113549_1_1_1, "RSA");
+		algorithms.put(EncodedOid.OID_1_2_840_113549_1_1_10, "RSA");
+		algorithms.put(EncodedOid.OID_1_2_840_10040_4_1, "DSA");
+		algorithms.put(EncodedOid.OID_1_3_101_110, "XDH");
+		algorithms.put(EncodedOid.OID_1_3_101_111, "XDH");
+		algorithms.put(EncodedOid.OID_1_3_101_112, "EdDSA");
+		algorithms.put(EncodedOid.OID_1_3_101_113, "EdDSA");
+		algorithms.put(EncodedOid.OID_1_2_840_10045_2_1, "EC");
+		ALGORITHMS = Collections.unmodifiableMap(algorithms);
+	}
+
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
@@ -85,21 +109,6 @@ final class PemPrivateKeyParser {
 				PemPrivateKeyParser::createKeySpecForPkcs8Encrypted, "RSA", "RSASSA-PSS", "EC", "DSA", "EdDSA", "XDH"));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
-
-	/**
-	 * ASN.1 encoded object identifier {@literal 1.2.840.113549.1.1.1}.
-	 */
-	private static final int[] RSA_ALGORITHM = { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 };
-
-	/**
-	 * ASN.1 encoded object identifier {@literal 1.2.840.10045.2.1}.
-	 */
-	private static final int[] EC_ALGORITHM = { 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01 };
-
-	/**
-	 * ASN.1 encoded object identifier {@literal 1.3.132.0.34}.
-	 */
-	private static final int[] EC_PARAMETERS = { 0x2b, 0x81, 0x04, 0x00, 0x22 };
 
 	private PemPrivateKeyParser() {
 	}
@@ -121,29 +130,22 @@ final class PemPrivateKeyParser {
 		Assert.state(privateKey != null && privateKey.isType(ValueType.PRIMITIVE, TagType.OCTET_STRING),
 				"Key spec should contain private key");
 		DerElement parameters = DerElement.of(ecPrivateKey.getContents());
-		return createKeySpecForAlgorithm(bytes, EC_ALGORITHM, getEcParameters(parameters));
+		return createKeySpecForAlgorithm(bytes, ELLIPTIC_CURVE_ALGORITHM, getEcParameters(parameters));
 	}
 
-	private static int[] getEcParameters(DerElement parameters) {
+	private static EncodedOid getEcParameters(DerElement parameters) {
 		if (parameters == null) {
-			return EC_PARAMETERS;
+			return ELLIPTIC_CURVE_384_BIT;
 		}
 		Assert.state(parameters.isType(ValueType.ENCODED), "Key spec should contain encoded parameters");
 		DerElement contents = DerElement.of(parameters.getContents());
 		Assert.state(contents != null && contents.isType(ValueType.PRIMITIVE, TagType.OBJECT_IDENTIFIER),
 				"Key spec parameters should contain object identifier");
-		return getEcParameters(contents.getContents());
+		return EncodedOid.of(contents);
 	}
 
-	private static int[] getEcParameters(ByteBuffer bytes) {
-		int[] result = new int[bytes.remaining()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = bytes.get() & 0xFF;
-		}
-		return result;
-	}
-
-	private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, int[] algorithm, int[] parameters) {
+	private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, EncodedOid algorithm,
+			EncodedOid parameters) {
 		try {
 			DerEncoder encoder = new DerEncoder();
 			encoder.integer(0x00); // Version 0
@@ -160,7 +162,20 @@ final class PemPrivateKeyParser {
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, String password) {
-		return new PKCS8EncodedKeySpec(bytes);
+		DerElement ecPrivateKey = DerElement.of(bytes);
+		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
+				"Key spec should be an ASN.1 encoded sequence");
+		DerElement version = DerElement.of(ecPrivateKey.getContents());
+		Assert.state(version != null && version.isType(ValueType.PRIMITIVE, TagType.INTEGER),
+				"Key spec should start with version");
+		DerElement sequence = DerElement.of(ecPrivateKey.getContents());
+		Assert.state(sequence != null && sequence.isType(ValueType.ENCODED, TagType.SEQUENCE),
+				"Key spec should contain private key");
+		DerElement algorithmId = DerElement.of(sequence.getContents());
+		Assert.state(algorithmId != null && algorithmId.isType(ValueType.PRIMITIVE, TagType.OBJECT_IDENTIFIER),
+				"Key spec container object identifier");
+		String algorithmName = ALGORITHMS.get(EncodedOid.of(algorithmId));
+		return (algorithmName != null) ? new PKCS8EncodedKeySpec(bytes, algorithmName) : new PKCS8EncodedKeySpec(bytes);
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs8Encrypted(byte[] bytes, String password) {
@@ -231,6 +246,15 @@ final class PemPrivateKeyParser {
 
 		private PrivateKey parse(byte[] bytes, String password) {
 			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
+			if (keySpec.getAlgorithm() != null) {
+				try {
+					KeyFactory keyFactory = KeyFactory.getInstance(keySpec.getAlgorithm());
+					return keyFactory.generatePrivate(keySpec);
+				}
+				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+					// Ignore
+				}
+			}
 			for (String algorithm : this.algorithms) {
 				try {
 					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
@@ -252,9 +276,9 @@ final class PemPrivateKeyParser {
 
 		private final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		void objectIdentifier(int... encodedObjectIdentifier) throws IOException {
-			int code = (encodedObjectIdentifier != null) ? 0x06 : 0x05;
-			codeLengthBytes(code, bytes(encodedObjectIdentifier));
+		void objectIdentifier(EncodedOid encodedOid) throws IOException {
+			int code = (encodedOid != null) ? 0x06 : 0x05;
+			codeLengthBytes(code, (encodedOid != null) ? encodedOid.toByteArray() : null);
 		}
 
 		void integer(int... encodedInteger) throws IOException {
@@ -442,6 +466,71 @@ final class PemPrivateKeyParser {
 				return algParameters.toString();
 			}
 			return algName;
+		}
+
+	}
+
+	/**
+	 * ANS.1 encoded object identifier.
+	 */
+	static final class EncodedOid {
+
+		static final EncodedOid OID_1_2_840_10040_4_1 = EncodedOid.of("2a8648ce380401");
+		static final EncodedOid OID_1_2_840_113549_1_1_1 = EncodedOid.of("2A864886F70D010101");
+		static final EncodedOid OID_1_2_840_113549_1_1_10 = EncodedOid.of("2a864886f70d01010a");
+		static final EncodedOid OID_1_3_101_110 = EncodedOid.of("2b656e");
+		static final EncodedOid OID_1_3_101_111 = EncodedOid.of("2b656f");
+		static final EncodedOid OID_1_3_101_112 = EncodedOid.of("2b6570");
+		static final EncodedOid OID_1_3_101_113 = EncodedOid.of("2b6571");
+		static final EncodedOid OID_1_2_840_10045_2_1 = EncodedOid.of("2a8648ce3d0201");
+		static final EncodedOid OID_1_3_132_0_34 = EncodedOid.of("2b81040022");
+
+		private final byte[] value;
+
+		private EncodedOid(byte[] value) {
+			this.value = value;
+		}
+
+		byte[] toByteArray() {
+			return this.value.clone();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			return Arrays.equals(this.value, ((EncodedOid) obj).value);
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(this.value);
+		}
+
+		static EncodedOid of(String hexString) {
+			return of(HexFormat.of().parseHex(hexString));
+		}
+
+		static EncodedOid of(DerElement derElement) {
+			return of(derElement.getContents());
+		}
+
+		static EncodedOid of(ByteBuffer byteBuffer) {
+			return of(byteBuffer.array(), byteBuffer.arrayOffset() + byteBuffer.position(), byteBuffer.remaining());
+		}
+
+		static EncodedOid of(byte[] bytes) {
+			return of(bytes, 0, bytes.length);
+		}
+
+		static EncodedOid of(byte[] bytes, int off, int len) {
+			byte[] value = new byte[len];
+			System.arraycopy(bytes, off, value, 0, len);
+			return new EncodedOid(value);
 		}
 
 	}
