@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -140,6 +141,16 @@ public final class PropertiesSslBundle implements SslBundle {
 	private static JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
 		return new JksSslStoreDetails(properties.getType(), properties.getProvider(), properties.getLocation(),
 				properties.getPassword());
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key", this.key);
+		creator.append("options", this.options);
+		creator.append("protocol", this.protocol);
+		creator.append("stores", this.stores);
+		return creator.toString();
 	}
 
 }

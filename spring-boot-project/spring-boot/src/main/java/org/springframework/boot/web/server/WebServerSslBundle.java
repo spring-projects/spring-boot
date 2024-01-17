@@ -29,6 +29,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -186,6 +187,16 @@ public final class WebServerSslBundle implements SslBundle {
 				|| (ssl.getTrustStoreType() != null && ssl.getTrustStoreType().equals("PKCS11")));
 	}
 
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key", this.key);
+		creator.append("protocol", this.protocol);
+		creator.append("stores", this.stores);
+		creator.append("options", this.options);
+		return creator.toString();
+	}
+
 	private static final class WebServerSslStoreBundle implements SslStoreBundle {
 
 		private final KeyStore keyStore;
@@ -214,6 +225,15 @@ public final class WebServerSslBundle implements SslBundle {
 		@Override
 		public String getKeyStorePassword() {
 			return this.keyStorePassword;
+		}
+
+		@Override
+		public String toString() {
+			ToStringCreator creator = new ToStringCreator(this);
+			creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+			creator.append("keyStorePassword", (this.keyStorePassword != null) ? "******" : null);
+			creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+			return creator.toString();
 		}
 
 	}
