@@ -1960,6 +1960,10 @@
       "defaultValue": "log"
     },
     {
+      "name": "spring.liquibase.ui-service",
+      "defaultValue": "logger"
+    },
+    {
       "name": "spring.mail.test-connection",
       "description": "Whether to test that the mail server is available on startup.",
       "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
