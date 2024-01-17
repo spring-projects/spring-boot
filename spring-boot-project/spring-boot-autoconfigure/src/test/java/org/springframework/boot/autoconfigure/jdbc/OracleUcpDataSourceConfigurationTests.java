@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.Connection;
-import java.time.Duration;
 
 import javax.sql.DataSource;
 
@@ -83,10 +82,10 @@ class OracleUcpDataSourceConfigurationTests {
 		this.contextRunner.run((context) -> {
 			PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
 			assertThat(ds.getInitialPoolSize()).isZero();
-			assertThat(ds.getMinPoolSize()).isEqualTo(1);
+			assertThat(ds.getMinPoolSize()).isZero();
 			assertThat(ds.getMaxPoolSize()).isEqualTo(Integer.MAX_VALUE);
 			assertThat(ds.getInactiveConnectionTimeout()).isZero();
-			assertThat(ds.getConnectionWaitDuration()).isEqualTo(Duration.ofSeconds(3));
+			assertThat(ds.getConnectionWaitTimeout()).isEqualTo(3);
 			assertThat(ds.getTimeToLiveConnectionTimeout()).isZero();
 			assertThat(ds.getAbandonedConnectionTimeout()).isZero();
 			assertThat(ds.getTimeoutCheckInterval()).isEqualTo(30);
