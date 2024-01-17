@@ -1141,7 +1141,7 @@ bom {
 			]
 		}
 	}
-	library("Pulsar", "3.1.1") {
+	library("Pulsar", "3.1.2") {
 		group("org.apache.pulsar") {
 			modules = [
 				"bouncy-castle-bc",
