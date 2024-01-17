@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -121,6 +122,16 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load store from '" + location + "'", ex);
 		}
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+		String keyStorePassword = getKeyStorePassword();
+		creator.append("keyStorePassword", (keyStorePassword != null) ? "******" : null);
+		creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+		return creator.toString();
 	}
 
 }
