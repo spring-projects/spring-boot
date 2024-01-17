@@ -1221,7 +1221,7 @@ bom {
 			]
 		}
 	}
-	library("Pulsar Reactive", "0.5.1") {
+	library("Pulsar Reactive", "0.5.2") {
 		group("org.apache.pulsar") {
 			modules = [
 				"pulsar-client-reactive-adapter",
