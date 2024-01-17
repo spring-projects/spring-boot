@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,9 +136,12 @@ public class MockRestServiceServerAutoConfiguration {
 				.getExpectationManagers();
 			Map<RestClient.Builder, RequestExpectationManager> restClientExpectationManagers = this.restClientCustomizer
 				.getExpectationManagers();
-			Assert.state(!(restTemplateExpectationManagers.isEmpty() && restClientExpectationManagers.isEmpty()),
-					"Unable to use auto-configured MockRestServiceServer since "
-							+ "a mock server customizer has not been bound to a RestTemplate or RestClient");
+			boolean neitherBound = restTemplateExpectationManagers.isEmpty() && restClientExpectationManagers.isEmpty();
+			boolean bothBound = !restTemplateExpectationManagers.isEmpty() && !restClientExpectationManagers.isEmpty();
+			Assert.state(!neitherBound, "Unable to use auto-configured MockRestServiceServer since "
+					+ "a mock server customizer has not been bound to a RestTemplate or RestClient");
+			Assert.state(!bothBound, "Unable to use auto-configured MockRestServiceServer since "
+					+ "mock server customizers have been bound to both a RestTemplate and a RestClient");
 			if (!restTemplateExpectationManagers.isEmpty()) {
 				Assert.state(restTemplateExpectationManagers.size() == 1,
 						"Unable to use auto-configured MockRestServiceServer since "
