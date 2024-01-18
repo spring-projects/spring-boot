@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -58,13 +59,12 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class, after = RSocketMessagingAutoConfiguration.class)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
-@ConditionalOnMissingClass({ "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
-		"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
 @ConditionalOnMissingBean(
 		value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class,
 				ReactiveAuthenticationManagerResolver.class },
 		type = { "org.springframework.security.oauth2.jwt.ReactiveJwtDecoder" })
-@Conditional(ReactiveUserDetailsServiceAutoConfiguration.ReactiveUserDetailsServiceCondition.class)
+@Conditional({ ReactiveUserDetailsServiceAutoConfiguration.RSocketEnabledOrReactiveWebApplication.class,
+		ReactiveUserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.class })
 @EnableConfigurationProperties(SecurityProperties.class)
 public class ReactiveUserDetailsServiceAutoConfiguration {
 
@@ -98,9 +98,9 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 		return NOOP_PASSWORD_PREFIX + password;
 	}
 
-	static class ReactiveUserDetailsServiceCondition extends AnyNestedCondition {
+	static class RSocketEnabledOrReactiveWebApplication extends AnyNestedCondition {
 
-		ReactiveUserDetailsServiceCondition() {
+		RSocketEnabledOrReactiveWebApplication() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
@@ -111,6 +111,31 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 		static class ReactiveWebApplicationCondition {
+
+		}
+
+	}
+
+	static final class MissingAlternativeOrUserPropertiesConfigured extends AnyNestedCondition {
+
+		MissingAlternativeOrUserPropertiesConfigured() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnMissingClass({
+				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
+				"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
+		static final class MissingAlternative {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.security.user", name = "name")
+		static final class NameConfigured {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.security.user", name = "password")
+		static final class PasswordConfigured {
 
 		}
 
