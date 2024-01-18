@@ -16,14 +16,13 @@
 
 package org.springframework.boot.actuate.session;
 
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.session.SessionsDescriptor.SessionDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
@@ -46,7 +45,19 @@ public class SessionsEndpoint {
 	/**
 	 * Create a new {@link SessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
+	 * @deprecated since 3.3.0 for removal in 3.5.0 in favor of
+	 * {@link #SessionsEndpoint(SessionRepository, FindByIndexNameSessionRepository)}
+	 */
+	@Deprecated(since = "3.3.0", forRemoval = true)
+	public SessionsEndpoint(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
+		this(sessionRepository, sessionRepository);
+	}
+
+	/**
+	 * Create a new {@link SessionsEndpoint} instance.
+	 * @param sessionRepository the session repository
 	 * @param indexedSessionRepository the indexed session repository
+	 * @since 3.3.0
 	 */
 	public SessionsEndpoint(SessionRepository<? extends Session> sessionRepository,
 			FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
@@ -76,23 +87,6 @@ public class SessionsEndpoint {
 	@DeleteOperation
 	public void deleteSession(@Selector String sessionId) {
 		this.sessionRepository.deleteById(sessionId);
-	}
-
-	/**
-	 * Description of user's {@link Session sessions}.
-	 */
-	public static final class SessionsDescriptor implements OperationResponseBody {
-
-		private final List<SessionDescriptor> sessions;
-
-		public SessionsDescriptor(Map<String, ? extends Session> sessions) {
-			this.sessions = sessions.values().stream().map(SessionDescriptor::new).toList();
-		}
-
-		public List<SessionDescriptor> getSessions() {
-			return this.sessions;
-		}
-
 	}
 
 }

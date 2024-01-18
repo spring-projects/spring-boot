@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.session;
 
+import java.util.Collections;
+
+import net.minidev.json.JSONArray;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
@@ -23,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest.Infras
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSession;
+import org.springframework.session.ReactiveFindByIndexNameSessionRepository;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -34,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * Integration tests for {@link ReactiveSessionsEndpoint} exposed by WebFlux.
  *
  * @author Vedran Pavic
+ * @author Moritz Halbritter
  */
 class ReactiveSessionsEndpointWebIntegrationTests {
 
@@ -41,6 +46,46 @@ class ReactiveSessionsEndpointWebIntegrationTests {
 
 	@SuppressWarnings("unchecked")
 	private static final ReactiveSessionRepository<Session> sessionRepository = mock(ReactiveSessionRepository.class);
+
+	@SuppressWarnings("unchecked")
+	private static final ReactiveFindByIndexNameSessionRepository<Session> indexedSessionRepository = mock(
+			ReactiveFindByIndexNameSessionRepository.class);
+
+	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	void sessionsForUsernameWithoutUsernameParam(WebTestClient client) {
+		client.get()
+			.uri((builder) -> builder.path("/actuator/sessions").build())
+			.exchange()
+			.expectStatus()
+			.is5xxServerError(); // https://github.com/spring-projects/spring-boot/issues/39236
+	}
+
+	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	void sessionsForUsernameNoResults(WebTestClient client) {
+		given(indexedSessionRepository.findByPrincipalName("user")).willReturn(Mono.just(Collections.emptyMap()));
+		client.get()
+			.uri((builder) -> builder.path("/actuator/sessions").queryParam("username", "user").build())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("sessions")
+			.isEmpty();
+	}
+
+	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	void sessionsForUsernameFound(WebTestClient client) {
+		given(indexedSessionRepository.findByPrincipalName("user"))
+			.willReturn(Mono.just(Collections.singletonMap(session.getId(), session)));
+		client.get()
+			.uri((builder) -> builder.path("/actuator/sessions").queryParam("username", "user").build())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("sessions.[*].id")
+			.isEqualTo(new JSONArray().appendElement(session.getId()));
+	}
 
 	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
 	void sessionForIdFound(WebTestClient client) {
@@ -80,7 +125,7 @@ class ReactiveSessionsEndpointWebIntegrationTests {
 
 		@Bean
 		ReactiveSessionsEndpoint sessionsEndpoint() {
-			return new ReactiveSessionsEndpoint(sessionRepository);
+			return new ReactiveSessionsEndpoint(sessionRepository, indexedSessionRepository);
 		}
 
 	}

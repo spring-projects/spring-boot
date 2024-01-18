@@ -17,12 +17,16 @@
 package org.springframework.boot.actuate.session;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import org.springframework.boot.actuate.session.SessionsDescriptor.SessionDescriptor;
 import org.springframework.session.MapSession;
+import org.springframework.session.ReactiveFindByIndexNameSessionRepository;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 
@@ -35,6 +39,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveSessionsEndpoint}.
  *
  * @author Vedran Pavic
+ * @author Moritz Halbritter
  */
 class ReactiveSessionsEndpointTests {
 
@@ -43,7 +48,36 @@ class ReactiveSessionsEndpointTests {
 	@SuppressWarnings("unchecked")
 	private final ReactiveSessionRepository<Session> sessionRepository = mock(ReactiveSessionRepository.class);
 
-	private final ReactiveSessionsEndpoint endpoint = new ReactiveSessionsEndpoint(this.sessionRepository);
+	@SuppressWarnings("unchecked")
+	private final ReactiveFindByIndexNameSessionRepository<Session> indexedSessionRepository = mock(
+			ReactiveFindByIndexNameSessionRepository.class);
+
+	private final ReactiveSessionsEndpoint endpoint = new ReactiveSessionsEndpoint(this.sessionRepository,
+			this.indexedSessionRepository);
+
+	@Test
+	void sessionsForUsername() {
+		given(this.indexedSessionRepository.findByPrincipalName("user"))
+			.willReturn(Mono.just(Collections.singletonMap(session.getId(), session)));
+		StepVerifier.create(this.endpoint.sessionsForUsername("user")).consumeNextWith((sessions) -> {
+			List<SessionDescriptor> result = sessions.getSessions();
+			assertThat(result).hasSize(1);
+			assertThat(result.get(0).getId()).isEqualTo(session.getId());
+			assertThat(result.get(0).getAttributeNames()).isEqualTo(session.getAttributeNames());
+			assertThat(result.get(0).getCreationTime()).isEqualTo(session.getCreationTime());
+			assertThat(result.get(0).getLastAccessedTime()).isEqualTo(session.getLastAccessedTime());
+			assertThat(result.get(0).getMaxInactiveInterval()).isEqualTo(session.getMaxInactiveInterval().getSeconds());
+			assertThat(result.get(0).isExpired()).isEqualTo(session.isExpired());
+
+		}).expectComplete().verify(Duration.ofSeconds(1));
+		then(this.indexedSessionRepository).should().findByPrincipalName("user");
+	}
+
+	@Test
+	void sessionsForUsernameWhenNoIndexedRepository() {
+		ReactiveSessionsEndpoint endpoint = new ReactiveSessionsEndpoint(this.sessionRepository, null);
+		StepVerifier.create(endpoint.sessionsForUsername("user")).expectComplete().verify(Duration.ofSeconds(1));
+	}
 
 	@Test
 	void getSession() {

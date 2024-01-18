@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.ReactiveFindByIndexNameSessionRepository;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.SessionRepository;
 
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SessionsEndpointAutoConfiguration}.
  *
  * @author Vedran Pavic
+ * @author Moritz Halbritter
  */
 class SessionsEndpointAutoConfigurationTests {
 
@@ -100,11 +102,21 @@ class SessionsEndpointAutoConfigurationTests {
 
 		private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
-			.withUserConfiguration(ReactiveSessionRepositoryConfiguration.class);
+			.withUserConfiguration(ReactiveSessionRepositoryConfiguration.class,
+					ReactiveIndexedSessionRepositoryConfiguration.class);
 
 		@Test
 		void runShouldHaveEndpointBean() {
 			this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=sessions")
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveSessionsEndpoint.class));
+		}
+
+		@Test
+		void runWhenNoIndexedSessionRepositoryShouldHaveEndpointBean() {
+			new ReactiveWebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
+				.withUserConfiguration(ReactiveSessionRepositoryConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=sessions")
 				.run((context) -> assertThat(context).hasSingleBean(ReactiveSessionsEndpoint.class));
 		}
 
@@ -117,6 +129,16 @@ class SessionsEndpointAutoConfigurationTests {
 		void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 			this.contextRunner.withPropertyValues("management.endpoint.sessions.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveSessionsEndpoint.class));
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class ReactiveIndexedSessionRepositoryConfiguration {
+
+			@Bean
+			ReactiveFindByIndexNameSessionRepository<?> indexedSessionRepository() {
+				return mock(ReactiveFindByIndexNameSessionRepository.class);
+			}
+
 		}
 
 		@Configuration(proxyBeanMethods = false)

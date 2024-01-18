@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.ReactiveFindByIndexNameSessionRepository;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
@@ -67,8 +68,9 @@ public class SessionsEndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		ReactiveSessionsEndpoint sessionsEndpoint(ReactiveSessionRepository<? extends Session> sessionRepository) {
-			return new ReactiveSessionsEndpoint(sessionRepository);
+		ReactiveSessionsEndpoint sessionsEndpoint(ReactiveSessionRepository<? extends Session> sessionRepository,
+				ObjectProvider<ReactiveFindByIndexNameSessionRepository<? extends Session>> indexedSessionRepository) {
+			return new ReactiveSessionsEndpoint(sessionRepository, indexedSessionRepository.getIfAvailable());
 		}
 
 	}
