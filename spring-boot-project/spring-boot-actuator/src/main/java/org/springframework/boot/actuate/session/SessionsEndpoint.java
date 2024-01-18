@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.session;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
@@ -93,58 +91,6 @@ public class SessionsEndpoint {
 
 		public List<SessionDescriptor> getSessions() {
 			return this.sessions;
-		}
-
-	}
-
-	/**
-	 * Description of user's {@link Session session}.
-	 */
-	public static final class SessionDescriptor implements OperationResponseBody {
-
-		private final String id;
-
-		private final Set<String> attributeNames;
-
-		private final Instant creationTime;
-
-		private final Instant lastAccessedTime;
-
-		private final long maxInactiveInterval;
-
-		private final boolean expired;
-
-		public SessionDescriptor(Session session) {
-			this.id = session.getId();
-			this.attributeNames = session.getAttributeNames();
-			this.creationTime = session.getCreationTime();
-			this.lastAccessedTime = session.getLastAccessedTime();
-			this.maxInactiveInterval = session.getMaxInactiveInterval().getSeconds();
-			this.expired = session.isExpired();
-		}
-
-		public String getId() {
-			return this.id;
-		}
-
-		public Set<String> getAttributeNames() {
-			return this.attributeNames;
-		}
-
-		public Instant getCreationTime() {
-			return this.creationTime;
-		}
-
-		public Instant getLastAccessedTime() {
-			return this.lastAccessedTime;
-		}
-
-		public long getMaxInactiveInterval() {
-			return this.maxInactiveInterval;
-		}
-
-		public boolean isExpired() {
-			return this.expired;
 		}
 
 	}

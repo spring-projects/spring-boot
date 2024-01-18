@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class SessionsEndpointTests {
 	void sessionsForUsername() {
 		given(this.indexedSessionRepository.findByPrincipalName("user"))
 			.willReturn(Collections.singletonMap(session.getId(), session));
-		List<SessionsEndpoint.SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
+		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());
 		assertThat(result.get(0).getAttributeNames()).isEqualTo(session.getAttributeNames());
@@ -74,7 +74,7 @@ class SessionsEndpointTests {
 	@Test
 	void getSession() {
 		given(this.sessionRepository.findById(session.getId())).willReturn(session);
-		SessionsEndpoint.SessionDescriptor result = this.endpoint.getSession(session.getId());
+		SessionDescriptor result = this.endpoint.getSession(session.getId());
 		assertThat(result.getId()).isEqualTo(session.getId());
 		assertThat(result.getAttributeNames()).isEqualTo(session.getAttributeNames());
 		assertThat(result.getCreationTime()).isEqualTo(session.getCreationTime());

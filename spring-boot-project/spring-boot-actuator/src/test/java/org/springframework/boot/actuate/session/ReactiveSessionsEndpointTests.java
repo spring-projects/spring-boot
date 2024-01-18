@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.actuate.session;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -53,21 +55,23 @@ class ReactiveSessionsEndpointTests {
 			assertThat(result.getLastAccessedTime()).isEqualTo(session.getLastAccessedTime());
 			assertThat(result.getMaxInactiveInterval()).isEqualTo(session.getMaxInactiveInterval().getSeconds());
 			assertThat(result.isExpired()).isEqualTo(session.isExpired());
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(1));
 		then(this.sessionRepository).should().findById(session.getId());
 	}
 
 	@Test
 	void getSessionWithIdNotFound() {
 		given(this.sessionRepository.findById("not-found")).willReturn(Mono.empty());
-		StepVerifier.create(this.endpoint.getSession("not-found")).verifyComplete();
+		StepVerifier.create(this.endpoint.getSession("not-found")).expectComplete().verify(Duration.ofSeconds(1));
 		then(this.sessionRepository).should().findById("not-found");
 	}
 
 	@Test
 	void deleteSession() {
 		given(this.sessionRepository.deleteById(session.getId())).willReturn(Mono.empty());
-		StepVerifier.create(this.endpoint.deleteSession(session.getId())).verifyComplete();
+		StepVerifier.create(this.endpoint.deleteSession(session.getId()))
+			.expectComplete()
+			.verify(Duration.ofSeconds(1));
 		then(this.sessionRepository).should().deleteById(session.getId());
 	}
 
