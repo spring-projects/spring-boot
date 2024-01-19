@@ -3,7 +3,7 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: springio/concourse-release-scripts
+    repository: ((dockerhub-proxy-cache))springio/concourse-release-scripts
     tag: '0.4.0'
     username: ((docker-hub-username))
     password: ((docker-hub-password))

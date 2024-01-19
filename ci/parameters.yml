@@ -13,3 +13,4 @@ build-name: "spring-boot"
 concourse-url: "https://ci.spring.io"
 task-timeout: 2h00m
 final-release: false
+dockerhub-proxy-cache: harbor-repo.vmware.com/dockerhub-proxy-cache/

@@ -3,7 +3,7 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: springio/github-changelog-generator
+    repository: ((dockerhub-proxy-cache))springio/github-changelog-generator
     tag: '0.0.8'
     username: ((docker-hub-username))
     password: ((docker-hub-password))
