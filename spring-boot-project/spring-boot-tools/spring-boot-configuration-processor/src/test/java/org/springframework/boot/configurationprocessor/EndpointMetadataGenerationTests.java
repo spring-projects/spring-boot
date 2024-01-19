@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,20 @@ import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEnd
 import org.springframework.boot.configurationsample.endpoint.DisabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
+import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint2;
+import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint3;
 import org.springframework.boot.configurationsample.endpoint.SpecificEndpoint;
 import org.springframework.boot.configurationsample.endpoint.incremental.IncrementalEndpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 
 /**
  * Metadata generation tests for Actuator endpoints.
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -146,6 +150,24 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(enabledFlag("specific", false));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	void shouldTolerateEndpointWithSameId() {
+		ConfigurationMetadata metadata = compile(SimpleEndpoint.class, SimpleEndpoint2.class);
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
+		assertThat(metadata).has(enabledFlag("simple", "simple", true));
+		assertThat(metadata).has(cacheTtl("simple"));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	void shouldFailIfEndpointWithSameIdButWithConflictingEnabledByDefaultSetting() {
+		assertThatRuntimeException().isThrownBy(() -> compile(SimpleEndpoint.class, SimpleEndpoint3.class))
+			.havingRootCause()
+			.isInstanceOf(IllegalStateException.class)
+			.withMessage(
+					"Existing property 'management.endpoint.simple.enabled' from type org.springframework.boot.configurationsample.endpoint.SimpleEndpoint has a conflicting value. Existing value: true, new value from type org.springframework.boot.configurationsample.endpoint.SimpleEndpoint3: false");
 	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId, String endpointSuffix, Boolean defaultValue) {

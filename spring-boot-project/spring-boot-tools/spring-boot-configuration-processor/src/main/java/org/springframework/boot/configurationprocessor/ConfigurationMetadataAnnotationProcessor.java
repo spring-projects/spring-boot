@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @author Kris De Volder
  * @author Jonas Keßler
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.AUTO_CONFIGURATION_ANNOTATION,
@@ -291,16 +292,28 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			return; // Can't process that endpoint
 		}
 		String endpointKey = ItemMetadata.newItemMetadataPrefix("management.endpoint.", endpointId);
-		Boolean enabledByDefault = (Boolean) elementValues.get("enableByDefault");
+		boolean enabledByDefault = (boolean) elementValues.getOrDefault("enableByDefault", true);
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
-		this.metadataCollector.add(ItemMetadata.newGroup(endpointKey, type, type, null));
-		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey, "enabled", Boolean.class.getName(), type, null,
-				String.format("Whether to enable the %s endpoint.", endpointId),
-				(enabledByDefault != null) ? enabledByDefault : true, null));
+		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
+		this.metadataCollector.add(
+				ItemMetadata.newProperty(endpointKey, "enabled", Boolean.class.getName(), type, null,
+						"Whether to enable the %s endpoint.".formatted(endpointId), enabledByDefault, null),
+				(existing) -> checkEnabledValueMatchesExisting(existing, enabledByDefault, type));
 		if (hasMainReadOperation(element)) {
-			this.metadataCollector.add(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
+			this.metadataCollector.addIfAbsent(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
 					Duration.class.getName(), type, null, "Maximum time that a response can be cached.", "0ms", null));
 		}
+	}
+
+	private void checkEnabledValueMatchesExisting(ItemMetadata existing, boolean enabledByDefault, String sourceType) {
+		boolean existingDefaultValue = (boolean) existing.getDefaultValue();
+		if (enabledByDefault == existingDefaultValue) {
+			return;
+		}
+		throw new IllegalStateException(
+				"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
+					.formatted(existing.getName(), existing.getSourceType(), existingDefaultValue, sourceType,
+							enabledByDefault));
 	}
 
 	private boolean hasMainReadOperation(TypeElement element) {
