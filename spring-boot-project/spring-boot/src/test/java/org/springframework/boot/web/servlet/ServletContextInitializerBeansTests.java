@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ServletContextInitializerBeans}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class ServletContextInitializerBeansTests {
 
@@ -82,6 +83,26 @@ class ServletContextInitializerBeansTests {
 			.isInstanceOf(HttpSessionIdListener.class);
 	}
 
+	@Test
+	void classesThatImplementMultipleInterfacesAreRegisteredForAllOfThem() {
+		load(MultipleInterfacesConfiguration.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory());
+		assertThat(initializerBeans).hasSize(3);
+		assertThat(initializerBeans).element(0)
+			.isInstanceOf(ServletRegistrationBean.class)
+			.extracting((initializer) -> ((ServletRegistrationBean<?>) initializer).getServlet())
+			.isInstanceOf(TestServletAndFilterAndListener.class);
+		assertThat(initializerBeans).element(1)
+			.isInstanceOf(FilterRegistrationBean.class)
+			.extracting((initializer) -> ((FilterRegistrationBean<?>) initializer).getFilter())
+			.isInstanceOf(TestServletAndFilterAndListener.class);
+		assertThat(initializerBeans).element(2)
+			.isInstanceOf(ServletListenerRegistrationBean.class)
+			.extracting((initializer) -> ((ServletListenerRegistrationBean<?>) initializer).getListener())
+			.isInstanceOf(TestServletAndFilterAndListener.class);
+	}
+
 	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
@@ -102,6 +123,16 @@ class ServletContextInitializerBeansTests {
 		@Bean
 		TestFilter testFilter() {
 			return new TestFilter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleInterfacesConfiguration {
+
+		@Bean
+		TestServletAndFilterAndListener testServletAndFilterAndListener() {
+			return new TestServletAndFilterAndListener();
 		}
 
 	}

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -67,7 +68,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	/**
 	 * Seen bean instances or bean names.
 	 */
-	private final Set<Object> seen = new HashSet<>();
+	private final Seen seen = new Seen();
 
 	private final MultiValueMap<Class<?>, ServletContextInitializer> initializers;
 
@@ -129,7 +130,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		this.initializers.add(type, initializer);
 		if (source != null) {
 			// Mark the underlying source as seen in case it wraps an existing bean
-			this.seen.add(source);
+			this.seen.add(type, source);
 		}
 		if (logger.isTraceEnabled()) {
 			String resourceDescription = getResourceDescription(beanName, beanFactory);
@@ -174,7 +175,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		for (Entry<String, B> entry : entries) {
 			String beanName = entry.getKey();
 			B bean = entry.getValue();
-			if (this.seen.add(bean)) {
+			if (this.seen.add(type, bean)) {
 				// One that we haven't already seen
 				RegistrationBean registration = adapter.createRegistrationBean(beanName, bean, entries.size());
 				int order = getOrder(bean);
@@ -198,17 +199,17 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type) {
-		return getOrderedBeansOfType(beanFactory, type, Collections.emptySet());
+		return getOrderedBeansOfType(beanFactory, type, Seen.empty());
 	}
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type,
-			Set<?> excludes) {
+			Seen seen) {
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		Map<String, T> map = new LinkedHashMap<>();
 		for (String name : names) {
-			if (!excludes.contains(name) && !ScopedProxyUtils.isScopedTarget(name)) {
+			if (!seen.contains(type, name) && !ScopedProxyUtils.isScopedTarget(name)) {
 				T bean = beanFactory.getBean(name, type);
-				if (!excludes.contains(bean)) {
+				if (!seen.contains(type, bean)) {
 					map.put(name, bean);
 				}
 			}
@@ -306,6 +307,39 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		public RegistrationBean createRegistrationBean(String name, EventListener source,
 				int totalNumberOfSourceBeans) {
 			return new ServletListenerRegistrationBean<>(source);
+		}
+
+	}
+
+	private static final class Seen {
+
+		private final Map<Class<?>, Set<Object>> seen = new HashMap<>();
+
+		boolean add(Class<?> type, Object object) {
+			if (contains(type, object)) {
+				return false;
+			}
+			return this.seen.computeIfAbsent(type, (ignore) -> new HashSet<>()).add(object);
+		}
+
+		boolean contains(Class<?> type, Object object) {
+			if (this.seen.isEmpty()) {
+				return false;
+			}
+			// If it has been directly seen, or the implemented ServletContextInitializer
+			// has been seen already
+			if (type != ServletContextInitializer.class
+					&& this.seen.getOrDefault(type, Collections.emptySet()).contains(object)) {
+				return true;
+			}
+			if (this.seen.getOrDefault(ServletContextInitializer.class, Collections.emptySet()).contains(object)) {
+				return true;
+			}
+			return false;
+		}
+
+		static Seen empty() {
+			return new Seen();
 		}
 
 	}

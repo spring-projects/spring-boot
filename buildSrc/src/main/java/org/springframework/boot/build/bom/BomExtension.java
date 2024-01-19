@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.mavenplugin.MavenExec;
 import org.springframework.util.FileCopyUtils;
@@ -113,8 +114,12 @@ public class BomExtension {
 		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
+		VersionAlignment versionAlignment = (libraryHandler.alignWithVersion != null)
+				? new VersionAlignment(libraryHandler.alignWithVersion.from, libraryHandler.alignWithVersion.managedBy,
+						this.project, this.libraries, libraryHandler.groups)
+				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots));
+				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment));
 	}
 
 	public void effectiveBomArtifact() {
@@ -220,6 +225,8 @@ public class BomExtension {
 
 		private String calendarName;
 
+		private AlignWithVersionHandler alignWithVersion;
+
 		@Inject
 		public LibraryHandler(String version) {
 			this.version = version;
@@ -249,6 +256,11 @@ public class BomExtension {
 			action.execute(handler);
 			this.prohibitedVersions.add(new ProhibitedVersion(handler.versionRange, handler.startsWith,
 					handler.endsWith, handler.contains, handler.reason));
+		}
+
+		public void alignWithVersion(Action<AlignWithVersionHandler> action) {
+			this.alignWithVersion = new AlignWithVersionHandler();
+			action.execute(this.alignWithVersion);
 		}
 
 		public static class ProhibitedHandler {
@@ -364,6 +376,22 @@ public class BomExtension {
 					this.classifier = classifier;
 				}
 
+			}
+
+		}
+
+		public static class AlignWithVersionHandler {
+
+			private String from;
+
+			private String managedBy;
+
+			public void from(String from) {
+				this.from = from;
+			}
+
+			public void managedBy(String managedBy) {
+				this.managedBy = managedBy;
 			}
 
 		}

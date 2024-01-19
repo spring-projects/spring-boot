@@ -215,6 +215,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 
 	private void actuatorPrefixes(Config prefix) {
 		prefix.accept("management");
+		prefix.accept("micrometer");
 	}
 
 	private void dockerComposePrefixes(Config prefix) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.util.Arrays;
-
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -29,6 +27,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -146,9 +145,12 @@ public final class PropertiesSslBundle implements SslBundle {
 
 	@Override
 	public String toString() {
-		return "PropertiesSslBundle{" + "key=" + this.key + ", protocol='" + this.protocol + '\'' + ", ciphers="
-				+ Arrays.toString(this.options.getCiphers()) + ", enabled-protocols="
-				+ Arrays.toString(this.options.getEnabledProtocols()) + '}';
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key", this.key);
+		creator.append("options", this.options);
+		creator.append("protocol", this.protocol);
+		creator.append("stores", this.stores);
+		return creator.toString();
 	}
 
 }

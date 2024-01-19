@@ -88,7 +88,7 @@ class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 			.untilAsserted(() -> whenPrometheusScraped().then()
 				.statusCode(200)
 				.contentType(OPENMETRICS_001)
-				.body(endsWith("# EOF\n")));
+				.body(endsWith("# EOF\n"), containsString("service_name")));
 		whenPrometheusScraped().then()
 			.body(containsString(
 					"{job=\"test\",service_name=\"test\",telemetry_sdk_language=\"java\",telemetry_sdk_name=\"io.micrometer\""),

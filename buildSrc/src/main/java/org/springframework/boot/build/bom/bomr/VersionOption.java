@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.build.bom.bomr;
 
 import java.util.List;
 
-import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.StringUtils;
 
@@ -46,17 +46,16 @@ class VersionOption {
 
 	static final class AlignedVersionOption extends VersionOption {
 
-		private final Library alignedWith;
+		private final VersionAlignment alignedWith;
 
-		AlignedVersionOption(DependencyVersion version, Library alignedWith) {
+		AlignedVersionOption(DependencyVersion version, VersionAlignment alignedWith) {
 			super(version);
 			this.alignedWith = alignedWith;
 		}
 
 		@Override
 		public String toString() {
-			return super.toString() + " (aligned with " + this.alignedWith.getName() + " "
-					+ this.alignedWith.getVersion().getVersion() + ")";
+			return super.toString() + " (aligned with " + this.alignedWith + ")";
 		}
 
 	}

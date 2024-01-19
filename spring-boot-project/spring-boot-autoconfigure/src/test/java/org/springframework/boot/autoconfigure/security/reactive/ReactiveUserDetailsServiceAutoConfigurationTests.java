@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,6 +119,18 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	@Test
 	void doesNotConfigureDefaultUserIfResourceServerIsPresent() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class));
+	}
+
+	@Test
+	void configuresDefaultUserWhenResourceServerIsPresentAndUsernameIsConfigured() {
+		this.contextRunner.withPropertyValues("spring.security.user.name=carol")
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveUserDetailsService.class));
+	}
+
+	@Test
+	void configuresDefaultUserWhenResourceServerIsPresentAndPasswordIsConfigured() {
+		this.contextRunner.withPropertyValues("spring.security.user.password=p4ssw0rd")
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveUserDetailsService.class));
 	}
 
 	@Test

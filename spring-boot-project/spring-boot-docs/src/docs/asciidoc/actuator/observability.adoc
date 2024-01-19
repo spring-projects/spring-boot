@@ -1,6 +1,5 @@
 [[actuator.observability]]
 == Observability
-
 Observability is the ability to observe the internal state of a running system from the outside.
 It consists of the three pillars logging, metrics and traces.
 
@@ -9,7 +8,7 @@ To create your own observations (which will lead to metrics and traces), you can
 
 include::code:MyCustomObservation[]
 
-NOTE: Low cardinality key-values will be added to metrics and traces, while high cardinality key-values will only be added to traces.
+NOTE: Low cardinality tags will be added to metrics and traces, while high cardinality tags will only be added to traces.
 
 Beans of type `ObservationPredicate`, `GlobalObservationConvention`, `ObservationFilter` and `ObservationHandler` will be automatically registered on the `ObservationRegistry`.
 You can additionally register any number of `ObservationRegistryCustomizer` beans to further configure the registry.
@@ -27,10 +26,12 @@ Read more about it https://jdbc-observations.github.io/datasource-micrometer/doc
 TIP: Observability for R2DBC is built into Spring Boot.
 To enable it, add the `io.r2dbc:r2dbc-proxy` dependency to your project.
 
-[[actuator.observability.common-key-values]]
-=== Common Key-Values
-Common key-values are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
-Common key-values are applied to all observations as low cardinality key-values and can be configured, as the following example shows:
+
+
+[[actuator.observability.common-tags]]
+=== Common tags
+Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
+Common tags are applied to all observations as low cardinality tags and can be configured, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -41,7 +42,7 @@ Common key-values are applied to all observations as low cardinality key-values 
 	      stack: "prod"
 ----
 
-The preceding example adds `region` and `stack` key-values to all observations with a value of `us-east-1` and `prod`, respectively.
+The preceding example adds `region` and `stack` tags to all observations with a value of `us-east-1` and `prod`, respectively.
 
 [[actuator.observability.preventing-observations]]
 === Preventing Observations
@@ -85,3 +86,10 @@ NOTE: Spring Boot does not provide auto-configuration for OpenTelemetry metrics 
 OpenTelemetry tracing is only auto-configured when used together with <<actuator#actuator.micrometer-tracing, Micrometer Tracing>>.
 
 The next sections will provide more details about logging, metrics and traces.
+
+
+
+[[actuator.observability.annotations]]
+=== Micrometer Observation Annotations support
+To enable scanning of metrics and tracing annotations like `@Timed`, `@Counted`, `@MeterTag` and `@NewSpan` annotations, you will need to set the configprop:micrometer.observations.annotations.enabled[] property to `true`.
+This feature is supported Micrometer directly, please refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer] and {micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.
