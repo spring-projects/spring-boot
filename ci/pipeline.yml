@@ -168,13 +168,13 @@ resources:
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: projects.registry.vmware.com/springboot/spring-boot-ci
+    repository: projects.registry.vmware.com/spring-oss-ci/spring-boot-ci
 - name: ci-image-jdk21
   type: registry-image
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: projects.registry.vmware.com/springboot/spring-boot-ci-jdk21
+    repository: projects.registry.vmware.com/spring-oss-ci/spring-boot-ci-jdk21
 - name: paketo-builder-base-image
   type: registry-image
   icon: docker
