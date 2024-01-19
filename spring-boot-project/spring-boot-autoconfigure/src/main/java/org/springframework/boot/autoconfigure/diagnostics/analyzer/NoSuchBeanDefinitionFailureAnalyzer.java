@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,6 +83,8 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%s required %s that could not be found.%n",
 				(description != null) ? description : "A component", getBeanDescription(cause)));
+		message.append(String.format("%nThe following packages were scanned :%n"));
+		message.append(getScannedPackageNames());
 		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
 		if (injectionPoint != null) {
 			Annotation[] injectionAnnotations = injectionPoint.getAnnotations();
@@ -106,6 +109,24 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 						? "revisiting the entries above or defining" : "defining",
 				getBeanDescription(cause));
 		return new FailureAnalysis(message.toString(), action, cause);
+	}
+
+	private String getScannedPackageNames() {
+		Set<String> processedPackages = new LinkedHashSet<>();
+		String springFrameworkPackagePrefix = "org.springframework";
+		StringBuilder scannedPackages = new StringBuilder();
+		String[] beanNames = this.beanFactory.getBeanDefinitionNames();
+		for (String beanName : beanNames) {
+			Class<?> beanType = this.beanFactory.getType(beanName);
+			if (beanType != null) {
+				String packageName = beanType.getPackage().getName();
+				if (!packageName.startsWith(springFrameworkPackagePrefix) && processedPackages.add(packageName)) {
+					scannedPackages.append(packageName).append(String.format("%n"));
+				}
+			}
+		}
+
+		return scannedPackages.toString();
 	}
 
 	private String getBeanDescription(NoSuchBeanDefinitionException cause) {
