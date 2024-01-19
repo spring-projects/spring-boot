@@ -3,8 +3,8 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: concourse/oci-build-task
-    tag: 0.10.0
+    tag: 0.11.1
+    repository: ((dockerhub-proxy-cache))concourse/oci-build-task
     username: ((docker-hub-username))
     password: ((docker-hub-password))
 inputs:
@@ -17,7 +17,7 @@ params:
   CONTEXT: ci-images-git-repo/ci/images
   DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
   DOCKER_HUB_AUTH: ((docker-hub-auth))
-  REGISTRY_MIRRORS: ((docker-hub-mirror))
+  BUILD_ARG_DOCKER_PROXY_CACHE: ((dockerhub-proxy-cache))
 run:
   path: /bin/sh
   args:
