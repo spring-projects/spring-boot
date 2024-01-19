@@ -478,6 +478,8 @@ jobs:
       save_build_info: true
   - task: promote
     file: git-repo/ci/tasks/promote.yml
+    vars:
+      dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     params:
       RELEASE_TYPE: M
       <<: *artifactory-task-params
@@ -514,6 +516,8 @@ jobs:
       <<: *artifactory-task-params
   - task: generate-changelog
     file: git-repo/ci/tasks/generate-changelog.yml
+    vars:
+      dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     params:
       RELEASE_TYPE: RC
       GITHUB_USERNAME: ((github-username))
@@ -537,6 +541,8 @@ jobs:
       threads: 8
   - task: promote
     file: git-repo/ci/tasks/promote.yml
+    vars:
+      dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     params:
       RELEASE_TYPE: RELEASE
       <<: *artifactory-task-params
@@ -571,6 +577,8 @@ jobs:
       save_build_info: true
   - task: generate-changelog
     file: git-repo/ci/tasks/generate-changelog.yml
+    vars:
+      dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     params:
       RELEASE_TYPE: RELEASE
       GITHUB_USERNAME: ((github-username))
