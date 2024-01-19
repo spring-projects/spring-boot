@@ -8,8 +8,8 @@ anchors:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
   ci-registry-image-resource-source: &ci-registry-image-resource-source
-    username: ((docker-hub-username))
-    password: ((docker-hub-password))
+    username: ((harbor-registry-username))
+    password: ((harbor-registry-password))
     tag: ((milestone))
   gradle-enterprise-task-params: &gradle-enterprise-task-params
     GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
@@ -99,31 +99,31 @@ resource_types:
   type: registry-image
   source:
     <<: *registry-image-resource-source
-    repository: concourse/registry-image-resource
-    tag: 1.7.1
+    repository: ((dockerhub-proxy-cache))concourse/registry-image-resource
+    tag: 1.9.0
 - name: artifactory-resource
   type: registry-image
   source:
     <<: *registry-image-resource-source
-    repository: springio/artifactory-resource
+    repository: ((dockerhub-proxy-cache))springio/artifactory-resource
     tag: 0.0.18
 - name: github-status-resource
   type: registry-image
   source:
     <<: *registry-image-resource-source
-    repository: dpb587/github-status-resource
+    repository: ((dockerhub-proxy-cache))dpb587/github-status-resource
     tag: master
 - name: slack-notification
   type: registry-image
   source:
     <<: *registry-image-resource-source
-    repository: cfcommunity/slack-notification-resource
+    repository: ((dockerhub-proxy-cache))cfcommunity/slack-notification-resource
     tag: latest
 - name: github-release
   type: registry-image
   source:
     <<: *registry-image-resource-source
-    repository: concourse/github-release-resource
+    repository: ((dockerhub-proxy-cache))concourse/github-release-resource
     tag: 1.8.0
 resources:
 - name: git-repo
@@ -168,18 +168,18 @@ resources:
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: ((docker-hub-organization))/((docker-hub-repository-prefix))-ci
+    repository: projects.registry.vmware.com/springboot/spring-boot-ci
 - name: ci-image-jdk21
   type: registry-image
   icon: docker
   source:
     <<: *ci-registry-image-resource-source
-    repository: ((docker-hub-organization))/((docker-hub-repository-prefix))-ci-jdk21
+    repository: projects.registry.vmware.com/springboot/spring-boot-ci-jdk21
 - name: paketo-builder-base-image
   type: registry-image
   icon: docker
   source:
-    repository: paketobuildpacks/builder-jammy-base
+    repository: ((dockerhub-proxy-cache))paketobuildpacks/builder-jammy-base
     tag: latest
 - name: artifactory-repo
   type: artifactory-resource
@@ -242,6 +242,7 @@ jobs:
         image: ci-image
       vars:
         ci-image-name: ci-image
+        dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     - task: build-ci-image-jdk21
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
@@ -249,6 +250,7 @@ jobs:
         image: ci-image-jdk21
       vars:
         ci-image-name: ci-image-jdk21
+        dockerhub-proxy-cache: ((dockerhub-proxy-cache))
   - in_parallel:
     - put: ci-image
       params:
@@ -481,6 +483,8 @@ jobs:
       <<: *artifactory-task-params
   - task: generate-changelog
     file: git-repo/ci/tasks/generate-changelog.yml
+    vars:
+      dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     params:
       RELEASE_TYPE: M
       GITHUB_USERNAME: ((github-username))
@@ -503,6 +507,8 @@ jobs:
       save_build_info: true
   - task: promote
     file: git-repo/ci/tasks/promote.yml
+    vars:
+      dockerhub-proxy-cache: ((dockerhub-proxy-cache))
     params:
       RELEASE_TYPE: RC
       <<: *artifactory-task-params
@@ -585,6 +591,8 @@ jobs:
         save_build_info: true
     - task: publish-to-sdkman
       file: git-repo/ci/tasks/publish-to-sdkman.yml
+      vars:
+        dockerhub-proxy-cache: ((dockerhub-proxy-cache))
       params:
         <<: *sdkman-task-params
         RELEASE_TYPE: RELEASE
