@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 
 /**
  * {@link ImportAutoConfiguration Auto-configuration imports} for typical Spring MVC
@@ -39,6 +40,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@AutoConfigureJson
 @ImportAutoConfiguration
 public @interface AutoConfigureWebMvc {
 
