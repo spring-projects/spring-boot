@@ -103,7 +103,7 @@ class ExtractCommandTests {
 	private void timeAttributes(File file) {
 		try {
 			BasicFileAttributes basicAttributes = Files
-				.getFileAttributeView(file.toPath(), BasicFileAttributeView.class, new LinkOption[0])
+				.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
 				.readAttributes();
 			assertThat(basicAttributes.lastModifiedTime().to(TimeUnit.SECONDS))
 				.isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS));

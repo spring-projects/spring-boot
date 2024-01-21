@@ -72,7 +72,7 @@ class LinuxDomainSocket extends DomainSocket {
 
 		@Override
 		protected List<String> getFieldOrder() {
-			return Arrays.asList(new String[] { "sunFamily", "sunPath" });
+			return Arrays.asList("sunFamily", "sunPath");
 		}
 
 	}
