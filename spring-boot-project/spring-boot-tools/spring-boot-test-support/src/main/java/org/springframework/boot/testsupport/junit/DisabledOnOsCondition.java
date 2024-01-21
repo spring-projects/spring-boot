@@ -53,7 +53,7 @@ class DisabledOnOsCondition implements ExecutionCondition {
 		String architecture = System.getProperty("os.arch");
 		String os = System.getProperty("os.name");
 		boolean onDisabledOs = Arrays.stream(annotation.os()).anyMatch(OS::isCurrentOs);
-		boolean onDisabledArchitecture = Arrays.stream(annotation.architecture()).anyMatch(architecture::equals);
+		boolean onDisabledArchitecture = Arrays.asList(annotation.architecture()).contains(architecture);
 		if (onDisabledOs && onDisabledArchitecture) {
 			String reason = annotation.disabledReason().isEmpty()
 					? String.format("Disabled on OS = %s, architecture = %s", os, architecture)

@@ -651,7 +651,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expected.add("\\Q" + libraryTwo.getName() + "\\E");
 		expected.add("^/META-INF/native-image/.*");
 		assertThat(getPackagedEntryContent("META-INF/native-image/argfile"))
-			.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
+			.isEqualTo(String.join("\n", expected) + "\n");
 	}
 
 	private File createLibraryJar() throws IOException {

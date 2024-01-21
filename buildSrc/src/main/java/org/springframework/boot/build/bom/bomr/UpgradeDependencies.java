@@ -242,9 +242,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	private boolean isNotProhibited(Library library, DependencyVersion candidate) {
-		return !library.getProhibitedVersions()
+		return library.getProhibitedVersions()
 			.stream()
-			.anyMatch((prohibited) -> prohibited.isProhibited(candidate.toString()));
+			.noneMatch((prohibited) -> prohibited.isProhibited(candidate.toString()));
 	}
 
 	private List<Library> matchingLibraries() {
