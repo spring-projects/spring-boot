@@ -80,17 +80,11 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
-		if ("west".equals(payload)) {
-			this.snake.setDirection(Direction.WEST);
-		}
-		else if ("north".equals(payload)) {
-			this.snake.setDirection(Direction.NORTH);
-		}
-		else if ("east".equals(payload)) {
-			this.snake.setDirection(Direction.EAST);
-		}
-		else if ("south".equals(payload)) {
-			this.snake.setDirection(Direction.SOUTH);
+		switch (payload) {
+			case "west" -> this.snake.setDirection(Direction.WEST);
+			case "north" -> this.snake.setDirection(Direction.NORTH);
+			case "east" -> this.snake.setDirection(Direction.EAST);
+			case "south" -> this.snake.setDirection(Direction.SOUTH);
 		}
 	}
 
