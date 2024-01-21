@@ -64,10 +64,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
-		if (!(candidate instanceof ReleaseTrainDependencyVersion)) {
+		if (!(candidate instanceof ReleaseTrainDependencyVersion candidateReleaseTrain)) {
 			return true;
 		}
-		ReleaseTrainDependencyVersion candidateReleaseTrain = (ReleaseTrainDependencyVersion) candidate;
 		int comparison = this.releaseTrain.compareTo(candidateReleaseTrain.releaseTrain);
 		if (comparison != 0) {
 			return comparison < 0;
@@ -88,10 +87,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public boolean isSnapshotFor(DependencyVersion candidate) {
-		if (!isSnapshot() || !(candidate instanceof ReleaseTrainDependencyVersion)) {
+		if (!isSnapshot() || !(candidate instanceof ReleaseTrainDependencyVersion candidateReleaseTrain)) {
 			return false;
 		}
-		ReleaseTrainDependencyVersion candidateReleaseTrain = (ReleaseTrainDependencyVersion) candidate;
 		return this.releaseTrain.equals(candidateReleaseTrain.releaseTrain);
 	}
 
