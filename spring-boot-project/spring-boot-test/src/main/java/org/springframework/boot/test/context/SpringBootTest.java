@@ -211,7 +211,7 @@ public @interface SpringBootTest {
 		 * that class does not have a main method, a test-specific
 		 * {@link SpringApplication} will be used.
 		 */
-		WHEN_AVAILABLE;
+		WHEN_AVAILABLE
 
 	}
 

@@ -482,7 +482,7 @@ public class CassandraProperties {
 		/**
 		 * No compression.
 		 */
-		NONE;
+		NONE
 
 	}
 

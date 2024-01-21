@@ -326,7 +326,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		/**
 		 * Throw an exception if an inactive contributor contains a bound value.
 		 */
-		FAIL_ON_BIND_TO_INACTIVE_SOURCE;
+		FAIL_ON_BIND_TO_INACTIVE_SOURCE
 
 	}
 
