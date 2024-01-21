@@ -413,7 +413,7 @@ class NestedJarFileTests {
 	}
 
 	private List<String> collectComments(JarFile jarFile) throws IOException {
-		try {
+		try (jarFile) {
 			List<String> comments = new ArrayList<>();
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
@@ -423,9 +423,6 @@ class NestedJarFileTests {
 				}
 			}
 			return comments;
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
