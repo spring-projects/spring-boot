@@ -116,7 +116,7 @@ public class SignalFxProperties extends StepRegistryProperties {
 		/**
 		 * Delta histogram.
 		 */
-		DELTA;
+		DELTA
 
 	}
 

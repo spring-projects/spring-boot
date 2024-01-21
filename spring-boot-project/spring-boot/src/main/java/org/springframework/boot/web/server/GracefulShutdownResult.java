@@ -39,6 +39,6 @@ public enum GracefulShutdownResult {
 	/**
 	 * The server was shutdown immediately, ignoring any active requests.
 	 */
-	IMMEDIATE;
+	IMMEDIATE
 
 }

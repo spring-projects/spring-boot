@@ -470,7 +470,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		/**
 		 * A valid location that contained nothing to load.
 		 */
-		EMPTY_LOCATION;
+		EMPTY_LOCATION
 
 	}
 
