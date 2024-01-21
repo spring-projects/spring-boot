@@ -1,0 +1,15 @@
+services:
+  keycloak:
+    image: '{imageName}'
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    command:
+      - start-dev
+    labels:
+      org.springframework.boot.security.oauth2.client.id: keycloak-client
+      org.springframework.boot.security.oauth2.client.secret: secret
+      org.springframework.boot.security.oauth2.client.scopes: openid,some_scope
+      org.springframework.boot.security.oauth2.client.keycloak.realm: KeycloakRealm

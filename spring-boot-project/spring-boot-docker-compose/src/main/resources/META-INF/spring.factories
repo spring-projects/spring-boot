@@ -32,4 +32,5 @@ org.springframework.boot.docker.compose.service.connection.rabbit.RabbitDockerCo
 org.springframework.boot.docker.compose.service.connection.redis.RedisDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.sqlserver.SqlServerJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.sqlserver.SqlServerR2dbcDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.zipkin.ZipkinDockerComposeConnectionDetailsFactory
+org.springframework.boot.docker.compose.service.connection.zipkin.ZipkinDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.oauth2.client.KeycloakDockerComposeConnectionDetailsFactory
