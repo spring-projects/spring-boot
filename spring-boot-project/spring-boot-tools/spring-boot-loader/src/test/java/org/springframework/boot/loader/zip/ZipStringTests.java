@@ -168,9 +168,7 @@ class ZipStringTests {
 	@Test
 	void zipStringWhenMultiCodePointAtBufferBoundary() throws Exception {
 		StringBuilder source = new StringBuilder();
-		for (int i = 0; i < ZipString.BUFFER_SIZE - 1; i++) {
-			source.append("A");
-		}
+		source.append("A".repeat(ZipString.BUFFER_SIZE - 1));
 		source.append("\u1EFF");
 		String charSequence = source.toString();
 		source.append("suffix");
