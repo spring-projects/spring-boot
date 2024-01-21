@@ -136,12 +136,12 @@ public class Snake {
 	public String getLocationsJson() {
 		synchronized (this.monitor) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x), Integer.valueOf(this.head.y)));
+			sb.append(String.format("{x: %d, y: %d}", this.head.x, this.head.y));
 			for (Location location : this.tail) {
 				sb.append(',');
-				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x), Integer.valueOf(location.y)));
+				sb.append(String.format("{x: %d, y: %d}", location.x, location.y));
 			}
-			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id), sb);
+			return String.format("{'id':%d,'body':[%s]}", this.id, sb);
 		}
 	}
 
