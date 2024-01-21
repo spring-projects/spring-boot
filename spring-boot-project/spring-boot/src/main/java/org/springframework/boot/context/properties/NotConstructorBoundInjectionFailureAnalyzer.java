@@ -61,8 +61,7 @@ class NotConstructorBoundInjectionFailureAnalyzer
 	}
 
 	private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
-		return (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor)
-				? isConstructorBindingConfigurationProperties(constructor) : false;
+		return injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor && isConstructorBindingConfigurationProperties(constructor);
 	}
 
 	private boolean isConstructorBindingConfigurationProperties(Constructor<?> constructor) {
