@@ -108,7 +108,7 @@ class ConfigurationPropertiesCharSequenceToObjectConverterTests {
 
 		@Override
 		public Long convert(CharSequence source) {
-			return Long.valueOf(source.toString()) + 1;
+			return Long.parseLong(source.toString()) + 1;
 		}
 
 	}
