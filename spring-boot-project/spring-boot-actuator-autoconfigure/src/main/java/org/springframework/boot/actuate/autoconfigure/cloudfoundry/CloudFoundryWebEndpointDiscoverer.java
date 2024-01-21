@@ -66,7 +66,8 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	@Override
 	protected boolean isExtensionTypeExposed(Class<?> extensionBeanType) {
 		// Filter regular health endpoint extensions so a CF version can replace them
-		return !isHealthEndpointExtension(extensionBeanType) || isCloudFoundryHealthEndpointExtension(extensionBeanType);
+		return !isHealthEndpointExtension(extensionBeanType)
+				|| isCloudFoundryHealthEndpointExtension(extensionBeanType);
 	}
 
 	private boolean isHealthEndpointExtension(Class<?> extensionBeanType) {
