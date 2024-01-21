@@ -90,23 +90,16 @@ public class JSONTokener {
 	 */
 	public Object nextValue() throws JSONException {
 		int c = nextCleanInternal();
-		switch (c) {
-			case -1:
-				throw syntaxError("End of input");
-
-			case '{':
-				return readObject();
-
-			case '[':
-				return readArray();
-
-			case '\'', '"':
-				return nextString((char) c);
-
-			default:
+		return switch (c) {
+			case -1 -> throw syntaxError("End of input");
+			case '{' -> readObject();
+			case '[' -> readArray();
+			case '\'', '"' -> nextString((char) c);
+			default -> {
 				this.pos--;
-				return readLiteral();
-		}
+				yield readLiteral();
+			}
+		};
 	}
 
 	private int nextCleanInternal() throws JSONException {
