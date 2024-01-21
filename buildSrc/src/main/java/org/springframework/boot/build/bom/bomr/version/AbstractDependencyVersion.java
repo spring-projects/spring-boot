@@ -58,10 +58,7 @@ abstract class AbstractDependencyVersion implements DependencyVersion {
 			return false;
 		}
 		AbstractDependencyVersion other = (AbstractDependencyVersion) obj;
-		if (!this.comparableVersion.equals(other.comparableVersion)) {
-			return false;
-		}
-		return true;
+		return this.comparableVersion.equals(other.comparableVersion);
 	}
 
 	@Override

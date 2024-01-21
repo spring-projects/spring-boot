@@ -332,10 +332,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 					&& this.seen.getOrDefault(type, Collections.emptySet()).contains(object)) {
 				return true;
 			}
-			if (this.seen.getOrDefault(ServletContextInitializer.class, Collections.emptySet()).contains(object)) {
-				return true;
-			}
-			return false;
+			return this.seen.getOrDefault(ServletContextInitializer.class, Collections.emptySet()).contains(object);
 		}
 
 		static Seen empty() {

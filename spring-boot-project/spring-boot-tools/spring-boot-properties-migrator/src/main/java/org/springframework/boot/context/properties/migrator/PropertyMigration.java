@@ -85,11 +85,8 @@ class PropertyMigration {
 		if (replacementType.equals(currentType)) {
 			return true;
 		}
-		if (replacementType.equals(Duration.class.getName())
-				&& (currentType.equals(Long.class.getName()) || currentType.equals(Integer.class.getName()))) {
-			return true;
-		}
-		return false;
+		return replacementType.equals(Duration.class.getName())
+				&& (currentType.equals(Long.class.getName()) || currentType.equals(Integer.class.getName()));
 	}
 
 	private static String determineType(ConfigurationMetadataProperty metadata) {

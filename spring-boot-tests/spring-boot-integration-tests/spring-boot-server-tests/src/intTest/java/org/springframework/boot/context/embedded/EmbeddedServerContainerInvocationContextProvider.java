@@ -155,10 +155,7 @@ class EmbeddedServerContainerInvocationContextProvider
 			if (parameterContext.getParameter().getType().equals(AbstractApplicationLauncher.class)) {
 				return true;
 			}
-			if (parameterContext.getParameter().getType().equals(RestTemplate.class)) {
-				return true;
-			}
-			return false;
+			return parameterContext.getParameter().getType().equals(RestTemplate.class);
 		}
 
 		@Override

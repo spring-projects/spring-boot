@@ -136,9 +136,7 @@ public final class EndpointRequest {
 					return true;
 				}
 				String managementContextId = applicationContext.getParent().getId() + ":management";
-				if (!managementContextId.equals(applicationContext.getId())) {
-					return true;
-				}
+				return !managementContextId.equals(applicationContext.getId());
 			}
 			return false;
 		}

@@ -55,10 +55,7 @@ public class Location {
 		if (this.x != location.x) {
 			return false;
 		}
-		if (this.y != location.y) {
-			return false;
-		}
-		return true;
+		return this.y == location.y;
 	}
 
 	@Override

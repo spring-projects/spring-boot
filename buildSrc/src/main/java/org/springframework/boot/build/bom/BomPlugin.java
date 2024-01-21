@@ -291,9 +291,7 @@ public class BomPlugin implements Plugin<Project> {
 				if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
 					return true;
 				}
-				if (name.equals(node.name())) {
-					return true;
-				}
+				return name.equals(node.name());
 			}
 			return false;
 		}
