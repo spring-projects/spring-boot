@@ -130,7 +130,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
 			try {
 				Method filePermissions = copySpec.getClass().getMethod("filePermissions", Action.class);
-				filePermissions.invoke(copySpec, new Action<Object>() {
+				filePermissions.invoke(copySpec, new Action<>() {
 
 					@Override
 					public void execute(Object filePermissions) {
