@@ -95,7 +95,7 @@ class StaticResourceJarsTests {
 	void doesNotCloseJarFromCachedConnection() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(true);
-		URL url = new URL("jar", null, 0, jarFile.toURI().toURL().toString() + "!/", handler);
+		URL url = new URL("jar", null, 0, jarFile.toURI().toURL() + "!/", handler);
 		try {
 			new StaticResourceJars().getUrlsFrom(url);
 			assertThatNoException()
@@ -110,7 +110,7 @@ class StaticResourceJarsTests {
 	void closesJarFromNonCachedConnection() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(false);
-		URL url = new URL("jar", null, 0, jarFile.toURI().toURL().toString() + "!/", handler);
+		URL url = new URL("jar", null, 0, jarFile.toURI().toURL() + "!/", handler);
 		new StaticResourceJars().getUrlsFrom(url);
 		assertThatIllegalStateException()
 			.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment())
