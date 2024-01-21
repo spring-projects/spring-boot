@@ -90,7 +90,7 @@ public final class MeterValue {
 		if (duration != null) {
 			return new MeterValue(duration);
 		}
-		return new MeterValue(Double.valueOf(value));
+		return new MeterValue(Double.parseDouble(value));
 	}
 
 	/**
