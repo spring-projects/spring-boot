@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetails;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetailsMapper;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
+import org.springframework.boot.autoconfigure.security.oauth2.client.PropertiesOAuth2ClientConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -32,21 +35,28 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 
 /**
- * {@link Configuration @Configuration} used to map {@link OAuth2ClientProperties} to
- * client registrations.
+ * {@link Configuration @Configuration} used to map {@link OAuth2ClientConnectionDetails}
+ * to client registrations.
  *
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
-@Conditional(ClientsConfiguredCondition.class)
 class OAuth2ClientRegistrationRepositoryConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(OAuth2ClientConnectionDetails.class)
+	@Conditional(ClientsConfiguredCondition.class)
+	PropertiesOAuth2ClientConnectionDetails oAuth2ClientConnectionDetails(OAuth2ClientProperties properties) {
+		return new PropertiesOAuth2ClientConnectionDetails(properties);
+	}
+
+	@Bean
+	@ConditionalOnBean(OAuth2ClientConnectionDetails.class)
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
-	InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
+	InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientConnectionDetails connectionDetails) {
 		List<ClientRegistration> registrations = new ArrayList<>(
-				new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
+				new OAuth2ClientConnectionDetailsMapper(connectionDetails).asClientRegistrations().values());
 		return new InMemoryClientRegistrationRepository(registrations);
 	}
 

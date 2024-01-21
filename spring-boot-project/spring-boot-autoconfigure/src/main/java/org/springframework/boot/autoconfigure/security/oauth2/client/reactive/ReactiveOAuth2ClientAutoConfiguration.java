@@ -23,9 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -39,7 +37,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * @since 2.1.0
  */
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class)
-@EnableConfigurationProperties(OAuth2ClientProperties.class)
 @Conditional(ReactiveOAuth2ClientAutoConfiguration.NonServletApplicationCondition.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ClientRegistration.class })
 @Import({ ReactiveOAuth2ClientConfigurations.ReactiveClientRegistrationRepositoryConfiguration.class,

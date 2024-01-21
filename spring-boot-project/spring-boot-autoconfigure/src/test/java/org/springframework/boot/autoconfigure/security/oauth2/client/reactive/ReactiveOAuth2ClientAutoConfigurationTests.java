@@ -18,12 +18,17 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.reactive;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetails;
+import org.springframework.boot.autoconfigure.security.oauth2.client.PropertiesOAuth2ClientConnectionDetails;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
@@ -92,6 +97,22 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 				assertThat(registration).isNotNull();
 				assertThat(registration.getClientSecret()).isEqualTo("secret");
 			});
+	}
+
+	@Test
+	void clientRegistrationRepositoryBeanShouldBeCreatedWhenConnectionDetailsPresent() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsClientConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(OAuth2ClientConnectionDetails.class)
+				.doesNotHaveBean(PropertiesOAuth2ClientConnectionDetails.class);
+			ReactiveClientRegistrationRepository repo = context.getBean(ReactiveClientRegistrationRepository.class);
+			ClientRegistration registration = repo.findByRegistrationId("oauth2-client").block(Duration.ofSeconds(30));
+			assertThat(registration).isNotNull();
+			assertThat(registration.getClientName()).isEqualTo("client");
+			assertThat(registration.getClientId()).isEqualTo("client-id");
+			assertThat(registration.getClientSecret()).isEqualTo("client-secret");
+			assertThat(registration.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
+			assertThat(registration.getScopes()).contains("openid", "some-scope");
+		});
 	}
 
 	@Test
@@ -188,6 +209,67 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 			.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(filterChain, "filters");
 		return filters.stream().anyMatch(filter::isInstance);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsClientConfiguration {
+
+		@Bean
+		OAuth2ClientConnectionDetails oAuth2ClientConnectionDetails() {
+			return new OAuth2ClientConnectionDetails() {
+				@Override
+				public Map<String, Registration> getRegistrations() {
+					Registration registration = new Registration() {
+						@Override
+						public String getProvider() {
+							return "github";
+						}
+
+						@Override
+						public String getClientId() {
+							return "client-id";
+						}
+
+						@Override
+						public String getClientSecret() {
+							return "client-secret";
+						}
+
+						@Override
+						public String getClientAuthenticationMethod() {
+							return null;
+						}
+
+						@Override
+						public String getAuthorizationGrantType() {
+							return AuthorizationGrantType.AUTHORIZATION_CODE.getValue();
+						}
+
+						@Override
+						public String getRedirectUri() {
+							return null;
+						}
+
+						@Override
+						public Set<String> getScopes() {
+							return Set.of("openid", "some-scope");
+						}
+
+						@Override
+						public String getClientName() {
+							return "client";
+						}
+					};
+					return Map.of("oauth2-client", registration);
+				}
+
+				@Override
+				public Map<String, Provider> getProviders() {
+					return Collections.emptyMap();
+				}
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
