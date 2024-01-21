@@ -119,9 +119,7 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		String factoryBeanName = BeanFactory.FACTORY_BEAN_PREFIX + name;
 		if (beanFactory.containsBean(factoryBeanName)) {
 			FactoryBean<?> factoryBean = (FactoryBean<?>) beanFactory.getBean(factoryBeanName);
-			if (!factoryBean.isSingleton()) {
-				return false;
-			}
+			return factoryBean.isSingleton();
 		}
 		return true;
 	}

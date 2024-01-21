@@ -39,10 +39,7 @@ class WebDriverContextCustomizer implements ContextCustomizer {
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || obj.getClass() != getClass()) {
-			return false;
-		}
-		return true;
+		return obj != null && obj.getClass() == getClass();
 	}
 
 	@Override
