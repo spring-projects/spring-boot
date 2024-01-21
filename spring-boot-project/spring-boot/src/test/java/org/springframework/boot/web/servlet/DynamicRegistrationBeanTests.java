@@ -50,7 +50,7 @@ class DynamicRegistrationBeanTests {
 	}
 
 	private static DynamicRegistrationBean<?> createBean() {
-		return new DynamicRegistrationBean<Dynamic>() {
+		return new DynamicRegistrationBean<>() {
 			@Override
 			protected Dynamic addRegistration(String description, ServletContext servletContext) {
 				return null;
