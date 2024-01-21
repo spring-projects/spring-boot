@@ -75,7 +75,7 @@ class BsdDomainSocket extends DomainSocket {
 
 		@Override
 		protected List<String> getFieldOrder() {
-			return Arrays.asList(new String[] { "sunLen", "sunFamily", "sunPath" });
+			return Arrays.asList("sunLen", "sunFamily", "sunPath");
 		}
 
 	}
