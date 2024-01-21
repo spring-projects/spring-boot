@@ -127,8 +127,7 @@ class PropertiesMigrationReporter {
 						new PropertyMigration(match, metadata, determineReplacementMetadata(metadata), false));
 			}
 			// Prefix match for maps
-			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource) {
-				IterableConfigurationPropertySource iterableSource = (IterableConfigurationPropertySource) propertySource;
+			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource iterableSource) {
 				iterableSource.stream()
 					.filter(metadataName::isAncestorOf)
 					.map(propertySource::getConfigurationProperty)
