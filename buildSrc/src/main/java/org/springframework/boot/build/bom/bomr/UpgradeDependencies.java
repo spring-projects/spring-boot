@@ -194,7 +194,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		java.util.Optional<Milestone> matchingMilestone = milestones.stream()
 			.filter((milestone) -> milestone.getName().equals(getMilestone().get()))
 			.findFirst();
-		if (!matchingMilestone.isPresent()) {
+		if (matchingMilestone.isEmpty()) {
 			throw new InvalidUserDataException("Unknown milestone: " + getMilestone().get());
 		}
 		return matchingMilestone.get();

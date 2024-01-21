@@ -37,7 +37,7 @@ class DisabledOnOsCondition implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		if (!context.getElement().isPresent()) {
+		if (context.getElement().isEmpty()) {
 			return ConditionEvaluationResult.enabled("No element for @DisabledOnOs found");
 		}
 		MergedAnnotation<DisabledOnOs> annotation = MergedAnnotations
