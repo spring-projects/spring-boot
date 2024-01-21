@@ -50,7 +50,7 @@ public final class SnakeTimer {
 			if (snakes.isEmpty()) {
 				startTimer();
 			}
-			snakes.put(Integer.valueOf(snake.getId()), snake);
+			snakes.put(snake.getId(), snake);
 		}
 	}
 
@@ -60,7 +60,7 @@ public final class SnakeTimer {
 
 	public static void removeSnake(Snake snake) {
 		synchronized (MONITOR) {
-			snakes.remove(Integer.valueOf(snake.getId()));
+			snakes.remove(snake.getId());
 			if (snakes.isEmpty()) {
 				stopTimer();
 			}

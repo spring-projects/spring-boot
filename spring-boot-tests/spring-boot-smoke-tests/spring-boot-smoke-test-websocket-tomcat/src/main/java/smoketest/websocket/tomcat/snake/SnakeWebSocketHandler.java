@@ -69,7 +69,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator(); iterator.hasNext();) {
 			Snake snake = iterator.next();
-			sb.append(String.format("{id: %d, color: '%s'}", Integer.valueOf(snake.getId()), snake.getHexColor()));
+			sb.append(String.format("{id: %d, color: '%s'}", snake.getId(), snake.getHexColor()));
 			if (iterator.hasNext()) {
 				sb.append(',');
 			}
@@ -97,7 +97,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		SnakeTimer.removeSnake(this.snake);
-		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}", Integer.valueOf(this.id)));
+		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}", this.id));
 	}
 
 }
