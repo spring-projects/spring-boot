@@ -196,7 +196,7 @@ class JooqAutoConfigurationTests {
 	void jooqWithDefaultJooqExceptionTranslator() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
 			JooqExceptionTranslator translator = context.getBean(JooqExceptionTranslator.class);
-			assertThat(translator).isInstanceOf(DefaultJooqExceptionTranslator.class);
+			assertThat(translator).isInstanceOf(JooqExceptionTranslator.class);
 		});
 	}
 
@@ -279,7 +279,7 @@ class JooqAutoConfigurationTests {
 	static class CustomJooqExceptionTranslatorConfiguration {
 
 		@Bean
-		JooqExceptionTranslator jooqExceptionTranslator() {
+		JooqExceptionTranslatorListener jooqExceptionTranslator() {
 			return new CustomJooqExceptionTranslator();
 		}
 
@@ -334,7 +334,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	static class CustomJooqExceptionTranslator implements JooqExceptionTranslator {
+	static class CustomJooqExceptionTranslator implements JooqExceptionTranslatorListener {
 
 
 		@Override

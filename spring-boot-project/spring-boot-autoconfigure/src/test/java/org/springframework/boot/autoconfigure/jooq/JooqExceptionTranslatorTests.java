@@ -40,9 +40,9 @@ import static org.mockito.Mockito.never;
  *
  * @author Andy Wilkinson
  */
-class DefaultJooqExceptionTranslatorTests {
+class JooqExceptionTranslatorTests {
 
-	private final JooqExceptionTranslator exceptionTranslator = new DefaultJooqExceptionTranslator();
+	private final JooqExceptionTranslatorListener exceptionTranslator = new JooqExceptionTranslator();
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource
