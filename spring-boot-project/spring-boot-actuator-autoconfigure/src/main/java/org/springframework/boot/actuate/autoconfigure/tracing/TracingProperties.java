@@ -224,7 +224,7 @@ public class TracingProperties {
 		/**
 		 * Supported propagation types. The declared order of the values matter.
 		 */
-		enum PropagationType {
+		public enum PropagationType {
 
 			/**
 			 * <a href="https://www.w3.org/TR/trace-context/">W3C</a> propagation.
