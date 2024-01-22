@@ -1,0 +1,11 @@
+services:
+  ldap:
+    image: '{imageName}'
+    environment:
+      - 'LDAP_DOMAIN=ldap.example.org'
+      - 'LDAP_ADMIN_PASSWORD=somepassword'
+      - 'LDAP_TLS=true'
+    hostname: ldap
+    ports:
+      - "389"
+      - "636"

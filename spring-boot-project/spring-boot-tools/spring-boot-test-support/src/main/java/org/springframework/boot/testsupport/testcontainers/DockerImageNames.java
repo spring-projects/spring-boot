@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ public final class DockerImageNames {
 	private static final String MYSQL_VERSION = "8.0";
 
 	private static final String NEO4J_VERSION = "4.4.11";
+
+	private static final String OPEN_LDAP_VERSION = "1.5.0";
 
 	private static final String ORACLE_FREE_VERSION = "23.3-slim";
 
@@ -117,6 +119,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName kafka() {
 		return DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running OpenLDAP.
+	 * @return a docker image name for running OpenLDAP
+	 */
+	public static DockerImageName openLdap() {
+		return DockerImageName.parse("osixia/openldap").withTag(OPEN_LDAP_VERSION);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.core.support.SimpleDirContextAuthenticationStrategy;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
+import org.springframework.ldap.support.LdapUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -113,6 +114,25 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesLdapConnectionDetails.class));
+	}
+
+	@Test
+	void usesCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(LdapContextSource.class)
+				.hasSingleBean(LdapConnectionDetails.class)
+				.doesNotHaveBean(PropertiesLdapConnectionDetails.class);
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUrls()).isEqualTo(new String[] { "ldaps://ldap.example.com" });
+			assertThat(contextSource.getBaseLdapName()).isEqualTo(LdapUtils.newLdapName("dc=base"));
+			assertThat(contextSource.getUserDn()).isEqualTo("ldap-user");
+			assertThat(contextSource.getPassword()).isEqualTo("ldap-password");
+		});
+	}
+
+	@Test
 	void templateExists() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
 			assertThat(context).hasSingleBean(LdapTemplate.class);
@@ -172,6 +192,37 @@ class LdapAutoConfigurationTests {
 					.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
 					.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
 			});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		LdapConnectionDetails ldapConnectionDetails() {
+			return new LdapConnectionDetails() {
+
+				@Override
+				public String[] getUrls() {
+					return new String[] { "ldaps://ldap.example.com" };
+				}
+
+				@Override
+				public String getBase() {
+					return "dc=base";
+				}
+
+				@Override
+				public String getUsername() {
+					return "ldap-user";
+				}
+
+				@Override
+				public String getPassword() {
+					return "ldap-password";
+				}
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

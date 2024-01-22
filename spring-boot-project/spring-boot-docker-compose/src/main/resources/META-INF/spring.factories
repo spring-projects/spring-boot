@@ -9,6 +9,7 @@ org.springframework.boot.docker.compose.service.connection.activemq.ActiveMQDock
 org.springframework.boot.docker.compose.service.connection.cassandra.CassandraDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.flyway.JdbcAdaptingFlywayConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.ldap.OpenLdapDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.liquibase.JdbcAdaptingLiquibaseConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbR2dbcDockerComposeConnectionDetailsFactory,\

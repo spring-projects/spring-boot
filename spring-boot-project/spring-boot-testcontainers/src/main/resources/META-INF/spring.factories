@@ -16,6 +16,7 @@ org.springframework.boot.testcontainers.service.connection.flyway.FlywayContaine
 org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.jdbc.JdbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.kafka.KafkaContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.ldap.OpenLdapContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\

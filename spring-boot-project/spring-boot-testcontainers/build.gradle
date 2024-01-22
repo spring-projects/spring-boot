@@ -57,6 +57,7 @@ dependencies {
 	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.kafka:spring-kafka")
+	testImplementation("org.springframework.ldap:spring-ldap-core")
 	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
 
