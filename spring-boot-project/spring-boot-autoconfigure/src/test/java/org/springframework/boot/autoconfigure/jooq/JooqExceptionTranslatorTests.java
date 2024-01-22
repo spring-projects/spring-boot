@@ -42,7 +42,7 @@ import static org.mockito.Mockito.never;
  */
 class JooqExceptionTranslatorTests {
 
-	private final JooqExceptionTranslatorListener exceptionTranslator = new JooqExceptionTranslator();
+	private final JooqExceptionTranslator exceptionTranslator = new JooqExceptionTranslator();
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource
