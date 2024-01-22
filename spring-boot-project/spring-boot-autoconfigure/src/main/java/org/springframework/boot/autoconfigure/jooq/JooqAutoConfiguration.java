@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,15 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
-		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
+	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider(
+			ExceptionTranslatorExecuteListener exceptionTranslatorExecuteListener) {
+		return new DefaultExecuteListenerProvider(exceptionTranslatorExecuteListener);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ExceptionTranslatorExecuteListener.class)
+	public ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
+		return ExceptionTranslatorExecuteListener.DEFAULT;
 	}
 
 	@Configuration(proxyBeanMethods = false)
