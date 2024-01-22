@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose Ldap service connections.
+ * Auto-configuration for Docker Compose LDAP service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.ldap;

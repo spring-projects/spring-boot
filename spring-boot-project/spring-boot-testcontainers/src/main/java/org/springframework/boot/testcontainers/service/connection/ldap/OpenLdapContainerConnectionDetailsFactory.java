@@ -35,22 +35,22 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  *
  * @author Philipp Kessler
  */
-class LdapContainerConnectionDetailsFactory
+class OpenLdapContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, LdapConnectionDetails> {
 
-	LdapContainerConnectionDetailsFactory() {
+	OpenLdapContainerConnectionDetailsFactory() {
 		super("osixia/openldap");
 	}
 
 	@Override
 	protected LdapConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
-		return new LdapContainerConnectionDetailsFactory.LdapContainerConnectionDetails(source);
+		return new OpenLdapContainerConnectionDetails(source);
 	}
 
-	private static final class LdapContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
+	private static final class OpenLdapContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements LdapConnectionDetails {
 
-		private LdapContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		private OpenLdapContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
@@ -65,14 +65,13 @@ class LdapContainerConnectionDetailsFactory
 
 		@Override
 		public String getBase() {
-			String baseDn = getContainer().getEnvMap().getOrDefault("LDAP_BASE_DN", null);
-			if (baseDn == null) {
-				baseDn = Arrays
-					.stream(getContainer().getEnvMap().getOrDefault("LDAP_DOMAIN", "example.org").split("\\."))
-					.map("dc=%s"::formatted)
-					.collect(Collectors.joining(","));
+			Map<String, String> env = getContainer().getEnvMap();
+			if (env.containsKey("LDAP_BASE_DN")) {
+				return env.get("LDAP_BASE_DN");
 			}
-			return baseDn;
+			return Arrays.stream(env.getOrDefault("LDAP_DOMAIN", "example.org").split("\\."))
+				.map("dc=%s"::formatted)
+				.collect(Collectors.joining(","));
 		}
 
 		@Override

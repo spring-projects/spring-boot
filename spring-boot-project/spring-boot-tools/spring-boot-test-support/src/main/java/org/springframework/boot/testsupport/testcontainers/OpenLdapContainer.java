@@ -19,16 +19,16 @@ package org.springframework.boot.testsupport.testcontainers;
 import org.testcontainers.containers.GenericContainer;
 
 /**
- * A {@link GenericContainer} for OpenLdap.
+ * A {@link GenericContainer} for OpenLDAP.
  *
  * @author Philipp Kessler
  */
-public class LdapContainer extends GenericContainer<LdapContainer> {
+public class OpenLdapContainer extends GenericContainer<OpenLdapContainer> {
 
 	private static final int DEFAULT_LDAP_PORT = 389;
 
-	public LdapContainer() {
-		super(DockerImageNames.ldap());
+	public OpenLdapContainer() {
+		super(DockerImageNames.openLdap());
 		addExposedPorts(DEFAULT_LDAP_PORT);
 	}
 

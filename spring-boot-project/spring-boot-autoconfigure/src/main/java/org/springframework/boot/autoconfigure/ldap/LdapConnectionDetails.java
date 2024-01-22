@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.ldap;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * Details required to establish a connection to a Ldap service.
+ * Details required to establish a connection to an LDAP service.
  *
  * @author Philipp Kessler
  * @since 3.3.0
@@ -28,13 +28,13 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * LDAP URLs of the server.
-	 * @return list of the LDAP urls to use
+	 * @return the LDAP URLs to use
 	 */
 	String[] getUrls();
 
 	/**
 	 * Base suffix from which all operations should originate.
-	 * @return base suffix from which all operations should originate or null.
+	 * @return base suffix
 	 */
 	default String getBase() {
 		return null;
@@ -42,7 +42,7 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Login username of the server.
-	 * @return login username of the server or null.
+	 * @return login username
 	 */
 	default String getUsername() {
 		return null;
@@ -50,7 +50,7 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Login password of the server.
-	 * @return login password of the server or null.
+	 * @return login password
 	 */
 	default String getPassword() {
 		return null;

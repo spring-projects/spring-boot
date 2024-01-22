@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,6 @@ public final class DockerImageNames {
 
 	private static final String KAFKA_VERSION = "7.4.0";
 
-	private static final String LDAP_VERSION = "1.5.0";
-
 	private static final String MARIADB_VERSION = "10.10";
 
 	private static final String MONGO_VERSION = "5.0.17";
@@ -49,6 +47,8 @@ public final class DockerImageNames {
 	private static final String MYSQL_VERSION = "8.0";
 
 	private static final String NEO4J_VERSION = "4.4.11";
+
+	private static final String OPEN_LDAP_VERSION = "1.5.0";
 
 	private static final String ORACLE_FREE_VERSION = "23.3-slim";
 
@@ -122,11 +122,11 @@ public final class DockerImageNames {
 	}
 
 	/**
-	 * Return a {@link DockerImageName} suitable for running OpenLdap.
-	 * @return a docker image name for running OpenLdap
+	 * Return a {@link DockerImageName} suitable for running OpenLDAP.
+	 * @return a docker image name for running OpenLDAP
 	 */
-	public static DockerImageName ldap() {
-		return DockerImageName.parse("osixia/openldap").withTag(LDAP_VERSION);
+	public static DockerImageName openLdap() {
+		return DockerImageName.parse("osixia/openldap").withTag(OPEN_LDAP_VERSION);
 	}
 
 	/**

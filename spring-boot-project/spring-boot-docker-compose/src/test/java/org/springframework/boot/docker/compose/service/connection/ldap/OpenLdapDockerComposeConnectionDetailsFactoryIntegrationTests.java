@@ -25,14 +25,14 @@ import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link LdapDockerComposeConnectionDetailsFactory}.
+ * Integration tests for {@link OpenLdapDockerComposeConnectionDetailsFactory}.
  *
  * @author Philipp Kessler
  */
-class LdapDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
-	LdapDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("ldap-compose.yaml", DockerImageNames.ldap());
+	OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests() {
+		super("ldap-compose.yaml", DockerImageNames.openLdap());
 	}
 
 	@Test

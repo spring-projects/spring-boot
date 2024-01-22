@@ -31,21 +31,22 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  *
  * @author Philipp Kessler
  */
-class LdapDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<LdapConnectionDetails> {
+class OpenLdapDockerComposeConnectionDetailsFactory
+		extends DockerComposeConnectionDetailsFactory<LdapConnectionDetails> {
 
-	protected LdapDockerComposeConnectionDetailsFactory() {
+	protected OpenLdapDockerComposeConnectionDetailsFactory() {
 		super("osixia/openldap");
 	}
 
 	@Override
 	protected LdapConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new LdapDockerComposeConnectionDetails(source.getRunningService());
+		return new OpenLdapDockerComposeConnectionDetails(source.getRunningService());
 	}
 
 	/**
 	 * {@link LdapConnectionDetails} backed by an {@code openldap} {@link RunningService}.
 	 */
-	static class LdapDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class OpenLdapDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements LdapConnectionDetails {
 
 		private final String[] urls;
@@ -56,20 +57,21 @@ class LdapDockerComposeConnectionDetailsFactory extends DockerComposeConnectionD
 
 		private final String password;
 
-		LdapDockerComposeConnectionDetails(RunningService service) {
+		OpenLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			Map<String, String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
 			String ldapPort = usesTls ? env.getOrDefault("LDAPS_PORT", "636") : env.getOrDefault("LDAP_PORT", "389");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),
 					service.ports().get(Integer.parseInt(ldapPort))) };
-			String baseDn = env.getOrDefault("LDAP_BASE_DN", null);
-			if (baseDn == null) {
-				baseDn = Arrays.stream(env.getOrDefault("LDAP_DOMAIN", "example.org").split("\\."))
+			if (env.containsKey("LDAP_BASE_DN")) {
+				this.base = env.get("LDAP_BASE_DN");
+			}
+			else {
+				this.base = Arrays.stream(env.getOrDefault("LDAP_DOMAIN", "example.org").split("\\."))
 					.map("dc=%s"::formatted)
 					.collect(Collectors.joining(","));
 			}
-			this.base = baseDn;
 			this.password = env.getOrDefault("LDAP_ADMIN_PASSWORD", "admin");
 			this.username = "cn=admin,%s".formatted(this.base);
 		}

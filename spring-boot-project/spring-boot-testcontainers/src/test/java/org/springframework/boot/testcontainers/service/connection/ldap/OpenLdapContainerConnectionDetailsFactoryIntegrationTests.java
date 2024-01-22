@@ -18,9 +18,6 @@ package org.springframework.boot.testcontainers.service.connection.ldap;
 
 import java.util.List;
 
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.LdapContainer;
+import org.springframework.boot.testsupport.testcontainers.OpenLdapContainer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
@@ -39,17 +36,17 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LdapContainerConnectionDetailsFactory}.
+ * Tests for {@link OpenLdapContainerConnectionDetailsFactory}.
  *
  * @author Philipp Kessler
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class LdapContainerConnectionDetailsFactoryIntegrationTests {
+class OpenLdapContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final LdapContainer openLdap = new LdapContainer().withEnv("LDAP_TLS", "false");
+	static final OpenLdapContainer openLdap = new OpenLdapContainer().withEnv("LDAP_TLS", "false");
 
 	@Autowired
 	private LdapTemplate ldapTemplate;
@@ -57,12 +54,7 @@ class LdapContainerConnectionDetailsFactoryIntegrationTests {
 	@Test
 	void connectionCanBeMadeToLdapContainer() {
 		List<String> cn = this.ldapTemplate.search(LdapQueryBuilder.query().where("objectclass").is("dcObject"),
-				new AttributesMapper<String>() {
-					@Override
-					public String mapFromAttributes(Attributes attributes) throws NamingException {
-						return attributes.get("dc").get().toString();
-					}
-				});
+				(AttributesMapper<String>) (attributes) -> attributes.get("dc").get().toString());
 		assertThat(cn).hasSize(1);
 		assertThat(cn.get(0)).isEqualTo("example");
 	}
