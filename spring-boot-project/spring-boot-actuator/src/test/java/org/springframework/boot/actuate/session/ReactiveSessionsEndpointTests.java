@@ -68,7 +68,6 @@ class ReactiveSessionsEndpointTests {
 			assertThat(result.get(0).getLastAccessedTime()).isEqualTo(session.getLastAccessedTime());
 			assertThat(result.get(0).getMaxInactiveInterval()).isEqualTo(session.getMaxInactiveInterval().getSeconds());
 			assertThat(result.get(0).isExpired()).isEqualTo(session.isExpired());
-
 		}).expectComplete().verify(Duration.ofSeconds(1));
 		then(this.indexedSessionRepository).should().findByPrincipalName("user");
 	}

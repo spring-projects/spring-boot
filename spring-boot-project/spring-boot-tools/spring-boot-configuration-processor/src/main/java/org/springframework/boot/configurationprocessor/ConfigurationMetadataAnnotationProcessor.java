@@ -307,13 +307,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void checkEnabledValueMatchesExisting(ItemMetadata existing, boolean enabledByDefault, String sourceType) {
 		boolean existingDefaultValue = (boolean) existing.getDefaultValue();
-		if (enabledByDefault == existingDefaultValue) {
-			return;
+		if (enabledByDefault != existingDefaultValue) {
+			throw new IllegalStateException(
+					"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
+						.formatted(existing.getName(), existing.getSourceType(), existingDefaultValue, sourceType,
+								enabledByDefault));
 		}
-		throw new IllegalStateException(
-				"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
-					.formatted(existing.getName(), existing.getSourceType(), existingDefaultValue, sourceType,
-							enabledByDefault));
 	}
 
 	private boolean hasMainReadOperation(TypeElement element) {
