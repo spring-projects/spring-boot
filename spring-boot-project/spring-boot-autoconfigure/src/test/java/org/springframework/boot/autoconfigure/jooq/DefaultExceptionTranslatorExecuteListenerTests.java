@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jooq;
 
 import java.sql.SQLException;
+import java.util.function.Function;
 
 import org.jooq.Configuration;
 import org.jooq.ExecuteContext;
@@ -26,8 +27,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
@@ -36,40 +39,59 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 /**
- * Tests for {@link JooqExceptionTranslator}
+ * Tests for {@link DefaultExceptionTranslatorExecuteListener}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-@Deprecated(since = "3.3.0")
-@SuppressWarnings("removal")
-class JooqExceptionTranslatorTests {
+class DefaultExceptionTranslatorExecuteListenerTests {
 
-	private final JooqExceptionTranslator exceptionTranslator = new JooqExceptionTranslator();
+	private final ExceptionTranslatorExecuteListener listener = new DefaultExceptionTranslatorExecuteListener();
+
+	@Test
+	void createWhenTranslatorFactoryIsNullThrowsException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new DefaultExceptionTranslatorExecuteListener(
+					(Function<ExecuteContext, SQLExceptionTranslator>) null))
+			.withMessage("TranslatorFactory must not be null");
+	}
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource
-	void exceptionTranslation(SQLDialect dialect, SQLException sqlException) {
+	void exceptionTranslatesSqlExceptions(SQLDialect dialect, SQLException sqlException) {
+		ExecuteContext context = mockContext(dialect, sqlException);
+		this.listener.exception(context);
+		then(context).should().exception(assertArg((ex) -> assertThat(ex).isInstanceOf(BadSqlGrammarException.class)));
+	}
+
+	@Test
+	void exceptionWhenExceptionCannotBeTranslatedDoesNotCallExecuteContextException() {
+		ExecuteContext context = mockContext(SQLDialect.POSTGRES, new SQLException(null, null, 123456789));
+		this.listener.exception(context);
+		then(context).should(never()).exception(any());
+	}
+
+	@Test
+	void exceptionWhenHasCustomTranslatorFactory() {
+		SQLExceptionTranslator translator = BadSqlGrammarException::new;
+		ExceptionTranslatorExecuteListener listener = new DefaultExceptionTranslatorExecuteListener(
+				(context) -> translator);
+		SQLException sqlException = sqlException(123);
+		ExecuteContext context = mockContext(SQLDialect.DUCKDB, sqlException);
+		listener.exception(context);
+		then(context).should().exception(assertArg((ex) -> assertThat(ex).isInstanceOf(BadSqlGrammarException.class)));
+	}
+
+	private ExecuteContext mockContext(SQLDialect dialect, SQLException sqlException) {
 		ExecuteContext context = mock(ExecuteContext.class);
 		Configuration configuration = mock(Configuration.class);
 		given(context.configuration()).willReturn(configuration);
 		given(configuration.dialect()).willReturn(dialect);
 		given(context.sqlException()).willReturn(sqlException);
-		this.exceptionTranslator.exception(context);
-		then(context).should().exception(assertArg((ex) -> assertThat(ex).isInstanceOf(BadSqlGrammarException.class)));
+		return context;
 	}
 
-	@Test
-	void whenExceptionCannotBeTranslatedThenExecuteContextExceptionIsNotCalled() {
-		ExecuteContext context = mock(ExecuteContext.class);
-		Configuration configuration = mock(Configuration.class);
-		given(context.configuration()).willReturn(configuration);
-		given(configuration.dialect()).willReturn(SQLDialect.POSTGRES);
-		given(context.sqlException()).willReturn(new SQLException(null, null, 123456789));
-		this.exceptionTranslator.exception(context);
-		then(context).should(never()).exception(any());
-	}
-
-	static Object[] exceptionTranslation() {
+	static Object[] exceptionTranslatesSqlExceptions() {
 		return new Object[] { new Object[] { SQLDialect.DERBY, sqlException("42802") },
 				new Object[] { SQLDialect.H2, sqlException(42000) },
 				new Object[] { SQLDialect.HSQLDB, sqlException(-22) },

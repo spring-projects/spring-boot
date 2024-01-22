@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.jooq.CharsetProvider;
 import org.jooq.ConnectionProvider;
 import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
-import org.jooq.ExecuteContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.SQLDialect;
@@ -185,21 +184,22 @@ class JooqAutoConfigurationTests {
 	@Test
 	void jooqExceptionTranslatorProviderFromConfigurationCustomizerOverridesJooqExceptionTranslatorBean() {
 		this.contextRunner
-				.withUserConfiguration(JooqDataSourceConfiguration.class, CustomJooqExceptionTranslatorConfiguration.class)
-				.run((context) -> {
-					JooqExceptionTranslatorListener translator = context.getBean(JooqExceptionTranslatorListener.class);
-					assertThat(translator).isInstanceOf(CustomJooqExceptionTranslator.class);
-				});
+			.withUserConfiguration(JooqDataSourceConfiguration.class, CustomJooqExceptionTranslatorConfiguration.class)
+			.run((context) -> {
+				assertThat(context.getBean(ExceptionTranslatorExecuteListener.class))
+					.isInstanceOf(CustomJooqExceptionTranslator.class);
+				assertThat(context.getBean(DefaultExecuteListenerProvider.class).provide())
+					.isInstanceOf(CustomJooqExceptionTranslator.class);
+			});
 	}
 
 	@Test
 	void jooqWithDefaultJooqExceptionTranslator() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
-			JooqExceptionTranslatorListener translator = context.getBean(JooqExceptionTranslatorListener.class);
-			assertThat(translator).isInstanceOf(JooqExceptionTranslator.class);
+			ExceptionTranslatorExecuteListener translator = context.getBean(ExceptionTranslatorExecuteListener.class);
+			assertThat(translator).isInstanceOf(DefaultExceptionTranslatorExecuteListener.class);
 		});
 	}
-
 
 	@Test
 	void transactionProviderFromConfigurationCustomizerOverridesTransactionProviderBean() {
@@ -279,7 +279,7 @@ class JooqAutoConfigurationTests {
 	static class CustomJooqExceptionTranslatorConfiguration {
 
 		@Bean
-		JooqExceptionTranslatorListener jooqExceptionTranslator() {
+		ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
 			return new CustomJooqExceptionTranslator();
 		}
 
@@ -334,13 +334,8 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	static class CustomJooqExceptionTranslator implements JooqExceptionTranslatorListener {
+	static class CustomJooqExceptionTranslator implements ExceptionTranslatorExecuteListener {
 
-
-		@Override
-		public void exception(ExecuteContext context) {
-
-		}
 	}
 
 }
