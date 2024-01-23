@@ -304,7 +304,7 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void whenNoPropertiesEnablesObservation() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
-				.hasFieldOrPropertyWithValue("observationEnabled", true));
+				.hasFieldOrPropertyWithValue("observationEnabled", false));
 		}
 
 		@Test
@@ -451,7 +451,7 @@ class PulsarAutoConfigurationTests {
 		void whenNoPropertiesEnablesObservation() {
 			this.contextRunner
 				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
-					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", true));
+					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", false));
 		}
 
 		@Test

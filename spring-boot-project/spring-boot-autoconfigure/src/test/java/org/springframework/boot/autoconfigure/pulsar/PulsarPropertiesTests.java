@@ -354,10 +354,10 @@ class PulsarPropertiesTests {
 		void bind() {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.pulsar.listener.schema-type", "avro");
-			map.put("spring.pulsar.listener.observation-enabled", "false");
+			map.put("spring.pulsar.listener.observation-enabled", "true");
 			PulsarProperties.Listener properties = bindPropeties(map).getListener();
 			assertThat(properties.getSchemaType()).isEqualTo(SchemaType.AVRO);
-			assertThat(properties.isObservationEnabled()).isFalse();
+			assertThat(properties.isObservationEnabled()).isTrue();
 		}
 
 	}
@@ -389,9 +389,9 @@ class PulsarPropertiesTests {
 		@Test
 		void bind() {
 			Map<String, String> map = new HashMap<>();
-			map.put("spring.pulsar.template.observations-enabled", "false");
+			map.put("spring.pulsar.template.observations-enabled", "true");
 			PulsarProperties.Template properties = bindPropeties(map).getTemplate();
-			assertThat(properties.isObservationsEnabled()).isFalse();
+			assertThat(properties.isObservationsEnabled()).isTrue();
 		}
 
 	}
