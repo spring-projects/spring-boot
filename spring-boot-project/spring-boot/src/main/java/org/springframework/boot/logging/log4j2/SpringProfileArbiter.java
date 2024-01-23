@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ final class SpringProfileArbiter implements Arbiter {
 
 	@Override
 	public boolean isCondition() {
-		return (this.environment != null) ? this.environment.acceptsProfiles(this.profiles) : false;
+		return (this.environment != null) && this.environment.acceptsProfiles(this.profiles);
 	}
 
 	@PluginBuilderFactory

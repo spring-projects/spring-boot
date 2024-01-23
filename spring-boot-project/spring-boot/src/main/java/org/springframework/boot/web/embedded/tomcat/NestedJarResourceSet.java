@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 					// JarFile.isMultiRelease() is final so we must go to the manifest
 					Manifest manifest = getManifest();
 					Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
-					this.multiRelease = (attributes != null) ? attributes.containsKey(MULTI_RELEASE) : false;
+					this.multiRelease = (attributes != null) && attributes.containsKey(MULTI_RELEASE);
 				}
 			}
 		}

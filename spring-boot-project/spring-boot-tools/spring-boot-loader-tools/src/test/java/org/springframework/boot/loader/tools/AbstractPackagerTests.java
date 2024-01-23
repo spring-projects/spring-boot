@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -651,7 +651,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expected.add("\\Q" + libraryTwo.getName() + "\\E");
 		expected.add("^/META-INF/native-image/.*");
 		assertThat(getPackagedEntryContent("META-INF/native-image/argfile"))
-			.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
+			.isEqualTo(String.join("\n", expected) + "\n");
 	}
 
 	private File createLibraryJar() throws IOException {

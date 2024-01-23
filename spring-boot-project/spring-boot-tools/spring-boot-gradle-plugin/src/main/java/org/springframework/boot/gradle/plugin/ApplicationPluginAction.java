@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
 			try {
 				Method filePermissions = copySpec.getClass().getMethod("filePermissions", Action.class);
-				filePermissions.invoke(copySpec, new Action<Object>() {
+				filePermissions.invoke(copySpec, new Action<>() {
 
 					@Override
 					public void execute(Object filePermissions) {

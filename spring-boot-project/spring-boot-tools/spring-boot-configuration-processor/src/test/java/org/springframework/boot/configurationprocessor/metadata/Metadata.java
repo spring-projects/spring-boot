@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,10 +157,7 @@ public final class Metadata {
 			if (this.deprecation == null && itemMetadata.getDeprecation() != null) {
 				return false;
 			}
-			if (this.deprecation != null && !this.deprecation.equals(itemMetadata.getDeprecation())) {
-				return false;
-			}
-			return true;
+			return this.deprecation == null || this.deprecation.equals(itemMetadata.getDeprecation());
 		}
 
 		public MetadataItemCondition ofType(Class<?> dataType) {
@@ -348,10 +345,7 @@ public final class Metadata {
 			if (this.value != null && !this.value.equals(valueHint.getValue())) {
 				return false;
 			}
-			if (this.description != null && !this.description.equals(valueHint.getDescription())) {
-				return false;
-			}
-			return true;
+			return this.description == null || this.description.equals(valueHint.getDescription());
 		}
 
 	}

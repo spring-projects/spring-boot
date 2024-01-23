@@ -194,7 +194,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		java.util.Optional<Milestone> matchingMilestone = milestones.stream()
 			.filter((milestone) -> milestone.getName().equals(getMilestone().get()))
 			.findFirst();
-		if (!matchingMilestone.isPresent()) {
+		if (matchingMilestone.isEmpty()) {
 			throw new InvalidUserDataException("Unknown milestone: " + getMilestone().get());
 		}
 		return matchingMilestone.get();
@@ -242,9 +242,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	private boolean isNotProhibited(Library library, DependencyVersion candidate) {
-		return !library.getProhibitedVersions()
+		return library.getProhibitedVersions()
 			.stream()
-			.anyMatch((prohibited) -> prohibited.isProhibited(candidate.toString()));
+			.noneMatch((prohibited) -> prohibited.isProhibited(candidate.toString()));
 	}
 
 	private List<Library> matchingLibraries() {
