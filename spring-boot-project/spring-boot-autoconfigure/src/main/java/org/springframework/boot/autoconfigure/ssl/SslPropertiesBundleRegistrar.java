@@ -25,6 +25,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties.Store;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 
@@ -37,6 +41,8 @@ import org.springframework.boot.ssl.SslBundleRegistry;
  * @author Moritz Halbritter
  */
 class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
+
+	private static final Log logger = LogFactory.getLog(SslPropertiesBundleRegistrar.class);
 
 	private final SslProperties.Bundles properties;
 
@@ -63,6 +69,7 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 					Supplier<Set<Path>> pathsSupplier = () -> watchedPaths.apply(bundleProperties);
 					watchForUpdates(registry, bundleName, pathsSupplier, bundleSupplier);
 				}
+				logPropertiesSslBundle(bundleName, bundleProperties);
 			}
 			catch (IllegalStateException ex) {
 				throw new IllegalStateException("Unable to register SSL bundle '%s'".formatted(bundleName), ex);
@@ -101,6 +108,23 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 			.filter(BundleContentProperty::hasValue)
 			.map(BundleContentProperty::toWatchPath)
 			.collect(Collectors.toSet());
+	}
+
+	private void logPropertiesSslBundle(String bundleName, SslBundleProperties propertiesSslBundle) {
+		String alias = propertiesSslBundle.getKey().getAlias();
+		if (propertiesSslBundle instanceof PemSslBundleProperties pemSslBundleProperties) {
+			Store keystore = pemSslBundleProperties.getKeystore();
+			Store truststore = pemSslBundleProperties.getTruststore();
+			logger.info("PEM bundleName [" + bundleName + "], configured from keystore [private-key: "
+					+ keystore.getPrivateKey() + ", certificate :" + keystore.getCertificate() + "] using alias ["
+					+ alias + "] with trust store [private-key: " + truststore.getPrivateKey() + ", certificate: "
+					+ truststore.getCertificate() + "]");
+		}
+		else if (propertiesSslBundle instanceof JksSslBundleProperties jksSslBundleProperties) {
+			logger.info("JKS bundleName [" + bundleName + "], configured from keystore ["
+					+ jksSslBundleProperties.getKeystore().getLocation() + "] using alias [" + alias
+					+ "] with trust store [" + jksSslBundleProperties.getTruststore().getLocation() + "]");
+		}
 	}
 
 }
