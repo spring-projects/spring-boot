@@ -68,7 +68,10 @@ class OperationMethodParameter implements OperationParameter {
 		if (!ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class))) {
 			return false;
 		}
-		return !jsr305Present || new Jsr305().isMandatory(this.parameter);
+		if (jsr305Present) {
+			return new Jsr305().isMandatory(this.parameter);
+		}
+		return true;
 	}
 
 	@Override

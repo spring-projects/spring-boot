@@ -53,7 +53,7 @@ final class SpringProfileArbiter implements Arbiter {
 
 	@Override
 	public boolean isCondition() {
-		return this.environment != null && this.environment.acceptsProfiles(this.profiles);
+		return (this.environment != null) && this.environment.acceptsProfiles(this.profiles);
 	}
 
 	@PluginBuilderFactory

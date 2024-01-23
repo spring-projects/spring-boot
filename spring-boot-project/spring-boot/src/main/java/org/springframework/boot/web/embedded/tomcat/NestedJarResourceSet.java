@@ -124,7 +124,7 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 					// JarFile.isMultiRelease() is final so we must go to the manifest
 					Manifest manifest = getManifest();
 					Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
-					this.multiRelease = attributes != null && attributes.containsKey(MULTI_RELEASE);
+					this.multiRelease = (attributes != null) && attributes.containsKey(MULTI_RELEASE);
 				}
 			}
 		}

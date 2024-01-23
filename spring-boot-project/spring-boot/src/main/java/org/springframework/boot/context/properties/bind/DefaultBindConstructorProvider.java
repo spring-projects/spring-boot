@@ -127,7 +127,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				return true;
 			}
 			Class<?> userClass = ClassUtils.getUserClass(type);
-			return userClass != type && isAutowiredPresent(userClass);
+			return (userClass != type) && isAutowiredPresent(userClass);
 		}
 
 		private static Constructor<?>[] getCandidateConstructors(Class<?> type) {
