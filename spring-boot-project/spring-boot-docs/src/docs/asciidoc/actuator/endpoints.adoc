@@ -301,7 +301,7 @@ By default, any authenticated user is authorized.
 For JMX endpoints, all users are always authorized.
 
 The following example allows all users with the `admin` role to view values from the `/env` endpoint in their original form.
-Unuthorized users, or users without the `admin` role, will see only sanitized values.
+Unauthorized users, or users without the `admin` role, will see only sanitized values.
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
