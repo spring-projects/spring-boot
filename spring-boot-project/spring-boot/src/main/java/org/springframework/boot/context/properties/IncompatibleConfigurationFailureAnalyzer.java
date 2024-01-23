@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import java.util.stream.Collectors;
-
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
