@@ -43,6 +43,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 1.4.2
  * @see ResetMocksTestExecutionListener
  */
@@ -57,12 +58,13 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
+		closeMocks(testContext);
 		initMocks(testContext);
 		injectFields(testContext);
 	}
 
 	@Override
-	public void beforeTestMethod(TestContext testContext) throws Exception {
+	public void beforeTestMethod(TestContext testContext) {
 		if (Boolean.TRUE.equals(
 				testContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
 			initMocks(testContext);
@@ -72,15 +74,19 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
-		Object mocks = testContext.getAttribute(MOCKS_ATTRIBUTE_NAME);
-		if (mocks instanceof AutoCloseable closeable) {
-			closeable.close();
-		}
+		closeMocks(testContext);
 	}
 
 	private void initMocks(TestContext testContext) {
 		if (hasMockitoAnnotations(testContext)) {
 			testContext.setAttribute(MOCKS_ATTRIBUTE_NAME, MockitoAnnotations.openMocks(testContext.getTestInstance()));
+		}
+	}
+
+	private void closeMocks(TestContext testContext) throws Exception {
+		Object mocks = testContext.getAttribute(MOCKS_ATTRIBUTE_NAME);
+		if (mocks instanceof AutoCloseable closeable) {
+			closeable.close();
 		}
 	}
 
@@ -126,7 +132,7 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 		private final Set<Annotation> annotations = new LinkedHashSet<>();
 
 		@Override
-		public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+		public void doWith(Field field) throws IllegalArgumentException {
 			for (Annotation annotation : field.getDeclaredAnnotations()) {
 				if (annotation.annotationType().getName().startsWith("org.mockito")) {
 					this.annotations.add(annotation);
