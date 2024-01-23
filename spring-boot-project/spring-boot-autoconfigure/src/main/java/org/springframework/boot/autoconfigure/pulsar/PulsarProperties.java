@@ -761,7 +761,7 @@ public class PulsarProperties {
 		 * Whether to record observations for when the Observations API is available and
 		 * the client supports it.
 		 */
-		private boolean observationEnabled = true;
+		private boolean observationEnabled;
 
 		public SchemaType getSchemaType() {
 			return this.schemaType;
@@ -856,7 +856,7 @@ public class PulsarProperties {
 		/**
 		 * Whether to record observations for when the Observations API is available.
 		 */
-		private boolean observationsEnabled = true;
+		private boolean observationsEnabled;
 
 		public boolean isObservationsEnabled() {
 			return this.observationsEnabled;
