@@ -101,8 +101,10 @@ public class NestedJarFile extends JarFile {
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
 	 * {@code File}.
 	 * @param file the jar file to be opened for reading
-	 * @param nestedEntryName the nested entry name to open or {@code null}
+	 * @param nestedEntryName the nested entry name to open
 	 * @throws IOException on I/O error
+	 * @throws IllegalArgumentException if {@code nestedEntryName} is {@code null} or
+	 * empty
 	 */
 	public NestedJarFile(File file, String nestedEntryName) throws IOException {
 		this(file, nestedEntryName, null, true, Cleaner.instance);
@@ -112,9 +114,11 @@ public class NestedJarFile extends JarFile {
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
 	 * {@code File}.
 	 * @param file the jar file to be opened for reading
-	 * @param nestedEntryName the nested entry name to open or {@code null}
+	 * @param nestedEntryName the nested entry name to open
 	 * @param version the release version to use when opening a multi-release jar
 	 * @throws IOException on I/O error
+	 * @throws IllegalArgumentException if {@code nestedEntryName} is {@code null} or
+	 * empty
 	 */
 	public NestedJarFile(File file, String nestedEntryName, Runtime.Version version) throws IOException {
 		this(file, nestedEntryName, version, true, Cleaner.instance);
@@ -124,11 +128,13 @@ public class NestedJarFile extends JarFile {
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
 	 * {@code File}.
 	 * @param file the jar file to be opened for reading
-	 * @param nestedEntryName the nested entry name to open or {@code null}
+	 * @param nestedEntryName the nested entry name to open
 	 * @param version the release version to use when opening a multi-release jar
 	 * @param onlyNestedJars if <em>only</em> nested jars should be opened
 	 * @param cleaner the cleaner used to release resources
 	 * @throws IOException on I/O error
+	 * @throws IllegalArgumentException if {@code nestedEntryName} is {@code null} or
+	 * empty
 	 */
 	NestedJarFile(File file, String nestedEntryName, Runtime.Version version, boolean onlyNestedJars, Cleaner cleaner)
 			throws IOException {
