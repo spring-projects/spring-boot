@@ -115,7 +115,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 		if (eventPublisher != null) {
 			propertySource.addEventPublisher(eventPublisher);
 		}
-		else if (registry != null) {
+		else if (registry != null && !registry.containsBeanDefinition(EventPublisherRegistrar.NAME)) {
 			registry.registerBeanDefinition(EventPublisherRegistrar.NAME, new RootBeanDefinition(
 					EventPublisherRegistrar.class, () -> new EventPublisherRegistrar(environment)));
 		}
