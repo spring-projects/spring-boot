@@ -64,9 +64,10 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 	}
 
 	@Override
-	public void beforeTestMethod(TestContext testContext) {
+	public void beforeTestMethod(TestContext testContext) throws Exception {
 		if (Boolean.TRUE.equals(
 				testContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
+			closeMocks(testContext);
 			initMocks(testContext);
 			reinjectFields(testContext);
 		}
@@ -74,6 +75,11 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
+		closeMocks(testContext);
+	}
+
+	@Override
+	public void afterTestClass(TestContext testContext) throws Exception {
 		closeMocks(testContext);
 	}
 

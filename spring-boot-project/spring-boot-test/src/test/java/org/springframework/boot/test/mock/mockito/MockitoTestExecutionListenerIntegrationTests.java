@@ -21,11 +21,13 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -36,6 +38,8 @@ import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,6 +77,122 @@ class MockitoTestExecutionListenerIntegrationTests {
 			this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
 			UUID result = UUID.randomUUID();
 			assertThat(result).isEqualTo(uuid);
+		}
+
+	}
+
+	@Nested
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+	class MockedStaticTestsDirtiesContext {
+
+		private static final UUID uuid = UUID.randomUUID();
+
+		@Mock
+		private MockedStatic<UUID> mockedStatic;
+
+		@Test
+		@Order(1)
+		@Disabled
+		void shouldReturnConstantValueDisabled() {
+			this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+			UUID result = UUID.randomUUID();
+			assertThat(result).isEqualTo(uuid);
+		}
+
+		@Test
+		@Order(2)
+		void shouldNotFailBecauseOfMockedStaticNotBeingClosed() {
+			this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+			UUID result = UUID.randomUUID();
+			assertThat(result).isEqualTo(uuid);
+		}
+
+		@Test
+		@Order(3)
+		void shouldNotFailBecauseOfMockedStaticNotBeingClosedWhenMocksAreReinjected() {
+			this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+			UUID result = UUID.randomUUID();
+			assertThat(result).isEqualTo(uuid);
+		}
+
+	}
+
+	@Nested
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+	class MockedStaticTestsIfClassContainsOnlyDisabledTests {
+
+		@Nested
+		@Order(1)
+		class TestClass1 {
+
+			private static final UUID uuid = UUID.randomUUID();
+
+			@Mock
+			private MockedStatic<UUID> mockedStatic;
+
+			@Test
+			@Order(1)
+			@Disabled
+			void disabledTest() {
+				this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+			}
+
+		}
+
+		@Nested
+		@Order(2)
+		class TestClass2 {
+
+			private static final UUID uuid = UUID.randomUUID();
+
+			@Mock
+			private MockedStatic<UUID> mockedStatic;
+
+			@Test
+			@Order(1)
+			void shouldNotFailBecauseMockedStaticHasNotBeenClosed() {
+				this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+				UUID result = UUID.randomUUID();
+				assertThat(result).isEqualTo(uuid);
+			}
+
+		}
+
+	}
+
+	@Nested
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+	class MockedStaticTestsIfClassContainsNoTests {
+
+		@Nested
+		@Order(1)
+		class TestClass1 {
+
+			@Mock
+			private MockedStatic<UUID> mockedStatic;
+
+		}
+
+		@Nested
+		@Order(2)
+		class TestClass2 {
+
+			private static final UUID uuid = UUID.randomUUID();
+
+			@Mock
+			private MockedStatic<UUID> mockedStatic;
+
+			@Test
+			@Order(1)
+			void shouldNotFailBecauseMockedStaticHasNotBeenClosed() {
+				this.mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+				UUID result = UUID.randomUUID();
+				assertThat(result).isEqualTo(uuid);
+			}
+
 		}
 
 	}
