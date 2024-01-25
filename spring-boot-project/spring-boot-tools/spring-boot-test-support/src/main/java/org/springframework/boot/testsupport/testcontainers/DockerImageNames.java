@@ -30,6 +30,8 @@ public final class DockerImageNames {
 
 	private static final String ACTIVE_MQ_VERSION = "5.18.0";
 
+	private static final String ARTEMIS_VERSION = "2.31.2";
+
 	private static final String CASSANDRA_VERSION = "3.11.10";
 
 	private static final String COUCHBASE_VERSION = "7.1.4";
@@ -79,6 +81,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName activeMq() {
 		return DockerImageName.parse("symptoma/activemq").withTag(ACTIVE_MQ_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Artemis.
+	 * @return a docker image name for running artemis
+	 */
+	public static DockerImageName artemis() {
+		return DockerImageName.parse("apache/activemq-artemis").withTag(ARTEMIS_VERSION);
 	}
 
 	/**
