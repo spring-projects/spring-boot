@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.Runtime.Version;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -30,6 +31,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -38,6 +40,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
@@ -59,11 +63,13 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class ExtractCommandTests {
 
-	private static final FileTime CREATION_TIME = FileTime.from(Instant.now().minus(3, ChronoUnit.DAYS));
+	private static final Instant NOW = Instant.now();
 
-	private static final FileTime LAST_MODIFIED_TIME = FileTime.from(Instant.now().minus(2, ChronoUnit.DAYS));
+	private static final FileTime CREATION_TIME = FileTime.from(NOW.minus(3, ChronoUnit.DAYS));
 
-	private static final FileTime LAST_ACCESS_TIME = FileTime.from(Instant.now().minus(1, ChronoUnit.DAYS));
+	private static final FileTime LAST_MODIFIED_TIME = FileTime.from(NOW.minus(2, ChronoUnit.DAYS));
+
+	private static final FileTime LAST_ACCESS_TIME = FileTime.from(NOW.minus(1, ChronoUnit.DAYS));
 
 	@TempDir
 	File temp;
@@ -107,16 +113,33 @@ class ExtractCommandTests {
 				.readAttributes();
 			assertThat(basicAttributes.lastModifiedTime().to(TimeUnit.SECONDS))
 				.isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS));
-			assertThat(basicAttributes.creationTime().to(TimeUnit.SECONDS)).satisfiesAnyOf(
-					(creationTime) -> assertThat(creationTime).isEqualTo(CREATION_TIME.to(TimeUnit.SECONDS)),
-					// On macOS (at least) the creation time is the last modified time
-					(creationTime) -> assertThat(creationTime).isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS)));
+			FileTime expectedCreationTime = expectedCreationTime();
+			if (expectedCreationTime != null) {
+				assertThat(basicAttributes.creationTime().to(TimeUnit.SECONDS))
+					.isEqualTo(expectedCreationTime.to(TimeUnit.SECONDS));
+			}
 			assertThat(basicAttributes.lastAccessTime().to(TimeUnit.SECONDS))
 				.isEqualTo(LAST_ACCESS_TIME.to(TimeUnit.SECONDS));
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private FileTime expectedCreationTime() {
+		// macOS uses last modified time until Java 20 where it uses creation time.
+		// https://github.com/openjdk/jdk21u-dev/commit/6397d564a5dab07f81bf4c69b116ebfabb2446ba
+		if (OS.MAC.isCurrentOs()) {
+			return (EnumSet.range(JRE.JAVA_17, JRE.JAVA_19).contains(JRE.currentVersion())) ? LAST_MODIFIED_TIME
+					: CREATION_TIME;
+		}
+		if (OS.LINUX.isCurrentOs()) {
+			// Linux uses the modified time until Java 21.0.2 where a bug means that it
+			// uses the birth time which it has not set, preventing us from verifying it.
+			// https://github.com/openjdk/jdk21u-dev/commit/4cf572e3b99b675418e456e7815fb6fd79245e30
+			return (Runtime.version().compareTo(Version.parse("21.0.2")) >= 0) ? null : LAST_MODIFIED_TIME;
+		}
+		return CREATION_TIME;
 	}
 
 	@Test
