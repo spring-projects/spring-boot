@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -47,5 +48,44 @@ import org.springframework.context.annotation.Import;
 @Import({ ArtemisEmbeddedServerConfiguration.class, ArtemisXAConnectionFactoryConfiguration.class,
 		ArtemisConnectionFactoryConfiguration.class })
 public class ArtemisAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(ArtemisConnectionDetails.class)
+	ArtemisConnectionDetails artemisConnectionDetails(ArtemisProperties properties) {
+		return new PropertiesArtemisConnectionDetails(properties);
+	}
+
+	/**
+	 * Adapts {@link ArtemisProperties} to {@link ArtemisConnectionDetails}.
+	 */
+	static class PropertiesArtemisConnectionDetails implements ArtemisConnectionDetails {
+
+		private final ArtemisProperties properties;
+
+		PropertiesArtemisConnectionDetails(ArtemisProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public ArtemisMode getMode() {
+			return this.properties.getMode();
+		}
+
+		@Override
+		public String getBrokerUrl() {
+			return this.properties.getBrokerUrl();
+		}
+
+		@Override
+		public String getUser() {
+			return this.properties.getUser();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+	}
 
 }

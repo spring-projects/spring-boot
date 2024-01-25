@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,15 +44,16 @@ class ArtemisXAConnectionFactoryConfiguration {
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
-			XAConnectionFactoryWrapper wrapper) throws Exception {
-		return wrapper.wrapConnectionFactory(new ArtemisConnectionFactoryFactory(beanFactory, properties)
-			.createConnectionFactory(ActiveMQXAConnectionFactory.class));
+			ArtemisConnectionDetails connectionDetails, XAConnectionFactoryWrapper wrapper) throws Exception {
+		return wrapper
+			.wrapConnectionFactory(new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
+				.createConnectionFactory(ActiveMQXAConnectionFactory.class));
 	}
 
 	@Bean
-	ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
-			ArtemisProperties properties) {
-		return new ArtemisConnectionFactoryFactory(beanFactory, properties)
+	ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+			ArtemisConnectionDetails connectionDetails) {
+		return new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
 			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 	}
 

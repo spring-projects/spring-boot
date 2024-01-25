@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,18 @@ class ArtemisConnectionFactoryFactory {
 
 	private final ArtemisProperties properties;
 
+	private final ArtemisConnectionDetails connectionDetails;
+
 	private final ListableBeanFactory beanFactory;
 
-	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties) {
+	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+			ArtemisConnectionDetails connectionDetails) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");
+		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
 		this.beanFactory = beanFactory;
 		this.properties = properties;
+		this.connectionDetails = connectionDetails;
 	}
 
 	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
@@ -80,7 +85,7 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
-		ArtemisMode mode = this.properties.getMode();
+		ArtemisMode mode = this.connectionDetails.getMode();
 		if (mode == null) {
 			mode = deduceMode();
 		}
@@ -127,17 +132,17 @@ class ArtemisConnectionFactoryFactory {
 	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
 			throws Exception {
 		T connectionFactory = newNativeConnectionFactory(factoryClass);
-		String user = this.properties.getUser();
+		String user = this.connectionDetails.getUser();
 		if (StringUtils.hasText(user)) {
 			connectionFactory.setUser(user);
-			connectionFactory.setPassword(this.properties.getPassword());
+			connectionFactory.setPassword(this.connectionDetails.getPassword());
 		}
 		return connectionFactory;
 	}
 
 	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
-		String brokerUrl = StringUtils.hasText(this.properties.getBrokerUrl()) ? this.properties.getBrokerUrl()
-				: DEFAULT_BROKER_URL;
+		String brokerUrl = StringUtils.hasText(this.connectionDetails.getBrokerUrl())
+				? this.connectionDetails.getBrokerUrl() : DEFAULT_BROKER_URL;
 		Constructor<T> constructor = factoryClass.getConstructor(String.class);
 		return constructor.newInstance(brokerUrl);
 
