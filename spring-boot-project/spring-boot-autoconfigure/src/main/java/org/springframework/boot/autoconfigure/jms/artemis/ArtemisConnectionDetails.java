@@ -18,6 +18,12 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
+/**
+ * Details required to establish a connection to an Artemis service.
+ *
+ * @author Eddú Meléndez
+ * @since 3.3.0
+ */
 public interface ArtemisConnectionDetails extends ConnectionDetails {
 
 	ArtemisMode getMode();
