@@ -68,7 +68,8 @@ class ArtemisConnectionFactoryConfiguration {
 
 			@Bean(name = "jmsConnectionFactory")
 			CachingConnectionFactory cachingJmsConnectionFactory(JmsProperties jmsProperties,
-					ArtemisProperties properties, ArtemisConnectionDetails connectionDetails, ListableBeanFactory beanFactory) {
+					ArtemisProperties properties, ArtemisConnectionDetails connectionDetails,
+					ListableBeanFactory beanFactory) {
 				JmsProperties.Cache cacheProperties = jmsProperties.getCache();
 				CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 						createJmsConnectionFactory(properties, connectionDetails, beanFactory));
@@ -88,8 +89,10 @@ class ArtemisConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties, ArtemisConnectionDetails connectionDetails) {
-			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
+		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+				ArtemisConnectionDetails connectionDetails) {
+			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties,
+					connectionDetails)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 				.createPooledConnectionFactory(connectionFactory);

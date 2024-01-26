@@ -34,7 +34,8 @@ class ArtemisContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<ArtemisContainer, ArtemisConnectionDetails> {
 
 	@Override
-	protected ArtemisConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<ArtemisContainer> source) {
+	protected ArtemisConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<ArtemisContainer> source) {
 		return new ArtemisContainerConnectionDetails(source);
 	}
 

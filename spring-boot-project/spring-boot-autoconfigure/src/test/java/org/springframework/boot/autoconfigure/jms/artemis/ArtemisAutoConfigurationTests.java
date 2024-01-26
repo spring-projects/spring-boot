@@ -374,23 +374,23 @@ class ArtemisAutoConfigurationTests {
 
 	@Test
 	void definesPropertiesBasedConnectionDetailsByDefault() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(PropertiesArtemisConnectionDetails.class));
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesArtemisConnectionDetails.class));
 	}
 
 	@Test
 	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
-				.withPropertyValues("spring.artemis.pool.enabled=false", "spring.jms.cache.enabled=false")
-				.withUserConfiguration(TestConnectionDetailsConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ArtemisConnectionDetails.class)
-							.doesNotHaveBean(PropertiesArtemisConnectionDetails.class);
-					ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
-					assertThat(connectionFactory.toURI().toString()).startsWith("tcp://localhost:12345");
-					assertThat(connectionFactory.getUser()).isEqualTo("springuser");
-					assertThat(connectionFactory.getPassword()).isEqualTo("spring");
-				});
+			.withPropertyValues("spring.artemis.pool.enabled=false", "spring.jms.cache.enabled=false")
+			.withUserConfiguration(TestConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ArtemisConnectionDetails.class)
+					.doesNotHaveBean(PropertiesArtemisConnectionDetails.class);
+				ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+				assertThat(connectionFactory.toURI().toString()).startsWith("tcp://localhost:12345");
+				assertThat(connectionFactory.getUser()).isEqualTo("springuser");
+				assertThat(connectionFactory.getPassword()).isEqualTo("spring");
+			});
 	}
 
 	private ConnectionFactory getConnectionFactory(AssertableApplicationContext context) {

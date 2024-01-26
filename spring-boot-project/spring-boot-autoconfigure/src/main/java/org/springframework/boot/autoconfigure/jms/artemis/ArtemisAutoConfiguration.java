@@ -85,6 +85,7 @@ public class ArtemisAutoConfiguration {
 		public String getPassword() {
 			return this.properties.getPassword();
 		}
+
 	}
 
 }

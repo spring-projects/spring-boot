@@ -51,7 +51,8 @@ class ArtemisConnectionFactoryFactory {
 
 	private final ListableBeanFactory beanFactory;
 
-	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties, ArtemisConnectionDetails connectionDetails) {
+	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+			ArtemisConnectionDetails connectionDetails) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");
 		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
@@ -140,8 +141,8 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
-		String brokerUrl = StringUtils.hasText(this.connectionDetails.getBrokerUrl()) ? this.connectionDetails.getBrokerUrl()
-				: DEFAULT_BROKER_URL;
+		String brokerUrl = StringUtils.hasText(this.connectionDetails.getBrokerUrl())
+				? this.connectionDetails.getBrokerUrl() : DEFAULT_BROKER_URL;
 		Constructor<T> constructor = factoryClass.getConstructor(String.class);
 		return constructor.newInstance(brokerUrl);
 

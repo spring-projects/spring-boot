@@ -18,7 +18,6 @@ package org.springframework.boot.docker.compose.service.connection.activemq;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
