@@ -35,6 +35,7 @@ import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -374,6 +375,14 @@ class PulsarAutoConfigurationTests {
 				});
 		}
 
+		@Test
+		void injectsExpectedBeanWithExplicitGenericType() {
+			this.contextRunner.withBean(ExplicitGenericTypeConfig.class)
+					.run((context) -> assertThat(context).getBean(ExplicitGenericTypeConfig.class)
+							.hasFieldOrPropertyWithValue("consumerFactory", context.getBean(PulsarConsumerFactory.class))
+							.hasFieldOrPropertyWithValue("containerFactory", context.getBean(ConcurrentPulsarListenerContainerFactory.class)));
+		}
+
 		@TestConfiguration(proxyBeanMethods = false)
 		static class ConsumerBuilderCustomizersConfig {
 
@@ -389,6 +398,16 @@ class PulsarAutoConfigurationTests {
 				return (builder) -> builder.consumerName("fromCustomizer1");
 			}
 
+		}
+
+		static class ExplicitGenericTypeConfig {
+			@Autowired
+			PulsarConsumerFactory<TestType> consumerFactory;
+
+			@Autowired
+			ConcurrentPulsarListenerContainerFactory<TestType> containerFactory;
+
+			static class TestType {}
 		}
 
 	}
