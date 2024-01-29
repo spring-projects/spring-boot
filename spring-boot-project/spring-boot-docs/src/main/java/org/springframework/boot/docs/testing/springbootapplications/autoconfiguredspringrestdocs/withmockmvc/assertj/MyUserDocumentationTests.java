@@ -14,37 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.springbootapplications.springmvctests;
+package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc.assertj;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 
-@WebMvcTest(UserVehicleController.class)
-class MyControllerTests {
+@WebMvcTest(UserController.class)
+@AutoConfigureRestDocs
+class MyUserDocumentationTests {
 
 	@Autowired
 	private MockMvcTester mvc;
 
-	@MockBean
-	private UserVehicleService userVehicleService;
-
 	@Test
-	void testExample() {
-		// @formatter:off
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-			.willReturn(new VehicleDetails("Honda", "Civic"));
-		assertThat(this.mvc.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
-			.hasStatusOk()
-			.hasBodyTextEqualTo("Honda Civic");
-		// @formatter:on
+	void listUsers() {
+		assertThat(this.mvc.get().uri("/users").accept(MediaType.TEXT_PLAIN)).hasStatusOk()
+			.apply(document("list-users"));
 	}
 
 }

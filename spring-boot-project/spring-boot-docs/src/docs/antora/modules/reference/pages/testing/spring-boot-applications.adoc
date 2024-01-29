@@ -140,7 +140,14 @@ include-code::MyApplicationArgumentTests[]
 
 By default, `@SpringBootTest` does not start the server but instead sets up a mock environment for testing web endpoints.
 
-With Spring MVC, we can query our web endpoints using {url-spring-framework-docs}/testing/spring-mvc-test-framework.html[`MockMvc`] or `WebTestClient`, as shown in the following example:
+With Spring MVC, we can query our web endpoints using {url-spring-framework-docs}/testing/mockmvc.html[`MockMvc`].
+Three integrations are available:
+
+* The regular {url-spring-framework-docs}/testing/mockmvc/hamcrest.html[`MockMvc`] that uses Hamcrest.
+* {url-spring-framework-docs}/testing/mockmvc/assertj.html[`MockMvcTester`] that wraps `MockMvc` and uses AssertJ.
+* {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] where `MockMvc` is plugged in as the server to handle requests with.
+
+The following example showcases the available integrations:
 
 include-code::MyMockMvcTests[]
 
@@ -345,9 +352,10 @@ Often, `@WebMvcTest` is limited to a single controller and is used in combinatio
 
 `@WebMvcTest` also auto-configures `MockMvc`.
 Mock MVC offers a powerful way to quickly test MVC controllers without needing to start a full HTTP server.
+If AssertJ is available, the AssertJ support provided by `MockMvcTester` is auto-configured as well.
 
-TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureMockMvc`.
-The following example uses `MockMvc`:
+TIP: You can also auto-configure `MockMvc` and `MockMvcTester` in a non-`@WebMvcTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureMockMvc`.
+The following example uses `MockMvcTester`:
 
 include-code::MyControllerTests[]
 
@@ -753,7 +761,13 @@ It can also be used to configure the host, scheme, and port that appears in any 
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
-include-code::MyUserDocumentationTests[]
+include-code::hamcrest/MyUserDocumentationTests[]
+
+If you prefer to use the AssertJ integration, `MockMvcTester` is available as well, as shown in the following example:
+
+include-code::assertj/MyUserDocumentationTests[]
+
+Both reuses the same `MockMvc` instance behind the scenes so any configuration to it applies to both.
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsMockMvcConfigurationCustomizer` bean, as shown in the following example:
 

@@ -31,10 +31,12 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 /**
  * Annotation that can be applied to a test class to enable and configure
- * auto-configuration of {@link MockMvc}.
+ * auto-configuration of {@link MockMvc}. If AssertJ is available a {@link MockMvcTester}
+ * is auto-configured as well.
  *
  * @author Phillip Webb
  * @since 1.4.0
