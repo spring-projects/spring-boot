@@ -124,9 +124,12 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 			while (iterator.hasNext()) {
 				HttpMessageConverter<?> candidate = iterator.next();
 				if (isReplacement(defaultConverter, candidate)) {
-					combined.add(candidate);
-					iterator.remove();
+					defaultConverter = null;
+					break;
 				}
+			}
+			if (defaultConverter == null) {
+				continue;
 			}
 			combined.add(defaultConverter);
 			if (defaultConverter instanceof AllEncompassingFormHttpMessageConverter allEncompassingConverter) {

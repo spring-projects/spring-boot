@@ -73,7 +73,7 @@ class HttpMessageConvertersTests {
 			}
 		}
 		// The existing converter is still there, but with a lower priority
-		assertThat(httpConverters).hasSize(3);
+		assertThat(httpConverters).hasSize(2);
 		assertThat(httpConverters.indexOf(converter1)).isZero();
 		assertThat(httpConverters.indexOf(converter2)).isOne();
 		assertThat(converters.getConverters().indexOf(converter1)).isNotZero();
