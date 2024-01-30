@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,9 +31,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -293,29 +292,20 @@ public class DockerApi {
 			Assert.notNull(exports, "Exports must not be null");
 			URI saveUri = buildUrl("/images/" + reference + "/get");
 			Response response = http().get(saveUri);
-			ImageArchiveManifest manifest = null;
-			Map<String, Path> layerFiles = new HashMap<>();
-			try (TarArchiveInputStream tar = new TarArchiveInputStream(response.getContent())) {
+			Path exportFile = copyToTemp(response.getContent());
+			ImageArchiveManifest manifest = getManifest(reference, exportFile);
+			try (TarArchiveInputStream tar = new TarArchiveInputStream(new FileInputStream(exportFile.toFile()))) {
 				TarArchiveEntry entry = tar.getNextEntry();
 				while (entry != null) {
-					if (entry.getName().equals("manifest.json")) {
-						manifest = readManifest(tar);
-					}
-					if (entry.getName().endsWith(".tar")) {
-						layerFiles.put(entry.getName(), copyToTemp(tar));
+					if (manifestContainsLayerEntry(manifest, entry.getName())) {
+						Path layerFile = copyToTemp(tar);
+						exports.accept(entry.getName(), layerFile);
+						Files.delete(layerFile);
 					}
 					entry = tar.getNextEntry();
 				}
 			}
-			Assert.notNull(manifest, "Manifest not found in image " + reference);
-			for (Map.Entry<String, Path> entry : layerFiles.entrySet()) {
-				String name = entry.getKey();
-				Path path = entry.getValue();
-				if (manifestContainsLayerEntry(manifest, name)) {
-					exports.accept(name, path);
-				}
-				Files.delete(path);
-			}
+			Files.delete(exportFile);
 		}
 
 		/**
@@ -355,13 +345,26 @@ public class DockerApi {
 			http().post(uri).close();
 		}
 
+		private ImageArchiveManifest getManifest(ImageReference reference, Path exportFile) throws IOException {
+			try (TarArchiveInputStream tar = new TarArchiveInputStream(new FileInputStream(exportFile.toFile()))) {
+				TarArchiveEntry entry = tar.getNextEntry();
+				while (entry != null) {
+					if (entry.getName().equals("manifest.json")) {
+						return readManifest(tar);
+					}
+					entry = tar.getNextEntry();
+				}
+			}
+			throw new IllegalArgumentException("Manifest not found in image " + reference);
+		}
+
 		private ImageArchiveManifest readManifest(TarArchiveInputStream tar) throws IOException {
 			String manifestContent = new BufferedReader(new InputStreamReader(tar, StandardCharsets.UTF_8)).lines()
 				.collect(Collectors.joining());
 			return ImageArchiveManifest.of(new ByteArrayInputStream(manifestContent.getBytes(StandardCharsets.UTF_8)));
 		}
 
-		private Path copyToTemp(TarArchiveInputStream in) throws IOException {
+		private Path copyToTemp(InputStream in) throws IOException {
 			Path path = Files.createTempFile("create-builder-scratch-", null);
 			try (OutputStream out = Files.newOutputStream(path)) {
 				StreamUtils.copy(in, out);

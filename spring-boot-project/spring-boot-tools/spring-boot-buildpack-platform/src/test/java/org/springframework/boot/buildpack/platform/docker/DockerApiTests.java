@@ -382,6 +382,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("removal")
 		void exportLayerFilesDeletesTempFiles() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
