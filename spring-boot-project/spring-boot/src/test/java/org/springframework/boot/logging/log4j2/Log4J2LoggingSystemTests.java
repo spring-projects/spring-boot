@@ -553,8 +553,9 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void correlationLoggingToConsoleWhenHasCorrelationPattern(CapturedOutput output) {
+	void correlationLoggingToConsoleWhenHasCorrelationPatternAndExpectCorrelationIdTrue(CapturedOutput output) {
 		this.environment.setProperty("logging.pattern.correlation", "%correlationId{spanId(0),traceId(0)}");
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
 		this.loggingSystem.setStandardConfigLocations(false);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
@@ -562,6 +563,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world"))
 			.contains(" [0123456789012345-01234567890123456789012345678901] ");
+	}
+
+	@Test
+	void correlationLoggingToConsoleWhenHasCorrelationPatternAndExpectCorrelationIdFalse(CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.correlation", "%correlationId{spanId(0),traceId(0)}");
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "false");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("0123456789012345");
 	}
 
 	@Test

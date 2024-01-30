@@ -239,7 +239,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.FILE_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.LEVEL_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN, resolver);
-		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
+		setCorrelationPatternSystemProperty(resolver);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
@@ -252,6 +252,12 @@ public class LoggingSystemProperties {
 				setSystemProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName(),
 						"[%s] ".formatted(applicationName));
 			}
+		}
+	}
+
+	private void setCorrelationPatternSystemProperty(PropertyResolver resolver) {
+		if (resolver.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, Boolean.FALSE)) {
+			setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
 		}
 	}
 

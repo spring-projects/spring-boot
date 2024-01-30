@@ -546,6 +546,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "10MB");
 		this.environment.setProperty("logging.logback.rollingpolicy.total-size-cap", "100MB");
 		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "20");
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -729,13 +730,24 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void correlationLoggingToConsoleWhenHasCorrelationPattern(CapturedOutput output) {
+	void correlationLoggingToConsoleWhenHasCorrelationPatternAndExpectCorrelationIdTrue(CapturedOutput output) {
 		this.environment.setProperty("logging.pattern.correlation", "%correlationId{spanId(0),traceId(0)}");
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
 		initialize(this.initializationContext, null, null);
 		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world"))
 			.contains(" [0123456789012345-01234567890123456789012345678901] ");
+	}
+
+	@Test
+	void correlationLoggingToConsoleWhenHasCorrelationPatternAndExpectCorrelationIdFalse(CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.correlation", "%correlationId{spanId(0),traceId(0)}");
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "false");
+		initialize(this.initializationContext, null, null);
+		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("0123456789012345");
 	}
 
 	@Test
