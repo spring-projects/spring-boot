@@ -22,6 +22,7 @@ import java.util.Map;
  * Artemis environment details.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class ArtemisEnvironment {
 
@@ -30,8 +31,8 @@ class ArtemisEnvironment {
 	private final String password;
 
 	ArtemisEnvironment(Map<String, String> env) {
-		this.user = env.get("ACTIVEMQ_CONNECTION_USER");
-		this.password = env.get("ACTIVEMQ_CONNECTION_PASSWORD");
+		this.user = env.get("ARTEMIS_USER");
+		this.password = env.get("ARTEMIS_PASSWORD");
 	}
 
 	String getUser() {

@@ -26,12 +26,28 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  */
 public interface ArtemisConnectionDetails extends ConnectionDetails {
 
+	/**
+	 * Artemis deployment mode, auto-detected by default.
+	 * @return the Artemis deployment mode, auto-detected by default
+	 */
 	ArtemisMode getMode();
 
+	/**
+	 * Artemis broker url.
+	 * @return the Artemis broker url
+	 */
 	String getBrokerUrl();
 
+	/**
+	 * Login user of the broker.
+	 * @return the login user of the broker
+	 */
 	String getUser();
 
+	/**
+	 * Login password of the broker.
+	 * @return the login password of the broker
+	 */
 	String getPassword();
 
 }

@@ -4,5 +4,5 @@ services:
     ports:
       - '61616'
     environment:
-      ACTIVEMQ_CONNECTION_USER: 'root'
-      ACTIVEMQ_CONNECTION_PASSWORD: 'secret'
+      ARTEMIS_USER: 'root'
+      ARTEMIS_PASSWORD: 'secret'

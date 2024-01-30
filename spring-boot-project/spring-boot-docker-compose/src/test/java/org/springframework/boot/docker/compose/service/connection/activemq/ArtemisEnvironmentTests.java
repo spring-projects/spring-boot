@@ -38,7 +38,7 @@ class ArtemisEnvironmentTests {
 
 	@Test
 	void getUserWhenHasActiveMqUser() {
-		ArtemisEnvironment environment = new ArtemisEnvironment(Map.of("ACTIVEMQ_CONNECTION_USER", "me"));
+		ArtemisEnvironment environment = new ArtemisEnvironment(Map.of("ARTEMIS_USER", "me"));
 		assertThat(environment.getUser()).isEqualTo("me");
 	}
 
@@ -50,7 +50,7 @@ class ArtemisEnvironmentTests {
 
 	@Test
 	void getPasswordWhenHasActiveMqPassword() {
-		ArtemisEnvironment environment = new ArtemisEnvironment(Map.of("ACTIVEMQ_CONNECTION_PASSWORD", "secret"));
+		ArtemisEnvironment environment = new ArtemisEnvironment(Map.of("ARTEMIS_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 

@@ -27,6 +27,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * {@link ArtemisConnectionDetails} for an {@code artemis} service.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class ArtemisDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<ArtemisConnectionDetails> {
@@ -34,7 +35,7 @@ class ArtemisDockerComposeConnectionDetailsFactory
 	private static final int ACTIVEMQ_PORT = 61616;
 
 	protected ArtemisDockerComposeConnectionDetailsFactory() {
-		super("apache/activemq-classic");
+		super("apache/activemq-artemis");
 	}
 
 	@Override
