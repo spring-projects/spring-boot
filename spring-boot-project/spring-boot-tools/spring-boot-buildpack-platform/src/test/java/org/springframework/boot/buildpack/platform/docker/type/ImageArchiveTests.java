@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,14 +54,14 @@ class ImageArchiveTests extends AbstractJsonTests {
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
 			for (int i = 0; i < EXISTING_IMAGE_LAYER_COUNT; i++) {
-				TarArchiveEntry blankEntry = tar.getNextTarEntry();
+				TarArchiveEntry blankEntry = tar.getNextEntry();
 				assertThat(blankEntry.getName()).isEqualTo("blank_" + i);
 			}
-			TarArchiveEntry layerEntry = tar.getNextTarEntry();
+			TarArchiveEntry layerEntry = tar.getNextEntry();
 			byte[] layerContent = read(tar, layerEntry.getSize());
-			TarArchiveEntry configEntry = tar.getNextTarEntry();
+			TarArchiveEntry configEntry = tar.getNextEntry();
 			byte[] configContent = read(tar, configEntry.getSize());
-			TarArchiveEntry manifestEntry = tar.getNextTarEntry();
+			TarArchiveEntry manifestEntry = tar.getNextEntry();
 			byte[] manifestContent = read(tar, manifestEntry.getSize());
 			assertExpectedLayer(layerEntry, layerContent);
 			assertExpectedConfig(configEntry, configContent);
@@ -72,7 +72,7 @@ class ImageArchiveTests extends AbstractJsonTests {
 	private void assertExpectedLayer(TarArchiveEntry entry, byte[] content) throws Exception {
 		assertThat(entry.getName()).isEqualTo("bb09e17fd1bd2ee47155f1349645fcd9fff31e1247c7ed99cad469f1c16a4216.tar");
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
-			TarArchiveEntry contentEntry = tar.getNextTarEntry();
+			TarArchiveEntry contentEntry = tar.getNextEntry();
 			assertThat(contentEntry.getName()).isEqualTo("/spring/");
 		}
 	}

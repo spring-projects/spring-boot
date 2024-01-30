@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,13 +90,13 @@ final class TarGzipBuildpack implements Buildpack {
 				new GzipCompressorInputStream(Files.newInputStream(this.path)));
 				TarArchiveOutputStream output = new TarArchiveOutputStream(outputStream)) {
 			writeBasePathEntries(output, basePath);
-			TarArchiveEntry entry = tar.getNextTarEntry();
+			TarArchiveEntry entry = tar.getNextEntry();
 			while (entry != null) {
 				entry.setName(basePath + "/" + entry.getName());
 				output.putArchiveEntry(entry);
 				StreamUtils.copy(tar, output);
 				output.closeArchiveEntry();
-				entry = tar.getNextTarEntry();
+				entry = tar.getNextEntry();
 			}
 			output.finish();
 		}

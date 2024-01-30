@@ -86,7 +86,8 @@ class EnvironmentEndpointWebExtensionTests {
 
 	private void verifyPrefixed(SecurityContext securityContext, boolean showUnsanitized) {
 		given(this.delegate.getEnvironmentEntryDescriptor("test", showUnsanitized))
-			.willReturn(new EnvironmentEntryDescriptor(null, Collections.emptyList(), Collections.emptyList()));
+			.willReturn(new EnvironmentEntryDescriptor(null, Collections.emptyList(), Collections.emptyList(),
+					Collections.emptyList()));
 		this.webExtension.environmentEntry(securityContext, "test");
 		then(this.delegate).should().getEnvironmentEntryDescriptor("test", showUnsanitized);
 	}
