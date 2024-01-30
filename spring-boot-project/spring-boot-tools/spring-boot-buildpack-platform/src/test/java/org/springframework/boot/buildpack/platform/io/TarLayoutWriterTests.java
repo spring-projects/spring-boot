@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ class TarLayoutWriterTests {
 		}
 		try (TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			TarArchiveEntry directoryEntry = tarInputStream.getNextTarEntry();
-			TarArchiveEntry fileEntry = tarInputStream.getNextTarEntry();
+			TarArchiveEntry directoryEntry = tarInputStream.getNextEntry();
+			TarArchiveEntry fileEntry = tarInputStream.getNextEntry();
 			byte[] fileContent = new byte[(int) fileEntry.getSize()];
 			tarInputStream.read(fileContent);
 			assertThat(tarInputStream.getNextEntry()).isNull();

@@ -296,7 +296,7 @@ public class DockerApi {
 			ImageArchiveManifest manifest = null;
 			Map<String, Path> layerFiles = new HashMap<>();
 			try (TarArchiveInputStream tar = new TarArchiveInputStream(response.getContent())) {
-				TarArchiveEntry entry = tar.getNextTarEntry();
+				TarArchiveEntry entry = tar.getNextEntry();
 				while (entry != null) {
 					if (entry.getName().equals("manifest.json")) {
 						manifest = readManifest(tar);
@@ -304,7 +304,7 @@ public class DockerApi {
 					if (entry.getName().endsWith(".tar")) {
 						layerFiles.put(entry.getName(), copyToTemp(tar));
 					}
-					entry = tar.getNextTarEntry();
+					entry = tar.getNextEntry();
 				}
 			}
 			Assert.notNull(manifest, "Manifest not found in image " + reference);

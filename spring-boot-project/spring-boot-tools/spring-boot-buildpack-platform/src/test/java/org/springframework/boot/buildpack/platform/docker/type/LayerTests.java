@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,9 @@ class LayerTests {
 		layer.writeTo(outputStream);
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/");
-			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/file");
-			assertThat(tarStream.getNextTarEntry()).isNull();
+			assertThat(tarStream.getNextEntry().getName()).isEqualTo("/directory/");
+			assertThat(tarStream.getNextEntry().getName()).isEqualTo("/directory/file");
+			assertThat(tarStream.getNextEntry()).isNull();
 		}
 	}
 
