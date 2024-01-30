@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@ import java.util.stream.Stream;
 
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
+import liquibase.ui.UIServiceEnum;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.ShowSummary;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.ShowSummaryOutput;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.UIService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,6 +45,11 @@ public class LiquibasePropertiesTests {
 	@Test
 	void valuesOfShowSummaryOutputMatchValuesOfUpdateSummaryOutputEnum() {
 		assertThat(namesOf(ShowSummaryOutput.values())).isEqualTo(namesOf(UpdateSummaryOutputEnum.values()));
+	}
+
+	@Test
+	void valuesOfUiServiceMatchValuesOfUiServiceEnum() {
+		assertThat(namesOf(UIService.values())).isEqualTo(namesOf(UIServiceEnum.values()));
 	}
 
 	private List<String> namesOf(Enum<?>[] input) {
