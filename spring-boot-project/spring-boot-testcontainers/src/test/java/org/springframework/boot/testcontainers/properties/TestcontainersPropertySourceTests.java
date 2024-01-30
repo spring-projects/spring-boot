@@ -23,6 +23,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.testcontainers.properties.TestcontainersPropertySource.EventPublisherRegistrar;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -41,6 +43,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class TestcontainersPropertySourceTests {
 
 	private MockEnvironment environment = new MockEnvironment();
+
+	private GenericApplicationContext context = new GenericApplicationContext();
+
+	TestcontainersPropertySourceTests() {
+		((DefaultListableBeanFactory) this.context.getBeanFactory()).setAllowBeanDefinitionOverriding(false);
+		this.context.setEnvironment(this.environment);
+	}
 
 	@Test
 	void getPropertyWhenHasValueSupplierReturnsSuppliedValue() {
@@ -90,17 +99,35 @@ class TestcontainersPropertySourceTests {
 	}
 
 	@Test
-	void attachWhenNotAttachedAttaches() {
+	void attachToEnvironmentWhenNotAttachedAttaches() {
 		TestcontainersPropertySource.attach(this.environment);
 		PropertySource<?> propertySource = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
 		assertThat(propertySource).isNotNull();
 	}
 
 	@Test
-	void attachWhenAlreadyAttachedReturnsExisting() {
+	void attachToEnvironmentWhenAlreadyAttachedReturnsExisting() {
 		DynamicPropertyRegistry r1 = TestcontainersPropertySource.attach(this.environment);
 		PropertySource<?> p1 = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
 		DynamicPropertyRegistry r2 = TestcontainersPropertySource.attach(this.environment);
+		PropertySource<?> p2 = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
+		assertThat(r1).isSameAs(r2);
+		assertThat(p1).isSameAs(p2);
+	}
+
+	@Test
+	void attachToEnvironmentAndContextWhenNotAttachedAttaches() {
+		TestcontainersPropertySource.attach(this.environment, this.context);
+		PropertySource<?> propertySource = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
+		assertThat(propertySource).isNotNull();
+		assertThat(this.context.containsBean(EventPublisherRegistrar.NAME));
+	}
+
+	@Test
+	void attachToEnvironmentAndContextWhenAlreadyAttachedReturnsExisting() {
+		DynamicPropertyRegistry r1 = TestcontainersPropertySource.attach(this.environment, this.context);
+		PropertySource<?> p1 = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
+		DynamicPropertyRegistry r2 = TestcontainersPropertySource.attach(this.environment, this.context);
 		PropertySource<?> p2 = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
 		assertThat(r1).isSameAs(r2);
 		assertThat(p1).isSameAs(p2);

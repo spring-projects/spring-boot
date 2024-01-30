@@ -115,7 +115,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 		if (eventPublisher != null) {
 			propertySource.addEventPublisher(eventPublisher);
 		}
-		else if (registry != null) {
+		else if (registry != null && !registry.containsBeanDefinition(EventPublisherRegistrar.NAME)) {
 			registry.registerBeanDefinition(EventPublisherRegistrar.NAME, new RootBeanDefinition(
 					EventPublisherRegistrar.class, () -> new EventPublisherRegistrar(environment)));
 		}
@@ -138,7 +138,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 	 * to the {@link TestcontainersPropertySource}. This class is a
 	 * {@link BeanFactoryPostProcessor} so that it is initialized as early as possible.
 	 */
-	private static class EventPublisherRegistrar implements BeanFactoryPostProcessor, ApplicationEventPublisherAware {
+	static class EventPublisherRegistrar implements BeanFactoryPostProcessor, ApplicationEventPublisherAware {
 
 		static final String NAME = EventPublisherRegistrar.class.getName();
 
