@@ -138,7 +138,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 	 * to the {@link TestcontainersPropertySource}. This class is a
 	 * {@link BeanFactoryPostProcessor} so that it is initialized as early as possible.
 	 */
-	private static class EventPublisherRegistrar implements BeanFactoryPostProcessor, ApplicationEventPublisherAware {
+	static class EventPublisherRegistrar implements BeanFactoryPostProcessor, ApplicationEventPublisherAware {
 
 		static final String NAME = EventPublisherRegistrar.class.getName();
 
