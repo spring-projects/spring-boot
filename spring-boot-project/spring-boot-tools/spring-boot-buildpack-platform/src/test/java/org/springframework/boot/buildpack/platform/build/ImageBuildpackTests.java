@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -189,6 +190,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				tarOut.finish();
 			}
 			consumer.accept("test", tarFile.toPath());
+			Files.delete(tarFile.toPath());
 		}
 		catch (IOException ex) {
 			fail("Error writing mock layers", ex);
