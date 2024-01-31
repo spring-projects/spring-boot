@@ -377,9 +377,10 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeanWithExplicitGenericType() {
 			this.contextRunner.withBean(ExplicitGenericTypeConfig.class)
-					.run((context) -> assertThat(context).getBean(ExplicitGenericTypeConfig.class)
-							.hasFieldOrPropertyWithValue("consumerFactory", context.getBean(PulsarConsumerFactory.class))
-							.hasFieldOrPropertyWithValue("containerFactory", context.getBean(ConcurrentPulsarListenerContainerFactory.class)));
+				.run((context) -> assertThat(context).getBean(ExplicitGenericTypeConfig.class)
+					.hasFieldOrPropertyWithValue("consumerFactory", context.getBean(PulsarConsumerFactory.class))
+					.hasFieldOrPropertyWithValue("containerFactory",
+							context.getBean(ConcurrentPulsarListenerContainerFactory.class)));
 		}
 
 		@TestConfiguration(proxyBeanMethods = false)
@@ -400,13 +401,17 @@ class PulsarAutoConfigurationTests {
 		}
 
 		static class ExplicitGenericTypeConfig {
+
 			@Autowired
 			PulsarConsumerFactory<TestType> consumerFactory;
 
 			@Autowired
 			ConcurrentPulsarListenerContainerFactory<TestType> containerFactory;
 
-			static class TestType {}
+			static class TestType {
+
+			}
+
 		}
 
 	}
