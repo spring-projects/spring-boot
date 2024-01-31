@@ -34,7 +34,7 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("activemq-classic-compose.yaml", DockerImageNames.activeMq());
+		super("activemq-classic-compose.yaml", DockerImageNames.activeMqClassic());
 	}
 
 	@Test
