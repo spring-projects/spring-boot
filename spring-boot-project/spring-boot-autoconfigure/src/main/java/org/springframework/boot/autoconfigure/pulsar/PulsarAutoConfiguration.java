@@ -65,6 +65,7 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
  * @author Soby Chacko
  * @author Alexander Preuß
  * @author Phillip Webb
+ * @author Jonas Geiregat
  * @since 3.2.0
  */
 @AutoConfiguration
@@ -131,7 +132,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarConsumerFactory.class)
-	DefaultPulsarConsumerFactory<Object> pulsarConsumerFactory(PulsarClient pulsarClient,
+	DefaultPulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient,
 			ObjectProvider<ConsumerBuilderCustomizer<?>> customizersProvider) {
 		List<ConsumerBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeConsumerBuilder);
@@ -150,7 +151,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarListenerContainerFactory")
-	ConcurrentPulsarListenerContainerFactory<Object> pulsarListenerContainerFactory(
+	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
 			TopicResolver topicResolver, Environment environment) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
