@@ -49,13 +49,13 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactory
 	static class ActiveMQDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements ActiveMQConnectionDetails {
 
-		private final ActiveMQEnvironment environment;
+		private final ActiveMQClassicEnvironment environment;
 
 		private final String brokerUrl;
 
 		protected ActiveMQDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.environment = new ActiveMQEnvironment(service.env());
+			this.environment = new ActiveMQClassicEnvironment(service.env());
 			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().get(ACTIVEMQ_PORT);
 		}
 
