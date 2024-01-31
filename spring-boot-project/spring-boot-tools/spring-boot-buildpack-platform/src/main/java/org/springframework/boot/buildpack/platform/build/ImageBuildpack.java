@@ -131,12 +131,12 @@ final class ImageBuildpack implements Buildpack {
 			try (TarArchiveInputStream tarIn = new TarArchiveInputStream(Files.newInputStream(path));
 					TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
 				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-				TarArchiveEntry entry = tarIn.getNextEntry();
+				TarArchiveEntry entry = tarIn.getNextTarEntry();
 				while (entry != null) {
 					tarOut.putArchiveEntry(entry);
 					StreamUtils.copy(tarIn, tarOut);
 					tarOut.closeArchiveEntry();
-					entry = tarIn.getNextEntry();
+					entry = tarIn.getNextTarEntry();
 				}
 				tarOut.finish();
 			}
