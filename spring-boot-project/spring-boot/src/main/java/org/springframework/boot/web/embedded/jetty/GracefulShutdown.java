@@ -36,6 +36,7 @@ import org.springframework.util.ReflectionUtils;
  * Handles Jetty graceful shutdown.
  *
  * @author Andy Wilkinson
+ * @author Onur Kagan Ozcan
  */
 final class GracefulShutdown {
 
@@ -99,7 +100,6 @@ final class GracefulShutdown {
 		while (this.shuttingDown && this.activeRequests.get() > 0) {
 			sleep(100);
 		}
-		System.out.println(this.activeRequests.get());
 		this.shuttingDown = false;
 		long activeRequests = this.activeRequests.get();
 		if (activeRequests == 0) {
