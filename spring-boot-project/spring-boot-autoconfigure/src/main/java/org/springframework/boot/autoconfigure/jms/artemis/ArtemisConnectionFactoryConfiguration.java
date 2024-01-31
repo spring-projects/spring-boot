@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,13 +49,14 @@ class ArtemisConnectionFactoryConfiguration {
 
 		@Bean(name = "jmsConnectionFactory")
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
-		ActiveMQConnectionFactory jmsConnectionFactory(ArtemisProperties properties, ListableBeanFactory beanFactory) {
-			return createJmsConnectionFactory(properties, beanFactory);
+		ActiveMQConnectionFactory jmsConnectionFactory(ArtemisProperties properties, ListableBeanFactory beanFactory,
+				ArtemisConnectionDetails connectionDetails) {
+			return createJmsConnectionFactory(properties, connectionDetails, beanFactory);
 		}
 
 		private static ActiveMQConnectionFactory createJmsConnectionFactory(ArtemisProperties properties,
-				ListableBeanFactory beanFactory) {
-			return new ArtemisConnectionFactoryFactory(beanFactory, properties)
+				ArtemisConnectionDetails connectionDetails, ListableBeanFactory beanFactory) {
+			return new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
@@ -67,10 +68,11 @@ class ArtemisConnectionFactoryConfiguration {
 
 			@Bean(name = "jmsConnectionFactory")
 			CachingConnectionFactory cachingJmsConnectionFactory(JmsProperties jmsProperties,
-					ArtemisProperties properties, ListableBeanFactory beanFactory) {
+					ArtemisProperties properties, ArtemisConnectionDetails connectionDetails,
+					ListableBeanFactory beanFactory) {
 				JmsProperties.Cache cacheProperties = jmsProperties.getCache();
 				CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
-						createJmsConnectionFactory(properties, beanFactory));
+						createJmsConnectionFactory(properties, connectionDetails, beanFactory));
 				connectionFactory.setCacheConsumers(cacheProperties.isConsumers());
 				connectionFactory.setCacheProducers(cacheProperties.isProducers());
 				connectionFactory.setSessionCacheSize(cacheProperties.getSessionCacheSize());
@@ -87,8 +89,10 @@ class ArtemisConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties) {
-			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties)
+		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+				ArtemisConnectionDetails connectionDetails) {
+			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties,
+					connectionDetails)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 				.createPooledConnectionFactory(connectionFactory);

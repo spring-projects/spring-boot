@@ -72,6 +72,9 @@ The following service connections are currently supported:
 | `ActiveMQConnectionDetails`
 | Containers named "symptoma/activemq"
 
+| `ArtemisConnectionDetails`
+| Containers named "apache/activemq-artemis"
+
 | `CassandraConnectionDetails`
 | Containers named "cassandra"
 

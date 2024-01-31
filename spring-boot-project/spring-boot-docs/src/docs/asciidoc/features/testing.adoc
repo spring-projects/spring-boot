@@ -983,6 +983,9 @@ The following service connection factories are provided in the `spring-boot-test
 | `ActiveMQConnectionDetails`
 | Containers named "symptoma/activemq"
 
+| `ArtemisConnectionDetails`
+| Containers of type `ArtemisContainer`
+
 | `CassandraConnectionDetails`
 | Containers of type `CassandraContainer`
 

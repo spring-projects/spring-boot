@@ -17,6 +17,7 @@ dependencies {
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
+	optional("org.testcontainers:activemq")
 	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
@@ -44,6 +45,9 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	testImplementation("org.apache.activemq:activemq-client-jakarta")
+	testImplementation("org.apache.activemq:artemis-jakarta-client")  {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.influxdb:influxdb-java")
