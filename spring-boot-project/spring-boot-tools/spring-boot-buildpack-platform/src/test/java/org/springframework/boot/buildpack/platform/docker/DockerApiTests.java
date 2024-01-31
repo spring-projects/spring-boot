@@ -336,10 +336,10 @@ class DockerApiTests {
 				archive.writeTo(out);
 				try (TarArchiveInputStream in = new TarArchiveInputStream(
 						new ByteArrayInputStream(out.toByteArray()))) {
-					TarArchiveEntry entry = in.getNextEntry();
+					TarArchiveEntry entry = in.getNextTarEntry();
 					while (entry != null) {
 						contents.add(name, entry.getName());
-						entry = in.getNextEntry();
+						entry = in.getNextTarEntry();
 					}
 				}
 			});
@@ -364,10 +364,10 @@ class DockerApiTests {
 				archive.writeTo(out);
 				try (TarArchiveInputStream in = new TarArchiveInputStream(
 						new ByteArrayInputStream(out.toByteArray()))) {
-					TarArchiveEntry entry = in.getNextEntry();
+					TarArchiveEntry entry = in.getNextTarEntry();
 					while (entry != null) {
 						contents.add(name, entry.getName());
-						entry = in.getNextEntry();
+						entry = in.getNextTarEntry();
 					}
 				}
 			});

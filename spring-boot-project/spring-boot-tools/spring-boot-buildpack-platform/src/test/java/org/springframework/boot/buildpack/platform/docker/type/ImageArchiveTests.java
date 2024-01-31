@@ -54,14 +54,14 @@ class ImageArchiveTests extends AbstractJsonTests {
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
 			for (int i = 0; i < EXISTING_IMAGE_LAYER_COUNT; i++) {
-				TarArchiveEntry blankEntry = tar.getNextEntry();
+				TarArchiveEntry blankEntry = tar.getNextTarEntry();
 				assertThat(blankEntry.getName()).isEqualTo("blank_" + i);
 			}
-			TarArchiveEntry layerEntry = tar.getNextEntry();
+			TarArchiveEntry layerEntry = tar.getNextTarEntry();
 			byte[] layerContent = read(tar, layerEntry.getSize());
-			TarArchiveEntry configEntry = tar.getNextEntry();
+			TarArchiveEntry configEntry = tar.getNextTarEntry();
 			byte[] configContent = read(tar, configEntry.getSize());
-			TarArchiveEntry manifestEntry = tar.getNextEntry();
+			TarArchiveEntry manifestEntry = tar.getNextTarEntry();
 			byte[] manifestContent = read(tar, manifestEntry.getSize());
 			assertExpectedLayer(layerEntry, layerContent);
 			assertExpectedConfig(configEntry, configContent);
@@ -72,7 +72,7 @@ class ImageArchiveTests extends AbstractJsonTests {
 	private void assertExpectedLayer(TarArchiveEntry entry, byte[] content) throws Exception {
 		assertThat(entry.getName()).isEqualTo("bb09e17fd1bd2ee47155f1349645fcd9fff31e1247c7ed99cad469f1c16a4216.tar");
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
-			TarArchiveEntry contentEntry = tar.getNextEntry();
+			TarArchiveEntry contentEntry = tar.getNextTarEntry();
 			assertThat(contentEntry.getName()).isEqualTo("/spring/");
 		}
 	}

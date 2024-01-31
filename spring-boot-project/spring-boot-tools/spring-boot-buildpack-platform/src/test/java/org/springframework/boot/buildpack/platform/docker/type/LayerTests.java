@@ -61,9 +61,9 @@ class LayerTests {
 		layer.writeTo(outputStream);
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			assertThat(tarStream.getNextEntry().getName()).isEqualTo("/directory/");
-			assertThat(tarStream.getNextEntry().getName()).isEqualTo("/directory/file");
-			assertThat(tarStream.getNextEntry()).isNull();
+			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/");
+			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/file");
+			assertThat(tarStream.getNextTarEntry()).isNull();
 		}
 	}
 

@@ -295,14 +295,14 @@ public class DockerApi {
 			Path exportFile = copyToTemp(response.getContent());
 			ImageArchiveManifest manifest = getManifest(reference, exportFile);
 			try (TarArchiveInputStream tar = new TarArchiveInputStream(new FileInputStream(exportFile.toFile()))) {
-				TarArchiveEntry entry = tar.getNextEntry();
+				TarArchiveEntry entry = tar.getNextTarEntry();
 				while (entry != null) {
 					if (manifestContainsLayerEntry(manifest, entry.getName())) {
 						Path layerFile = copyToTemp(tar);
 						exports.accept(entry.getName(), layerFile);
 						Files.delete(layerFile);
 					}
-					entry = tar.getNextEntry();
+					entry = tar.getNextTarEntry();
 				}
 			}
 			Files.delete(exportFile);
@@ -347,12 +347,12 @@ public class DockerApi {
 
 		private ImageArchiveManifest getManifest(ImageReference reference, Path exportFile) throws IOException {
 			try (TarArchiveInputStream tar = new TarArchiveInputStream(new FileInputStream(exportFile.toFile()))) {
-				TarArchiveEntry entry = tar.getNextEntry();
+				TarArchiveEntry entry = tar.getNextTarEntry();
 				while (entry != null) {
 					if (entry.getName().equals("manifest.json")) {
 						return readManifest(tar);
 					}
-					entry = tar.getNextEntry();
+					entry = tar.getNextTarEntry();
 				}
 			}
 			throw new IllegalArgumentException("Manifest not found in image " + reference);

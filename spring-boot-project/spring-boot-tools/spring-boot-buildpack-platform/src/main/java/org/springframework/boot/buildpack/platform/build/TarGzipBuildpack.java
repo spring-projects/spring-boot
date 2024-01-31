@@ -90,13 +90,13 @@ final class TarGzipBuildpack implements Buildpack {
 				new GzipCompressorInputStream(Files.newInputStream(this.path)));
 				TarArchiveOutputStream output = new TarArchiveOutputStream(outputStream)) {
 			writeBasePathEntries(output, basePath);
-			TarArchiveEntry entry = tar.getNextEntry();
+			TarArchiveEntry entry = tar.getNextTarEntry();
 			while (entry != null) {
 				entry.setName(basePath + "/" + entry.getName());
 				output.putArchiveEntry(entry);
 				StreamUtils.copy(tar, output);
 				output.closeArchiveEntry();
-				entry = tar.getNextEntry();
+				entry = tar.getNextTarEntry();
 			}
 			output.finish();
 		}
