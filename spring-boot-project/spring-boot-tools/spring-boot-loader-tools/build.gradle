@@ -20,7 +20,7 @@ configurations {
 }
 
 dependencies {
-	api("org.apache.commons:commons-compress")
+	api("org.apache.commons:commons-compress:$commonsCompressVersion")
 	api("org.springframework:spring-core")
 
 	compileOnly("ch.qos.logback:logback-classic")
