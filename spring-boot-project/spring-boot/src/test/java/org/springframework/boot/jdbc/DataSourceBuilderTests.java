@@ -457,6 +457,20 @@ class DataSourceBuilderTests {
 		assertThat(testSource.getPassword()).isEqualTo("secret");
 	}
 
+	@Test
+	void buildWhenDerivedFromCustomTypeDeriveDriverClassNameFromDerivedUrl() {
+		UrlCapableLimitedCustomDataSource dataSource = new UrlCapableLimitedCustomDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource).type(SimpleDriverDataSource.class);
+		SimpleDriverDataSource testSource = (SimpleDriverDataSource) builder.build();
+		assertThat(testSource.getUsername()).isEqualTo("test");
+		assertThat(testSource.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+		assertThat(testSource.getPassword()).isEqualTo("secret");
+		assertThat(testSource.getDriver()).isInstanceOf(org.postgresql.Driver.class);
+	}
+
 	@Test // gh-31920
 	void buildWhenC3P0TypeSpecifiedReturnsExpectedDataSource() {
 		this.dataSource = DataSourceBuilder.create()
@@ -620,11 +634,9 @@ class DataSourceBuilderTests {
 
 	}
 
-	static class CustomDataSource extends LimitedCustomDataSource {
+	static class UrlCapableLimitedCustomDataSource extends LimitedCustomDataSource {
 
 		private String url;
-
-		private String driverClassName;
 
 		String getUrl() {
 			return this.url;
@@ -633,6 +645,13 @@ class DataSourceBuilderTests {
 		void setUrl(String url) {
 			this.url = url;
 		}
+
+	}
+
+	static class CustomDataSource extends UrlCapableLimitedCustomDataSource {
+
+		private String driverClassName;
+
 
 		String getDriverClassName() {
 			return this.driverClassName;
