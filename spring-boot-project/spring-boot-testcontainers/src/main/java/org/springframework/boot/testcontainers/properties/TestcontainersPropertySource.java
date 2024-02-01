@@ -36,10 +36,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.util.function.SupplierUtils;
 
 /**
  * {@link EnumerablePropertySource} backed by a map with values supplied from one or more
@@ -48,7 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public class TestcontainersPropertySource extends EnumerablePropertySource<Map<String, Supplier<Object>>> {
+public class TestcontainersPropertySource extends MapPropertySource {
 
 	static final String NAME = "testcontainersPropertySource";
 
@@ -75,24 +76,14 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 
 	@Override
 	public Object getProperty(String name) {
-		Supplier<Object> valueSupplier = this.source.get(name);
+		Object valueSupplier = this.source.get(name);
 		return (valueSupplier != null) ? getProperty(name, valueSupplier) : null;
 	}
 
-	private Object getProperty(String name, Supplier<Object> valueSupplier) {
+	private Object getProperty(String name, Object valueSupplier) {
 		BeforeTestcontainersPropertySuppliedEvent event = new BeforeTestcontainersPropertySuppliedEvent(this, name);
 		this.eventPublishers.forEach((eventPublisher) -> eventPublisher.publishEvent(event));
-		return valueSupplier.get();
-	}
-
-	@Override
-	public boolean containsProperty(String name) {
-		return this.source.containsKey(name);
-	}
-
-	@Override
-	public String[] getPropertyNames() {
-		return StringUtils.toStringArray(this.source.keySet());
+		return SupplierUtils.resolve(valueSupplier);
 	}
 
 	public static DynamicPropertyRegistry attach(Environment environment) {
