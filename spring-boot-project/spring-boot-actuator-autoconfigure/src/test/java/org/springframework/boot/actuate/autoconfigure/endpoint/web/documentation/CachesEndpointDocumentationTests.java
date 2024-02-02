@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	private static final List<FieldDescriptor> levelFields = Arrays.asList(
-			fieldWithPath("name").description("Cache name."),
+	private static final List<FieldDescriptor> levelFields = List.of(fieldWithPath("name").description("Cache name."),
 			fieldWithPath("cacheManager").description("Cache manager name."),
 			fieldWithPath("target").description("Fully qualified name of the native cache."));
 

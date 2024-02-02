@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 	private static final Session sessionThree = createSession(Instant.now().minusSeconds(60 * 60 * 2),
 			Instant.now().minusSeconds(12));
 
-	private static final List<FieldDescriptor> sessionFields = Arrays.asList(
+	private static final List<FieldDescriptor> sessionFields = List.of(
 			fieldWithPath("id").description("ID of the session."),
 			fieldWithPath("attributeNames").description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime").description("Timestamp of when the session was created."),

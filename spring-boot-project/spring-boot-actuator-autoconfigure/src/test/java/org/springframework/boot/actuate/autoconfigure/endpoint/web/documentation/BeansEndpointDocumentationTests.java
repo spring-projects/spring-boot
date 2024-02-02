@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests 
 
 	@Test
 	void beans() throws Exception {
-		List<FieldDescriptor> beanFields = Arrays.asList(fieldWithPath("aliases").description("Names of any aliases."),
+		List<FieldDescriptor> beanFields = List.of(fieldWithPath("aliases").description("Names of any aliases."),
 				fieldWithPath("scope").description("Scope of the bean."),
 				fieldWithPath("type").description("Fully qualified type of the bean."),
 				fieldWithPath("resource").description("Resource in which the bean was defined, if any.")
