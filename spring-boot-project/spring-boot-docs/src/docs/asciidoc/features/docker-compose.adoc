@@ -70,7 +70,7 @@ The following service connections are currently supported:
 | Connection Details | Matched on
 
 | `ActiveMQConnectionDetails`
-| Containers named "symptoma/activemq"
+| Containers named "symptoma/activemq", "apache/activemq-classic"
 
 | `ArtemisConnectionDetails`
 | Containers named "apache/activemq-artemis"

@@ -28,7 +28,7 @@ import org.testcontainers.utility.DockerImageName;
  */
 public final class DockerImageNames {
 
-	private static final String ACTIVE_MQ_VERSION = "5.18.0";
+	private static final String ACTIVE_MQ_VERSION = "5.18.3";
 
 	private static final String ARTEMIS_VERSION = "2.31.2";
 
@@ -81,6 +81,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName activeMq() {
 		return DockerImageName.parse("symptoma/activemq").withTag(ACTIVE_MQ_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running ActiveMQ.
+	 * @return a docker image name for running activeMq
+	 */
+	public static DockerImageName activeMqClassic() {
+		return DockerImageName.parse("apache/activemq-classic").withTag(ACTIVE_MQ_VERSION);
 	}
 
 	/**
