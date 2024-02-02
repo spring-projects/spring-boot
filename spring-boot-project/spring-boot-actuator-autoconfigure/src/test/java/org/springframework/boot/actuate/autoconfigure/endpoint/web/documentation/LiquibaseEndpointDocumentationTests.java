@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import liquibase.changelog.ChangeSet.ExecType;
@@ -59,7 +58,7 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {
-		return Arrays.asList(fieldWithPath("author").description("Author of the change set."),
+		return List.of(fieldWithPath("author").description("Author of the change set."),
 				fieldWithPath("changeLog").description("Change log that contains the change set."),
 				fieldWithPath("comments").description("Comments on the change set."),
 				fieldWithPath("contexts").description("Contexts of the change set."),

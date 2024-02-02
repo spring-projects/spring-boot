@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -66,11 +66,11 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
 		given(request.getHeaders())
-			.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
+			.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, List.of("application/json")));
 		RecordableHttpResponse response = mock(RecordableHttpResponse.class);
 		given(response.getStatus()).willReturn(200);
 		given(response.getHeaders())
-			.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
+			.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, List.of("application/json")));
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		Instant instant = Instant.parse("2022-12-22T13:43:41.00Z");
@@ -78,7 +78,7 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		Clock end = Clock.offset(start, Duration.ofMillis(23));
 		HttpExchange exchange = HttpExchange.start(start, request)
 			.finish(end, response, () -> principal, () -> UUID.randomUUID().toString(), EnumSet.allOf(Include.class));
-		given(this.repository.findAll()).willReturn(Arrays.asList(exchange));
+		given(this.repository.findAll()).willReturn(List.of(exchange));
 		this.mockMvc.perform(get("/actuator/httpexchanges"))
 			.andExpect(status().isOk())
 			.andDo(document("httpexchanges", responseFields(

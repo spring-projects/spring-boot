@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -73,8 +72,7 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 							initialDelayWithPrefix("fixedRate.[]."),
 							fieldWithPath("custom").description("Tasks with custom triggers, if any."),
 							targetFieldWithPrefix("custom.[]."),
-							fieldWithPath("custom.[].trigger").description("Trigger for the task."))))
-			.andDo(MockMvcResultHandlers.print());
+							fieldWithPath("custom.[].trigger").description("Trigger for the task."))));
 	}
 
 	private FieldDescriptor targetFieldWithPrefix(String prefix) {
