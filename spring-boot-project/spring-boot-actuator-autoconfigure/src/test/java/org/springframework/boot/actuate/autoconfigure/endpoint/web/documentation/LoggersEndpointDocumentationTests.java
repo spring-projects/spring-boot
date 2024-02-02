@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -55,18 +54,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	private static final List<FieldDescriptor> levelFields = Arrays.asList(
+	private static final List<FieldDescriptor> levelFields = List.of(
 			fieldWithPath("configuredLevel").description("Configured level of the logger, if any.").optional(),
 			fieldWithPath("effectiveLevel").description("Effective level of the logger."));
 
-	private static final List<FieldDescriptor> groupLevelFields;
-
-	static {
-		groupLevelFields = Arrays
-			.asList(fieldWithPath("configuredLevel").description("Configured level of the logger group, if any.")
-				.type(JsonFieldType.STRING)
-				.optional(), fieldWithPath("members").description("Loggers that are part of this group"));
-	}
+	private static final List<FieldDescriptor> groupLevelFields = List
+		.of(fieldWithPath("configuredLevel").description("Configured level of the logger group, if any.")
+			.type(JsonFieldType.STRING)
+			.optional(), fieldWithPath("members").description("Loggers that are part of this group"));
 
 	@MockBean
 	private LoggingSystem loggingSystem;
@@ -78,7 +73,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	void allLoggers() throws Exception {
 		given(this.loggingSystem.getSupportedLogLevels()).willReturn(EnumSet.allOf(LogLevel.class));
 		given(this.loggingSystem.getLoggerConfigurations())
-			.willReturn(Arrays.asList(new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
+			.willReturn(List.of(new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
 					new LoggerConfiguration("com.example", LogLevel.DEBUG, LogLevel.DEBUG)));
 		this.mockMvc.perform(get("/actuator/loggers"))
 			.andExpect(status().isOk())
@@ -164,7 +159,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 		}
 
 		private Map<String, List<String>> getLoggerGroups() {
-			return Collections.singletonMap("test", Arrays.asList("test.member1", "test.member2"));
+			return Collections.singletonMap("test", List.of("test.member1", "test.member2"));
 		}
 
 	}
