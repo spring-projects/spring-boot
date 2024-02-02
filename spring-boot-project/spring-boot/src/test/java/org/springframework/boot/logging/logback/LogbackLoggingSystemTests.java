@@ -807,6 +807,15 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void whenConfigLocationIsNotXmlWithoutSuffixThenIllegalArgumentExceptionShouldBeThrown() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+				.isThrownBy(() -> initialize(this.initializationContext, "https://spring.io/projects/spring-boot",
+						getLogFile(tmpDir() + "/tmp.log", null)))
+				.satisfies((ex) -> assertThat(ex.getCause()).isInstanceOf(IllegalArgumentException.class));
+	}
+
+	@Test
 	void shouldRespectConsoleThreshold(CapturedOutput output) {
 		this.environment.setProperty("logging.threshold.console", "warn");
 		this.loggingSystem.beforeInitialize();

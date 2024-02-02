@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -281,7 +283,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (url.getPath().endsWith(".xml")) {
+		if (checkXmlUrl(url)) {
 			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
@@ -289,6 +291,31 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		else {
 			throw new IllegalArgumentException("Unsupported file extension in '" + url + "'. Only .xml is supported");
 		}
+	}
+
+	private boolean checkXmlUrl(URL url) {
+		if (url.getPath().endsWith(".xml")) {
+			return true;
+		}
+
+		// check for HTTP(S) resource url without ".xml" suffix
+		if ("http".equals(url.getProtocol()) || "https".equals(url.getProtocol())) {
+			HttpURLConnection connection = null;
+			try {
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestMethod("HEAD");
+				String contentType = connection.getHeaderField("Content-Type");
+				return contentType != null && (contentType.startsWith("application/xml") || contentType.startsWith("text/xml"));
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Could not open URL [" + url + "].");
+			} finally {
+				if (connection != null) {
+					connection.disconnect();
+				}
+			}
+		}
+
+		return false;
 	}
 
 	private void stopAndReset(LoggerContext loggerContext) {
