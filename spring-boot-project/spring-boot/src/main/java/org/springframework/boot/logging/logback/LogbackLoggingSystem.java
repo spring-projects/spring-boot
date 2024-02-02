@@ -306,9 +306,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				connection.setRequestMethod("HEAD");
 				String contentType = connection.getHeaderField("Content-Type");
 				return contentType != null && (contentType.startsWith("application/xml") || contentType.startsWith("text/xml"));
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				throw new IllegalArgumentException("Could not open URL [" + url + "].");
-			} finally {
+			}
+			finally {
 				if (connection != null) {
 					connection.disconnect();
 				}
