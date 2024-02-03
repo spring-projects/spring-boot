@@ -49,24 +49,24 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 
 	private List<String> exclusions = new ArrayList<>();
 
-	private final RegularFileProperty reportLocation;
-
 	private final RegularFileProperty metadataLocation;
+
+	private final RegularFileProperty reportLocation;
 
 	public CheckSpringConfigurationMetadata() {
 		this.metadataLocation = getProject().getObjects().fileProperty();
 		this.reportLocation = getProject().getObjects().fileProperty();
 	}
 
-	@OutputFile
-	public RegularFileProperty getReportLocation() {
-		return this.reportLocation;
-	}
-
 	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public RegularFileProperty getMetadataLocation() {
 		return this.metadataLocation;
+	}
+
+	@OutputFile
+	public RegularFileProperty getReportLocation() {
+		return this.reportLocation;
 	}
 
 	public void setExclusions(List<String> exclusions) {
