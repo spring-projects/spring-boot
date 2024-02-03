@@ -79,11 +79,11 @@ The following configuration suspend the process until a debugger has joined on p
 include::../maven/running/debug-pom.xml[tags=debug]
 ----
 
-These arguments can be specified on the command line as well, make sure to wrap that properly, that is:
+These arguments can be specified on the command line as well:
 
 [indent=0]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
+	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 ----
 
 
