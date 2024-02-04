@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Saml2RelyingPartyProperties}.
  *
  * @author Madhura Bhave
+ * @author Lasse Wulff
  */
 class Saml2RelyingPartyPropertiesTests {
 
@@ -100,6 +101,13 @@ class Saml2RelyingPartyPropertiesTests {
 			.getAssertingparty()
 			.getSinglesignon()
 			.getSignRequest()).isNull();
+	}
+
+	@Test
+	void customizeNameIdFormat() {
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.name-id-format", "sampleNameIdFormat");
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getNameIdFormat())
+			.isEqualTo("sampleNameIdFormat");
 	}
 
 	private void bind(String name, String value) {
