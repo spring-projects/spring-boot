@@ -31,6 +31,7 @@ import org.springframework.security.saml2.provider.service.registration.Saml2Mes
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Lasse Wulff
  * @since 2.2.0
  */
 @ConfigurationProperties("spring.security.saml2.relyingparty")
@@ -72,6 +73,8 @@ public class Saml2RelyingPartyProperties {
 		 */
 		private final AssertingParty assertingparty = new AssertingParty();
 
+		private String nameIdFormat;
+
 		public String getEntityId() {
 			return this.entityId;
 		}
@@ -92,12 +95,20 @@ public class Saml2RelyingPartyProperties {
 			return this.decryption;
 		}
 
+		public Singlelogout getSinglelogout() {
+			return this.singlelogout;
+		}
+
 		public AssertingParty getAssertingparty() {
 			return this.assertingparty;
 		}
 
-		public Singlelogout getSinglelogout() {
-			return this.singlelogout;
+		public String getNameIdFormat() {
+			return this.nameIdFormat;
+		}
+
+		public void setNameIdFormat(String nameIdFormat) {
+			this.nameIdFormat = nameIdFormat;
 		}
 
 		public static class Acs {
