@@ -58,7 +58,7 @@ public final class DockerImageNames {
 
 	private static final String OPENTELEMETRY_VERSION = "0.75.0";
 
-	private static final String PULSAR_VERSION = "3.1.0";
+	private static final String PULSAR_VERSION = "3.2.0";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
 
