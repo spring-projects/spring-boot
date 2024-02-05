@@ -269,9 +269,6 @@ publishing.publications.withType(MavenPublication) {
 									delegate.artifactId('native-maven-plugin')
 									configuration {
 										delegate.classesDirectory('${project.build.outputDirectory}')
-										metadataRepository {
-											delegate.enabled('true')
-										}
 										delegate.requiredVersion('22.3')
 									}
 									executions {
@@ -315,9 +312,6 @@ publishing.publications.withType(MavenPublication) {
 								delegate.artifactId('native-maven-plugin')
 								configuration {
 									delegate.classesDirectory('${project.build.outputDirectory}')
-									metadataRepository {
-										delegate.enabled('true')
-									}
 									delegate.requiredVersion('22.3')
 								}
 								executions {
