@@ -303,9 +303,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private OperationInvoker getInvoker(WebOperation operation) {
 			OperationInvoker invoker = operation::invoke;
 			if (operation.isBlocking()) {
-				invoker = new ElasticSchedulerInvoker(invoker);
+				return new ElasticSchedulerInvoker(invoker);
 			}
-			return invoker;
+			return context -> Mono.fromCallable(() -> invoker.invoke(context));
 		}
 
 		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
