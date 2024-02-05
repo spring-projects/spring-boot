@@ -533,7 +533,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.
 			return (setter != null) || ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
-					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
+					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type)
+					|| parentType.isRecord();
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {

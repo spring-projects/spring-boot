@@ -648,4 +648,91 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void testNestedRecords() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(NestedRecordsConfig.class);
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor nestedRecords = applicationProperties.getContexts()
+					.get(context.getId())
+					.getBeans()
+					.get("nestedRecords");
+			assertThat(nestedRecords.getPrefix()).isEqualTo("nested-records");
+
+			Map<String, Object> propertiesMap = nestedRecords.getProperties();
+			assertThat(propertiesMap).containsOnlyKeys("exposedNested1", "hiddenNested1");
+
+			Map<String, Object> exposedNested1 = (Map<String, Object>) propertiesMap.get("exposedNested1");
+			assertThat(exposedNested1).containsOnlyKeys("nested2", "nested2Hidden", "property");
+
+			Map<String, Object> nested2 = (Map<String, Object>) exposedNested1.get("nested2");
+			assertThat(nested2).containsOnlyKeys("nested3", "nested3Hidden", "property");
+
+			Map<String, Object> nested3 = (Map<String, Object>) nested2.get("nested3");
+			assertThat(nested3).containsOnlyKeys("exposedAtClassProperty", "hidden");
+		});
+	}
+
+	record NestedRecordExposed(
+			Nested1 exposedNested1,
+			Nested1 hiddenNested1
+	) {
+		public static final String VAL = "val";
+
+		NestedRecordExposed(Nested1 exposedNested1, Nested1 hiddenNested1) {
+			this.exposedNested1 = new Nested1();
+			this.hiddenNested1 = new Nested1();
+		}
+
+		record Nested1(Nested2 nested2, Nested2 nested2Hidden, String property) {
+
+			Nested1() {
+				this(new Nested2(), new Nested2(), VAL);
+			}
+
+			Nested1(Nested2 nested2, Nested2 nested2Hidden, String property) {
+				this.nested2 = new Nested2();
+				this.nested2Hidden = new Nested2();
+				this.property = VAL;
+			}
+		}
+
+		record Nested2(Nested3 nested3, Nested3 nested3Hidden, String property) {
+
+			Nested2() {
+				this(new Nested3(VAL, VAL), new Nested3(VAL, VAL), VAL);
+			}
+
+			Nested2(Nested3 nested3, Nested3 nested3Hidden, String property) {
+				this.nested3 = new Nested3(VAL, VAL);
+				this.nested3Hidden = new Nested3(VAL, VAL);
+				this.property = VAL;
+			}
+		}
+
+		record Nested3(String exposedAtClassProperty, String hidden) {
+
+			Nested3(String exposedAtClassProperty, String hidden) {
+				this.exposedAtClassProperty = VAL;
+				this.hidden = VAL;
+			}
+		}
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(Base.class)
+	static class NestedRecordsConfig {
+
+		@Bean
+		@ConfigurationProperties(prefix = "nested-records")
+		NestedRecordExposed nestedRecords() {
+			return new NestedRecordExposed(null, null);
+		}
+	}
+
 }
