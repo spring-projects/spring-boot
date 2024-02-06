@@ -227,6 +227,31 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	void readOperationWithQueryParametersMissing() {
+		load(QueryEndpointConfiguration.class,
+				(client) -> client.get().uri("/query").exchange().expectStatus().isBadRequest());
+	}
+
+	@Test
+	void reactiveReadOperationWithSingleQueryParameters() {
+		load(ReactiveQueryEndpointConfiguration.class,
+				(client) -> client.get()
+					.uri("/query?param=test")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("query")
+					.isEqualTo("test"));
+	}
+
+	@Test
+	void reactiveReadOperationWithQueryParametersMissing() {
+		load(ReactiveQueryEndpointConfiguration.class,
+				(client) -> client.get().uri("/query").exchange().expectStatus().isBadRequest());
+	}
+
+	@Test
 	void readOperationWithSingleQueryParametersAndMultipleValues() {
 		load(QueryEndpointConfiguration.class,
 				(client) -> client.get()
@@ -734,6 +759,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
+	static class ReactiveQueryEndpointConfiguration {
+
+		@Bean
+		ReactiveQueryEndpoint reactiveQueryEndpoint() {
+			return new ReactiveQueryEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
 	static class VoidWriteResponseEndpointConfiguration {
 
 		@Bean
@@ -970,6 +1006,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		Map<String, String> queryWithParameterList(String one, List<String> two) {
 			return Collections.singletonMap("query", one + " " + two);
+		}
+
+	}
+
+	@Endpoint(id = "query")
+	static class ReactiveQueryEndpoint {
+
+		@ReadOperation
+		Mono<Map<String, String>> query(String param) {
+			return Mono.just(Collections.singletonMap("query", param));
 		}
 
 	}
