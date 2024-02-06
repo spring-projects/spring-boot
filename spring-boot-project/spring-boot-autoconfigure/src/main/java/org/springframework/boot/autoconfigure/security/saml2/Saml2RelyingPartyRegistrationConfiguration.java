@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Moritz Halbritter
  * @author Lasse Lindqvist
+ * @author Lasse Wulff
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
@@ -104,6 +105,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
 		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
 		builder.entityId(properties.getEntityId());
+		builder.nameIdFormat(properties.getNameIdFormat());
 		RelyingPartyRegistration registration = builder.build();
 		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
 		validateSigningCredentials(properties, signRequest);
