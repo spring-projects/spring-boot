@@ -17,7 +17,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
 	implementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
-	implementation("org.apache.commons:commons-compress")
+	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
 
 	implementation("org.assertj:assertj-core")
 }

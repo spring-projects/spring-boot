@@ -80,12 +80,12 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 				this.actual.writeTo(out);
 				try (TarArchiveInputStream in = new TarArchiveInputStream(
 						new ByteArrayInputStream(out.toByteArray()))) {
-					TarArchiveEntry entry = in.getNextTarEntry();
+					TarArchiveEntry entry = in.getNextEntry();
 					while (entry != null) {
 						if (!entry.isDirectory()) {
 							entryNames.add(entry.getName().replaceFirst("^/workspace/", ""));
 						}
-						entry = in.getNextTarEntry();
+						entry = in.getNextEntry();
 					}
 				}
 			}
@@ -101,7 +101,7 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 				this.actual.writeTo(out);
 				try (TarArchiveInputStream in = new TarArchiveInputStream(
 						new ByteArrayInputStream(out.toByteArray()))) {
-					TarArchiveEntry entry = in.getNextTarEntry();
+					TarArchiveEntry entry = in.getNextEntry();
 					while (entry != null) {
 						if (entry.getName().equals(name)) {
 							ByteArrayOutputStream entryOut = new ByteArrayOutputStream();
@@ -109,7 +109,7 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 							assertConsumer.accept(new JsonContentAssert(LayerContentAssert.class, entryOut.toString()));
 							return;
 						}
-						entry = in.getNextTarEntry();
+						entry = in.getNextEntry();
 					}
 				}
 				failWithMessage("Expected JSON entry '%s' in layer with digest '%s'", name, this.actual.getId());
