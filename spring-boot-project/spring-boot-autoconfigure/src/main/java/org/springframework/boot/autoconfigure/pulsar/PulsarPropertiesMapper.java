@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.api.Authentication;
@@ -36,7 +37,6 @@ import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticat
 import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.ServiceUrlProvider;
 import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuilderImpl;
-import org.apache.pulsar.common.util.ObjectMapperFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
@@ -133,7 +133,10 @@ final class PulsarPropertiesMapper {
 	private String getAuthenticationParamsJson(Map<String, String> params) {
 		Map<String, String> sortedParams = new TreeMap<>(params);
 		try {
-			return ObjectMapperFactory.create().writeValueAsString(sortedParams);
+			return sortedParams.entrySet()
+				.stream()
+				.map((e) -> "\"%s\":\"%s\"".formatted(e.getKey(), e.getValue()))
+				.collect(Collectors.joining(",", "{", "}"));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not convert auth parameters to encoded string", ex);
