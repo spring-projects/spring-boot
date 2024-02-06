@@ -83,7 +83,7 @@ These arguments can be specified on the command line as well:
 
 [indent=0]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005
 ----
 
 
