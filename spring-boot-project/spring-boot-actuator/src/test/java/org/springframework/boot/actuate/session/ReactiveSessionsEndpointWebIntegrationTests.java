@@ -57,7 +57,7 @@ class ReactiveSessionsEndpointWebIntegrationTests {
 			.uri((builder) -> builder.path("/actuator/sessions").build())
 			.exchange()
 			.expectStatus()
-			.is5xxServerError(); // https://github.com/spring-projects/spring-boot/issues/39236
+			.is4xxClientError();
 	}
 
 	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
