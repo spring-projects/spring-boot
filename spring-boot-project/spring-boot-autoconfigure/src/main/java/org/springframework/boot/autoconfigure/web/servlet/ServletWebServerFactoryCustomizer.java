@@ -38,6 +38,7 @@ import org.springframework.util.CollectionUtils;
  * @author Olivier Lamy
  * @author Yunkun Huang
  * @author Scott Frederick
+ * @author Lasse Wulff
  * @since 2.0.0
  */
 public class ServletWebServerFactoryCustomizer
@@ -94,6 +95,7 @@ public class ServletWebServerFactoryCustomizer
 		map.from(() -> this.cookieSameSiteSuppliers)
 			.whenNot(CollectionUtils::isEmpty)
 			.to(factory::setCookieSameSiteSuppliers);
+		map.from(this.serverProperties::getMimeMappings).to(factory::setMimeMappings);
 		this.webListenerRegistrars.forEach((registrar) -> registrar.register(factory));
 	}
 
