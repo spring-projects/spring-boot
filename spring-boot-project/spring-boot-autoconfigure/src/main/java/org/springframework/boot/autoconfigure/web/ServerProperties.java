@@ -37,6 +37,7 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.Http2;
+import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Encoding;
@@ -71,6 +72,7 @@ import org.springframework.util.unit.DataSize;
  * @author Parviz Rozikov
  * @author Florian Storz
  * @author Michael Weidmann
+ * @author Lasse Wulff
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -114,6 +116,8 @@ public class ServerProperties {
 
 	@NestedConfigurationProperty
 	private final Compression compression = new Compression();
+
+	private final MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
 
 	@NestedConfigurationProperty
 	private final Http2 http2 = new Http2();
@@ -184,6 +188,14 @@ public class ServerProperties {
 
 	public Compression getCompression() {
 		return this.compression;
+	}
+
+	public MimeMappings getMimeMappings() {
+		return this.mimeMappings;
+	}
+
+	public void setMimeMappings(Map<String, String> customMappings) {
+		customMappings.forEach(this.mimeMappings::add);
 	}
 
 	public Http2 getHttp2() {
