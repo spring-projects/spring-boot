@@ -83,6 +83,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @ImportRuntimeHints(AbstractWebFluxEndpointHandlerMappingRuntimeHints.class)
@@ -260,6 +261,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	}
 
+	protected static final class ExceptionCapturingInvoker implements OperationInvoker {
+
+		private final OperationInvoker invoker;
+
+		public ExceptionCapturingInvoker(OperationInvoker invoker) {
+			this.invoker = invoker;
+		}
+
+		@Override
+		public Object invoke(InvocationContext context) {
+			try {
+				return this.invoker.invoke(context);
+			}
+			catch (Exception ex) {
+				return Mono.error(ex);
+			}
+		}
+
+	}
+
 	/**
 	 * Reactive handler providing actuator links at the root endpoint.
 	 */
@@ -303,9 +324,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private OperationInvoker getInvoker(WebOperation operation) {
 			OperationInvoker invoker = operation::invoke;
 			if (operation.isBlocking()) {
-				invoker = new ElasticSchedulerInvoker(invoker);
+				return new ElasticSchedulerInvoker(invoker);
 			}
-			return invoker;
+			return new ExceptionCapturingInvoker(invoker);
 		}
 
 		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
