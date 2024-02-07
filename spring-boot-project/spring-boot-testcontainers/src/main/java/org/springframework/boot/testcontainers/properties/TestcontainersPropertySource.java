@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 			return attach(environment);
 		}
 		Assert.state(propertySource instanceof TestcontainersPropertySource,
-				"Incorrect DynamicValuesPropertySource type registered");
+				"Incorrect TestcontainersPropertySource type registered");
 		return ((TestcontainersPropertySource) propertySource).registry;
 	}
 
