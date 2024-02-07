@@ -129,7 +129,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 			return getOrAdd(environment);
 		}
 		Assert.state(propertySource instanceof TestcontainersPropertySource,
-				"Incorrect DynamicValuesPropertySource type registered");
+				"Incorrect TestcontainersPropertySource type registered");
 		return ((TestcontainersPropertySource) propertySource);
 	}
 
