@@ -46,6 +46,8 @@ import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -66,6 +68,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rafiullah Hamedy
  * @author Chris Bono
  * @author Parviz Rozikov
+ * @author Lasse Wulff
  */
 @DirtiesUrlFactories
 class ServerPropertiesTests {
@@ -180,6 +183,21 @@ class ServerPropertiesTests {
 	void testContextPathWithLeadingAndTrailingWhitespaceAndContextWithSpace() {
 		bind("server.servlet.context-path", "  /assets /copy/    ");
 		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets /copy");
+	}
+
+	@Test
+	void testDefaultMimeMapping() {
+		assertThat(this.properties.getMimeMappings())
+			.containsExactly(MimeMappings.DEFAULT.getAll().toArray(new Mapping[0]));
+	}
+
+	@Test
+	void testCustomizedMimeMapping() {
+		MimeMappings expectedMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
+		expectedMappings.add("mjs", "text/javascript");
+		bind("server.mime-mappings.mjs", "text/javascript");
+		assertThat(this.properties.getMimeMappings())
+			.containsExactly(expectedMappings.getAll().toArray(new Mapping[0]));
 	}
 
 	@Test

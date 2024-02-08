@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Yunkun Huang
+ * @author Lasse Wulff
  */
 class ServletWebServerFactoryCustomizerTests {
 
@@ -70,6 +71,13 @@ class ServletWebServerFactoryCustomizerTests {
 		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
 		then(factory).should().setDisplayName("TestName");
+	}
+
+	@Test
+	void testCustomMimeMappings() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setMimeMappings(this.properties.getMimeMappings());
 	}
 
 	@Test
