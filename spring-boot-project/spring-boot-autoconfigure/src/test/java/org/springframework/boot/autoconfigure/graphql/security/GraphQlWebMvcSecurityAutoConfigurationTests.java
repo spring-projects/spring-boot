@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 the original author or authors.
+ * Copyright 2020-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -84,8 +82,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	void anonymousUserShouldBeUnauthorized() {
 		testWith((mockMvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
-			MvcResult result = mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}")).andReturn();
-			mockMvc.perform(asyncDispatch(result))
+			mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("data.bookById.name").doesNotExist())
@@ -97,10 +94,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	void authenticatedUserShouldGetData() {
 		testWith((mockMvc) -> {
 			String query = "{  bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
-			MvcResult result = mockMvc
-				.perform(post("/graphql").content("{\"query\": \"" + query + "\"}").with(user("rob")))
-				.andReturn();
-			mockMvc.perform(asyncDispatch(result))
+			mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}").with(user("rob")))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("data.bookById.name").value("GraphQL for beginners"))

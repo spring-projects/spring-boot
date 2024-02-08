@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,10 @@ import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.function.RouterFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -84,8 +82,7 @@ class GraphQlWebMvcAutoConfigurationTests {
 	void simpleQueryShouldWork() {
 		testWith((mockMvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			MvcResult result = mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}")).andReturn();
-			mockMvc.perform(asyncDispatch(result))
+			mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_GRAPHQL_RESPONSE))
 				.andExpect(jsonPath("data.bookById.name").value("GraphQL for beginners"));
@@ -116,8 +113,7 @@ class GraphQlWebMvcAutoConfigurationTests {
 	void shouldConfigureWebInterceptors() {
 		testWith((mockMvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			MvcResult result = mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}")).andReturn();
-			mockMvc.perform(asyncDispatch(result))
+			mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}"))
 				.andExpect(status().isOk())
 				.andExpect(header().string("X-Custom-Header", "42"));
 		});
@@ -148,12 +144,10 @@ class GraphQlWebMvcAutoConfigurationTests {
 		testWith((mockMvc) -> {
 			String query = "{" + "  bookById(id: \\\"book-1\\\"){ " + "    id" + "    name" + "    pageCount"
 					+ "    author" + "  }" + "}";
-			MvcResult result = mockMvc
+			mockMvc
 				.perform(post("/graphql").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
 					.header(HttpHeaders.ORIGIN, "https://example.com")
 					.content("{\"query\": \"" + query + "\"}"))
-				.andReturn();
-			mockMvc.perform(asyncDispatch(result))
 				.andExpect(status().isOk())
 				.andExpect(header().stringValues(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com"))
 				.andExpect(header().stringValues(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
