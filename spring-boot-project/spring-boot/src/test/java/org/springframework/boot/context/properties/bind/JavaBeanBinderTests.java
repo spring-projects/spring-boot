@@ -52,6 +52,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Andy Wilkinson
+ * @author Lasse Wulff
  */
 class JavaBeanBinderTests {
 
@@ -72,6 +73,27 @@ class JavaBeanBinderTests {
 		assertThat(bean.getLongValue()).isEqualTo(34);
 		assertThat(bean.getStringValue()).isEqualTo("foo");
 		assertThat(bean.getEnumValue()).isEqualTo(ExampleEnum.FOO_BAR);
+	}
+
+	@Test
+	void bindRenamedPropertyToClassBean() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("renamed.public", "alpha");
+		this.sources.add(source);
+		ExampleRenamedPropertyBean bean = this.binder.bind("renamed", Bindable.of(ExampleRenamedPropertyBean.class))
+			.get();
+		assertThat(bean.getExampleProperty()).isEqualTo("alpha");
+	}
+
+	@Test
+	void bindRenamedPropertyToRecordBean() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("renamed.class", "alpha");
+		this.sources.add(source);
+		ExampleRenamedPropertyRecordBean bean = this.binder
+			.bind("renamed", Bindable.of(ExampleRenamedPropertyRecordBean.class))
+			.get();
+		assertThat(bean.exampleProperty()).isEqualTo("alpha");
 	}
 
 	@Test
@@ -646,6 +668,24 @@ class JavaBeanBinderTests {
 			this.enumValue = enumValue;
 		}
 
+	}
+
+	static class ExampleRenamedPropertyBean {
+
+		@Name("public")
+		private String exampleProperty;
+
+		String getExampleProperty() {
+			return this.exampleProperty;
+		}
+
+		void setExampleProperty(String exampleProperty) {
+			this.exampleProperty = exampleProperty;
+		}
+
+	}
+
+	record ExampleRenamedPropertyRecordBean(@Name("class") String exampleProperty) {
 	}
 
 	static class ExampleDefaultsBean {
