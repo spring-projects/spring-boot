@@ -23,15 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be used to specify the name when binding to an immutable property.
- * This annotation may be required when binding to names that clash with reserved language
+ * Annotation that can be used to specify the name when binding to a property. This
+ * annotation may be required when binding to names that clash with reserved language
  * keywords.
  *
  * @author Phillip Webb
+ * @author Lasse Wulff
  * @since 2.4.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Documented
 public @interface Name {
 
