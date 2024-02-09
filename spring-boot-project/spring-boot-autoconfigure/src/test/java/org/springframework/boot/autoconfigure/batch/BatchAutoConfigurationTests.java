@@ -80,6 +80,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.integration.transaction.PseudoTransactionManager;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -102,6 +103,7 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
+ * @author Lasse Wulff
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -352,6 +354,18 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	void testBatchTransactionManager() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, BatchTransactionManagerConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringBootBatchConfiguration.class);
+				PlatformTransactionManager batchTransactionManager = context.getBean("batchTransactionManager",
+						PlatformTransactionManager.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getTransactionManager())
+					.isEqualTo(batchTransactionManager);
+			});
+	}
+
+	@Test
 	void jobRepositoryBeansDependOnBatchDataSourceInitializer() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
@@ -515,6 +529,28 @@ class BatchAutoConfigurationTests {
 		@Bean
 		public DataSource batchDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class BatchTransactionManagerConfiguration {
+
+		@Bean
+		public DataSource dataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:database").username("sa").build();
+		}
+
+		@Bean
+		@Primary
+		public PlatformTransactionManager normalTransactionManager() {
+			return new PseudoTransactionManager();
+		}
+
+		@BatchTransactionManager
+		@Bean
+		public PlatformTransactionManager batchTransactionManager() {
+			return new PseudoTransactionManager();
 		}
 
 	}
