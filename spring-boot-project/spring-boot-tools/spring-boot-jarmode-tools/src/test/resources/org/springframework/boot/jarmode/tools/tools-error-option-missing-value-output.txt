@@ -1,0 +1,13 @@
+Error: Option "--destination" for the extract command requires a value
+
+Extract the contents from the jar
+
+Usage:
+  java -Djarmode=tools -jar test.jar extract [options]
+
+Options:
+  --launcher                Whether to extract the Spring Boot launcher
+  --layers string list      Layers to extract
+  --destination string      Directory to extract files to. Defaults to the current working directory
+  --libraries string        Name of the libraries directory. Only applicable when not using --launcher. Defaults to lib/
+  --runner-filename string  Name of the runner JAR file. Only applicable when not using --launcher. Defaults to runner.jar

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,7 +129,7 @@ class BootArchiveSupport {
 
 	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
 			LoaderImplementation loaderImplementation, boolean supportsSignatureFile, LayerResolver layerResolver,
-			String layerToolsLocation) {
+			String jarmodeToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
@@ -143,7 +143,7 @@ class BootArchiveSupport {
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirMode, fileMode,
-				includeDefaultLoader, layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec,
+				includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec,
 				compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
 				loaderImplementation);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;

@@ -1,0 +1,4 @@
+Help about any command
+
+Usage:
+  java -Djarmode=tools -jar test.jar help [<command>]

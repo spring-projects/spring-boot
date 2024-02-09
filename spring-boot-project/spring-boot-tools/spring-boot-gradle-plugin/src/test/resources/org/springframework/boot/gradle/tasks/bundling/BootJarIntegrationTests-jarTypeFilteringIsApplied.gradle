@@ -19,7 +19,5 @@ dependencies {
 }
 
 bootJar {
-	layered {
-		enabled = false
-	}
+	includeTools = false
 }

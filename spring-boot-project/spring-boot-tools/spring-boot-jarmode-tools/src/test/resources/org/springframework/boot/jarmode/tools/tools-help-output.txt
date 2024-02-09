@@ -1,0 +1,7 @@
+Usage:
+  java -Djarmode=tools -jar test.jar
+
+Available commands:
+  extract      Extract the contents from the jar
+  list-layers  List layers from the jar that can be extracted
+  help         Help about any command

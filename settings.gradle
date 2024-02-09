@@ -57,7 +57,7 @@ include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadat
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"
-include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"
+include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-tools"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader-classic"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader-tools"

@@ -43,7 +43,7 @@ dependencies {
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 	loaderClassic(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-classic"))
 
-	jarmode(project(":spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"))
+	jarmode(project(":spring-boot-project:spring-boot-tools:spring-boot-jarmode-tools"))
 
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
@@ -81,18 +81,18 @@ task reproducibleLoaderClassicJar(type: Jar) {
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 
-task layerToolsJar(type: Sync) {
+task toolsJar(type: Sync) {
 	dependsOn configurations.jarmode
 	from {
 		file(configurations.jarmode.incoming.files.singleFile)
 	}
-	rename({ "spring-boot-jarmode-layertools.jar" })
+	rename({ "spring-boot-jarmode-tools.jar" })
 	into(file("${generatedResources}/META-INF/jarmode"))
 }
 
 sourceSets {
 	main {
-		output.dir(generatedResources, builtBy: [layerToolsJar, reproducibleLoaderJar, reproducibleLoaderClassicJar])
+		output.dir(generatedResources, builtBy: [toolsJar, reproducibleLoaderJar, reproducibleLoaderClassicJar])
 	}
 }
 

@@ -226,6 +226,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		P packager = createPackager(file);
+		packager.setIncludeRelevantJarModeJars(false);
 		execute(packager, (callback) -> {
 			callback.library(newLibrary(libJarFile1, LibraryScope.COMPILE, false));
 			callback.library(newLibrary(libJarFile2, LibraryScope.COMPILE, false));
@@ -299,7 +300,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		assertThat(Arrays.asList(classpathIndex.split("\\n")))
-			.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-layertools.jar\"");
+			.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-tools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -606,6 +607,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
 		this.testJarFile.addFile("WEB-INF/lib/" + webLibrary.getName(), webLibrary);
 		P packager = createPackager(this.testJarFile.getFile("war"));
+		packager.setIncludeRelevantJarModeJars(false);
 		packager.setLayout(new Layouts.War());
 		execute(packager, (callback) -> {
 			callback.library(newLibrary(webLibrary, LibraryScope.COMPILE, false, false));
