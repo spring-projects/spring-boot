@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,25 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
 import java.net.URI;
+import java.util.Set;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.glassfish.jersey.micrometer.server.DefaultJerseyTagsProvider;
+import org.glassfish.jersey.micrometer.server.JerseyTagsProvider;
+import org.glassfish.jersey.micrometer.server.MetricsApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration.JerseyTagsProviderAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -85,6 +88,22 @@ class JerseyServerMetricsAutoConfigurationTests {
 	void shouldHonorExistingTagProvider() {
 		this.webContextRunner.withUserConfiguration(CustomJerseyTagsProviderConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
+	}
+
+	@Test
+	@Deprecated(since = "3.3.0", forRemoval = true)
+	void shouldHonorExistingMicrometerTagProvider() {
+		this.webContextRunner.withUserConfiguration(CustomMicrometerJerseyTagsProviderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(CustomMicrometerJerseyTagsProvider.class);
+				ResourceConfig config = new ResourceConfig();
+				context.getBean(ResourceConfigCustomizer.class).customize(config);
+				Set<Object> instances = config.getInstances();
+				assertThat(instances).hasSize(1)
+					.first(InstanceOfAssertFactories.type(MetricsApplicationEventListener.class))
+					.satisfies((listener) -> assertThat(listener).extracting("tagsProvider")
+						.isInstanceOf(JerseyTagsProviderAdapter.class));
+			});
 	}
 
 	@Test
@@ -148,6 +167,33 @@ class JerseyServerMetricsAutoConfigurationTests {
 	}
 
 	static class CustomJerseyTagsProvider implements JerseyTagsProvider {
+
+		@Override
+		public Iterable<Tag> httpRequestTags(RequestEvent event) {
+			return null;
+		}
+
+		@Override
+		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
+			return null;
+		}
+
+	}
+
+	@SuppressWarnings("deprecation")
+	@Configuration(proxyBeanMethods = false)
+	static class CustomMicrometerJerseyTagsProviderConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider customJerseyTagsProvider() {
+			return new CustomMicrometerJerseyTagsProvider();
+		}
+
+	}
+
+	@SuppressWarnings("deprecation")
+	static class CustomMicrometerJerseyTagsProvider
+			implements io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider {
 
 		@Override
 		public Iterable<Tag> httpRequestTags(RequestEvent event) {

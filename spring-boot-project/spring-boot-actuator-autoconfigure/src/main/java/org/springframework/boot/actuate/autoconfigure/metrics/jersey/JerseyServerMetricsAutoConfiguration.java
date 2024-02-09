@@ -20,13 +20,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jersey.server.AnnotationFinder;
-import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
+import org.glassfish.jersey.micrometer.server.AnnotationFinder;
+import org.glassfish.jersey.micrometer.server.DefaultJerseyTagsProvider;
+import org.glassfish.jersey.micrometer.server.JerseyTagsProvider;
+import org.glassfish.jersey.micrometer.server.MetricsApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.monitoring.RequestEvent;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
@@ -66,17 +69,22 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(JerseyTagsProvider.class)
+	@SuppressWarnings("deprecation")
+	@ConditionalOnMissingBean({ JerseyTagsProvider.class,
+			io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider.class })
 	public DefaultJerseyTagsProvider jerseyTagsProvider() {
 		return new DefaultJerseyTagsProvider();
 	}
 
 	@Bean
+	@SuppressWarnings("deprecation")
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
-			JerseyTagsProvider tagsProvider) {
+			ObjectProvider<JerseyTagsProvider> tagsProvider,
+			ObjectProvider<io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider> micrometerTagsProvider) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry, tagsProvider, metricName,
-				true, new AnnotationUtilsAnnotationFinder()));
+		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry,
+				tagsProvider.getIfAvailable(() -> new JerseyTagsProviderAdapter(micrometerTagsProvider.getObject())),
+				metricName, true, new AnnotationUtilsAnnotationFinder()));
 	}
 
 	@Bean
@@ -97,6 +105,28 @@ public class JerseyServerMetricsAutoConfiguration {
 		@Override
 		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
+		}
+
+	}
+
+	@SuppressWarnings("deprecation")
+	static final class JerseyTagsProviderAdapter implements JerseyTagsProvider {
+
+		private final io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider delegate;
+
+		private JerseyTagsProviderAdapter(
+				io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Iterable<Tag> httpRequestTags(RequestEvent event) {
+			return this.delegate.httpRequestTags(event);
+		}
+
+		@Override
+		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
+			return this.delegate.httpLongRequestTags(event);
 		}
 
 	}
