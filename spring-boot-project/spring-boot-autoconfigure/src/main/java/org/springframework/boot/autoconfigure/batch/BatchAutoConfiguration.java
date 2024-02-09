@@ -65,6 +65,7 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
+ * @author Lasse Wulff
  * @since 1.0.0
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
@@ -108,11 +109,13 @@ public class BatchAutoConfiguration {
 		private final ExecutionContextSerializer executionContextSerializer;
 
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
-				PlatformTransactionManager transactionManager, BatchProperties properties,
+				PlatformTransactionManager transactionManager,
+				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
+				BatchProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
 				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
-			this.transactionManager = transactionManager;
+			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 			this.executionContextSerializer = executionContextSerializer
