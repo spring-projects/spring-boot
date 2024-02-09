@@ -120,10 +120,9 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void correlationPatternIsSetWhenExpectCorrelationIdTrue() {
 		new LoggingSystemProperties(
-			new MockEnvironment()
-				.withProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true")
-				.withProperty("logging.pattern.correlation", "correlation pattern")
-		).apply(null);
+				new MockEnvironment().withProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true")
+					.withProperty("logging.pattern.correlation", "correlation pattern"))
+			.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName()))
 			.isEqualTo("correlation pattern");
 	}
@@ -131,18 +130,16 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void correlationPatternIsNotSetWhenExpectCorrelationIdFalse() {
 		new LoggingSystemProperties(
-			new MockEnvironment()
-				.withProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "false")
-				.withProperty("logging.pattern.correlation", "correlation pattern")
-		).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName()))
-			.isNull();
+				new MockEnvironment().withProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "false")
+					.withProperty("logging.pattern.correlation", "correlation pattern"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName())).isNull();
 	}
 
 	@Test
 	void defaultValueResolverIsUsed() {
-		MockEnvironment environment = new MockEnvironment()
-			.withProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
+		MockEnvironment environment = new MockEnvironment().withProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY,
+				"true");
 		Map<String, String> defaultValues = Map
 			.of(LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName(), "default correlation pattern");
 		new LoggingSystemProperties(environment, defaultValues::get, null).apply(null);
