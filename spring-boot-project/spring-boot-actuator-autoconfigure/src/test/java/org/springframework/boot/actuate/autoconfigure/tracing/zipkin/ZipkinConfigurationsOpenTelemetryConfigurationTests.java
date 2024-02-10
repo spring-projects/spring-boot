@@ -19,13 +19,12 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import org.junit.jupiter.api.Test;
 import zipkin2.Span;
-import zipkin2.codec.BytesEncoder;
-import zipkin2.codec.SpanBytesEncoder;
-import zipkin2.reporter.Sender;
+import zipkin2.reporter.BytesEncoder;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, OpenTelemetryConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, OpenTelemetryConfiguration.class));
 
 	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
 		.withPropertyValues("management.tracing.enabled=false");
@@ -79,12 +78,48 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
 	}
 
+	@Test
+	void shouldUseCustomEncoderBean() {
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomEncoderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+				assertThat(context.getBean(ZipkinSpanExporter.class)).extracting("encoder")
+					.isInstanceOf(CustomSpanEncoder.class)
+					.extracting("encoding")
+					.isEqualTo(Encoding.JSON);
+			});
+	}
+
+	@Test
+	void shouldUseCustomEncodingBean() {
+		this.contextRunner
+			.withUserConfiguration(SenderConfiguration.class, CustomEncodingConfiguration.class,
+					CustomEncoderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+				assertThat(context.getBean(ZipkinSpanExporter.class)).extracting("encoder")
+					.isInstanceOf(CustomSpanEncoder.class)
+					.extracting("encoding")
+					.isEqualTo(Encoding.PROTO3);
+			});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomEncodingConfiguration {
+
+		@Bean
+		Encoding encoding() {
+			return Encoding.PROTO3;
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static final class SenderConfiguration {
 
 		@Bean
-		Sender sender() {
-			return new NoopSender();
+		BytesMessageSender sender(Encoding encoding) {
+			return new NoopSender(encoding);
 		}
 
 	}
@@ -100,12 +135,25 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class BaseConfiguration {
+	private static final class CustomEncoderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		BytesEncoder<Span> spanBytesEncoder() {
-			return SpanBytesEncoder.JSON_V2;
+		BytesEncoder<Span> encoder(Encoding encoding) {
+			return new CustomSpanEncoder(encoding);
+		}
+
+	}
+
+	record CustomSpanEncoder(Encoding encoding) implements BytesEncoder<Span> {
+
+		@Override
+		public int sizeInBytes(Span span) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public byte[] encode(Span span) {
+			throw new UnsupportedOperationException();
 		}
 
 	}

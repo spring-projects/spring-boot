@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.time.Duration;
 
+import zipkin2.reporter.Encoding;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -35,6 +37,11 @@ public class ZipkinProperties {
 	private String endpoint = "http://localhost:9411/api/v2/spans";
 
 	/**
+	 * How to encode the POST body to the Zipkin API.
+	 */
+	private Encoding encoding = Encoding.JSON;
+
+	/**
 	 * Connection timeout for requests to Zipkin.
 	 */
 	private Duration connectTimeout = Duration.ofSeconds(1);
@@ -50,6 +57,14 @@ public class ZipkinProperties {
 
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
+	}
+
+	public Encoding getEncoding() {
+		return this.encoding;
+	}
+
+	public void setEncoding(Encoding encoding) {
+		this.encoding = encoding;
 	}
 
 	public Duration getConnectTimeout() {

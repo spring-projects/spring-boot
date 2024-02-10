@@ -16,14 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import zipkin2.Span;
-import zipkin2.codec.BytesEncoder;
-import zipkin2.codec.SpanBytesEncoder;
-import zipkin2.reporter.Sender;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.ReporterConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -44,9 +41,8 @@ import org.springframework.context.annotation.Import;
  * @since 3.0.0
  */
 @AutoConfiguration(after = RestTemplateAutoConfiguration.class)
-@ConditionalOnClass(Sender.class)
-@Import({ SenderConfiguration.class, ReporterConfiguration.class, BraveConfiguration.class,
-		OpenTelemetryConfiguration.class })
+@ConditionalOnClass(BytesMessageSender.class)
+@Import({ SenderConfiguration.class, BraveConfiguration.class, OpenTelemetryConfiguration.class })
 @EnableConfigurationProperties(ZipkinProperties.class)
 public class ZipkinAutoConfiguration {
 
@@ -58,8 +54,8 @@ public class ZipkinAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public BytesEncoder<Span> spanBytesEncoder() {
-		return SpanBytesEncoder.JSON_V2;
+	public Encoding encoding(ZipkinProperties properties) {
+		return properties.getEncoding();
 	}
 
 }
