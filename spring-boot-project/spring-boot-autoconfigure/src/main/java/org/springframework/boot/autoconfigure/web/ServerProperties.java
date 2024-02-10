@@ -117,6 +117,9 @@ public class ServerProperties {
 	@NestedConfigurationProperty
 	private final Compression compression = new Compression();
 
+	/**
+	 * Custom MIME mappings in addition to the default MIME mappings.
+	 */
 	private final MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
 
 	@NestedConfigurationProperty
