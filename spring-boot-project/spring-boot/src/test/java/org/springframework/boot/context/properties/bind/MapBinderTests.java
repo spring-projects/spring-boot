@@ -610,6 +610,19 @@ class MapBinderTests {
 			.containsExactly("127.0.0.1", "127.0.0.2");
 	}
 
+	@Test
+	void bindToMapWithPlaceholdersShouldResolve() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		StandardEnvironment environment = new StandardEnvironment();
+		Binder binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment), conversionService, null, null);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=bc");
+		this.sources.add(new MockConfigurationPropertySource("foo", "a${bar},${bar}d"));
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map).containsKey("abc");
+		assertThat(map).containsKey("bcd");
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
 		return Bindable.of(ResolvableType.forClassWithGenerics(Map.class, keyType, valueType));
