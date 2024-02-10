@@ -16,13 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import brave.Tag;
+import brave.Tags;
+import brave.handler.MutableSpan;
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import zipkin2.Span;
-import zipkin2.codec.BytesEncoder;
-import zipkin2.reporter.AsyncReporter;
-import zipkin2.reporter.Reporter;
-import zipkin2.reporter.Sender;
-import zipkin2.reporter.brave.ZipkinSpanHandler;
+import zipkin2.reporter.BytesEncoder;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
+import zipkin2.reporter.HttpEndpointSupplier;
+import zipkin2.reporter.HttpEndpointSuppliers;
+import zipkin2.reporter.SpanBytesEncoder;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
+import zipkin2.reporter.brave.MutableSpanBytesEncoder;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -59,15 +65,20 @@ class ZipkinConfigurations {
 	static class UrlConnectionSenderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(Sender.class)
-		URLConnectionSender urlConnectionSender(ZipkinProperties properties,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
+		@ConditionalOnMissingBean(BytesMessageSender.class)
+		URLConnectionSender urlConnectionSender(ZipkinProperties properties, Encoding encoding,
+				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
+				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
 			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
 				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
+			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
+				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
 			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
 			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
 			builder.readTimeout((int) properties.getReadTimeout().toMillis());
+			builder.endpointSupplierFactory(endpointSupplierFactory);
 			builder.endpoint(connectionDetails.getSpanEndpoint());
+			builder.encoding(encoding);
 			return builder.build();
 		}
 
@@ -79,17 +90,21 @@ class ZipkinConfigurations {
 	static class RestTemplateSenderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(Sender.class)
-		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
+		@ConditionalOnMissingBean(BytesMessageSender.class)
+		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties, Encoding encoding,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
+				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
+				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
 			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
 				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
+			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
+				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setReadTimeout(properties.getReadTimeout());
 			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
-			return new ZipkinRestTemplateSender(connectionDetails.getSpanEndpoint(), restTemplateBuilder.build());
+			return new ZipkinRestTemplateSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
+					restTemplateBuilder.build());
 		}
 
 		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
@@ -111,42 +126,48 @@ class ZipkinConfigurations {
 	static class WebClientSenderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(Sender.class)
-		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
+		@ConditionalOnMissingBean(BytesMessageSender.class)
+		ZipkinWebClientSender webClientSender(ZipkinProperties properties, Encoding encoding,
 				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
+				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
+				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
 			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
 				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
+			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
+				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
 			WebClient.Builder builder = WebClient.builder();
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return new ZipkinWebClientSender(connectionDetails.getSpanEndpoint(), builder.build(),
-					properties.getConnectTimeout().plus(properties.getReadTimeout()));
+			return new ZipkinWebClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
+					builder.build(), properties.getConnectTimeout().plus(properties.getReadTimeout()));
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ReporterConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(Reporter.class)
-		@ConditionalOnBean(Sender.class)
-		AsyncReporter<Span> spanReporter(Sender sender, BytesEncoder<Span> encoder) {
-			return AsyncReporter.builder(sender).build(encoder);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ZipkinSpanHandler.class)
+	@ConditionalOnClass(AsyncZipkinSpanHandler.class)
 	static class BraveConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnBean(Reporter.class)
+		@ConditionalOnMissingBean(value = MutableSpan.class, parameterizedContainer = BytesEncoder.class)
 		@ConditionalOnEnabledTracing
-		ZipkinSpanHandler zipkinSpanHandler(Reporter<Span> spanReporter) {
-			return (ZipkinSpanHandler) ZipkinSpanHandler.newBuilder(spanReporter).build();
+		Tag<Throwable> errorTag() {
+			return Tags.ERROR;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(value = MutableSpan.class, parameterizedContainer = BytesEncoder.class)
+		@ConditionalOnEnabledTracing
+		BytesEncoder<MutableSpan> braveSpanEncoder(Encoding encoding, Tag<Throwable> errorTag) {
+			return MutableSpanBytesEncoder.create(encoding, errorTag);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnBean(BytesMessageSender.class)
+		@ConditionalOnEnabledTracing
+		AsyncZipkinSpanHandler asyncZipkinSpanHandler(BytesMessageSender sender,
+				BytesEncoder<MutableSpan> braveSpanEncoder) {
+			return AsyncZipkinSpanHandler.newBuilder(sender).build(braveSpanEncoder);
 		}
 
 	}
@@ -156,11 +177,18 @@ class ZipkinConfigurations {
 	static class OpenTelemetryConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnBean(Sender.class)
+		@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
 		@ConditionalOnEnabledTracing
-		ZipkinSpanExporter zipkinSpanExporter(BytesEncoder<Span> encoder, Sender sender) {
-			return ZipkinSpanExporter.builder().setEncoder(encoder).setSender(sender).build();
+		BytesEncoder<Span> zipkinSpanEncoder(Encoding encoding) {
+			return SpanBytesEncoder.forEncoding(encoding);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnBean(BytesMessageSender.class)
+		@ConditionalOnEnabledTracing
+		ZipkinSpanExporter zipkinSpanExporter(BytesMessageSender sender, BytesEncoder<Span> zipkinSpanEncoder) {
+			return ZipkinSpanExporter.builder().setSender(sender).setEncoder(zipkinSpanEncoder).build();
 		}
 
 	}

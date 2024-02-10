@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,22 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import zipkin2.reporter.HttpEndpointSupplier;
+import zipkin2.reporter.Encoding;
 
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Details required to establish a connection to a Zipkin server.
- *
- * <p>
- * Note: {@linkplain #getSpanEndpoint()} is only read once and passed to a bean of type
- * {@link HttpEndpointSupplier.Factory} which defaults to no-op (constant).
- *
- * @author Moritz Halbritter
- * @since 3.1.0
+ * Configures the bean {@linkplain ZipkinAutoConfiguration} would from properties.
  */
-public interface ZipkinConnectionDetails extends ConnectionDetails {
+@Configuration(proxyBeanMethods = false)
+class DefaultEncodingConfiguration {
 
-	/**
-	 * The endpoint for the span reporting.
-	 * @return the endpoint
-	 */
-	String getSpanEndpoint();
+	@Bean
+	@ConditionalOnMissingBean
+	Encoding encoding() {
+		return Encoding.JSON;
+	}
 
 }

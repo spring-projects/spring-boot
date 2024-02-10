@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -25,7 +26,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import zipkin2.reporter.Sender;
+import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
@@ -51,18 +52,18 @@ import static org.mockito.Mockito.mock;
 class ZipkinConfigurationsSenderConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(SenderConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(SenderConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	private final WebApplicationContextRunner servletContextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(SenderConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(Sender.class);
+			assertThat(context).hasSingleBean(BytesMessageSender.class);
 			assertThat(context).hasSingleBean(URLConnectionSender.class);
 			assertThat(context).doesNotHaveBean(ZipkinRestTemplateSender.class);
 		});
@@ -74,7 +75,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-				assertThat(context).hasSingleBean(Sender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 				then(context.getBean(ZipkinWebClientBuilderCustomizer.class)).should()
 					.customize(ArgumentMatchers.any());
@@ -87,7 +88,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-				assertThat(context).hasSingleBean(Sender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 			});
 	}
@@ -98,7 +99,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-				assertThat(context).hasSingleBean(Sender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 			});
 	}
@@ -109,7 +110,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-				assertThat(context).hasSingleBean(Sender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
 	}
@@ -120,7 +121,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-				assertThat(context).hasSingleBean(Sender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
 	}
@@ -131,7 +132,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-				assertThat(context).hasSingleBean(Sender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
 	}
@@ -140,7 +141,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	void shouldNotUseWebClientSenderIfNoBuilderIsAvailable() {
 		this.reactiveContextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(ZipkinWebClientSender.class);
-			assertThat(context).hasSingleBean(Sender.class);
+			assertThat(context).hasSingleBean(BytesMessageSender.class);
 			assertThat(context).hasSingleBean(URLConnectionSender.class);
 		});
 	}
@@ -149,7 +150,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context).hasBean("customSender");
-			assertThat(context).hasSingleBean(Sender.class);
+			assertThat(context).hasSingleBean(BytesMessageSender.class);
 		});
 	}
 
@@ -164,7 +165,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 					ZipkinRestTemplateSender sender = context.getBean(ZipkinRestTemplateSender.class);
-					sender.sendSpans("spans".getBytes(StandardCharsets.UTF_8)).execute();
+					sender.send(List.of("spans".getBytes(StandardCharsets.UTF_8)));
 					RecordedRequest recordedRequest = mockWebServer.takeRequest(1, TimeUnit.SECONDS);
 					assertThat(recordedRequest).isNotNull();
 					assertThat(recordedRequest.getHeaders().get("x-dummy")).isEqualTo("dummy");
@@ -196,8 +197,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private static final class CustomConfiguration {
 
 		@Bean
-		Sender customSender() {
-			return mock(Sender.class);
+		BytesMessageSender customSender() {
+			return mock(BytesMessageSender.class);
 		}
 
 	}

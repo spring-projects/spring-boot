@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import brave.Tag;
+import brave.handler.MutableSpan;
 import brave.handler.SpanHandler;
+import brave.propagation.TraceContext;
 import org.junit.jupiter.api.Test;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import zipkin2.reporter.brave.ZipkinSpanHandler;
+import zipkin2.reporter.BytesEncoder;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -40,61 +44,89 @@ import static org.mockito.Mockito.mock;
 class ZipkinConfigurationsBraveConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(BraveConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, BraveConfiguration.class));
 
 	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
 		.withPropertyValues("management.tracing.enabled=false");
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.withUserConfiguration(ReporterConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanHandler.class));
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AsyncZipkinSpanHandler.class));
 	}
 
 	@Test
 	void shouldNotSupplySpanHandlerIfReporterIsMissing() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));
 	}
 
 	@Test
 	void shouldNotSupplyIfZipkinReporterBraveIsNotOnClasspath() {
+		// Note: Technically, Brave can work without zipkin-reporter. For example,
+		// WavefrontSpanHandler doesn't require this to operate. If we remove this
+		// dependency enforcement when WavefrontSpanHandler is in use, we can resolve
+		// micrometer-metrics/tracing#509. We also need this for any configuration that
+		// uses senders defined in the Spring Boot source tree, such as HttpSender.
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter.brave"))
-			.withUserConfiguration(ReporterConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
+			.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));
 
 	}
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
-		this.contextRunner.withUserConfiguration(ReporterConfiguration.class, CustomConfiguration.class)
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomConfiguration.class)
 			.run((context) -> {
-				assertThat(context).hasBean("customZipkinSpanHandler");
-				assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+				assertThat(context).hasBean("customAsyncZipkinSpanHandler");
+				assertThat(context).hasSingleBean(AsyncZipkinSpanHandler.class);
 			});
 	}
 
 	@Test
-	void shouldSupplyZipkinSpanHandlerWithCustomSpanHandler() {
-		this.contextRunner.withUserConfiguration(ReporterConfiguration.class, CustomSpanHandlerConfiguration.class)
+	void shouldSupplyAsyncZipkinSpanHandlerWithCustomSpanHandler() {
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomSpanHandlerConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasBean("customSpanHandler");
-				assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+				assertThat(context).hasSingleBean(AsyncZipkinSpanHandler.class);
 			});
 	}
 
 	@Test
-	void shouldNotSupplyZipkinSpanHandlerIfTracingIsDisabled() {
-		this.tracingDisabledContextRunner.withUserConfiguration(ReporterConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
+	void shouldNotSupplyAsyncZipkinSpanHandlerIfTracingIsDisabled() {
+		this.tracingDisabledContextRunner.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));
+	}
+
+	@Test
+	void shouldUseCustomEncoderBean() {
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomEncoderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncZipkinSpanHandler.class);
+				assertThat(context.getBean(AsyncZipkinSpanHandler.class)).extracting("spanReporter.encoder")
+					.isInstanceOf(CustomMutableSpanEncoder.class)
+					.extracting("encoding")
+					.isEqualTo(Encoding.JSON);
+			});
+	}
+
+	@Test
+	void shouldUseCustomEncodingBean() {
+		this.contextRunner
+			.withUserConfiguration(SenderConfiguration.class, CustomEncodingConfiguration.class,
+					CustomEncoderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncZipkinSpanHandler.class);
+				assertThat(context.getBean(AsyncZipkinSpanHandler.class)).extracting("encoding")
+					.isEqualTo(Encoding.PROTO3);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class ReporterConfiguration {
+	private static final class SenderConfiguration {
 
 		@Bean
-		@SuppressWarnings("unchecked")
-		Reporter<Span> reporter() {
-			return mock(Reporter.class);
+		BytesMessageSender sender(Encoding encoding) {
+			return new NoopSender(encoding);
 		}
 
 	}
@@ -103,9 +135,23 @@ class ZipkinConfigurationsBraveConfigurationTests {
 	private static final class CustomConfiguration {
 
 		@Bean
-		@SuppressWarnings("unchecked")
-		ZipkinSpanHandler customZipkinSpanHandler() {
-			return (ZipkinSpanHandler) ZipkinSpanHandler.create(mock(Reporter.class));
+		AsyncZipkinSpanHandler customAsyncZipkinSpanHandler() {
+			return AsyncZipkinSpanHandler.create(new NoopSender(Encoding.JSON));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomErrorTagConfiguration {
+
+		@Bean
+		Tag<Throwable> errorTag() {
+			return new Tag<Throwable>("exception") {
+				@Override
+				protected String parseValue(Throwable throwable, TraceContext traceContext) {
+					return throwable.getMessage();
+				}
+			};
 		}
 
 	}
@@ -116,6 +162,51 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		@Bean
 		SpanHandler customSpanHandler() {
 			return mock(SpanHandler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomEncodingConfiguration {
+
+		@Bean
+		Encoding encoding() {
+			return Encoding.PROTO3;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomEncoderConfiguration {
+
+		@Bean
+		BytesEncoder<MutableSpan> encoder(Encoding encoding) {
+			return new CustomMutableSpanEncoder(encoding);
+		}
+
+	}
+
+	private static final class CustomMutableSpanEncoder implements BytesEncoder<MutableSpan> {
+
+		private final Encoding encoding;
+
+		private CustomMutableSpanEncoder(Encoding encoding) {
+			this.encoding = encoding;
+		}
+
+		@Override
+		public Encoding encoding() {
+			return this.encoding;
+		}
+
+		@Override
+		public int sizeInBytes(MutableSpan span) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public byte[] encode(MutableSpan span) {
+			throw new UnsupportedOperationException();
 		}
 
 	}
