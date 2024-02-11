@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -615,7 +615,8 @@ class MapBinderTests {
 		DefaultConversionService conversionService = new DefaultConversionService();
 		conversionService.addConverter(new MapConverter());
 		StandardEnvironment environment = new StandardEnvironment();
-		Binder binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment), conversionService, null, null);
+		Binder binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment),
+				conversionService, null, null);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=bc");
 		this.sources.add(new MockConfigurationPropertySource("foo", "a${bar},${bar}d"));
 		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
