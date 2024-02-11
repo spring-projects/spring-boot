@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				ConfigurationProperty property = source.getConfigurationProperty(name);
 				if (property != null && !hasDescendants) {
 					getContext().setConfigurationProperty(property);
-					return getContext().getConverter().convert(property.getValue(), target);
+					Object result = property.getValue();
+					result = getContext().getPlaceholdersResolver().resolvePlaceholders(result);
+					return getContext().getConverter().convert(result, target);
 				}
 				source = source.filter(name::isAncestorOf);
 			}
