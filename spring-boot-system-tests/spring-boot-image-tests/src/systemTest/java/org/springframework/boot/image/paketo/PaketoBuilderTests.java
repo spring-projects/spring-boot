@@ -73,6 +73,7 @@ class PaketoBuilderTests {
 		this.gradleBuild.scriptPropertyFrom(new File("../../gradle.properties"), "nativeBuildToolsVersion");
 		this.gradleBuild.expectDeprecationMessages("BPL_SPRING_CLOUD_BINDINGS_ENABLED.*true.*Deprecated");
 		this.gradleBuild.expectDeprecationMessages("BOM table is deprecated");
+		this.gradleBuild.expectDeprecationMessages("Command \"packages\" is deprecated, use `syft scan` instead");
 		this.gradleBuild.gradleVersion(GradleVersions.maximumCompatible());
 	}
 
