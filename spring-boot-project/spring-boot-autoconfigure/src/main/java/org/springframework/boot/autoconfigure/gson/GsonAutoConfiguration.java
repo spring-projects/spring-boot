@@ -93,7 +93,7 @@ public class GsonAutoConfiguration {
 			map.from(properties::getFieldNamingPolicy).to(builder::setFieldNamingPolicy);
 			map.from(properties::getPrettyPrinting).whenTrue().toCall(builder::setPrettyPrinting);
 			map.from(properties::getLenient).whenTrue().toCall(builder::setLenient);
-			map.from(properties::getDisableHtmlEscaping).whenFalse().toCall(builder::disableHtmlEscaping);
+			map.from(properties::getDisableHtmlEscaping).whenTrue().toCall(builder::disableHtmlEscaping);
 			map.from(properties::getDateFormat).to(builder::setDateFormat);
 		}
 

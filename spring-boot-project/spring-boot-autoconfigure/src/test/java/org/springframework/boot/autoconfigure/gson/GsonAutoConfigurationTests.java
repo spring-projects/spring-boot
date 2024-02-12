@@ -244,7 +244,7 @@ class GsonAutoConfigurationTests {
 	void withDisableHtmlEscapingTrue() {
 		this.contextRunner.withPropertyValues("spring.gson.disable-html-escaping:true").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson.htmlSafe()).isTrue();
+			assertThat(gson.htmlSafe()).isFalse();
 		});
 	}
 
@@ -252,7 +252,7 @@ class GsonAutoConfigurationTests {
 	void withDisableHtmlEscapingFalse() {
 		this.contextRunner.withPropertyValues("spring.gson.disable-html-escaping:false").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson.htmlSafe()).isFalse();
+			assertThat(gson.htmlSafe()).isTrue();
 		});
 	}
 
