@@ -827,7 +827,8 @@ public class JSONObject {
 				return o.toString();
 			}
 		}
-		catch (Exception ignored) {
+		catch (Exception ex) {
+			// Ignore
 		}
 		return null;
 	}

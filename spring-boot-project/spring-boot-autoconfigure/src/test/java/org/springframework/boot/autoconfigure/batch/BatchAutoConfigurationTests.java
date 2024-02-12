@@ -603,6 +603,7 @@ class BatchAutoConfigurationTests {
 					jobRegistry.register(getJobFactory());
 				}
 				catch (DuplicateJobException ex) {
+					// Ignore
 				}
 			}
 			return bean;

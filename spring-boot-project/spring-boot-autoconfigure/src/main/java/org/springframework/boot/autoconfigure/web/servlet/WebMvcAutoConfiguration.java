@@ -495,6 +495,7 @@ public class WebMvcAutoConfiguration {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 			return null;
 		}

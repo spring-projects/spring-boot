@@ -500,6 +500,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 					resolved.add(resolve(className, this.classLoader));
 				}
 				catch (ClassNotFoundException | NoClassDefFoundError ex) {
+					// Ignore
 				}
 			}
 			return resolved;

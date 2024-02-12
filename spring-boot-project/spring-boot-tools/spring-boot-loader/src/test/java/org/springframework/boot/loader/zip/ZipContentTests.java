@@ -88,6 +88,7 @@ class ZipContentTests {
 				this.zipContent.close();
 			}
 			catch (IllegalStateException ex) {
+				// Ignore
 			}
 		}
 	}

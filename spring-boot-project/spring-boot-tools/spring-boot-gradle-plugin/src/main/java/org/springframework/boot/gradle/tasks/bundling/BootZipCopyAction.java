@@ -204,6 +204,7 @@ class BootZipCopyAction implements CopyAction {
 			outputStream.close();
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 	}
 

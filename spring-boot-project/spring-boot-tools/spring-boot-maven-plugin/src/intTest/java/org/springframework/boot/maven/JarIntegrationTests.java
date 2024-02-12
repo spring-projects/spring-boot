@@ -349,6 +349,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 					.anyMatch((dependency) -> dependency.startsWith("BOOT-INF/lib/log4j-api-2"));
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		});
 	}

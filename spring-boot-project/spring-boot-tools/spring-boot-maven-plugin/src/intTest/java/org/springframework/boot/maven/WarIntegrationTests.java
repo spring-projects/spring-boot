@@ -167,6 +167,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 					.anyMatch((dependency) -> dependency.startsWith("WEB-INF/lib-provided/"));
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		});
 	}

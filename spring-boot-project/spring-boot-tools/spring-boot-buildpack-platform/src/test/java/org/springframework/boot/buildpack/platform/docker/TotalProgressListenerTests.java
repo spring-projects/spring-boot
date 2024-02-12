@@ -78,6 +78,7 @@ class TotalProgressListenerTests extends AbstractJsonTests {
 				Thread.sleep(10);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 

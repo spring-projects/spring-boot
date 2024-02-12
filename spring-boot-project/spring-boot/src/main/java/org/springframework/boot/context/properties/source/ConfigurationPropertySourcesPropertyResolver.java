@@ -49,6 +49,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 					return attached.findConfigurationProperty(name) != null;
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 		}
@@ -91,6 +92,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 					return (configurationProperty != null) ? configurationProperty.getValue() : null;
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 		}

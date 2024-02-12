@@ -203,6 +203,7 @@ final class PrivateKeyParser {
 					return keyFactory.generatePrivate(keySpec);
 				}
 				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+					// Ignore
 				}
 			}
 			return null;
