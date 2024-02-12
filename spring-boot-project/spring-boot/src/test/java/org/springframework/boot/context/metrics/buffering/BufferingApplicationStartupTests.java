@@ -139,6 +139,7 @@ class BufferingApplicationStartupTests {
 							Thread.sleep(1);
 						}
 						catch (InterruptedException ex) {
+							// Ignore
 						}
 						step.end();
 					}

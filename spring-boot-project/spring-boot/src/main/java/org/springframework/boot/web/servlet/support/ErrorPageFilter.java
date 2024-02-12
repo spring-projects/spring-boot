@@ -304,6 +304,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 			collection.add(ClassUtils.forName(className, null));
 		}
 		catch (Throwable ex) {
+			// Ignore
 		}
 	}
 

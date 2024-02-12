@@ -133,6 +133,7 @@ class ApplicationContextRequestMatcherTests {
 			thread.join(1000);
 		}
 		catch (InterruptedException ex) {
+			// Ignore
 		}
 	}
 
@@ -205,6 +206,7 @@ class ApplicationContextRequestMatcherTests {
 				Thread.sleep(200);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 			this.initialized.set(true);
 		}

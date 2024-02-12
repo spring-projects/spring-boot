@@ -155,6 +155,7 @@ public class UndertowWebServer implements WebServer {
 			closeable.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 

@@ -132,6 +132,7 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback {
 				StreamUtils.copy(this.input, this.output);
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 

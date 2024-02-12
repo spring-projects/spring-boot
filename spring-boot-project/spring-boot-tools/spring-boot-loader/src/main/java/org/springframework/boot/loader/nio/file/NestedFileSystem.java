@@ -138,6 +138,7 @@ class NestedFileSystem extends FileSystem {
 			zipFileSystem.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 

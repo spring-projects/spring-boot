@@ -121,6 +121,7 @@ public class TextResourceOrigin implements Origin {
 			}
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 		return resource.getDescription();
 	}

@@ -72,6 +72,7 @@ class TcpConnectServiceReadinessCheck {
 			}
 		}
 		catch (SocketTimeoutException ex) {
+			// Ignore
 		}
 	}
 

@@ -75,6 +75,7 @@ final class DefaultPropertyMapper implements PropertyMapper {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 		return ConfigurationPropertyName.EMPTY;
 	}

@@ -208,6 +208,7 @@ class BindConverterTests {
 				thread.join();
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 		assertThat(results).isNotEmpty().doesNotContainNull();

@@ -316,6 +316,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 			closeable.close();
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 	}
 

@@ -79,6 +79,7 @@ class HealthEndpointTests extends
 				Thread.sleep(100);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 			return this.up;
 		};

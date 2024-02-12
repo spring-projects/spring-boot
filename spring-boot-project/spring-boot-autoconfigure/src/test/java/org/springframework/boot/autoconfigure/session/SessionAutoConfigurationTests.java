@@ -106,6 +106,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 				delegatingFilterProxy.doFilter(null, null, null);
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 			assertThat(delegatingFilterProxy).extracting("delegate")
 				.isSameAs(context.getBean(SessionRepositoryFilter.class));

@@ -93,6 +93,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			}
 		}
 		catch (NoClassDefFoundError ex) {
+			// Ignore
 		}
 		return null;
 	}

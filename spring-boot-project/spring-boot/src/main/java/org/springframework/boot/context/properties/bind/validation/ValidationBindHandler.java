@@ -212,6 +212,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 			return null;
 		}

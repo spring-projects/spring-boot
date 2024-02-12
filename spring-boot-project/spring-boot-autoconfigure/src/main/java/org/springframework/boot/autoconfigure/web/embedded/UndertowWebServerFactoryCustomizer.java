@@ -164,6 +164,7 @@ public class UndertowWebServerFactoryCustomizer
 						lookup.put(getCanonicalName(field.getName()), option);
 					}
 					catch (IllegalAccessException ex) {
+						// Ignore
 					}
 				}
 			});

@@ -110,6 +110,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 			this.cachedResponses.entrySet().removeIf((entry) -> entry.getValue().isStale(accessTime, this.timeToLive));
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 

@@ -50,6 +50,7 @@ class TestcontainersLifecycleBeanFactoryPostProcessor implements BeanFactoryPost
 				}
 			}
 			catch (NoSuchBeanDefinitionException ex) {
+				// Ignore
 			}
 		}
 	}
