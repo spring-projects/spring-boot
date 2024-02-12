@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,8 @@ class JSON {
 			try {
 				return Double.valueOf((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -68,7 +69,8 @@ class JSON {
 			try {
 				return (int) Double.parseDouble((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -85,7 +87,8 @@ class JSON {
 			try {
 				return (long) Double.parseDouble((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;

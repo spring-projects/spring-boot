@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,6 +128,7 @@ public class NettyWebServer implements WebServer {
 			message.append(String.format(format, value));
 		}
 		catch (UnsupportedOperationException ex) {
+			// Ignore
 		}
 	}
 

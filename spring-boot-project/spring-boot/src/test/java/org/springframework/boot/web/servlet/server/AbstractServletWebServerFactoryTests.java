@@ -1262,7 +1262,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			blockingServlet.admitOne();
 		}
 		catch (RuntimeException ex) {
-
+			// Ignore
 		}
 	}
 
@@ -1318,7 +1318,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			blockingServlet.admitOne();
 		}
 		catch (RuntimeException ex) {
-
+			// Ignore
 		}
 	}
 

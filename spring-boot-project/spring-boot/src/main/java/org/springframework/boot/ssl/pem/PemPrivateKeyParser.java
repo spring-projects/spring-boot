@@ -261,6 +261,7 @@ final class PemPrivateKeyParser {
 					return keyFactory.generatePrivate(keySpec);
 				}
 				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+					// Ignore
 				}
 			}
 			return null;
