@@ -171,8 +171,8 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Returns the root URI applied by a {@link RootUriTemplateHandler} or {@code ""} if
-	 * the root URI is not available.
+	 * Returns the root URI applied by {@link RestTemplateBuilder#rootUri(String)} or
+	 * {@code ""} if the root URI has not been applied.
 	 * @return the root URI
 	 */
 	public String getRootUri() {
