@@ -27,10 +27,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * Qualifier annotation for a {@link PlatformTransactionManager
- * PlatformTransactionManager} to be injected into Batch auto-configuration. Can be used
- * on a secondary {@link PlatformTransactionManager PlatformTransactionManager}, if there
- * is another one marked as {@link Primary @Primary}.
+ * Qualifier annotation for a {@link PlatformTransactionManager} to be injected into Batch
+ * auto-configuration. Can be used on a secondary {@link PlatformTransactionManager}, if
+ * there is another one marked as {@link Primary @Primary}.
  *
  * @author Lasse Wulff
  * @since 3.3.0

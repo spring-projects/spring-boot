@@ -80,13 +80,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.support.ConfigurableConversionService;
-import org.springframework.integration.transaction.PseudoTransactionManager;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -544,13 +547,34 @@ class BatchAutoConfigurationTests {
 		@Bean
 		@Primary
 		public PlatformTransactionManager normalTransactionManager() {
-			return new PseudoTransactionManager();
+			return new TestTransactionManager();
 		}
 
 		@BatchTransactionManager
 		@Bean
 		public PlatformTransactionManager batchTransactionManager() {
-			return new PseudoTransactionManager();
+			return new TestTransactionManager();
+		}
+
+	}
+
+	static class TestTransactionManager extends AbstractPlatformTransactionManager {
+
+		@Override
+		protected Object doGetTransaction() throws TransactionException {
+			return null;
+		}
+
+		@Override
+		protected void doBegin(Object transaction, TransactionDefinition definition) throws TransactionException {
+		}
+
+		@Override
+		protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
+		}
+
+		@Override
+		protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
 		}
 
 	}

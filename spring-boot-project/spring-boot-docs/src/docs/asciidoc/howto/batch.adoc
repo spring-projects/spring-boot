@@ -21,8 +21,7 @@ For more info about Spring Batch, see the {spring-batch}[Spring Batch project pa
 
 [[howto.batch.specifying-a-transaction-manager]]
 === Specifying a Batch Transaction Manager
-Similar to <<howto.batch.specifying-a-data-source>> you can also define a `PlatformTransactionManager`
-for use in the batch processing by marking it as `@BatchTransactionManager`.
+Similar to <<howto.batch.specifying-a-data-source>>, you can define a `PlatformTransactionManager` for use in the batch processing by marking it as `@BatchTransactionManager`.
 If you do so and want two transaction managers, remember to mark the other one as `@Primary`.
 
 
