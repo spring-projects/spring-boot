@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link UriTemplateHandler} to set the root for URI that starts with {@code '/'}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.4.0
  */
 public class RootUriTemplateHandler implements UriTemplateHandler {
@@ -47,7 +48,9 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	/**
 	 * Create a new {@link RootUriTemplateHandler} instance.
 	 * @param rootUri the root URI to be used to prefix relative URLs
+	 * @deprecated since 3.2.3 for removal in 3.4.0, with no replacement
 	 */
+	@Deprecated(since = "3.2.3", forRemoval = true)
 	public RootUriTemplateHandler(String rootUri) {
 		this(rootUri, new DefaultUriBuilderFactory());
 	}
@@ -55,8 +58,10 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	/**
 	 * Create a new {@link RootUriTemplateHandler} instance.
 	 * @param rootUri the root URI to be used to prefix relative URLs
-	 * @param handler the delegate handler
+	 * @param handler the handler handler
+	 * @deprecated since 3.2.3 for removal in 3.4.0, with no replacement
 	 */
+	@Deprecated(since = "3.2.3", forRemoval = true)
 	public RootUriTemplateHandler(String rootUri, UriTemplateHandler handler) {
 		Assert.notNull(rootUri, "RootUri must not be null");
 		Assert.notNull(handler, "Handler must not be null");
@@ -74,7 +79,7 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 		return this.handler.expand(apply(uriTemplate), uriVariables);
 	}
 
-	private String apply(String uriTemplate) {
+	String apply(String uriTemplate) {
 		if (StringUtils.startsWithIgnoreCase(uriTemplate, "/")) {
 			return getRootUri() + uriTemplate;
 		}
@@ -91,7 +96,9 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @param wrapper the wrapper to apply to the delegate URI template handler
 	 * @return the new handler
 	 * @since 2.3.10
+	 * @deprecated since 3.2.3 for removal in 3.4.0, with no replacement
 	 */
+	@Deprecated(since = "3.2.3", forRemoval = true)
 	public RootUriTemplateHandler withHandlerWrapper(Function<UriTemplateHandler, UriTemplateHandler> wrapper) {
 		return new RootUriTemplateHandler(getRootUri(), wrapper.apply(this.handler));
 	}
@@ -101,7 +108,9 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @param restTemplate the {@link RestTemplate} to add the handler to
 	 * @param rootUri the root URI
 	 * @return the added {@link RootUriTemplateHandler}.
+	 * @deprecated since 3.2.3 for removal in 3.4.0, with no replacement
 	 */
+	@Deprecated(since = "3.2.3", forRemoval = true)
 	public static RootUriTemplateHandler addTo(RestTemplate restTemplate, String rootUri) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		RootUriTemplateHandler handler = new RootUriTemplateHandler(rootUri, restTemplate.getUriTemplateHandler());
