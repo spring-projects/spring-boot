@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ public final class GradleVersions {
 	@SuppressWarnings("UnstableApiUsage")
 	public static List<String> allCompatible() {
 		if (isJavaVersion(JavaVersion.VERSION_20)) {
-			return Arrays.asList("8.1.1", "8.5");
+			return Arrays.asList("8.1.1", "8.6");
 		}
-		return Arrays.asList("7.5.1", GradleVersion.current().getVersion(), "8.0.2", "8.5");
+		return Arrays.asList("7.5.1", GradleVersion.current().getVersion(), "8.0.2", "8.6");
 	}
 
 	public static String minimumCompatible() {
