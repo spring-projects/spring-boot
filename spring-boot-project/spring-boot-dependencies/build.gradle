@@ -671,7 +671,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty Reactive HTTPClient", "4.0.1") {
+	library("Jetty Reactive HTTPClient", "4.0.3") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
