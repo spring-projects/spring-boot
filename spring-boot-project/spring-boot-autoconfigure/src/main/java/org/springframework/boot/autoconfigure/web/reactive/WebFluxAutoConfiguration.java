@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
@@ -55,6 +56,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
@@ -149,6 +151,8 @@ public class WebFluxAutoConfiguration {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
 
+		private final Environment environment;
+
 		private final Resources resourceProperties;
 
 		private final WebFluxProperties webFluxProperties;
@@ -163,11 +167,12 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(WebProperties webProperties, WebFluxProperties webFluxProperties,
+		public WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<ViewResolver> viewResolvers) {
+			this.environment = environment;
 			this.resourceProperties = webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
@@ -189,7 +194,8 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		public void configureBlockingExecution(BlockingExecutionConfigurer configurer) {
-			if (this.beanFactory.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
+			if (Threading.VIRTUAL.isActive(this.environment) && this.beanFactory
+				.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
 				Object taskExecutor = this.beanFactory
 					.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 				if (taskExecutor instanceof AsyncTaskExecutor asyncTaskExecutor) {
