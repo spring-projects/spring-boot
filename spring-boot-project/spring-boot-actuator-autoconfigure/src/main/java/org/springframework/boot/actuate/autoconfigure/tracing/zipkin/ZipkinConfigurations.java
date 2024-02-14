@@ -149,7 +149,6 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(value = MutableSpan.class, parameterizedContainer = BytesEncoder.class)
-		@ConditionalOnEnabledTracing
 		BytesEncoder<MutableSpan> braveSpanEncoder(Encoding encoding,
 				ObjectProvider<Tag<Throwable>> throwableTagProvider) {
 			Tag<Throwable> throwableTag = throwableTagProvider.getIfAvailable(() -> Tags.ERROR);
@@ -173,7 +172,6 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
-		@ConditionalOnEnabledTracing
 		BytesEncoder<Span> zipkinSpanEncoder(Encoding encoding) {
 			return SpanBytesEncoder.forEncoding(encoding);
 		}

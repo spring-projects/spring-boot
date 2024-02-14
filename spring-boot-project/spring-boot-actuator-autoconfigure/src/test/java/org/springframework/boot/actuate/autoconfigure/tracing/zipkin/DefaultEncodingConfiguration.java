@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 import zipkin2.reporter.Encoding;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Configures the bean {@linkplain ZipkinAutoConfiguration} would from properties.
  */
-@Configuration(proxyBeanMethods = false)
+@TestConfiguration(proxyBeanMethods = false)
 class DefaultEncodingConfiguration {
 
 	@Bean
