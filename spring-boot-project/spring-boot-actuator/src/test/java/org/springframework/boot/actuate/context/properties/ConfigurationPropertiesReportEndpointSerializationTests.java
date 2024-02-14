@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -695,6 +696,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 				this(new Nested2(), new Nested2(), VAL);
 			}
 
+			@ConstructorBinding
 			Nested1(Nested2 nested2, Nested2 nested2Hidden, String property) {
 				this.nested2 = new Nested2();
 				this.nested2Hidden = new Nested2();
@@ -708,6 +710,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 				this(new Nested3(VAL, VAL), new Nested3(VAL, VAL), VAL);
 			}
 
+			@ConstructorBinding
 			Nested2(Nested3 nested3, Nested3 nested3Hidden, String property) {
 				this.nested3 = new Nested3(VAL, VAL);
 				this.nested3Hidden = new Nested3(VAL, VAL);
@@ -717,6 +720,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		record Nested3(String exposedAtClassProperty, String hidden) {
 
+			@ConstructorBinding
 			Nested3(String exposedAtClassProperty, String hidden) {
 				this.exposedAtClassProperty = VAL;
 				this.hidden = VAL;
