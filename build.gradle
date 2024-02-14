@@ -28,10 +28,6 @@ allprojects {
 	group "org.springframework.boot"
 
 	repositories {
-		// TODO: temporary for zipkin-reporter-java
-		maven {
-			url "https://oss.sonatype.org/content/repositories/snapshots/"
-		}
 		mavenCentral()
 		if (version.contains('-')) {
 			maven { url "https://repo.spring.io/milestone" }
