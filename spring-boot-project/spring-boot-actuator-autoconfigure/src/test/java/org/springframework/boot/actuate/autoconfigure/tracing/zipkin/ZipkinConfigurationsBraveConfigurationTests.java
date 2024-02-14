@@ -225,18 +225,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 
 	}
 
-	private static final class CustomMutableSpanEncoder implements BytesEncoder<MutableSpan> {
-
-		private final Encoding encoding;
-
-		private CustomMutableSpanEncoder(Encoding encoding) {
-			this.encoding = encoding;
-		}
-
-		@Override
-		public Encoding encoding() {
-			return this.encoding;
-		}
+	private record CustomMutableSpanEncoder(Encoding encoding) implements BytesEncoder<MutableSpan> {
 
 		@Override
 		public int sizeInBytes(MutableSpan span) {
