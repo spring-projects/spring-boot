@@ -17,6 +17,7 @@
 package smoketest.actuator;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -175,6 +176,18 @@ class SampleActuatorApplicationTests {
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/anotherlegacy", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains(entry("legacy", "legacy"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void testInfo() {
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/info", Map.class));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).containsKey("build");
+		Map<String, Object> body = entity.getBody();
+		Map<String, Object> example = (Map<String, Object>) body.get("example");
+		assertThat(example).containsEntry("someKey","someValue");
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
