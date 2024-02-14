@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
-import zipkin2.reporter.HttpEndpointSupplier;
-import zipkin2.reporter.HttpEndpointSuppliers;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
@@ -47,12 +45,6 @@ import org.springframework.context.annotation.Import;
 @Import({ SenderConfiguration.class, BraveConfiguration.class, OpenTelemetryConfiguration.class })
 @EnableConfigurationProperties(ZipkinProperties.class)
 public class ZipkinAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean(HttpEndpointSupplier.Factory.class)
-	HttpEndpointSupplier.Factory endpointSupplierFactory() {
-		return HttpEndpointSuppliers.constantFactory();
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(ZipkinConnectionDetails.class)

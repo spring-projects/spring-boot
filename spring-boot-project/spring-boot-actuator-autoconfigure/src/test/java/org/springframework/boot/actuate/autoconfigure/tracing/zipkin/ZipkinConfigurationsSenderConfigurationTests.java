@@ -27,6 +27,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
@@ -173,6 +174,32 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		}
 	}
 
+	@Test
+	void shouldUseCustomHttpEndpointSupplierFactory() {
+		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
+			.run((context) -> assertThat(context.getBean(URLConnectionSender.class))
+				.extracting("delegate.endpointSupplier")
+				.isInstanceOf(CustomHttpEndpointSupplier.class));
+	}
+
+	@Test
+	void shouldUseCustomHttpEndpointSupplierFactoryWhenReactive() {
+		this.reactiveContextRunner.withUserConfiguration(WebClientConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class))
+			.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
+			.run((context) -> assertThat(context.getBean(ZipkinWebClientSender.class)).extracting("endpointSupplier")
+				.isInstanceOf(CustomHttpEndpointSupplier.class));
+	}
+
+	@Test
+	void shouldUseCustomHttpEndpointSupplierFactoryWhenRestTemplate() {
+		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
+			.run((context) -> assertThat(context.getBean(ZipkinRestTemplateSender.class)).extracting("endpointSupplier")
+				.isInstanceOf(CustomHttpEndpointSupplier.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static final class RestTemplateConfiguration {
 
@@ -210,6 +237,37 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			return restTemplateBuilder.defaultHeader("x-dummy", "dummy");
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomHttpEndpointSupplierFactoryConfiguration {
+
+		@Bean
+		HttpEndpointSupplier.Factory httpEndpointSupplier() {
+			return new CustomHttpEndpointSupplierFactory();
+		}
+
+	}
+
+	private static final class CustomHttpEndpointSupplierFactory implements HttpEndpointSupplier.Factory {
+
+		@Override
+		public HttpEndpointSupplier create(String endpoint) {
+			return new CustomHttpEndpointSupplier(endpoint);
+		}
+
+	}
+
+	private record CustomHttpEndpointSupplier(String endpoint) implements HttpEndpointSupplier {
+
+		@Override
+		public String get() {
+			return this.endpoint;
+		}
+
+		@Override
+		public void close() {
+		}
 	}
 
 }

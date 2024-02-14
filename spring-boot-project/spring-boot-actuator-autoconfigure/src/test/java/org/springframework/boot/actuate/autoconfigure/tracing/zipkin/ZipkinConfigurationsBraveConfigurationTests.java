@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.nio.charset.StandardCharsets;
+
 import brave.Tag;
 import brave.handler.MutableSpan;
 import brave.handler.SpanHandler;
@@ -121,6 +123,43 @@ class ZipkinConfigurationsBraveConfigurationTests {
 			});
 	}
 
+	@Test
+	void shouldUseDefaultThrowableTagBean() {
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class).run((context) -> {
+			@SuppressWarnings("unchecked")
+			BytesEncoder<MutableSpan> encoder = context.getBean(BytesEncoder.class);
+
+			MutableSpan span = new MutableSpan();
+			span.traceId("1");
+			span.id("1");
+			span.tag("error", "true");
+			span.error(new RuntimeException("ice cream"));
+
+			// default tag key name is "error", and doesn't overwrite
+			assertThat(new String(encoder.encode(span), StandardCharsets.UTF_8)).isEqualTo(
+					"{\"traceId\":\"0000000000000001\",\"id\":\"0000000000000001\",\"tags\":{\"error\":\"true\"}}");
+		});
+	}
+
+	@Test
+	void shouldUseCustomThrowableTagBean() {
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomThrowableTagConfiguration.class)
+			.run((context) -> {
+				@SuppressWarnings("unchecked")
+				BytesEncoder<MutableSpan> encoder = context.getBean(BytesEncoder.class);
+
+				MutableSpan span = new MutableSpan();
+				span.traceId("1");
+				span.id("1");
+				span.tag("error", "true");
+				span.error(new RuntimeException("ice cream"));
+
+				// The custom throwable parser doesn't use the key "error" we can see both
+				assertThat(new String(encoder.encode(span), StandardCharsets.UTF_8)).isEqualTo(
+						"{\"traceId\":\"0000000000000001\",\"id\":\"0000000000000001\",\"tags\":{\"error\":\"true\",\"exception\":\"ice cream\"}}");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static final class SenderConfiguration {
 
@@ -142,10 +181,10 @@ class ZipkinConfigurationsBraveConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class CustomErrorTagConfiguration {
+	private static final class CustomThrowableTagConfiguration {
 
 		@Bean
-		Tag<Throwable> errorTag() {
+		Tag<Throwable> throwableTag() {
 			return new Tag<Throwable>("exception") {
 				@Override
 				protected String parseValue(Throwable throwable, TraceContext traceContext) {

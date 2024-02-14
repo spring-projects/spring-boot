@@ -144,18 +144,7 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	}
 
-	private static final class CustomSpanEncoder implements BytesEncoder<Span> {
-
-		private final Encoding encoding;
-
-		private CustomSpanEncoder(Encoding encoding) {
-			this.encoding = encoding;
-		}
-
-		@Override
-		public Encoding encoding() {
-			return this.encoding;
-		}
+	record CustomSpanEncoder(Encoding encoding) implements BytesEncoder<Span> {
 
 		@Override
 		public int sizeInBytes(Span span) {
