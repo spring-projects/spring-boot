@@ -31,6 +31,14 @@
       "defaultValue": true
     },
     {
+      "name": "management.endpoint.configprops.show-values",
+      "defaultValue": "never"
+    },
+    {
+      "name": "management.endpoint.env.show-values",
+      "defaultValue": "never"
+    },
+    {
       "name": "management.endpoint.health.probes.add-additional-paths",
       "type": "java.lang.Boolean",
       "description": "Whether to make the liveness and readiness health groups available on the main server port.",
@@ -94,6 +102,10 @@
       "defaultValue": [
         "health"
       ]
+    },
+    {
+      "name": "management.endpoint.quartz.show-values",
+      "defaultValue": "never"
     },
     {
       "name": "management.ganglia.metrics.export.addressing-mode",
