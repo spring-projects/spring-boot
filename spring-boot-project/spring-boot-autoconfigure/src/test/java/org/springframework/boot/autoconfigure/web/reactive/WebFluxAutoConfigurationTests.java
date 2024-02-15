@@ -39,6 +39,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -704,8 +706,20 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void asyncTaskExecutorWithApplicationTaskExecutor() {
+	void asyncTaskExecutorWithPlatformThreadsAndApplicationTaskExecutor() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isNull();
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void asyncTaskExecutorWithVirtualThreadsAndApplicationTaskExecutor() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
 				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
@@ -714,8 +728,10 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void asyncTaskExecutorWithNonMatchApplicationTaskExecutorBean() {
-		this.contextRunner.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void asyncTaskExecutorWithVirtualThreadsAndNonMatchApplicationTaskExecutorBean() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
 			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
@@ -725,8 +741,10 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void asyncTaskExecutorWithWebFluxConfigurerCanOverrideExecutor() {
-		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void asyncTaskExecutorWithVirtualThreadsAndWebFluxConfigurerCanOverrideExecutor() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
 			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
 				.extracting("scheduler.executor")
@@ -734,13 +752,15 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void asyncTaskExecutorWithCustomNonApplicationTaskExecutor() {
-		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void asyncTaskExecutorWithVirtualThreadsAndCustomNonApplicationTaskExecutor() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
 			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
 				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
-					.isNotSameAs(context.getBean("customTaskExecutor"));
+					.isNull();
 			});
 	}
 

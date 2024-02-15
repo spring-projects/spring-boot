@@ -996,7 +996,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.13.0-SNAPSHOT") {
+	library("Micrometer", "1.13.0-M1") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1009,7 +1009,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.3.0-SNAPSHOT") {
+	library("Micrometer Tracing", "1.3.0-M1") {
 		considerSnapshots()
 		calendarName = "Tracing"
 		group("io.micrometer") {
@@ -1071,7 +1071,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.15.0") {
+	library("Neo4j Java Driver", "5.17.0") {
 		alignWithVersion {
 			from "org.springframework.data:spring-data-neo4j"
 			managedBy "Spring Data Bom"

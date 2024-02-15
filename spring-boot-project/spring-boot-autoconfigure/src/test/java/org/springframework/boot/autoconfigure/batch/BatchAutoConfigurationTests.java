@@ -86,6 +86,10 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -102,6 +106,7 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
+ * @author Lasse Wulff
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -352,6 +357,18 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	void testBatchTransactionManager() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, BatchTransactionManagerConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringBootBatchConfiguration.class);
+				PlatformTransactionManager batchTransactionManager = context.getBean("batchTransactionManager",
+						PlatformTransactionManager.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getTransactionManager())
+					.isEqualTo(batchTransactionManager);
+			});
+	}
+
+	@Test
 	void jobRepositoryBeansDependOnBatchDataSourceInitializer() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
@@ -515,6 +532,49 @@ class BatchAutoConfigurationTests {
 		@Bean
 		public DataSource batchDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class BatchTransactionManagerConfiguration {
+
+		@Bean
+		public DataSource dataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:database").username("sa").build();
+		}
+
+		@Bean
+		@Primary
+		public PlatformTransactionManager normalTransactionManager() {
+			return new TestTransactionManager();
+		}
+
+		@BatchTransactionManager
+		@Bean
+		public PlatformTransactionManager batchTransactionManager() {
+			return new TestTransactionManager();
+		}
+
+	}
+
+	static class TestTransactionManager extends AbstractPlatformTransactionManager {
+
+		@Override
+		protected Object doGetTransaction() throws TransactionException {
+			return null;
+		}
+
+		@Override
+		protected void doBegin(Object transaction, TransactionDefinition definition) throws TransactionException {
+		}
+
+		@Override
+		protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
+		}
+
+		@Override
+		protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ class RestTemplateBuilderTests {
 			.build();
 		UriTemplateHandler handler = template.getUriTemplateHandler();
 		handler.expand("/hello");
-		assertThat(handler).isInstanceOf(RootUriTemplateHandler.class);
+		assertThat(handler).isInstanceOf(RootUriBuilderFactory.class);
 		then(uriTemplateHandler).should().expand("https://example.com/hello");
 	}
 
@@ -439,7 +439,7 @@ class RestTemplateBuilderTests {
 			.customizers((restTemplate) -> {
 				assertThat(restTemplate.getInterceptors()).hasSize(1);
 				assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
-				assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriTemplateHandler.class);
+				assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriBuilderFactory.class);
 				assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
 				ClientHttpRequestFactory actualRequestFactory = restTemplate.getRequestFactory();
 				assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);
