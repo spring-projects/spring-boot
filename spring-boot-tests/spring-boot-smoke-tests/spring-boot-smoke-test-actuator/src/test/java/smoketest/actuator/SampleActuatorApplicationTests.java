@@ -186,7 +186,7 @@ class SampleActuatorApplicationTests {
 		assertThat(entity.getBody()).containsKey("build");
 		Map<String, Object> body = entity.getBody();
 		Map<String, Object> example = (Map<String, Object>) body.get("example");
-		assertThat(example).containsEntry("someKey","someValue");
+		assertThat(example).containsEntry("someKey", "someValue");
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
