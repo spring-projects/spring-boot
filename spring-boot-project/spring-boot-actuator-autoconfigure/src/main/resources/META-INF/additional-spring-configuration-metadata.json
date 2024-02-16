@@ -31,6 +31,14 @@
       "defaultValue": true
     },
     {
+      "name": "management.endpoint.configprops.show-values",
+      "defaultValue": "never"
+    },
+    {
+      "name": "management.endpoint.env.show-values",
+      "defaultValue": "never"
+    },
+    {
       "name": "management.endpoint.health.probes.add-additional-paths",
       "type": "java.lang.Boolean",
       "description": "Whether to make the liveness and readiness health groups available on the main server port.",
@@ -60,6 +68,10 @@
       "type": "java.lang.Boolean",
       "description": "Whether to validate health group membership on startup. Validation fails if a group includes or excludes a health contributor that does not exist.",
       "defaultValue": true
+    },
+    {
+      "name": "management.endpoint.quartz.show-values",
+      "defaultValue": "never"
     },
     {
       "name": "management.endpoints.enabled-by-default",
