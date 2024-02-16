@@ -2080,6 +2080,12 @@
       }
     },
     {
+      "name": "management.observations.annotations.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of Micrometer annotations is enabled.",
+      "defaultValue": false
+    },
+    {
       "name": "management.otlp.metrics.export.base-time-unit",
       "defaultValue": "milliseconds"
     },
@@ -2251,8 +2257,10 @@
     {
       "name": "micrometer.observations.annotations.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether auto-configuration of Micrometer annotations is enabled.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.observations.annotations.enabled"
+      }
     }
   ],
   "hints": [

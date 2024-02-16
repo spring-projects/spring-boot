@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MetricsAspectsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-		.withPropertyValues("micrometer.observations.annotations.enabled=true")
+		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withConfiguration(AutoConfigurations.of(MetricsAspectsAutoConfiguration.class));
 
 	@Test
@@ -51,6 +51,17 @@ class MetricsAspectsAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(CountedAspect.class);
 				assertThat(context).doesNotHaveBean(TimedAspect.class);
+			});
+	}
+
+	@Test
+	void shouldConfigureAspectsWithLegacyProperty() {
+		new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(MetricsAspectsAutoConfiguration.class))
+			.withPropertyValues("micrometer.observations.annotations.enabled=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(CountedAspect.class);
+				assertThat(context).hasSingleBean(TimedAspect.class);
 			});
 	}
 

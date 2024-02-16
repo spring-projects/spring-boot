@@ -23,13 +23,16 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.weaver.Advice;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAspectsAutoConfiguration.ObservationAnnotationsEnabledCondition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics
@@ -40,7 +43,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass({ MeterRegistry.class, Advice.class })
-@ConditionalOnProperty(prefix = "micrometer.observations.annotations", name = "enabled", havingValue = "true")
+@Conditional(ObservationAnnotationsEnabledCondition.class)
 @ConditionalOnBean(MeterRegistry.class)
 public class MetricsAspectsAutoConfiguration {
 
@@ -57,6 +60,24 @@ public class MetricsAspectsAutoConfiguration {
 		TimedAspect timedAspect = new TimedAspect(registry);
 		meterTagAnnotationHandler.ifAvailable(timedAspect::setMeterTagAnnotationHandler);
 		return timedAspect;
+	}
+
+	static final class ObservationAnnotationsEnabledCondition extends AnyNestedCondition {
+
+		ObservationAnnotationsEnabledCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnProperty(prefix = "micrometer.observations.annotations", name = "enabled", havingValue = "true")
+		static class MicrometerObservationsEnabledCondition {
+
+		}
+
+		@ConditionalOnProperty(prefix = "management.observations.annotations", name = "enabled", havingValue = "true")
+		static class ManagementObservationsEnabledCondition {
+
+		}
+
 	}
 
 }
