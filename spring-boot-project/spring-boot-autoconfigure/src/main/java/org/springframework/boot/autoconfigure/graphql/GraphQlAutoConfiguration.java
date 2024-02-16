@@ -66,7 +66,6 @@ import org.springframework.graphql.execution.DefaultExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.execution.SubscriptionExceptionResolver;
-import org.springframework.graphql.execution.TypeDefinitionConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for creating a Spring GraphQL base
@@ -96,8 +95,7 @@ public class GraphQlAutoConfiguration {
 			ObjectProvider<DataFetcherExceptionResolver> exceptionResolvers,
 			ObjectProvider<SubscriptionExceptionResolver> subscriptionExceptionResolvers,
 			ObjectProvider<Instrumentation> instrumentations, ObjectProvider<RuntimeWiringConfigurer> wiringConfigurers,
-			ObjectProvider<GraphQlSourceBuilderCustomizer> sourceCustomizers,
-			ObjectProvider<TypeDefinitionConfigurer> typeDefinitionConfigurers) {
+			ObjectProvider<GraphQlSourceBuilderCustomizer> sourceCustomizers) {
 		String[] schemaLocations = properties.getSchema().getLocations();
 		Resource[] schemaResources = resolveSchemaResources(resourcePatternResolver, schemaLocations,
 				properties.getSchema().getFileExtensions());
@@ -112,7 +110,6 @@ public class GraphQlAutoConfiguration {
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}
-		typeDefinitionConfigurers.forEach(builder::configureTypeDefinitions);
 		builder.configureTypeDefinitions(new ConnectionTypeDefinitionConfigurer());
 		wiringConfigurers.orderedStream().forEach(builder::configureRuntimeWiring);
 		sourceCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
