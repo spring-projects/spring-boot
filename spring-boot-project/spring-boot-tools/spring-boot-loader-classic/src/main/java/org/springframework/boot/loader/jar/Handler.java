@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,6 +140,7 @@ public class Handler extends URLStreamHandler {
 				return connection;
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -154,6 +155,7 @@ public class Handler extends URLStreamHandler {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return false;
@@ -174,6 +176,7 @@ public class Handler extends URLStreamHandler {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 		return null;
 	}
@@ -425,6 +428,7 @@ public class Handler extends URLStreamHandler {
 					}
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 			finally {

@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -68,7 +67,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	private static final List<FieldDescriptor> componentFields = Arrays.asList(
+	private static final List<FieldDescriptor> componentFields = List.of(
 			fieldWithPath("status").description("Status of a specific part of the application"),
 			subsectionWithPath("details").description("Details of the health of a specific part of the application."));
 

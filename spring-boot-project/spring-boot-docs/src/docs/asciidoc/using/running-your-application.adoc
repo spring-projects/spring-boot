@@ -40,7 +40,7 @@ Doing so lets you attach a debugger to your packaged application, as shown in th
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-	$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+	$ java -agentlib:jdwp=server=y,transport=dt_socket,address=8000,suspend=n \
 	       -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 

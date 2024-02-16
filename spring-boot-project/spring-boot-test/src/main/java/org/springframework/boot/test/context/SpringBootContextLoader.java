@@ -167,6 +167,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
 			}
 			catch (ClassNotFoundException ex) {
+				// Ignore
 			}
 		}
 		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
@@ -555,6 +556,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				}
 			}
 			catch (AbandonedRunException ex) {
+				// Ignore
 			}
 			catch (Exception ex) {
 				if (this.failedContexts.size() == 1) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -827,7 +827,8 @@ public class JSONObject {
 				return o.toString();
 			}
 		}
-		catch (Exception ignored) {
+		catch (Exception ex) {
+			// Ignore
 		}
 		return null;
 	}

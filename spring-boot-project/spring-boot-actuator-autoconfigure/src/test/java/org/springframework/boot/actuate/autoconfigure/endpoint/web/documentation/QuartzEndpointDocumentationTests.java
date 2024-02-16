@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,10 +130,10 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.withInterval(1, IntervalUnit.HOUR))
 		.build();
 
-	private static final List<FieldDescriptor> triggerSummary = Arrays.asList(previousFireTime(""), nextFireTime(""),
+	private static final List<FieldDescriptor> triggerSummary = List.of(previousFireTime(""), nextFireTime(""),
 			priority(""));
 
-	private static final List<FieldDescriptor> cronTriggerSummary = Arrays.asList(
+	private static final List<FieldDescriptor> cronTriggerSummary = List.of(
 			fieldWithPath("expression").description("Cron expression to use."),
 			fieldWithPath("timeZone").type(JsonFieldType.STRING)
 				.optional()
@@ -158,8 +158,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				fieldWithPath("timeZone").type(JsonFieldType.STRING)
 					.description("Time zone within which time calculations will be performed, if any."));
 
-	private static final List<FieldDescriptor> customTriggerSummary = Collections.singletonList(
-			fieldWithPath("trigger").description("A toString representation of the custom trigger instance."));
+	private static final List<FieldDescriptor> customTriggerSummary = List
+		.of(fieldWithPath("trigger").description("A toString representation of the custom trigger instance."));
 
 	private static final FieldDescriptor[] commonCronDetails = new FieldDescriptor[] {
 			fieldWithPath("group").description("Name of the group."),
@@ -280,7 +280,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		setPreviousNextFireTime(secondTrigger, "2020-12-04T03:00:00Z", "2020-12-04T12:00:00Z");
 		mockTriggers(firstTrigger, secondTrigger);
 		given(this.scheduler.getTriggersOfJob(jobOne.getKey()))
-			.willAnswer((invocation) -> Arrays.asList(firstTrigger, secondTrigger));
+			.willAnswer((invocation) -> List.of(firstTrigger, secondTrigger));
 		this.mockMvc.perform(get("/actuator/quartz/jobs/samples/jobOne"))
 			.andExpect(status().isOk())
 			.andDo(document("quartz/job-details", responseFields(
@@ -398,7 +398,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 						.andWithPrefix("custom.", customTriggerSummary)));
 	}
 
-	private <T extends Trigger> T setupTriggerDetails(TriggerBuilder<T> builder, TriggerState state)
+	private <T extends Trigger> void setupTriggerDetails(TriggerBuilder<T> builder, TriggerState state)
 			throws SchedulerException {
 		T trigger = builder.withIdentity("example", "samples")
 			.withDescription("Example trigger")
@@ -409,7 +409,6 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		setPreviousNextFireTime(trigger, "2020-12-04T03:00:00Z", "2020-12-07T03:00:00Z");
 		given(this.scheduler.getTriggerState(trigger.getKey())).willReturn(state);
 		mockTriggers(trigger);
-		return trigger;
 	}
 
 	private static FieldDescriptor startTime(String prefix) {
@@ -481,7 +480,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 	}
 
-	private <T extends Trigger> T setPreviousNextFireTime(T trigger, String previousFireTime, String nextFireTime) {
+	private <T extends Trigger> void setPreviousNextFireTime(T trigger, String previousFireTime, String nextFireTime) {
 		OperableTrigger operableTrigger = (OperableTrigger) trigger;
 		if (previousFireTime != null) {
 			operableTrigger.setPreviousFireTime(fromUtc(previousFireTime));
@@ -489,7 +488,6 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		if (nextFireTime != null) {
 			operableTrigger.setNextFireTime(fromUtc(nextFireTime));
 		}
-		return trigger;
 	}
 
 	private static Date fromUtc(String utcTime) {
