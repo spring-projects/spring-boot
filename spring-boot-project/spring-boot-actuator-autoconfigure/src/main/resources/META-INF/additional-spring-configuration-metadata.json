@@ -70,6 +70,10 @@
       "defaultValue": true
     },
     {
+      "name": "management.endpoint.quartz.show-values",
+      "defaultValue": "never"
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
@@ -102,10 +106,6 @@
       "defaultValue": [
         "health"
       ]
-    },
-    {
-      "name": "management.endpoint.quartz.show-values",
-      "defaultValue": "never"
     },
     {
       "name": "management.ganglia.metrics.export.addressing-mode",
