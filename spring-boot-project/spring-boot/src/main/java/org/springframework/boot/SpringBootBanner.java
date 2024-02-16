@@ -51,7 +51,6 @@ class SpringBootBanner implements Banner {
 		while (padding.length() < STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())) {
 			padding.append(" ");
 		}
-
 		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding.toString(),
 				AnsiStyle.FAINT, version));
 		printStream.println();
