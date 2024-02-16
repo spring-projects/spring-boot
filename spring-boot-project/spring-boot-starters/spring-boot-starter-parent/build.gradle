@@ -148,7 +148,7 @@ publishing.publications.withType(MavenPublication) {
 							}
 							configuration {
 								delegate.verbose('true')
-								delegate.dateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+								delegate.dateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
 								delegate.generateGitPropertiesFile('true')
 								delegate.generateGitPropertiesFilename('${project.build.outputDirectory}/git.properties')
 							}
