@@ -41,6 +41,7 @@ import org.springframework.boot.test.json.JsonbTester;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@AutoConfigureJson
 @ImportAutoConfiguration
 @PropertyMapping("spring.test.jsontesters")
 public @interface AutoConfigureJsonTesters {
