@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ import org.springframework.util.ClassUtils;
  * @author Josh Long
  * @author Scott Frederick
  * @author Stefano Cordio
+ * @author Lasse Wulff
  * @since 1.0.0
  * @see EnableJpaRepositories
  */
@@ -84,18 +85,12 @@ public class JpaRepositoriesAutoConfiguration {
 	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
 		return (builder) -> {
-			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
+			AsyncTaskExecutor bootstrapExecutor = TaskExecutionAutoConfiguration
+				.determineAsyncTaskExecutor(taskExecutors);
 			if (bootstrapExecutor != null) {
 				builder.setBootstrapExecutor(bootstrapExecutor);
 			}
 		};
-	}
-
-	private AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
-		if (taskExecutors.size() == 1) {
-			return taskExecutors.values().iterator().next();
-		}
-		return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 	}
 
 	private static final class BootstrapExecutorCondition extends AnyNestedCondition {

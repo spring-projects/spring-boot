@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.util.Map;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -30,6 +33,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * @author Stephane Nicoll
  * @author Camille Vienot
  * @author Moritz Halbritter
+ * @author Lasse Wulff
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
@@ -45,5 +49,12 @@ public class TaskExecutionAutoConfiguration {
 	 * Bean name of the application {@link TaskExecutor}.
 	 */
 	public static final String APPLICATION_TASK_EXECUTOR_BEAN_NAME = "applicationTaskExecutor";
+
+	public static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+		if (taskExecutors.size() == 1) {
+			return taskExecutors.values().iterator().next();
+		}
+		return taskExecutors.get(APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+	}
 
 }
