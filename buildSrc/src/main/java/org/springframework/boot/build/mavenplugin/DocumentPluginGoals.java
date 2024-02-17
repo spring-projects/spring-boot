@@ -190,8 +190,11 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	private String parameterId(String name) {
-		StringBuilder id = new StringBuilder(name.length() + 4);
-		for (char c : name.toCharArray()) {
+		final int length = name.length();
+		StringBuilder id = new StringBuilder(length + 4);
+
+		for (int i = 0; i < length; i++) {
+			char c = name.charAt(i);
 			if (Character.isLowerCase(c)) {
 				id.append(c);
 			}
