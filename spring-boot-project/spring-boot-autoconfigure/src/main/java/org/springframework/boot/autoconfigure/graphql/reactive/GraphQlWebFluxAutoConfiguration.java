@@ -112,8 +112,8 @@ public class GraphQlWebFluxAutoConfiguration {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
-		builder = builder.GET(path, this::onlyAllowPost);
 		builder = builder.POST(path, SUPPORTS_MEDIATYPES, httpHandler::handleRequest);
+		builder = builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);
