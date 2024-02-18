@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ package org.springframework.boot.buildpack.platform.docker.type;
 import java.io.File;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link ImageReference}.
@@ -304,6 +307,28 @@ class ImageReferenceTests {
 		ImageReference reference = ImageReference.of("docker.io/library/ubuntu:bionic");
 		ImageReference updated = reference.inTaglessForm();
 		assertThat(updated).hasToString("docker.io/library/ubuntu");
+	}
+
+	@Test
+	void ofSimpleNameWithSingleCharacterSuffix() {
+		ImageReference reference = ImageReference.of("ubuntu-a");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu-a");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu-a");
+	}
+
+	@Test
+	@Timeout(value = 1, threadMode = ThreadMode.SEPARATE_THREAD)
+	void ofWhenIsVeryLongAndHasIllegalCharacter() {
+		try {
+			ImageReference
+				.of("docker.io/library/this-image-has-a-long-name-with-an-invalid-tag-which-is-at-danger-of-catastrophic-backtracking:1.0.0+1234");
+			fail("Contains an illegal character and should have thrown an IllegalArgumentException");
+		}
+		catch (IllegalArgumentException ignored) {
+		}
 	}
 
 }
