@@ -43,7 +43,7 @@ When used to secure a client-side connection, a `truststore` is typically config
 
 See {spring-boot-autoconfigure-module-code}/ssl/JksSslBundleProperties.java[JksSslBundleProperties] for the full set of supported properties.
 
-
+NOTE: When using SSL with Java KeyStore Files, only the bundle-based configurations will be applied as mixing of bundle-based configurations and directly configuring the server's SSL settings is not supported.
 
 [[features.ssl.pem]]
 === Configuring SSL With PEM-encoded Certificates
