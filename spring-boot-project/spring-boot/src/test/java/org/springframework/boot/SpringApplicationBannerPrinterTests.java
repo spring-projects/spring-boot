@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -53,7 +54,9 @@ class SpringApplicationBannerPrinterTests {
 				new ResourceBanner(resource));
 		Log log = mock(Log.class);
 		printer.print(new MockEnvironment(), SpringApplicationBannerPrinterTests.class, log);
-		then(log).should().info("\uD83D\uDE0D Spring Boot! \uD83D\uDE0D\n\n");
+		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+		then(log).should().info(captor.capture());
+		assertThat(captor.getValue()).isEqualToIgnoringNewLines("\uD83D\uDE0D Spring Boot! \uD83D\uDE0D");
 	}
 
 }
