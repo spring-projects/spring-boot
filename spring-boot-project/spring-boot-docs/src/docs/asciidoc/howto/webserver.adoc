@@ -172,8 +172,7 @@ The following example shows setting SSL properties using a Java KeyStore file:
 Using configuration such as the preceding example means the application no longer supports a plain HTTP connector at port 8080.
 Spring Boot does not support the configuration of both an HTTP connector and an HTTPS connector through `application.properties`.
 If you want to have both, you need to configure one of them programmatically.
-We recommend using `application.properties` to configure HTTPS, as the HTTP connector is the easier of the two to configure programmatically.
-
+We recommend using `application.properties` to configure HTTPS, as the HTTP connector is the easier of the two to configure programmatically. Also note that Spring Boot does not support the mixing of different configuration methods of SSL for embedded web servers, as such the use of the `ssl.bundle` property can't be combined with the discrete JKS or PEM property options under `server.ssl`.
 
 
 [[howto.webserver.configure-ssl.pem-files]]
