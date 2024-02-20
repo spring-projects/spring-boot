@@ -49,6 +49,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  *
  * @author Andy Wilkinson
  * @author Lasse Wulff
+ * @author Moritz Halbritter
  * @since 1.3.0
  */
 @AutoConfiguration(after = JacksonAutoConfiguration.class)
@@ -68,7 +69,14 @@ public class WebSocketMessagingAutoConfiguration {
 		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper,
 				Map<String, AsyncTaskExecutor> taskExecutors) {
 			this.objectMapper = objectMapper;
-			this.executor = TaskExecutionAutoConfiguration.determineAsyncTaskExecutor(taskExecutors);
+			this.executor = determineAsyncTaskExecutor(taskExecutors);
+		}
+
+		private static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+			if (taskExecutors.size() == 1) {
+				return taskExecutors.values().iterator().next();
+			}
+			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 		}
 
 		@Override
@@ -85,12 +93,16 @@ public class WebSocketMessagingAutoConfiguration {
 
 		@Override
 		public void configureClientInboundChannel(ChannelRegistration registration) {
-			registration.executor(this.executor);
+			if (this.executor != null) {
+				registration.executor(this.executor);
+			}
 		}
 
 		@Override
 		public void configureClientOutboundChannel(ChannelRegistration registration) {
-			registration.executor(this.executor);
+			if (this.executor != null) {
+				registration.executor(this.executor);
+			}
 		}
 
 		@Bean

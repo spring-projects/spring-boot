@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.SimpleMessageConverter;
@@ -144,11 +145,9 @@ class WebSocketMessagingAutoConfigurationTests {
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
-
 		configuration.configureClientInboundChannel(registration);
-
-		AsyncTaskExecutor mappedExecutor = (AsyncTaskExecutor) FieldUtils.getFieldValue(registration, "executor");
-		assertThat(mappedExecutor).isEqualTo(expectedExecutor);
+		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
+		assertThat(executor).isEqualTo(expectedExecutor);
 	}
 
 	@Test
@@ -158,11 +157,9 @@ class WebSocketMessagingAutoConfigurationTests {
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
-
 		configuration.configureClientOutboundChannel(registration);
-
-		AsyncTaskExecutor mappedExecutor = (AsyncTaskExecutor) FieldUtils.getFieldValue(registration, "executor");
-		assertThat(mappedExecutor).isEqualTo(expectedExecutor);
+		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
+		assertThat(executor).isEqualTo(expectedExecutor);
 	}
 
 	private List<MessageConverter> getCustomizedConverters() {
