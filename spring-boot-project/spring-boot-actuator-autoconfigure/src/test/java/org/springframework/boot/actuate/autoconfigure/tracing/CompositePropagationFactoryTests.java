@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import brave.internal.propagation.StringPropagationAdapter;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
@@ -143,9 +142,8 @@ class CompositePropagationFactoryTests {
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
-		public <K> Propagation<K> create(Propagation.KeyFactory<K> keyFactory) {
-			return StringPropagationAdapter.create(this, keyFactory);
+		public Propagation<String> get() {
+			return this;
 		}
 
 		@Override

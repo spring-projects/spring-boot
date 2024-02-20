@@ -70,7 +70,7 @@ public final class DockerImageNames {
 
 	private static final String REGISTRY_VERSION = "2.7.1";
 
-	private static final String ZIPKIN_VERSION = "2.24.1";
+	private static final String ZIPKIN_VERSION = "3.0.6";
 
 	private DockerImageNames() {
 	}

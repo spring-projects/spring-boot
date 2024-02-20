@@ -22,7 +22,6 @@ import brave.baggage.BaggagePropagation.FactoryBuilder;
 import brave.baggage.BaggagePropagationConfig;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
-import brave.propagation.Propagation.KeyFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,11 +49,10 @@ class LocalBaggageFieldsTests {
 		assertThat(LocalBaggageFields.empty().asList()).isEmpty();
 	}
 
-	@SuppressWarnings("deprecation")
 	private static FactoryBuilder createBuilder() {
 		return BaggagePropagation.newFactoryBuilder(new Factory() {
 			@Override
-			public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
+			public Propagation<String> get() {
 				return null;
 			}
 		});

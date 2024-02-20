@@ -17,12 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -33,11 +35,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import zipkin2.CheckResult;
-import zipkin2.reporter.Sender;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
+import zipkin2.reporter.HttpEndpointSupplier;
+import zipkin2.reporter.HttpEndpointSuppliers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,40 +82,25 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	}
 
 	@Override
-	Sender createSender() {
-		return createSender(Duration.ofSeconds(10));
+	BytesMessageSender createSender() {
+		return createSender(Encoding.JSON, Duration.ofSeconds(10));
 	}
 
-	Sender createSender(Duration timeout) {
+	ZipkinWebClientSender createSender(Encoding encoding, Duration timeout) {
+		return createSender(HttpEndpointSuppliers.constantFactory(), encoding, timeout);
+	}
+
+	ZipkinWebClientSender createSender(HttpEndpointSupplier.Factory endpointSupplierFactory, Encoding encoding,
+			Duration timeout) {
 		WebClient webClient = WebClient.builder().build();
-		return new ZipkinWebClientSender(ZIPKIN_URL, webClient, timeout);
+		return new ZipkinWebClientSender(encoding, endpointSupplierFactory, ZIPKIN_URL, webClient, timeout);
 	}
 
 	@Test
-	void checkShouldSendEmptySpanList() throws InterruptedException {
-		mockBackEnd.enqueue(new MockResponse());
-		assertThat(this.sender.check()).isEqualTo(CheckResult.OK);
-		requestAssertions((request) -> {
-			assertThat(request.getMethod()).isEqualTo("POST");
-			assertThat(request.getBody().readUtf8()).isEqualTo("[]");
-		});
-	}
-
-	@Test
-	void checkShouldNotRaiseException() throws InterruptedException {
-		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
-		CheckResult result = this.sender.check();
-		assertThat(result.ok()).isFalse();
-		assertThat(result.error()).hasMessageContaining("500 Internal Server Error");
-		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
-	}
-
-	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
-	void sendSpansShouldSendSpansToZipkin(boolean async) throws IOException, InterruptedException {
+	void sendShouldSendSpansToZipkin() throws IOException, InterruptedException {
 		mockBackEnd.enqueue(new MockResponse());
 		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
-		makeRequest(encodedSpans, async);
+		this.sender.send(encodedSpans);
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
 			assertThat(request.getHeader("Content-Type")).isEqualTo("application/json");
@@ -120,31 +108,66 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
-	void sendSpansShouldHandleHttpFailures(boolean async) throws InterruptedException {
+	@Test
+	void sendShouldSendSpansToZipkinInProto3() throws IOException, InterruptedException {
+		mockBackEnd.enqueue(new MockResponse());
+		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
+
+		try (BytesMessageSender sender = createSender(Encoding.PROTO3, Duration.ofSeconds(10))) {
+			sender.send(encodedSpans);
+		}
+
+		requestAssertions((request) -> {
+			assertThat(request.getMethod()).isEqualTo("POST");
+			assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
+			assertThat(request.getBody().readUtf8()).isEqualTo("span1span2");
+		});
+	}
+
+	/**
+	 * This tests that a dynamic {@linkplain HttpEndpointSupplier} updates are visible to
+	 * {@link HttpSender#postSpans(URI, HttpHeaders, byte[])}.
+	 */
+	@Test
+	void sendUsesDynamicEndpoint() throws Exception {
+		mockBackEnd.enqueue(new MockResponse());
+		mockBackEnd.enqueue(new MockResponse());
+
+		AtomicInteger suffix = new AtomicInteger();
+		try (BytesMessageSender sender = createSender((e) -> new HttpEndpointSupplier() {
+			@Override
+			public String get() {
+				return ZIPKIN_URL + "/" + suffix.incrementAndGet();
+			}
+
+			@Override
+			public void close() {
+			}
+		}, Encoding.JSON, Duration.ofSeconds(10))) {
+			sender.send(Collections.emptyList());
+			sender.send(Collections.emptyList());
+		}
+
+		assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/1");
+		assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/2");
+	}
+
+	@Test
+	void sendShouldHandleHttpFailures() throws InterruptedException {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
-		if (async) {
-			CallbackResult callbackResult = makeAsyncRequest(Collections.emptyList());
-			assertThat(callbackResult.success()).isFalse();
-			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
-		}
-		else {
-			assertThatException().isThrownBy(() -> makeSyncRequest(Collections.emptyList()))
-				.withMessageContaining("500 Internal Server Error");
-		}
+		assertThatException().isThrownBy(() -> this.sender.send(Collections.emptyList()))
+			.withMessageContaining("500 Internal Server Error");
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
-	void sendSpansShouldCompressData(boolean async) throws IOException, InterruptedException {
+	@Test
+	void sendShouldCompressData() throws IOException, InterruptedException {
 		String uncompressed = "a".repeat(10000);
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()
 			.decode("H4sIAAAAAAAA/+3BMQ0AAAwDIKFLj/k3UR8NcA8AAAAAAAAAAAADUsAZfeASJwAA");
 		mockBackEnd.enqueue(new MockResponse());
-		makeRequest(List.of(toByteArray(uncompressed)), async);
+		this.sender.send(List.of(toByteArray(uncompressed)));
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
 			assertThat(request.getHeader("Content-Type")).isEqualTo("application/json");
@@ -153,19 +176,12 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
-	void shouldTimeout(boolean async) {
-		Sender sender = createSender(Duration.ofMillis(1));
-		MockResponse response = new MockResponse().setResponseCode(200).setHeadersDelay(100, TimeUnit.MILLISECONDS);
-		mockBackEnd.enqueue(response);
-		if (async) {
-			CallbackResult callbackResult = makeAsyncRequest(sender, Collections.emptyList());
-			assertThat(callbackResult.success()).isFalse();
-			assertThat(callbackResult.error()).isInstanceOf(TimeoutException.class);
-		}
-		else {
-			assertThatException().isThrownBy(() -> makeSyncRequest(sender, Collections.emptyList()))
+	@Test
+	void shouldTimeout() throws IOException {
+		try (BytesMessageSender sender = createSender(Encoding.JSON, Duration.ofMillis(1))) {
+			MockResponse response = new MockResponse().setResponseCode(200).setHeadersDelay(100, TimeUnit.MILLISECONDS);
+			mockBackEnd.enqueue(response);
+			assertThatException().isThrownBy(() -> sender.send(Collections.emptyList()))
 				.withCauseInstanceOf(TimeoutException.class);
 		}
 	}

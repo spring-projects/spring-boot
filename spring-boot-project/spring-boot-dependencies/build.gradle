@@ -109,7 +109,14 @@ bom {
 			]
 		}
 	}
-	library("Brave", "5.17.1") {
+	library("Zipkin Reporter", "3.3.0") {
+		group("io.zipkin.reporter2") {
+			imports = [
+				"zipkin-reporter-bom"
+			]
+		}
+	}
+	library("Brave", "6.0.1") {
 		group("io.zipkin.brave") {
 			imports = [
 				"brave-bom"
@@ -1096,7 +1103,7 @@ bom {
 			]
 		}
 	}
-	library("OpenTelemetry", "1.33.0") {
+	library("OpenTelemetry", "1.35.0") {
 		group("io.opentelemetry") {
 			imports = [
 				"opentelemetry-bom"
