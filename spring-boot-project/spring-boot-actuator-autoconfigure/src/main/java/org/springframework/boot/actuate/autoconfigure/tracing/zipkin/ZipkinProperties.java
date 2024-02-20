@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.time.Duration;
 
-import zipkin2.reporter.Encoding;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -81,6 +79,22 @@ public class ZipkinProperties {
 
 	public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
+	}
+
+	/**
+	 * Zipkin message encoding.
+	 */
+	public enum Encoding {
+
+		/**
+		 * JSON.
+		 */
+		JSON,
+		/**
+		 * Protocol Buffers v3.
+		 */
+		PROTO3
+
 	}
 
 }

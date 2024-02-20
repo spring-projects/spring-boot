@@ -112,7 +112,7 @@ bom {
 	library("Zipkin Reporter", "3.3.0") {
 		group("io.zipkin.reporter2") {
 			imports = [
-					"zipkin-reporter-bom"
+				"zipkin-reporter-bom"
 			]
 		}
 	}

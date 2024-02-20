@@ -26,7 +26,6 @@ import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
-import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.brave.MutableSpanBytesEncoder;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
@@ -169,12 +168,6 @@ class ZipkinConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ZipkinSpanExporter.class)
 	static class OpenTelemetryConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
-		BytesEncoder<Span> zipkinSpanEncoder(Encoding encoding) {
-			return SpanBytesEncoder.forEncoding(encoding);
-		}
 
 		@Bean
 		@ConditionalOnMissingBean

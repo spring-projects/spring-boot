@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OpenTelemetryConfiguration}.
@@ -48,6 +49,7 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
+			.withBean(BytesEncoder.class, () -> mock(BytesEncoder.class))
 			.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanExporter.class));
 	}
 

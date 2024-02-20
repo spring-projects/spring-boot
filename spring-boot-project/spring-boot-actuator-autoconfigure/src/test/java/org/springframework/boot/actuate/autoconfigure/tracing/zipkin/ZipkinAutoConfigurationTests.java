@@ -40,7 +40,8 @@ class ZipkinAutoConfigurationTests {
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Encoding.class)
-			.hasSingleBean(PropertiesZipkinConnectionDetails.class));
+			.hasSingleBean(PropertiesZipkinConnectionDetails.class)
+			.hasBean("zipkinSpanEncoder"));
 	}
 
 	@Test

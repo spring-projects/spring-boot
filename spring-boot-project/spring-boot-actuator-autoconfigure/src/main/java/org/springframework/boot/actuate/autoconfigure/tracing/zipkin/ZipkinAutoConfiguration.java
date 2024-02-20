@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import zipkin2.reporter.BytesMessageSender;
+import zipkin2.Span;
+import zipkin2.reporter.BytesEncoder;
 import zipkin2.reporter.Encoding;
+import zipkin2.reporter.SpanBytesEncoder;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
@@ -41,7 +43,7 @@ import org.springframework.context.annotation.Import;
  * @since 3.0.0
  */
 @AutoConfiguration(after = RestTemplateAutoConfiguration.class)
-@ConditionalOnClass(BytesMessageSender.class)
+@ConditionalOnClass(Encoding.class)
 @Import({ SenderConfiguration.class, BraveConfiguration.class, OpenTelemetryConfiguration.class })
 @EnableConfigurationProperties(ZipkinProperties.class)
 public class ZipkinAutoConfiguration {
@@ -54,8 +56,17 @@ public class ZipkinAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Encoding encoding(ZipkinProperties properties) {
-		return properties.getEncoding();
+	Encoding encoding(ZipkinProperties properties) {
+		return switch (properties.getEncoding()) {
+			case JSON -> Encoding.JSON;
+			case PROTO3 -> Encoding.PROTO3;
+		};
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
+	BytesEncoder<Span> zipkinSpanEncoder(Encoding encoding) {
+		return SpanBytesEncoder.forEncoding(encoding);
 	}
 
 }
