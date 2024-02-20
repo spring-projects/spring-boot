@@ -38,7 +38,7 @@ Shrinking of the pool is more aggressive as threads are reclaimed when they are 
 
 A scheduler can also be auto-configured if it needs to be associated with scheduled task execution (using `@EnableScheduling` for instance).
 When virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a `SimpleAsyncTaskScheduler` that uses virtual threads.
-Otherwise, it will be a `ThreadPoolTaskScheduler` with sensible defaults.
+Otherwise, it will be a `ThreadPoolTaskScheduler` with sensible defaults. Note, the `SimpleAsyncTaskScheduler` will ignore any pool size properties.
 
 The `ThreadPoolTaskScheduler` uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
 
