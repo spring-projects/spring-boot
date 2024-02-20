@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.docker.compose.core;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -37,6 +39,16 @@ class ImageReferenceTests {
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
 		assertThat(reference).hasToString("docker.io/library/ubuntu");
+	}
+
+	@Test
+	void ofSimpleNameWithSingleCharacterSuffix() {
+		ImageReference reference = ImageReference.of("ubuntu-a");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu-a");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu-a");
 	}
 
 	@Test
@@ -149,10 +161,18 @@ class ImageReferenceTests {
 	}
 
 	@Test
-	void ofWhenHasIllegalCharacter() {
+	void ofWhenHasIllegalCharacterThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ImageReference
 				.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
+			.withMessageContaining("Unable to parse image reference");
+	}
+
+	@Test
+	@Timeout(value = 1, threadMode = ThreadMode.SEPARATE_THREAD)
+	void ofWhenImageNameIsVeryLongAndHasIllegalCharacterThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference
+			.of("docker.io/library/this-image-has-a-long-name-with-an-invalid-tag-which-is-at-danger-of-catastrophic-backtracking:1.0.0+1234"))
 			.withMessageContaining("Unable to parse image reference");
 	}
 
