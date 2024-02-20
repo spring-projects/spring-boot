@@ -50,6 +50,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Moritz Halbritter
  */
+@SuppressWarnings("removal")
 class ZipkinConfigurationsSenderConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -68,6 +69,20 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			assertThat(context).hasSingleBean(URLConnectionSender.class);
 			assertThat(context).doesNotHaveBean(ZipkinRestTemplateSender.class);
 		});
+	}
+
+	@Test
+	void shouldUseHttpClientIfUrlSenderIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(HttpClientConfiguration.class)
+			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.client",
+					"org.springframework.web.reactive.function.client"))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).hasSingleBean(BytesMessageSender.class);
+				assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
+				then(context.getBean(ZipkinHttpClientBuilderCustomizer.class)).should()
+					.customize(ArgumentMatchers.any());
+			});
 	}
 
 	@Test
@@ -216,6 +231,16 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		@Bean
 		ZipkinWebClientBuilderCustomizer webClientBuilder() {
 			return mock(ZipkinWebClientBuilderCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class HttpClientConfiguration {
+
+		@Bean
+		ZipkinHttpClientBuilderCustomizer httpClientBuilderCustomizer() {
+			return mock(ZipkinHttpClientBuilderCustomizer.class);
 		}
 
 	}

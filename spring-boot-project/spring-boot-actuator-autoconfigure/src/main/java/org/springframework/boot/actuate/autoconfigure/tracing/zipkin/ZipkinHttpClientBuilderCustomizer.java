@@ -16,26 +16,22 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.Builder;
+import java.net.http.HttpClient;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link Builder} used to send spans to Zipkin.
+ * {@link HttpClient.Builder} used to send spans to Zipkin.
  *
- * @author Marcin Grzejszczak
- * @since 3.0.0
- * @deprecated since 3.3.0 for removal in 3.5.0 in favor of
- * {@link ZipkinHttpClientBuilderCustomizer}
+ * @author Moritz Halbritter
+ * @since 3.3.0
  */
 @FunctionalInterface
-@Deprecated(since = "3.3.0", forRemoval = true)
-public interface ZipkinWebClientBuilderCustomizer {
+public interface ZipkinHttpClientBuilderCustomizer {
 
 	/**
-	 * Customize the web client builder.
-	 * @param webClientBuilder the {@code WebClient.Builder} to customize
+	 * Customize the http client builder.
+	 * @param httpClient the http client builder to customize
 	 */
-	void customize(WebClient.Builder webClientBuilder);
+	void customize(HttpClient.Builder httpClient);
 
 }
