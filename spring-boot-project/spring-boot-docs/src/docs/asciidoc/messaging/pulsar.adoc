@@ -50,6 +50,9 @@ Spring Boot will not attempt any kind of relaxed binding for these entries.
 
 For example, if you want to configure the issuer url for the `AuthenticationOAuth2` auth plugin you must use `+spring.pulsar.client.authentication.param.issuerUrl+`.
 If you use other forms, such as `issuerurl` or `issuer-url`, the setting will not be applied to the plugin.
+
+This lack of relaxed binding also makes using environment variables for authentication parameters problematic because the case sensitivity is lost during translation.
+If you use environment variables for the parameters then you will need to follow {spring-pulsar-docs}reference/pulsar.html#client-authentication-env-vars[these steps] in the Spring for Apache Pulsar reference documentation for it to work properly.
 ====
 
 
