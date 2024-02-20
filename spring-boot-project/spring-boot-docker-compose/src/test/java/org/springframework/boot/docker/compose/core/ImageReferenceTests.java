@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Timeout.ThreadMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link ImageReference}.
@@ -40,6 +39,16 @@ class ImageReferenceTests {
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
 		assertThat(reference).hasToString("docker.io/library/ubuntu");
+	}
+
+	@Test
+	void ofSimpleNameWithSingleCharacterSuffix() {
+		ImageReference reference = ImageReference.of("ubuntu-a");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu-a");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu-a");
 	}
 
 	@Test
@@ -152,10 +161,18 @@ class ImageReferenceTests {
 	}
 
 	@Test
-	void ofWhenHasIllegalCharacter() {
+	void ofWhenHasIllegalCharacterThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ImageReference
 				.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
+			.withMessageContaining("Unable to parse image reference");
+	}
+
+	@Test
+	@Timeout(value = 1, threadMode = ThreadMode.SEPARATE_THREAD)
+	void ofWhenImageNameIsVeryLongAndHasIllegalCharacterThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference
+			.of("docker.io/library/this-image-has-a-long-name-with-an-invalid-tag-which-is-at-danger-of-catastrophic-backtracking:1.0.0+1234"))
 			.withMessageContaining("Unable to parse image reference");
 	}
 
@@ -166,28 +183,6 @@ class ImageReferenceTests {
 		ImageReference r3 = ImageReference.of("docker.io/library/ubuntu:latest");
 		assertThat(r1).hasSameHashCodeAs(r2);
 		assertThat(r1).isEqualTo(r1).isEqualTo(r2).isNotEqualTo(r3);
-	}
-
-	@Test
-	void ofSimpleNameWithSingleCharacterSuffix() {
-		ImageReference reference = ImageReference.of("ubuntu-a");
-		assertThat(reference.getDomain()).isEqualTo("docker.io");
-		assertThat(reference.getName()).isEqualTo("library/ubuntu-a");
-		assertThat(reference.getTag()).isNull();
-		assertThat(reference.getDigest()).isNull();
-		assertThat(reference).hasToString("docker.io/library/ubuntu-a");
-	}
-
-	@Test
-	@Timeout(value = 1, threadMode = ThreadMode.SEPARATE_THREAD)
-	void ofWhenImageNameIsVeryLongAndHasIllegalCharacter() {
-		try {
-			ImageReference
-				.of("docker.io/library/this-image-has-a-long-name-with-an-invalid-tag-which-is-at-danger-of-catastrophic-backtracking:1.0.0+1234");
-			fail("Image Reference contains an illegal character and should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ignored) {
-		}
 	}
 
 }
