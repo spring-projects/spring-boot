@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * {@link Task} for resolving the name of the application's main class.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 2.4
  */
 @DisableCachingByDefault(because = "Not worth caching")
@@ -58,6 +59,8 @@ public class ResolveMainClassName extends DefaultTask {
 
 	private final Property<String> configuredMainClass;
 
+	private final Path projectDir;
+
 	private FileCollection classpath;
 
 	/**
@@ -66,6 +69,7 @@ public class ResolveMainClassName extends DefaultTask {
 	public ResolveMainClassName() {
 		this.outputFile = getProject().getObjects().fileProperty();
 		this.configuredMainClass = getProject().getObjects().property(String.class);
+		this.projectDir = getProject().getProjectDir().toPath();
 	}
 
 	/**
@@ -153,7 +157,7 @@ public class ResolveMainClassName extends DefaultTask {
 		String classpath = getClasspath().filter(File::isDirectory)
 			.getFiles()
 			.stream()
-			.map((directory) -> getProject().getProjectDir().toPath().relativize(directory.toPath()))
+			.map((directory) -> this.projectDir.relativize(directory.toPath()))
 			.map(Path::toString)
 			.collect(Collectors.joining(","));
 		return this.outputFile.map(new ClassNameReader(classpath));
