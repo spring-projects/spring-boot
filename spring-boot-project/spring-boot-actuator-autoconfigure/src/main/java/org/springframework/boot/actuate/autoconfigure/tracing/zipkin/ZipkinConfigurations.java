@@ -29,6 +29,7 @@ import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
+import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.brave.MutableSpanBytesEncoder;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
@@ -177,7 +178,7 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(value = MutableSpan.class, parameterizedContainer = BytesEncoder.class)
-		BytesEncoder<MutableSpan> braveSpanEncoder(Encoding encoding,
+		BytesEncoder<MutableSpan> mutableSpanBytesEncoder(Encoding encoding,
 				ObjectProvider<Tag<Throwable>> throwableTagProvider) {
 			Tag<Throwable> throwableTag = throwableTagProvider.getIfAvailable(() -> Tags.ERROR);
 			return MutableSpanBytesEncoder.create(encoding, throwableTag);
@@ -188,22 +189,28 @@ class ZipkinConfigurations {
 		@ConditionalOnBean(BytesMessageSender.class)
 		@ConditionalOnEnabledTracing
 		AsyncZipkinSpanHandler asyncZipkinSpanHandler(BytesMessageSender sender,
-				BytesEncoder<MutableSpan> braveSpanEncoder) {
-			return AsyncZipkinSpanHandler.newBuilder(sender).build(braveSpanEncoder);
+				BytesEncoder<MutableSpan> mutableSpanBytesEncoder) {
+			return AsyncZipkinSpanHandler.newBuilder(sender).build(mutableSpanBytesEncoder);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ZipkinSpanExporter.class)
+	@ConditionalOnClass({ ZipkinSpanExporter.class, Span.class })
 	static class OpenTelemetryConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
+		BytesEncoder<Span> spanBytesEncoder(Encoding encoding) {
+			return SpanBytesEncoder.forEncoding(encoding);
+		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(BytesMessageSender.class)
 		@ConditionalOnEnabledTracing
-		ZipkinSpanExporter zipkinSpanExporter(BytesMessageSender sender, BytesEncoder<Span> zipkinSpanEncoder) {
-			return ZipkinSpanExporter.builder().setSender(sender).setEncoder(zipkinSpanEncoder).build();
+		ZipkinSpanExporter zipkinSpanExporter(BytesMessageSender sender, BytesEncoder<Span> spanBytesEncoder) {
+			return ZipkinSpanExporter.builder().setSender(sender).setEncoder(spanBytesEncoder).build();
 		}
 
 	}

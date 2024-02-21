@@ -40,8 +40,7 @@ class ZipkinAutoConfigurationTests {
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Encoding.class)
-			.hasSingleBean(PropertiesZipkinConnectionDetails.class)
-			.hasBean("zipkinSpanEncoder"));
+			.hasSingleBean(PropertiesZipkinConnectionDetails.class));
 	}
 
 	@Test
@@ -65,14 +64,8 @@ class ZipkinAutoConfigurationTests {
 
 	@Test
 	void shouldUseCustomConnectionDetailsWhenDefined() {
-		this.contextRunner.withBean(ZipkinConnectionDetails.class, () -> new ZipkinConnectionDetails() {
-
-			@Override
-			public String getSpanEndpoint() {
-				return "http://localhost";
-			}
-
-		})
+		this.contextRunner
+			.withBean(ZipkinConnectionDetails.class, () -> new FixedZipkinConnectionDetails("http://localhost"))
 			.run((context) -> assertThat(context).hasSingleBean(ZipkinConnectionDetails.class)
 				.doesNotHaveBean(PropertiesZipkinConnectionDetails.class));
 	}
@@ -83,6 +76,21 @@ class ZipkinAutoConfigurationTests {
 			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.client",
 					"org.springframework.web.reactive.function.client"))
 			.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	private static final class FixedZipkinConnectionDetails implements ZipkinConnectionDetails {
+
+		private final String spanEndpoint;
+
+		private FixedZipkinConnectionDetails(String spanEndpoint) {
+			this.spanEndpoint = spanEndpoint;
+		}
+
+		@Override
+		public String getSpanEndpoint() {
+			return this.spanEndpoint;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

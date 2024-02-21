@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OpenTelemetryConfiguration}.
@@ -48,22 +47,40 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
-			.withBean(BytesEncoder.class, () -> mock(BytesEncoder.class))
-			.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanExporter.class));
+		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomEncoderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+				assertThat(context).hasBean("customSpanEncoder");
+			});
 	}
 
 	@Test
 	void shouldNotSupplyZipkinSpanExporterIfSenderIsMissing() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class);
+			assertThat(context).hasBean("spanBytesEncoder");
+		});
 	}
 
 	@Test
 	void shouldNotSupplyZipkinSpanExporterIfNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.opentelemetry.exporter.zipkin"))
 			.withUserConfiguration(SenderConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class);
+				assertThat(context).doesNotHaveBean("spanBytesEncoder");
+			});
 
+	}
+
+	@Test
+	void shouldBackOffIfZipkinIsNotOnClasspath() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.Span"))
+			.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class);
+				assertThat(context).doesNotHaveBean("spanBytesEncoder");
+			});
 	}
 
 	@Test
@@ -85,6 +102,7 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomEncoderConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+				assertThat(context).hasBean("customSpanEncoder");
 				assertThat(context.getBean(ZipkinSpanExporter.class)).extracting("encoder")
 					.isInstanceOf(CustomSpanEncoder.class)
 					.extracting("encoding")
@@ -99,6 +117,7 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 					CustomEncoderConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+				assertThat(context).hasBean("customSpanEncoder");
 				assertThat(context.getBean(ZipkinSpanExporter.class)).extracting("encoder")
 					.isInstanceOf(CustomSpanEncoder.class)
 					.extracting("encoding")
@@ -140,7 +159,7 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	private static final class CustomEncoderConfiguration {
 
 		@Bean
-		BytesEncoder<Span> encoder(Encoding encoding) {
+		BytesEncoder<Span> customSpanEncoder(Encoding encoding) {
 			return new CustomSpanEncoder(encoding);
 		}
 

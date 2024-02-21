@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import zipkin2.Span;
-import zipkin2.reporter.BytesEncoder;
 import zipkin2.reporter.Encoding;
-import zipkin2.reporter.SpanBytesEncoder;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
@@ -61,12 +58,6 @@ public class ZipkinAutoConfiguration {
 			case JSON -> Encoding.JSON;
 			case PROTO3 -> Encoding.PROTO3;
 		};
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
-	BytesEncoder<Span> zipkinSpanEncoder(Encoding encoding) {
-		return SpanBytesEncoder.forEncoding(encoding);
 	}
 
 }
