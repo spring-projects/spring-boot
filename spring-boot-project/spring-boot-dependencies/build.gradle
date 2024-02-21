@@ -1554,7 +1554,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "6.2.2-SNAPSHOT") {
+	library("Spring Integration", "6.2.2") {
 		considerSnapshots()
 		group("org.springframework.integration") {
 			imports = [
