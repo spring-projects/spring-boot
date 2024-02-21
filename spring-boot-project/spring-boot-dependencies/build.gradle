@@ -814,7 +814,7 @@ bom {
 			]
 		}
 	}
-	library("Kotlin Serialization", "1.6.2") {
+	library("Kotlin Serialization", "1.6.3") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-serialization-bom"
