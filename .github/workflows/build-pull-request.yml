@@ -23,7 +23,7 @@ jobs:
         uses: gradle/wrapper-validation-action@699bb18358f12c5b78b37bb0111d3a0e2276e0e2
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@29c0906b64b8fc82467890bfb7a0a7ef34bda89e
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
 
       - name: Build
         env:
