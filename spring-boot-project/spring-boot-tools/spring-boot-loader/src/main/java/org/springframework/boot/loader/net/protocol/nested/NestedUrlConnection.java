@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.boot.loader.net.util.UrlDecoder;
 import org.springframework.boot.loader.ref.Cleaner;
 
 /**
@@ -76,7 +77,7 @@ class NestedUrlConnection extends URLConnection {
 
 	private NestedLocation parseNestedLocation(URL url) throws MalformedURLException {
 		try {
-			return NestedLocation.parse(url.getPath());
+			return NestedLocation.parse(UrlDecoder.decode(url.getPath()));
 		}
 		catch (IllegalArgumentException ex) {
 			throw new MalformedURLException(ex.getMessage());
