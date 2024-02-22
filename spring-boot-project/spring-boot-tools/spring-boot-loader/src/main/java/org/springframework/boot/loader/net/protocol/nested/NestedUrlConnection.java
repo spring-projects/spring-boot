@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.boot.loader.net.util.UrlDecoder;
 import org.springframework.boot.loader.ref.Cleaner;
 
 /**
@@ -76,7 +77,7 @@ class NestedUrlConnection extends URLConnection {
 
 	private NestedLocation parseNestedLocation(URL url) throws MalformedURLException {
 		try {
-			return NestedLocation.parse(url.getPath());
+			return NestedLocation.parse(UrlDecoder.decode(url.getPath()));
 		}
 		catch (IllegalArgumentException ex) {
 			throw new MalformedURLException(ex.getMessage());
