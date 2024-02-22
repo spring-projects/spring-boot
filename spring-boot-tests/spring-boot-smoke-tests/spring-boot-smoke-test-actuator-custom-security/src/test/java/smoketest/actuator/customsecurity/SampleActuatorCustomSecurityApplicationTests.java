@@ -16,6 +16,7 @@
 
 package smoketest.actuator.customsecurity;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +82,16 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		entity = beansRestTemplate().getForEntity(getManagementPath() + "/actuator/beans/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	void testHome() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		ResponseEntity<String> entity = restTemplate().withBasicAuth("user", "password")
+			.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("<title>Hello");
 	}
 
 }
