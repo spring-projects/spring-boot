@@ -121,13 +121,7 @@ class NestedUrlConnectionTests {
 	@Test
 	void getInputStreamReturnsContentOfNestedJar() throws Exception {
 		NestedUrlConnection connection = new NestedUrlConnection(this.url);
-		try (InputStream actual = connection.getInputStream()) {
-			try (ZipContent zipContent = ZipContent.open(this.jarFile.toPath())) {
-				try (InputStream expected = zipContent.getEntry("nested.jar").openContent().asInputStream()) {
-					assertThat(actual).hasSameContentAs(expected);
-				}
-			}
-		}
+		assertHasSameContentAsNestedJar(connection);
 	}
 
 	@Test
@@ -160,6 +154,29 @@ class NestedUrlConnectionTests {
 		}
 		finally {
 			fileConnection.getInputStream().close();
+		}
+	}
+
+	@Test
+	void createDecodesUrlPath() throws Exception {
+		File withSpace = new File(this.temp, "te st");
+		withSpace.mkdirs();
+		this.jarFile = new File(withSpace, "test.jar");
+		TestJar.create(this.jarFile);
+		this.url = new URL("nested:" + this.jarFile.toURI().getRawPath() + "/!nested.jar");
+		assertThat(this.url.toString()).contains("%20");
+		NestedUrlConnection connection = new NestedUrlConnection(this.url);
+		assertHasSameContentAsNestedJar(connection);
+		assertThat(connection.getLastModified()).isEqualTo(this.jarFile.lastModified());
+	}
+
+	private void assertHasSameContentAsNestedJar(NestedUrlConnection connection) throws IOException {
+		try (InputStream actual = connection.getInputStream()) {
+			try (ZipContent zipContent = ZipContent.open(this.jarFile.toPath())) {
+				try (InputStream expected = zipContent.getEntry("nested.jar").openContent().asInputStream()) {
+					assertThat(actual).hasSameContentAs(expected);
+				}
+			}
 		}
 	}
 
