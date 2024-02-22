@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Service;
@@ -51,32 +52,44 @@ final class GracefulShutdown {
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-		new Thread(() -> doShutdown(callback), "tomcat-shutdown").start();
-	}
-
-	private void doShutdown(GracefulShutdownCallback callback) {
-		List<Connector> connectors = getConnectors();
-		connectors.forEach(this::close);
+		CountDownLatch shutdownUnderway = new CountDownLatch(1);
+		new Thread(() -> doShutdown(callback, shutdownUnderway), "tomcat-shutdown").start();
 		try {
-			for (Container host : this.tomcat.getEngine().findChildren()) {
-				for (Container context : host.findChildren()) {
-					while (!this.aborted && isActive(context)) {
-						Thread.sleep(50);
-					}
-					if (this.aborted) {
-						logger.info("Graceful shutdown aborted with one or more requests still active");
-						callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
-						return;
-					}
-				}
-			}
-
+			shutdownUnderway.await();
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
-		logger.info("Graceful shutdown complete");
-		callback.shutdownComplete(GracefulShutdownResult.IDLE);
+	}
+
+	private void doShutdown(GracefulShutdownCallback callback, CountDownLatch shutdownUnderway) {
+		try {
+			List<Connector> connectors = getConnectors();
+			connectors.forEach(this::close);
+			shutdownUnderway.countDown();
+			try {
+				for (Container host : this.tomcat.getEngine().findChildren()) {
+					for (Container context : host.findChildren()) {
+						while (!this.aborted && isActive(context)) {
+							Thread.sleep(50);
+						}
+						if (this.aborted) {
+							logger.info("Graceful shutdown aborted with one or more requests still active");
+							callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
+							return;
+						}
+					}
+				}
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			logger.info("Graceful shutdown complete");
+			callback.shutdownComplete(GracefulShutdownResult.IDLE);
+		}
+		finally {
+			shutdownUnderway.countDown();
+		}
 	}
 
 	private List<Connector> getConnectors() {
