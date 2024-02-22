@@ -24,7 +24,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -57,7 +56,7 @@ class ZipkinHttpClientSenderTests extends ZipkinHttpSenderTests {
 
 	private static MockWebServer mockBackEnd;
 
-	private static String zipkinUrl;
+	static String zipkinUrl;
 
 	@BeforeAll
 	static void beforeAll() throws IOException {
@@ -130,22 +129,15 @@ class ZipkinHttpClientSenderTests extends ZipkinHttpSenderTests {
 	void sendUsesDynamicEndpoint() throws Exception {
 		mockBackEnd.enqueue(new MockResponse());
 		mockBackEnd.enqueue(new MockResponse());
-		AtomicInteger suffix = new AtomicInteger();
-		try (BytesMessageSender sender = createSender((e) -> new HttpEndpointSupplier() {
-			@Override
-			public String get() {
-				return zipkinUrl + "/" + suffix.incrementAndGet();
+		try (TestHttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(zipkinUrl)) {
+			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON,
+					Duration.ofSeconds(10))) {
+				sender.send(Collections.emptyList());
+				sender.send(Collections.emptyList());
 			}
-
-			@Override
-			public void close() {
-			}
-		}, Encoding.JSON, Duration.ofSeconds(10))) {
-			sender.send(Collections.emptyList());
-			sender.send(Collections.emptyList());
+			assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/1");
+			assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/2");
 		}
-		assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/1");
-		assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/2");
 	}
 
 	@Test

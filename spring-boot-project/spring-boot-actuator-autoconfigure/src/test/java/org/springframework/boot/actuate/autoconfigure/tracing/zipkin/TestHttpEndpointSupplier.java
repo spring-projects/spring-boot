@@ -16,25 +16,32 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import zipkin2.reporter.HttpEndpointSupplier;
 
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-
 /**
- * Details required to establish a connection to a Zipkin server.
- * <p>
- * Note: {@linkplain #getSpanEndpoint()} is only read once and passed to a bean of type
- * {@link HttpEndpointSupplier.Factory} which defaults to no-op (constant).
+ * Test {@link HttpEndpointSupplier}.
  *
  * @author Moritz Halbritter
- * @since 3.1.0
  */
-public interface ZipkinConnectionDetails extends ConnectionDetails {
+class TestHttpEndpointSupplier implements HttpEndpointSupplier {
 
-	/**
-	 * The endpoint for the span reporting.
-	 * @return the endpoint
-	 */
-	String getSpanEndpoint();
+	private final String url;
+
+	private final AtomicInteger suffix = new AtomicInteger();
+
+	TestHttpEndpointSupplier(String url) {
+		this.url = url;
+	}
+
+	@Override
+	public String get() {
+		return this.url + "/" + this.suffix.incrementAndGet();
+	}
+
+	@Override
+	public void close() {
+	}
 
 }

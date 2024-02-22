@@ -90,6 +90,7 @@ public class ZipkinProperties {
 		 * JSON.
 		 */
 		JSON,
+
 		/**
 		 * Protocol Buffers v3.
 		 */

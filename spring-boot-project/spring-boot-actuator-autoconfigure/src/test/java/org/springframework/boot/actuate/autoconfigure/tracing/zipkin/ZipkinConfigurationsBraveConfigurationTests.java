@@ -72,7 +72,6 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter.brave"))
 			.withUserConfiguration(SenderConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));
-
 	}
 
 	@Test
@@ -128,13 +127,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class).run((context) -> {
 			@SuppressWarnings("unchecked")
 			BytesEncoder<MutableSpan> encoder = context.getBean(BytesEncoder.class);
-
-			MutableSpan span = new MutableSpan();
-			span.traceId("1");
-			span.id("1");
-			span.tag("error", "true");
-			span.error(new RuntimeException("ice cream"));
-
+			MutableSpan span = createTestSpan();
 			// default tag key name is "error", and doesn't overwrite
 			assertThat(new String(encoder.encode(span), StandardCharsets.UTF_8)).isEqualTo(
 					"{\"traceId\":\"0000000000000001\",\"id\":\"0000000000000001\",\"tags\":{\"error\":\"true\"}}");
@@ -147,17 +140,20 @@ class ZipkinConfigurationsBraveConfigurationTests {
 			.run((context) -> {
 				@SuppressWarnings("unchecked")
 				BytesEncoder<MutableSpan> encoder = context.getBean(BytesEncoder.class);
-
-				MutableSpan span = new MutableSpan();
-				span.traceId("1");
-				span.id("1");
-				span.tag("error", "true");
-				span.error(new RuntimeException("ice cream"));
-
+				MutableSpan span = createTestSpan();
 				// The custom throwable parser doesn't use the key "error" we can see both
 				assertThat(new String(encoder.encode(span), StandardCharsets.UTF_8)).isEqualTo(
 						"{\"traceId\":\"0000000000000001\",\"id\":\"0000000000000001\",\"tags\":{\"error\":\"true\",\"exception\":\"ice cream\"}}");
 			});
+	}
+
+	private MutableSpan createTestSpan() {
+		MutableSpan span = new MutableSpan();
+		span.traceId("1");
+		span.id("1");
+		span.tag("error", "true");
+		span.error(new RuntimeException("ice cream"));
+		return span;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -185,7 +181,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 
 		@Bean
 		Tag<Throwable> throwableTag() {
-			return new Tag<Throwable>("exception") {
+			return new Tag<>("exception") {
 				@Override
 				protected String parseValue(Throwable throwable, TraceContext traceContext) {
 					return throwable.getMessage();

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -113,11 +112,9 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendShouldSendSpansToZipkinInProto3() throws IOException, InterruptedException {
 		mockBackEnd.enqueue(new MockResponse());
 		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
-
 		try (BytesMessageSender sender = createSender(Encoding.PROTO3, Duration.ofSeconds(10))) {
 			sender.send(encodedSpans);
 		}
-
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
 			assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
@@ -133,24 +130,15 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendUsesDynamicEndpoint() throws Exception {
 		mockBackEnd.enqueue(new MockResponse());
 		mockBackEnd.enqueue(new MockResponse());
-
-		AtomicInteger suffix = new AtomicInteger();
-		try (BytesMessageSender sender = createSender((e) -> new HttpEndpointSupplier() {
-			@Override
-			public String get() {
-				return ZIPKIN_URL + "/" + suffix.incrementAndGet();
+		try (HttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(ZIPKIN_URL)) {
+			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON,
+					Duration.ofSeconds(10))) {
+				sender.send(Collections.emptyList());
+				sender.send(Collections.emptyList());
 			}
-
-			@Override
-			public void close() {
-			}
-		}, Encoding.JSON, Duration.ofSeconds(10))) {
-			sender.send(Collections.emptyList());
-			sender.send(Collections.emptyList());
+			assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/1");
+			assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/2");
 		}
-
-		assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/1");
-		assertThat(mockBackEnd.takeRequest().getPath()).endsWith("/2");
 	}
 
 	@Test

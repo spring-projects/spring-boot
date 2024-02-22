@@ -21,7 +21,6 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -97,7 +96,6 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 			.andExpect(content().contentType("application/x-protobuf"))
 			.andExpect(content().string("span1span2"))
 			.andRespond(withStatus(HttpStatus.ACCEPTED));
-
 		try (BytesMessageSender sender = createSender(Encoding.PROTO3)) {
 			sender.send(List.of(toByteArray("span1"), toByteArray("span2")));
 		}
@@ -111,20 +109,11 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 	void sendUsesDynamicEndpoint() throws Exception {
 		this.mockServer.expect(requestTo(ZIPKIN_URL + "/1")).andRespond(withStatus(HttpStatus.ACCEPTED));
 		this.mockServer.expect(requestTo(ZIPKIN_URL + "/2")).andRespond(withStatus(HttpStatus.ACCEPTED));
-
-		AtomicInteger suffix = new AtomicInteger();
-		try (BytesMessageSender sender = createSender((e) -> new HttpEndpointSupplier() {
-			@Override
-			public String get() {
-				return ZIPKIN_URL + "/" + suffix.incrementAndGet();
+		try (HttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(ZIPKIN_URL)) {
+			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON)) {
+				sender.send(Collections.emptyList());
+				sender.send(Collections.emptyList());
 			}
-
-			@Override
-			public void close() {
-			}
-		}, Encoding.JSON)) {
-			sender.send(Collections.emptyList());
-			sender.send(Collections.emptyList());
 		}
 	}
 

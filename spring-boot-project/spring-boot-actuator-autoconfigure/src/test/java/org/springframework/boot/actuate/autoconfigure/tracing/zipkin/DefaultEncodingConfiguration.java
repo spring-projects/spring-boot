@@ -30,7 +30,7 @@ class DefaultEncodingConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Encoding encoding() {
+	Encoding zipkinReporterEncoding() {
 		return Encoding.JSON;
 	}
 
