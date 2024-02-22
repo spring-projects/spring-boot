@@ -194,6 +194,8 @@ Alternatively, the SSL trust material can be configured in an <<features#feature
 	    bundle: "example"
 ----
 
+NOTE: The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
+
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
 
 

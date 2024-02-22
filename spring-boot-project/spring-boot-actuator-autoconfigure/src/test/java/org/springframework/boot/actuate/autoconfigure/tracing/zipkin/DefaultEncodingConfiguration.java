@@ -16,29 +16,22 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.io.IOException;
-import java.util.List;
-
-import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
 
-class NoopSender extends BytesMessageSender.Base {
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 
-	NoopSender(Encoding encoding) {
-		super(encoding);
-	}
+/**
+ * Configures the bean {@linkplain ZipkinAutoConfiguration} would from properties.
+ */
+@TestConfiguration(proxyBeanMethods = false)
+class DefaultEncodingConfiguration {
 
-	@Override
-	public int messageMaxBytes() {
-		return 1024;
-	}
-
-	@Override
-	public void send(List<byte[]> encodedSpans) {
-	}
-
-	@Override
-	public void close() throws IOException {
+	@Bean
+	@ConditionalOnMissingBean
+	Encoding zipkinReporterEncoding() {
+		return Encoding.JSON;
 	}
 
 }

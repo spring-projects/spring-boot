@@ -16,29 +16,32 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import zipkin2.reporter.BytesMessageSender;
-import zipkin2.reporter.Encoding;
+import zipkin2.reporter.HttpEndpointSupplier;
 
-class NoopSender extends BytesMessageSender.Base {
+/**
+ * Test {@link HttpEndpointSupplier}.
+ *
+ * @author Moritz Halbritter
+ */
+class TestHttpEndpointSupplier implements HttpEndpointSupplier {
 
-	NoopSender(Encoding encoding) {
-		super(encoding);
+	private final String url;
+
+	private final AtomicInteger suffix = new AtomicInteger();
+
+	TestHttpEndpointSupplier(String url) {
+		this.url = url;
 	}
 
 	@Override
-	public int messageMaxBytes() {
-		return 1024;
+	public String get() {
+		return this.url + "/" + this.suffix.incrementAndGet();
 	}
 
 	@Override
-	public void send(List<byte[]> encodedSpans) {
-	}
-
-	@Override
-	public void close() throws IOException {
+	public void close() {
 	}
 
 }

@@ -17,25 +17,18 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
 import java.net.URI;
-import java.util.Set;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.glassfish.jersey.micrometer.server.DefaultJerseyTagsProvider;
-import org.glassfish.jersey.micrometer.server.JerseyTagsProvider;
-import org.glassfish.jersey.micrometer.server.MetricsApplicationEventListener;
+import org.glassfish.jersey.micrometer.server.ObservationApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration.JerseyTagsProviderAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -58,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Michael Weirauch
  * @author Michael Simons
+ * @author Moritz Halbritter
  */
 class JerseyServerMetricsAutoConfigurationTests {
 
@@ -80,30 +74,8 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 	@Test
 	void shouldProvideAllNecessaryBeans() {
-		this.webContextRunner.run((context) -> assertThat(context).hasSingleBean(DefaultJerseyTagsProvider.class)
+		this.webContextRunner.run((context) -> assertThat(context).hasBean("jerseyMetricsUriTagFilter")
 			.hasSingleBean(ResourceConfigCustomizer.class));
-	}
-
-	@Test
-	void shouldHonorExistingTagProvider() {
-		this.webContextRunner.withUserConfiguration(CustomJerseyTagsProviderConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
-	}
-
-	@Test
-	@Deprecated(since = "3.3.0", forRemoval = true)
-	void shouldHonorExistingMicrometerTagProvider() {
-		this.webContextRunner.withUserConfiguration(CustomMicrometerJerseyTagsProviderConfiguration.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(CustomMicrometerJerseyTagsProvider.class);
-				ResourceConfig config = new ResourceConfig();
-				context.getBean(ResourceConfigCustomizer.class).customize(config);
-				Set<Object> instances = config.getInstances();
-				assertThat(instances).hasSize(1)
-					.first(InstanceOfAssertFactories.type(MetricsApplicationEventListener.class))
-					.satisfies((listener) -> assertThat(listener).extracting("tagsProvider")
-						.isInstanceOf(JerseyTagsProviderAdapter.class));
-			});
 	}
 
 	@Test
@@ -118,10 +90,9 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 	@Test
 	void noHttpRequestsTimedWhenJerseyInstrumentationMissingFromClasspath() {
-		this.webContextRunner.withClassLoader(new FilteredClassLoader(MetricsApplicationEventListener.class))
+		this.webContextRunner.withClassLoader(new FilteredClassLoader(ObservationApplicationEventListener.class))
 			.run((context) -> {
 				doRequest(context);
-
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				assertThat(registry.find("http.server.requests").timer()).isNull();
 			});
@@ -144,7 +115,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 		}
 
 		@Path("/users")
-		public class TestResource {
+		public static class TestResource {
 
 			@GET
 			@Path("/{id}")
@@ -152,57 +123,6 @@ class JerseyServerMetricsAutoConfigurationTests {
 				return id;
 			}
 
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomJerseyTagsProviderConfiguration {
-
-		@Bean
-		JerseyTagsProvider customJerseyTagsProvider() {
-			return new CustomJerseyTagsProvider();
-		}
-
-	}
-
-	static class CustomJerseyTagsProvider implements JerseyTagsProvider {
-
-		@Override
-		public Iterable<Tag> httpRequestTags(RequestEvent event) {
-			return null;
-		}
-
-		@Override
-		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
-			return null;
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	@Configuration(proxyBeanMethods = false)
-	static class CustomMicrometerJerseyTagsProviderConfiguration {
-
-		@Bean
-		io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider customJerseyTagsProvider() {
-			return new CustomMicrometerJerseyTagsProvider();
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	static class CustomMicrometerJerseyTagsProvider
-			implements io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider {
-
-		@Override
-		public Iterable<Tag> httpRequestTags(RequestEvent event) {
-			return null;
-		}
-
-		@Override
-		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
-			return null;
 		}
 
 	}

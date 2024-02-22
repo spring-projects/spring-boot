@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,11 @@ public class ZipkinProperties {
 	private String endpoint = "http://localhost:9411/api/v2/spans";
 
 	/**
+	 * How to encode the POST body to the Zipkin API.
+	 */
+	private Encoding encoding = Encoding.JSON;
+
+	/**
 	 * Connection timeout for requests to Zipkin.
 	 */
 	private Duration connectTimeout = Duration.ofSeconds(1);
@@ -52,6 +57,14 @@ public class ZipkinProperties {
 		this.endpoint = endpoint;
 	}
 
+	public Encoding getEncoding() {
+		return this.encoding;
+	}
+
+	public void setEncoding(Encoding encoding) {
+		this.encoding = encoding;
+	}
+
 	public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
@@ -66,6 +79,23 @@ public class ZipkinProperties {
 
 	public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
+	}
+
+	/**
+	 * Zipkin message encoding.
+	 */
+	public enum Encoding {
+
+		/**
+		 * JSON.
+		 */
+		JSON,
+
+		/**
+		 * Protocol Buffers v3.
+		 */
+		PROTO3
+
 	}
 
 }

@@ -30,7 +30,6 @@ import brave.context.slf4j.MDCScopeDecorator;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
-import brave.propagation.Propagation.KeyFactory;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -99,12 +98,11 @@ class BravePropagationConfigurations {
 			return builder;
 		}
 
-		@SuppressWarnings("deprecation")
 		private Factory createThrowAwayFactory() {
 			return new Factory() {
 
 				@Override
-				public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
+				public Propagation<String> get() {
 					return null;
 				}
 

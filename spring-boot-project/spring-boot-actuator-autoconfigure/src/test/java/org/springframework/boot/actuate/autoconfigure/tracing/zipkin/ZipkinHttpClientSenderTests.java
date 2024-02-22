@@ -18,12 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -40,24 +40,23 @@ import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 
 /**
- * Tests for {@link ZipkinWebClientSender}.
+ * Tests for {@link ZipkinHttpClientSender}.
  *
- * @author Stefan Bratanov
+ * @author Moritz Halbritter
  */
-@SuppressWarnings("removal")
-class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
+class ZipkinHttpClientSenderTests extends ZipkinHttpSenderTests {
 
 	private static ClearableDispatcher dispatcher;
 
 	private static MockWebServer mockBackEnd;
 
-	private static String ZIPKIN_URL;
+	static String zipkinUrl;
 
 	@BeforeAll
 	static void beforeAll() throws IOException {
@@ -65,7 +64,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		mockBackEnd = new MockWebServer();
 		mockBackEnd.setDispatcher(dispatcher);
 		mockBackEnd.start();
-		ZIPKIN_URL = mockBackEnd.url("/api/v2/spans").toString();
+		zipkinUrl = mockBackEnd.url("/api/v2/spans").toString();
 	}
 
 	@AfterAll
@@ -86,14 +85,14 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		return createSender(Encoding.JSON, Duration.ofSeconds(10));
 	}
 
-	ZipkinWebClientSender createSender(Encoding encoding, Duration timeout) {
+	ZipkinHttpClientSender createSender(Encoding encoding, Duration timeout) {
 		return createSender(HttpEndpointSuppliers.constantFactory(), encoding, timeout);
 	}
 
-	ZipkinWebClientSender createSender(HttpEndpointSupplier.Factory endpointSupplierFactory, Encoding encoding,
+	ZipkinHttpClientSender createSender(HttpEndpointSupplier.Factory endpointSupplierFactory, Encoding encoding,
 			Duration timeout) {
-		WebClient webClient = WebClient.builder().build();
-		return new ZipkinWebClientSender(encoding, endpointSupplierFactory, ZIPKIN_URL, webClient, timeout);
+		HttpClient httpClient = HttpClient.newBuilder().connectTimeout(timeout).build();
+		return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, zipkinUrl, httpClient, timeout);
 	}
 
 	@Test
@@ -130,7 +129,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendUsesDynamicEndpoint() throws Exception {
 		mockBackEnd.enqueue(new MockResponse());
 		mockBackEnd.enqueue(new MockResponse());
-		try (HttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(ZIPKIN_URL)) {
+		try (TestHttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(zipkinUrl)) {
 			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON,
 					Duration.ofSeconds(10))) {
 				sender.send(Collections.emptyList());
@@ -145,7 +144,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendShouldHandleHttpFailures() throws InterruptedException {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
 		assertThatException().isThrownBy(() -> this.sender.send(Collections.emptyList()))
-			.withMessageContaining("500 Internal Server Error");
+			.withMessageContaining("Expected HTTP status 2xx, got 500");
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
 	}
 
@@ -170,8 +169,8 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		try (BytesMessageSender sender = createSender(Encoding.JSON, Duration.ofMillis(1))) {
 			MockResponse response = new MockResponse().setResponseCode(200).setHeadersDelay(100, TimeUnit.MILLISECONDS);
 			mockBackEnd.enqueue(response);
-			assertThatException().isThrownBy(() -> sender.send(Collections.emptyList()))
-				.withCauseInstanceOf(TimeoutException.class);
+			assertThatIOException().isThrownBy(() -> sender.send(Collections.emptyList()))
+				.withMessageContaining("timed out");
 		}
 	}
 

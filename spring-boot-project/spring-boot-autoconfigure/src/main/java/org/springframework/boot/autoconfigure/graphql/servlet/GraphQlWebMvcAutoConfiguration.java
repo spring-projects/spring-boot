@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,9 +112,9 @@ public class GraphQlWebMvcAutoConfiguration {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
-		builder = builder.GET(path, this::onlyAllowPost);
 		builder = builder.POST(path, RequestPredicates.contentType(MediaType.APPLICATION_JSON)
 			.and(RequestPredicates.accept(SUPPORTED_MEDIA_TYPES)), httpHandler::handleRequest);
+		builder = builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);

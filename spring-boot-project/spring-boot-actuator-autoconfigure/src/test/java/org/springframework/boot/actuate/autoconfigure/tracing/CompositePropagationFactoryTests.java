@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import brave.internal.propagation.StringPropagationAdapter;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
@@ -143,9 +142,8 @@ class CompositePropagationFactoryTests {
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
-		public <K> Propagation<K> create(Propagation.KeyFactory<K> keyFactory) {
-			return StringPropagationAdapter.create(this, keyFactory);
+		public Propagation<String> get() {
+			return this;
 		}
 
 		@Override

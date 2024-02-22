@@ -16,35 +16,25 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
-import org.glassfish.jersey.micrometer.server.AnnotationFinder;
-import org.glassfish.jersey.micrometer.server.DefaultJerseyTagsProvider;
-import org.glassfish.jersey.micrometer.server.JerseyTagsProvider;
-import org.glassfish.jersey.micrometer.server.MetricsApplicationEventListener;
+import io.micrometer.observation.ObservationRegistry;
+import org.glassfish.jersey.micrometer.server.JerseyObservationConvention;
+import org.glassfish.jersey.micrometer.server.ObservationApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.monitoring.RequestEvent;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -53,13 +43,14 @@ import org.springframework.core.annotation.Order;
  * @author Michael Weirauch
  * @author Michael Simons
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 2.1.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
+@AutoConfiguration(after = { ObservationAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
-@ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
-@EnableConfigurationProperties(MetricsProperties.class)
+@ConditionalOnClass({ ResourceConfig.class, ObservationApplicationEventListener.class })
+@ConditionalOnBean({ ResourceConfig.class, ObservationRegistry.class })
+@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
 public class JerseyServerMetricsAutoConfiguration {
 
 	private final ObservationProperties observationProperties;
@@ -69,22 +60,11 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	@SuppressWarnings("deprecation")
-	@ConditionalOnMissingBean({ JerseyTagsProvider.class,
-			io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider.class })
-	public DefaultJerseyTagsProvider jerseyTagsProvider() {
-		return new DefaultJerseyTagsProvider();
-	}
-
-	@Bean
-	@SuppressWarnings("deprecation")
-	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
-			ObjectProvider<JerseyTagsProvider> tagsProvider,
-			ObjectProvider<io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider> micrometerTagsProvider) {
+	ResourceConfigCustomizer jerseyServerObservationResourceConfigCustomizer(ObservationRegistry observationRegistry,
+			ObjectProvider<JerseyObservationConvention> jerseyObservationConvention) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry,
-				tagsProvider.getIfAvailable(() -> new JerseyTagsProviderAdapter(micrometerTagsProvider.getObject())),
-				metricName, true, new AnnotationUtilsAnnotationFinder()));
+		return (config) -> config.register(new ObservationApplicationEventListener(observationRegistry, metricName,
+				jerseyObservationConvention.getIfAvailable()));
 	}
 
 	@Bean
@@ -95,40 +75,6 @@ public class JerseyServerMetricsAutoConfiguration {
 				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
 				metricsProperties.getWeb().getServer().getMaxUriTags(), filter);
-	}
-
-	/**
-	 * An {@link AnnotationFinder} that uses {@link AnnotationUtils}.
-	 */
-	private static final class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
-
-		@Override
-		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
-			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	static final class JerseyTagsProviderAdapter implements JerseyTagsProvider {
-
-		private final io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider delegate;
-
-		private JerseyTagsProviderAdapter(
-				io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public Iterable<Tag> httpRequestTags(RequestEvent event) {
-			return this.delegate.httpRequestTags(event);
-		}
-
-		@Override
-		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
-			return this.delegate.httpLongRequestTags(event);
-		}
-
 	}
 
 }

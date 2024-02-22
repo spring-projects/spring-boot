@@ -815,7 +815,7 @@ By default, Jersey server metrics are tagged with the following information:
 | The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
+To customize the tags, provide a `@Bean` that implements `JerseyObservationConvention`.
 
 
 

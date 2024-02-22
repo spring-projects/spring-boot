@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import brave.baggage.BaggagePropagation.FactoryBuilder;
 import brave.baggage.BaggagePropagationConfig;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
-import brave.propagation.Propagation.KeyFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,11 +49,10 @@ class LocalBaggageFieldsTests {
 		assertThat(LocalBaggageFields.empty().asList()).isEmpty();
 	}
 
-	@SuppressWarnings("deprecation")
 	private static FactoryBuilder createBuilder() {
 		return BaggagePropagation.newFactoryBuilder(new Factory() {
 			@Override
-			public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
+			public Propagation<String> get() {
 				return null;
 			}
 		});
