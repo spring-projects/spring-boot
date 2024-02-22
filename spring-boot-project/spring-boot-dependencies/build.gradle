@@ -1169,7 +1169,7 @@ bom {
 			]
 		}
 	}
-	library("QueryDSL", "5.0.0") {
+	library("QueryDSL", "5.1.0") {
 		group("com.querydsl") {
 			imports = [
 				"querydsl-bom"
