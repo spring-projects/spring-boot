@@ -81,6 +81,15 @@ class SampleActuatorUiApplicationTests {
 			.contains("Please contact the operator with the above information");
 	}
 
+	@Test
+	void testInsecureApplicationPath() {
+		HttpHeaders headers = new HttpHeaders();
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+			.exchange("/foo", HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		assertThat(entity.getBody()).contains("Expected exception in controller");
+	}
+
 	private String getPassword() {
 		return "password";
 	}
