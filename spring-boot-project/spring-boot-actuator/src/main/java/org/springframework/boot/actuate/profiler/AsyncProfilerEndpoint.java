@@ -16,19 +16,6 @@
 
 package org.springframework.boot.actuate.profiler;
 
-import one.profiler.AsyncProfiler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilterInputStream;
@@ -41,6 +28,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import one.profiler.AsyncProfiler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * <p>
@@ -59,8 +60,8 @@ import java.util.stream.Stream;
  * </pre>
  * </p>
  * <p>
- * Enable by activating "<i>profiler</i>" endpoint, for example, with following config in
- * {@code application.yaml}: <pre>{@code
+ * Enable by activating "<i>profiler</i>" endpoint like so {@code application.yaml}:
+ * <pre>{@code
  *   endpoints:
  *     web:
  *       exposure:
@@ -135,7 +136,7 @@ public class AsyncProfilerEndpoint {
 		}
 	}
 
-	@GetMapping("{operation:(?:dump|stop)}")
+	@GetMapping("{operation:dump|stop}")
 	public ResponseEntity<Resource> collectFlameGraph(@PathVariable String operation) {
 		if (log.isDebugEnabled()) {
 			log.debug("operation: " + operation);
@@ -187,9 +188,12 @@ public class AsyncProfilerEndpoint {
 	}
 
 	private static String getCommand(String operation, WebRequest request) {
-		String parameters = request.getParameterMap().entrySet().stream()
-				.filter(e -> !"duration".equalsIgnoreCase(e.getKey()))
-				.map(e -> parseParameter(e.getKey(), e.getValue())).collect(Collectors.joining(","));
+		String parameters = request.getParameterMap()
+			.entrySet()
+			.stream()
+			.filter((e) -> !"duration".equalsIgnoreCase(e.getKey()))
+			.map((e) -> parseParameter(e.getKey(), e.getValue()))
+			.collect(Collectors.joining(","));
 
 		if (OPERATION_START.equals(operation) && parameters.isBlank()) {
 			parameters = "event=cpu";
@@ -202,7 +206,7 @@ public class AsyncProfilerEndpoint {
 				|| (values.length == 1 && (values[0] == null || values[0].isBlank()))) {
 			return key;
 		}
-		return Stream.of(values).map(v -> key + "=" + v).collect(Collectors.joining(","));
+		return Stream.of(values).map((v) -> key + "=" + v).collect(Collectors.joining(","));
 	}
 
 	private File createTempFile() throws IOException {
@@ -271,7 +275,7 @@ public class AsyncProfilerEndpoint {
 			}
 			catch (IOException ex) {
 				AsyncProfilerEndpoint.TemporaryFileSystemResource.this.logger
-						.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
+					.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
 			}
 		}
 
