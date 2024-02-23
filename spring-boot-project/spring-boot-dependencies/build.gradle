@@ -503,6 +503,13 @@ bom {
 			]
 		}
 	}
+	library("Jakarta Inject", "2.0.1") {
+		group("jakarta.inject") {
+			modules = [
+				"jakarta.inject-api"
+			]
+		}
+	}
 	library("Jakarta JMS", "3.1.0") {
 		group("jakarta.jms") {
 			modules = [

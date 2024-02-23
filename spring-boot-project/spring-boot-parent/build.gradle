@@ -48,13 +48,6 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Inject", "2.0.1") {
-		group("jakarta.inject") {
-			modules = [
-				"jakarta.inject-api"
-			]
-		}
-	}
 	library("Janino", "3.1.10") {
 		group("org.codehaus.janino") {
 			imports = [
