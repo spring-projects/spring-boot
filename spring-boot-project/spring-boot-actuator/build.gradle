@@ -33,6 +33,7 @@ dependencies {
 	optional("io.undertow:undertow-servlet")
 	optional("javax.cache:cache-api")
 	optional("jakarta.jms:jakarta.jms-api")
+	optional("tools.profiler:async-profiler:2.9")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-micrometer")
